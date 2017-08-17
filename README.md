@@ -48,7 +48,7 @@ localhost:3000
 * 当前是jchat-web v1.0.0版本，暂无好友、免打扰等功能，相关功能将在v1.1.0实现
 * 业务事件消息，如群聊成员入群消息等，目前实现方法较为复杂，在js sdk更新版本后，v1.1.0将重写相关功能
 * 浏览器兼容性: IE11+ ， Chrome ， Firefox ， Safari，后续考虑兼容IE10
-* 整个项目的静态资源由gulp提交到七牛上，如需使用此功能，需在src/task/config.json中配置ak和sk以及url
+* 发布时整个项目的静态资源由gulp提交到七牛上，如需使用此功能，需在src/task/config.json中配置ak和sk以及url
 
 ### JMessage 文档
 
