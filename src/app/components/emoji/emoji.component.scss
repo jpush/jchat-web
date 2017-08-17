@@ -1,0 +1,97 @@
+.emoji-container{
+    width: 476px;
+    height: 263px;
+    background: #fff;
+    position: absolute;
+    border: 1px solid #D9DEE4;
+    .emoji-normal{
+        padding:  15px 20px 0 20px;
+        overflow: hidden;
+        box-sizing: border-box;
+        width: 476px;
+        height: 217px;
+        position: relative;
+        &:before{
+            position: absolute;
+            top: 15px;
+            right: 21px;
+            display: block;
+            width: 1px;
+            height: 202px;
+            background: #fff;
+            content: '';
+        }
+        li{
+            width: 29px;
+            height: 29px;
+            float: left;            
+            a{
+                border-bottom: 1px solid #f0f0f0;
+                border-right: 1px solid #f0f0f0;
+                cursor: pointer;
+                display:block;
+                height: 28px;
+                width: 28px;
+                text-align: center;
+                line-height: 29px;
+            }
+        }
+    }
+    &:after, &:before{
+        content: '';
+        position: absolute;
+        left: 26px;
+        top: 100%;
+        margin-left: -7px;
+    }
+    &:after{
+        margin-top: -1px;
+        border: 7px solid transparent;
+        border-top-color: #F2F6FB;
+    }
+    &:before{
+        border: 7px solid transparent;
+        border-top-color: #D9DEE4;
+    }
+    .emoji-jpush-scroll{
+        height: 233px;
+        width: 100%;
+        .emoji-jpush{
+            li{
+                width: 95px;
+                height: 95px;
+                float: left;
+                a{
+                    display:block;
+                    height:100%;
+                    top:100%;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+    .emoji-tab{
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 30px;
+        padding-left: 11px;
+        background-color: #F2F6FB;
+        box-sizing: border-box;
+        >button{
+            width: 30px;
+            height: 30px;
+            &.active{
+                background-color: #fff;
+            }
+        }
+        .emoji-tab-normal{
+            background: url(../../../assets/images/emoji-simple.png) center center no-repeat;
+            background-size: 20px;
+        }
+        .emoji-tab-jpush{
+            background: url(../../../assets/images/emoji-jpush.png) center center no-repeat;
+            background-size: 30px;
+        }
+    }
+}

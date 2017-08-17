@@ -1,0 +1,23 @@
+<div class="emoji-container" (click)="stopPagation($event)" [ngStyle]="{top: emojiInfo.position.top - 280 + 'px', left: emojiInfo.position.left + 2 + 'px'}">
+    <div *ngIf="tab === 0" class="emoji-normal clearfix">
+        <ul class="clearfix">
+            <li *ngFor="let item of emojiInfo.emojiAlias; let num = index;">
+                <a [id]="'emoji-face' + num" href="javascript:;" (click)="emojiSelectAction('emoji-face' + num)" [innerHTML]="item.unicode | emoji: false | sanitize: 'html'"></a>
+            </li>
+        </ul>
+    </div>
+    <!--发送极光表情-->
+    <!--<div *ngIf="tab === 1">
+        <perfect-scrollbar class="emoji-jpush-scroll">
+            <ul class="emoji-jpush">
+                <li *ngFor="let item of emojiInfo.jpushAlias" [title]="item.text" [ngStyle]="{'background': '#fff url('+ imgRouter +'assets/images/jpush/' + item.imgNum + '.png) top left no-repeat', 'background-size': '95px'}">
+                    <a href="javascript:;" (click)="jpushEmojiSelectAction(item)"></a>
+                </li>
+            </ul>
+        </perfect-scrollbar>
+    </div>-->
+    <div class="emoji-tab">
+        <button type="button" (click)="changeTab($event, 0)" class="emoji-tab-normal float-left" [ngClass]="{'active': tab === 0}"></button>
+        <!--<button type="button" (click)="changeTab($event, 1)" class="emoji-tab-jpush float-left" [ngClass]="{'active': tab === 1}"></button>-->
+    </div>
+</div>

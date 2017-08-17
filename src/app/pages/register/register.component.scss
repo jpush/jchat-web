@@ -1,0 +1,131 @@
+.register-container{
+    width: 400px;
+    min-height: 454px;
+    background-color: #fff;
+    border-radius: 4px;
+    margin: 0 auto;
+    overflow: hidden;
+    text-align: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+    padding-bottom: 42px;
+    box-sizing: border-box;
+    h1{
+        height: 143px;
+        line-height: 143px;
+        margin: 0;
+    }
+    .register-info{
+        >div{
+            position: relative;
+            width: 320px;
+            margin: 0 auto;
+        }
+        .register-tip{
+            position: absolute;
+            top: 46px;
+            left: 0;
+            font-size: 12px;
+            line-height: 17px;
+            color: #EB424C;
+        }
+        input{
+            height: 42px;
+            width: 320px;
+            border: 1px solid #D9DEE4;
+            padding-left: 45px;
+            box-sizing: border-box;
+            background-size: 18px;
+            border-radius: 2px;
+            font-size: 12px;
+        }
+        .register-username{
+            margin-bottom: 22px;
+            position: relative;
+            input{
+                background: url(../../../assets/images/username-icon.png) 13px center no-repeat;
+            }
+            &.register-tip-wrap{
+                margin-bottom: 32px;
+            }
+        }
+        .register-pwd{
+            margin-bottom: 22px;
+            input{
+                background: url(../../../assets/images/password-icon.png) 13px center no-repeat;
+            }
+            &.register-tip-wrap{
+                margin-bottom: 32px;
+            }       
+        }
+        .register-re-pwd{
+            margin-bottom: 30px;
+            input{
+                background: url(../../../assets/images/password-icon.png) 13px center no-repeat;
+            }
+            &.register-tip-wrap{
+                margin-bottom: 32px;
+            }
+        }
+        .register-btn{
+            button{
+                background-color: #2DD0CF;
+                border-radius: 2px;
+                width: 320px;
+                height: 42px;
+                font-size: 16px;
+                color: #FFFFFF;
+                &.disabled{
+                    color: #d9f6f6 !important;
+                    background-color: #81e3e2 !important;
+                    border-color: #81e3e2 !important;
+                    cursor: default;
+                }
+            }
+        }
+        .register-to-login{
+            margin-top: 10px;
+            font-size: 12px;
+            color: #808080;
+            letter-spacing: 0;
+            a{
+                font-size: 12px;
+                color: #2DD0CF;
+                letter-spacing: 0;
+                line-height: 17px;
+                cursor: pointer;
+            }
+        }
+    }
+}
+.copyright-container{
+    height: 55px;
+    position: absolute;
+    bottom: 76px;
+    text-align: center;
+    width: 100%;
+    font-size: 14px;
+    color: #FFFFFF;
+    opacity: 0.7;
+    img{
+        margin-bottom: 8px;
+    }
+}
+@media (max-height:650px){
+    .copyright-container{
+        display: none;
+    }
+}
+@media (min-height:650px) and (max-height:720px){
+    .copyright-container{
+        bottom: 20px;
+    }
+}
+@media (min-height:720px) and (max-height:780px){
+    .copyright-container{
+        bottom: 45px;
+    }
+}

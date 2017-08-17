@@ -1,0 +1,32 @@
+.menu-wrap{
+    position: absolute;
+    bottom: 31px;
+    left: 24px;
+    width: 115px;
+    background-color: #fff;
+    box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+    border-radius: 2px;
+    ul{
+        cursor: pointer;
+        line-height: 42px;
+        font-size: 14px;
+        color: #808080;
+        position: relative;
+        border-radius: 2px;
+        li{
+            padding-left: 22px;
+            box-sizing: border-box;
+        }
+        &:after{
+            content: '';
+            display: block;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            border-top-color: #fff;
+            position: absolute;
+            bottom: -11px;
+            left: 5px;
+        }
+    }
+}

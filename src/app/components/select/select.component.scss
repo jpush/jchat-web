@@ -1,0 +1,33 @@
+.select-container{
+    position: relative;
+    cursor: default;
+    .select-active{
+        border: 1px solid #E3E6EB;
+        border-radius: 2px;
+        height: 26px;
+        font-size: 14px;
+        color: #2C2C2C;
+        padding-left: 12px;
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+    .select-list{
+        background: #FFFFFF;
+        box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+        border-radius: 2px;
+        line-height: 26px;
+        font-size: 14px;
+        color: #2C2C2C;
+        position: absolute;
+        top: 29px;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        z-index: 1;
+        li{
+            padding-left: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+    }
+}

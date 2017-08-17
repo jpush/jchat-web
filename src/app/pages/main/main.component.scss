@@ -1,0 +1,131 @@
+.main-wrap{
+    width: 100%;
+    height: 100%;
+    .main-container{
+        max-width: 980px;
+        width: 100%;
+        max-height: 710px;
+        min-width: 770px;
+        min-height: 550px;
+        height: 100%;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 4px;
+        .main-menu{
+            width: 70px;
+            border-right: 1px solid #d8dfe4;
+            background: #E8EDF3;
+            border-bottom-left-radius: 3px;
+            border-top-left-radius: 3px;
+            position: relative;
+            z-index: 1;
+            .main-self-avatar{
+                margin: 61px 0 88px 13px;
+                width: 44px;
+                height: 44px;
+                overflow: hidden;
+                img{
+                    cursor: pointer;
+                }
+            }
+            .main-tab{
+                .main-chat{
+                    position: relative;
+                    height: 30px;
+                    margin-bottom: 31px;
+                    >div{
+                        background-size: 30px;
+                        width: 30px;
+                        height: 30px;
+                        margin: 0 auto;
+                        cursor: pointer;
+                    }
+                    .main-conversation-icon{
+                        background: url(../../../assets/images/chat-normal.png) center center no-repeat;                 
+                        &:hover{
+                            background-image: url(../../../assets/images/chat-active.png);
+                        }
+                        &.active{
+                            background-image: url(../../../assets/images/chat-active.png);
+                        }
+                    }
+                    .main-contact-icon{
+                        background: url(../../../assets/images/contact-normal.png) center center no-repeat;              
+                        &:hover{
+                            background-image: url(../../../assets/images/contact-active.png);
+                        }
+                        &.active{
+                            background-image: url(../../../assets/images/contact-active.png);
+                        }
+                    }
+                }
+            }
+            .main-add-container{
+                position: absolute;
+                bottom: 48px;
+                left: 0;
+                width: 100%;
+                .main-add-single{
+                    height: 21px;
+                    margin-bottom: 38px;
+                    position: relative;
+                    .main-add-single-icon{
+                        cursor: pointer;                    
+                        background: url(../../../assets/images/add-single-normal.png) center center no-repeat;
+                        background-size: 21px;
+                        width: 21px;
+                        height: 21px;
+                        margin: 0 auto;
+                        &:hover{
+                            background: url(../../../assets/images/add-single-active.png) center center no-repeat;
+                        }
+                    }
+                    .main-add-single-icon.active{
+                        background: url(../../../assets/images/add-single-active.png) center center no-repeat;
+                    }
+                }
+                .main-setting{
+                    height: 21px;
+                    position: relative;
+                    .main-setting-icon{
+                        cursor: pointer;                    
+                        background: url(../../../assets/images/menu-normal.png) center center no-repeat;
+                        background-size: 21px;
+                        width: 21px;
+                        height: 21px;
+                        margin: 0 auto;
+                        &:hover{
+                            background: url(../../../assets/images/menu-active.png) center center no-repeat;
+                        }
+                    }
+                    .main-setting-icon.active{
+                        background: url(../../../assets/images/menu-active.png) center center no-repeat;
+                    }
+                }
+            }
+        }
+    }
+}
+.copyright-container{
+    height: 55px;
+    position: absolute;
+    bottom: 30px;
+    text-align: center;
+    width: 100%;
+    font-size: 14px;
+    color: #FFFFFF;
+    opacity: 0.7;
+    img{
+        margin-bottom: 8px;
+    }
+}
+@media (max-height:900px){
+    .copyright-container{
+        display: none;
+    }
+}
+@media (max-width: 980px) {
+    .main-container{
+        max-height: 100% !important;
+    }
+}

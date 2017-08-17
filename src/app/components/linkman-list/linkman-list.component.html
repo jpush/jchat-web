@@ -1,0 +1,17 @@
+<perfect-scrollbar class="linkman-list-container">
+    <h2>联系人</h2>
+    <div class="linkman-list-no-data" *ngIf="!isEmpty">暂无联系人</div>
+    <div *ngIf="conversation">
+        <div *ngFor="let item of conversation">
+            <div *ngIf="item.data.length > 0 && !item.allGroup" class="linkman-list-letter">{{item.letter}}</div>
+            <div *ngIf="!item.allGroup">
+                <div *ngFor="let data of item.data" class="linkman-list-name display-flex" (click)="selectLinkmanItem(data)">
+                    <div *ngIf="data.type === 3" class="linkman-list-avatar">
+                        <img *ngIf="data.type === 3" (load)="avatarLoad($event)" [src]="data.avatarUrl ? (data.avatarUrl | sanitize: 'url') : ''" (error)="avatarErrorIcon($event)" alt="">
+                    </div>
+                    <span *ngIf="data.type === 3" class="flex-1">{{(data.nickName && data.nickName !== '') ? data.nickName : data.name}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</perfect-scrollbar>

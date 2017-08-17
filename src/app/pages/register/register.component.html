@@ -1,0 +1,35 @@
+<div class="register-wrap">
+    <div class="register-container">
+        <h1>
+            <img src="../../../assets/images/logo.png" alt="">
+        </h1>
+        <div class="register-info">
+            <div class="register-username" [ngClass]="{'register-tip-wrap': tip.usernameTip}">
+                <input spellcheck="false" id="registerUsername" class="input-focus" [ngClass]="{'input-error': tip.usernameTip}" [(ngModel)]="info.username" type="text" placeholder="请输入用户名" (blur)="usernameBlur()" (keyup)="isButtonAvailableAction('username')">
+                <p *ngIf="tip.usernameTip" class="register-tip">{{tip.usernameTip}}</p>
+            </div>
+            <div class="register-pwd" [ngClass]="{'register-tip-wrap': tip.passwordTip}">
+                <input spellcheck="false" class="input-focus" [ngClass]="{'input-error': tip.passwordTip}" [(ngModel)]="info.password" type="password" placeholder="请输入密码" (blur)="passwordBlur()" (keyup)="isButtonAvailableAction('password')">
+                <p *ngIf="tip.passwordTip" class="register-tip">{{tip.passwordTip}}</p>
+            </div>
+            <div class="register-re-pwd" [ngClass]="{'register-tip-wrap': tip.repeatPasswordTip}">
+                <input spellcheck="false" class="input-focus" [ngClass]="{'input-error': tip.repeatPasswordTip}" [(ngModel)]="info.repeatPassword" type="password" placeholder="请确认密码" (keyup.enter)="register()" (keyup)="isButtonAvailableAction('repeatPassword')">
+                <p *ngIf="tip.repeatPasswordTip" class="register-tip">{{tip.repeatPasswordTip}}</p>
+            </div>
+            <p class="register-btn">
+                <button [ngClass]="{'disabled': !isButtonAvailable}" class="btn-active" type="button" (click)="register()">注册</button>
+            </p>
+            <p class="register-to-login">
+                已有账号？
+                <a routerLink="/login">立即登录</a>
+            </p>
+        </div>
+    </div>
+</div>
+<div class="copyright-container">
+    <img src="../../../assets/images/copyright.png" alt="">
+    <p>
+        深圳市和讯华谷信息技术有限公司 版权所有 @2011-2017  粤ICP备12056275号-13
+    </p>
+</div>
+<tip-modal-component *ngIf="tipModal.show" [info]="tipModal.info" (modalTipEmit)="modalTipEmit($event)"></tip-modal-component>

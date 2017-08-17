@@ -1,0 +1,57 @@
+<div class="modal-shadow" (click)="stopPropagation($event)">
+    <div class="modal-content create-group-container">
+        <h2 class="modal-title">
+            <span *ngIf="!createGroup.info.action">发起群聊</span>
+            <span *ngIf="createGroup.info.action === 'add'">添加群成员</span>
+            <span *ngIf="createGroup.info.action === 'many'">多人会话</span>
+            <span class="modal-close" (click)="cancelCreateGroup($event)"></span>
+        </h2>
+        <div class="create-group-main">
+            <div class="create-group-list">
+                <div class="craete-group-search">
+                    <search-member-component [searchResult]="searchResult" (searchKeyup)="searchKeyupEmit($event)" (clearInput)="clearInputEmit()" (searchBtn)="searchBtnEmit($event)" (changeChecked)="changeCheckedEmit($event)"></search-member-component>
+                </div>
+                <perfect-scrollbar class="create-group-scroll">
+                    <div *ngFor="let item of createGroup.list">
+                        <div class="create-group-letter" *ngIf="!item.allGroup && !item.allFilter && item.data.length > 0">{{item.letter}}</div>
+                        <div class="create-group-member" *ngIf="!item.allGroup && !item.allFilter && item.data.length > 0">
+                            <div *ngFor="let user of item.data; let num = index" class="create-group-item">
+                                <div class="display-flex" *ngIf="user.show && user.type === 3">
+                                    <div class="create-group-avatar">
+                                        <img [src]="user.avatarUrl ? (user.avatarUrl | sanitize: 'url') : ''" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                    </div>
+                                    <div class="flex-1">{{user.nickName ? user.nickName : user.name}}</div>
+                                    <label class="create-group-select-label">
+                                        <input spellcheck="false" type="checkbox" (change)="selectItem($event,user)" [checked]="user.checked" [disabled]="user.disabled">
+                                        <b></b>                                   
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </perfect-scrollbar>
+            </div>
+            <div class="create-group-select">
+                <p class="create-group-select-title">已选成员</p>
+                <perfect-scrollbar class="create-group-scroll-select">
+                    <div *ngFor="let user of selectList" class="create-group-item">
+                        <div class="display-flex">
+                            <div class="create-group-avatar">
+                                <img [src]="user.avatarUrl ? (user.avatarUrl | sanitize: 'url') : ''" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                            </div>
+                            <div class="flex-1">{{user.nickName ? user.nickName : user.name}}</div>
+                            <div class="create-group-cancel-select" *ngIf="!createGroup.info.activeSingle || (createGroup.info.activeSingle.key && user.key != createGroup.info.activeSingle.key)" (click)="cancelSelect(user)"></div>
+                        </div>
+                    </div>
+                </perfect-scrollbar>
+            </div>
+        </div>
+        <p class="modal-btn modal-input create-group-name">
+            <span class="float-left" *ngIf="!createGroup.info.action">群名称：</span>
+            <input [ngClass]="{'input-error': nameTip}" spellcheck="false" *ngIf="!createGroup.info.action" (keyup)="emptyTip()" type="text" maxlength="20" class="input-focus float-left" [(ngModel)]="groupName" placeholder="请输入群组名称">
+            <span *ngIf="nameTip" class="float-left error">群名称不能为空</span>
+            <button type="button" (click)="confirmCreateGroup()" class="btn-confirm btn-active float-right">确定</button>                     
+            <button type="button" (click)="cancelCreateGroup($event)" class="btn-cancel btn-white float-right">取消</button>         
+        </p>
+    </div>
+</div>

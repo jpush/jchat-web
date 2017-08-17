@@ -1,0 +1,9 @@
+<div class="display-flex contact-container flex-1">
+    <div class="contact-list">
+        <contact-list-component (changeTab)="changeTabEmit($event)"></contact-list-component>        
+    </div>
+    <div class="contact-conversation flex-1">
+        <linkman-list-component [hidden]="tab === 2" [conversation]="conversation" (selectLinkmanItemEmit)="selectContactItemEmit($event)"></linkman-list-component>           
+        <group-list-component [hidden]="tab === 1" [groupList]="groupList" (selectGroupItemEmit)="selectContactItemEmit($event)"></group-list-component>
+    </div>
+</div>

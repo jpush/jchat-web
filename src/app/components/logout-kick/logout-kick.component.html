@@ -1,0 +1,15 @@
+<div class="modal-shadow" (click)="stopPropagation($event)">
+    <div class="modal-content">
+        <h2 class="modal-title">
+            {{info && info.title ? info.title : ''}}
+            <span class="modal-close" (click)="modalTip($event)"></span>
+        </h2>
+        <p class="modal-warn-tip">
+            {{info && info.tip ? info.tip : ''}}
+            </p>
+        <p class="modal-btn logout-kick">
+            <button type="button" (click)="modalTip($event)" class="btn-cancel btn-white">退出</button>
+            <button type="button" *ngIf="!info.hideRepeateLoginBtn" (click)="modalTip($event, info)" class="btn-confirm btn-active">重新登录</button>            
+        </p>
+    </div>
+</div>

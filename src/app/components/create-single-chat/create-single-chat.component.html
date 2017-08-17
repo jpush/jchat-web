@@ -1,0 +1,16 @@
+<div class="modal-shadow single-chat-wrap">
+    <div class="modal-content">
+        <h2 class="modal-title">
+            发起单聊
+            <span class="modal-close" (click)="createSingleChatEmit()"></span>
+        </h2>
+        <div class="modal-input">
+            <input spellcheck="false" (keyup)="emptyTip()" class="input-focus" [(ngModel)]="singleName" id="singleChatInput" type="text" placeholder="输入用户名查找" (keyup.enter)="createSingleChatEmit(singleName)">
+            <p class="modal-info" *ngIf="info">{{info}}</p>            
+        </div>
+        <p class="modal-btn">
+            <button type="button" (click)="createSingleChatEmit()" class="btn-cancel btn-white">取消</button>            
+            <button type="button" (click)="createSingleChatEmit(singleName)" class="btn-confirm btn-active">确定</button>
+        </p>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+.switch-container{
+    width: 28px;
+    height: 15px;
+    border-radius: 8px;
+    background-color: #2DD0CF;
+    cursor: pointer;
+    div{
+        height: 13px;
+        width: 13px;
+        border-radius: 7px;
+        background-color: #fff;
+    }
+    &.switch-left{
+        background-color: #c5c7d3;
+        div{
+            -webkit-transform: translate(1px, 1px);
+                    transform: translate(1px, 1px);
+        }
+    }
+    &.switch-right{
+        background-color: #2DD0CF;
+        div{
+            -webkit-transform: translate(14px, 1px);
+                    transform: translate(14px, 1px);
+        }
+    }
+}

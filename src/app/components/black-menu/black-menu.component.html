@@ -1,0 +1,21 @@
+<div class="modal-shadow">
+    <div class="modal-content">
+        <h2 class="modal-title">
+            黑名单列表
+            <span class="modal-close" (click)="blockMenuEmit()"></span>
+        </h2>
+        <ul class="black-menu-wrap" *ngIf="menuInfo && menuInfo.length > 0">
+            <li *ngFor="let item of menuInfo" class="display-flex">
+                <div class="black-menu-avatar">
+                    <img (load)="avatarLoad($event)" [src]="item.avatarUrl" alt="" (error)="avatarErrorIcon($event)">
+                </div>
+                <span class="flex-1">{{item.nickname !== '' ? item.nickname : item.username}}</span>
+                <button *ngIf="item.loading !== false" type="button" (click)="delSingleBlackAction(item)" [ngClass]="{'loading': item.loading}">移出</button>
+                <span *ngIf="item.loading === false" class="black-menu-removed">已移出</span>
+            </li>
+        </ul>
+        <p class="black-menu-nomore" *ngIf="!menuInfo || menuInfo.length === 0">
+            暂无数据
+        </p>
+    </div>
+</div>
