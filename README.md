@@ -20,12 +20,13 @@ JChat 无需成为好友也可以聊天
 
 ![jiguang](./screenshot/webjchat.gif)
 
-### 在线体验地址
-[JChat-web在线体验](https://jchat.im.jiguang.cn/#/login)
-
 ### 应用截图
 
 ![jiguang](./screenshot/webjchat2.png)
+
+### 在线体验地址
+
+<a href="https://jchat.im.jiguang.cn/#/login" target="_blank">JChat-web在线体验</a>
 
 ### 环境配置
 
