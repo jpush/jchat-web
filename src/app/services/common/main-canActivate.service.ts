@@ -35,7 +35,6 @@ export class MainCanActivate implements CanActivate {
         }
     }
     private JIMInit(resolve) {
-        const that = this;
         const timestamp = new Date().getTime();
         const signature = this.util.createSignature(timestamp);
         global.JIM.init({
@@ -45,7 +44,7 @@ export class MainCanActivate implements CanActivate {
             timestamp,
             flag: authPayload.flag
         }).onSuccess((data) => {
-            that.autoLogin(resolve);
+            this.autoLogin(resolve);
         }).onFail((data) => {
             resolve(false);
         }).onTimeout((data) => {
@@ -53,14 +52,13 @@ export class MainCanActivate implements CanActivate {
         });
     }
     private autoLogin(resolve) {
-        const that = this;
         global.JIM.login({
             username: this.username,
             password: this.password,
             is_md5: true
         }).onSuccess((data) => {
             global.user = data.username;
-            global.password = that.password;
+            global.password = this.password;
             resolve(true);
         }).onFail((data) => {
             resolve(false);

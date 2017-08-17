@@ -19,7 +19,6 @@ export class ContactEffect {
         .ofType(contactAction.getGroupList)
         .map(toPayload)
         .switchMap(() => {
-            let that = this;
             let groupListObj = global.JIM.getGroups()
             .onSuccess((data) => {
                 let groupList = data.group_list;
@@ -40,17 +39,17 @@ export class ContactEffect {
                                 }
                             }
                             group.name = name.substr(0, 20);
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: contactAction.getGroupListSuccess,
                                 payload: groupList
                             });
                         }).onFail((error) => {
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: appAction.errorApiTip,
                                 payload: error
                             });
                             group.name = '#群名获取失败';
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: contactAction.getGroupListSuccess,
                                 payload: groupList
                             });
@@ -58,13 +57,13 @@ export class ContactEffect {
                     }
                 }
                 if (!flag) {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: contactAction.getGroupListSuccess,
                         payload: groupList
                     });
                 }
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });

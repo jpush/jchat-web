@@ -90,13 +90,12 @@ export class ChatComponent implements OnInit, OnDestroy {
             type: chatAction.getVoiceState,
             payload: 'voiceState' + global.user
         });
-        const that = this;
         global.JIM.onMsgReceive((data) => {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: chatAction.receiveMessage,
                 payload: {
                     data,
-                    conversation: that.conversationList
+                    conversation: this.conversationList
                 }
             });
         });
@@ -104,7 +103,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         global.JIM.onDisconnect(() => {
             // 定时器是为了解决火狐下刷新时先弹出断线提示
             setTimeout(() => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.logoutKickShow,
                     payload: {
                         show: true,
@@ -119,7 +118,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         global.JIM.onEventNotification((data) => {
             switch (data.event_type) {
                 case 1:
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.logoutKickShow,
                         payload: {
                             show: true,
@@ -131,7 +130,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     });
                     break;
                 case 2:
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.logoutKickShow,
                         payload: {
                             show: true,
@@ -150,7 +149,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 if (data.event_type >= 8 && data.event_type <= 11) {
                     // 在加载离线消息时离线事件消息触发了
                     data.isOffline = true;
-                    that.eventArr.push(data);
+                    this.eventArr.push(data);
                 }
             } else {
                 // 离线消息加载完了之后离线事件消息触发了
@@ -160,30 +159,30 @@ export class ChatComponent implements OnInit, OnDestroy {
                 } else {
                     data.isOffline = false;
                 }
-                this.groupEvent(that, data);
+                this.groupEvent(data);
             }
         });
         // 离线业务消息监听，加载完数据之后才执行
         this.isLoaded$.subscribe((isLoaded) => {
             if (isLoaded) {
                 for (let item of this.eventArr) {
-                    this.groupEvent(that, item);
+                    this.groupEvent(item);
                 }
                 this.eventArr = [];
             }
         });
         // 离线消息同步监听
         global.JIM.onSyncConversation((data) => {
-            that.hasOffline = true;
-            that.store$.dispatch({
+            this.hasOffline = true;
+            this.store$.dispatch({
                 type: chatAction.getAllMessage,
                 payload: data
             });
         });
         // 如果3秒内没有加载离线消息则手动触发
         setTimeout(() => {
-            if (!that.hasOffline) {
-                that.store$.dispatch({
+            if (!this.hasOffline) {
+                this.store$.dispatch({
                     type: chatAction.getAllMessage,
                     payload: []
                 });
@@ -194,11 +193,11 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.chatStream$.unsubscribe();
         this.isLoadedSubject.unsubscribe();
     }
-    private groupEvent (that, item) {
+    private groupEvent (item) {
         switch (item.event_type) {
             case 8:
                 if (item.from_username === '') {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.createGroupEvent,
                         payload: item
                     });
@@ -206,20 +205,20 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case 9:
                 if (item.to_usernames[0].username !== global.user) {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.exitGroupEvent,
                         payload: item
                     });
                 }
                 break;
             case 10:
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.addGroupMembersEvent,
                     payload: item
                 });
                 break;
             case 11:
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.deleteGroupMembersEvent,
                     payload: item
                 });
@@ -569,32 +568,31 @@ export class ChatComponent implements OnInit, OnDestroy {
     // 发送图片消息
     private sendPicEmit(data) {
         let msgs;
-        const that = this;
         const file = this.elementRef.nativeElement.querySelector('#sendPic');
         // repeatSend = true重发消息
         if (data.repeatSend && this.active.type === 3) {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: chatAction.sendSinglePic,
                 payload: {
                     singlePicFormData: data.singlePicFormData,
-                    key: that.active.key,
+                    key: this.active.key,
                     msgs: data
                 }
             });
             return ;
         }else if (data.repeatSend && this.active.type === 4) {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: chatAction.sendGroupPic,
                 payload: {
                     groupPicFormData: data.groupPicFormData,
-                    key: that.active.key,
+                    key: this.active.key,
                     msgs: data
                 }
             });
             return ;
         }
         this.util.imgReader(file, () => {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: mainAction.showModalTip,
                 payload: {
                     show: true,
@@ -620,40 +618,40 @@ export class ChatComponent implements OnInit, OnDestroy {
                 },
                 ctime_ms: (new Date()).getTime(),
                 success: 1,
-                msgKey: that.msgKey ++
+                msgKey: this.msgKey ++
             };
             // 发送单聊图片
-            if (that.active.type === 3) {
+            if (this.active.type === 3) {
                 let singlePicFormData = {
-                    target_username: that.active.name,
-                    target_nickname: that.active.nickName,
+                    target_username: this.active.name,
+                    target_nickname: this.active.nickName,
                     appkey: authPayload.appKey,
                     image: data
                 };
                 msgs.singlePicFormData = singlePicFormData;
                 msgs.msg_type = 3;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendSinglePic,
                     payload: {
                         singlePicFormData,
-                        key: that.active.key,
+                        key: this.active.key,
                         msgs
                     }
                 });
             // 发送群聊图片
-            }else if (that.active.type === 4) {
+            }else if (this.active.type === 4) {
                 let groupPicFormData = {
-                    target_gid: that.active.key,
-                    target_gname: that.active.name,
+                    target_gid: this.active.key,
+                    target_gname: this.active.name,
                     image: data
                 };
                 msgs.groupPicFormData = groupPicFormData;
                 msgs.msg_type = 4;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendGroupPic,
                     payload: {
                         groupPicFormData,
-                        key: that.active.key,
+                        key: this.active.key,
                         msgs
                     }
                 });
