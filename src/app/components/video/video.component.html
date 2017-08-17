@@ -1,0 +1,17 @@
+<div class="modal-shadow">
+    <div class="video-container">
+        <span class="video-close" (click)="closeModal()"></span>
+        <video id="videoTag" [src]="url | sanitize: 'url'" (canplay)="videoCanplay()" (ended)="videoEnd()" autoplay></video>
+        <div class="video-toolbar">
+            <div class="video-play float-left play" (click)="pause()" *ngIf="state === 'play'"></div>
+            <div class="video-play float-left pause" (click)="play()" *ngIf="state === 'pause'"></div>
+            <div class="video-current-time float-left">{{currentTime >= 0 ? (currentTime | videoTime) : ''}}</div>
+            <div class="video-range float-left" (click)="changeCurrentTime($event)">
+                <div>
+                    <div class="float-left" [ngStyle]="{'width': video ? video.currentTime / video.duration * 100 + '%' : 0}"></div>
+                </div>
+            </div>
+            <div class="video-duration float-left">{{video && video.duration >= 0 ? (video.duration | videoTime) : ''}}</div>
+        </div>
+    </div>
+</div>

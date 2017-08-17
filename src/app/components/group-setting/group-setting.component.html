@@ -1,0 +1,54 @@
+<div class="group-setting-container" id="groupSettingContainer" [ngClass]="{'in': groupSetting.show, 'void': !groupSetting.show}" (click)="stopPropagation($event)">
+    <div class="group-setting-wrap">
+        <span class="group-setting-close" (click)="closeGroupSettingAction()"></span>
+        <div class="group-setting-header" id="groupSettingHeader">
+            <div class="group-setting-title">群设置</div>
+            <p class="clearfix group-setting-text">
+                <span class="float-left">群名称&nbsp;:&nbsp;</span>
+                <span class="float-left group-setting-name-text" [hidden]="modifyGroupNameShow" (click)="modifyGroupNameAction()" [title]="groupSetting.groupInfo.name">{{groupSetting.groupInfo.name}}</span>
+                <input spellcheck="false" maxlength="20" class="float-left group-setting-name-input input-focus" id="groupSettingNameInput" [hidden]="!modifyGroupNameShow" type="text" [ngModel]="groupSetting.groupInfo.name" (blur)="modifyGroupNameBlur($event)">
+            </p>
+            <div class="clearfix group-setting-text">
+                <span class="float-left">群描述&nbsp;:&nbsp;</span>
+                <span class="float-left group-setting-dec" id="groupSettingDec" [title]="groupSetting.groupInfo.desc ? groupSetting.groupInfo.desc : ''" (click)="modifyGroupDescriptionAction()">{{groupSetting.groupInfo.desc ? (groupSetting.groupInfo.desc | ellipsis: 26) : '未填写'}}</span>
+            </div>
+            <div class="clearfix group-setting-text">
+                <span class="float-left">屏蔽群消息&nbsp;:&nbsp;</span>
+                <switch-component [state]="groupSetting.active.shield" (changeSwitch)="changeGroupShieldEmit()" class="float-right group-setting-switch"></switch-component>
+            </div>
+            <div class="clearfix group-setting-text">
+                <span class="float-left">消息免打扰&nbsp;:&nbsp;</span>
+                <switch-component [state]="groupSetting.active.noDisturb" (changeSwitch)="changeGroupNoDisturbEmit()" class="float-right group-setting-switch"></switch-component>
+            </div>
+            <div class="group-setting-search">
+                <search-member-component [searchResult]="searchResult" (searchKeyup)="seachKeyupEmit($event)" (searchItem)="searchItemEmit($event)" (clearInput)="clearInputEmit()"></search-member-component>
+            </div>
+        </div>
+        <div class="group-setting-list" [ngStyle]="{'top': listTop + 'px'}">
+            <p class="clearfix group-setting-add">
+                <span class="float-left">群成员&nbsp;:&nbsp;</span>
+                <span class="float-left">{{groupSetting.memberList.length}}人</span>
+                <span class="float-right group-setting-add-member" (click)="addMemberAction()">添加群成员</span>
+            </p>
+            <div perfect-scrollbar class="group-setting-scroll">
+                <ul>
+                    <li class="clearfix display-flex" *ngFor="let item of groupSetting.memberList">
+                        <div class="group-setting-avatar" (click)="watchInfoAction(item)">
+                            <img [src]="item.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                        </div>
+                        <span class="flex-1" *ngIf="item.nickName">{{item.nickName}}</span>
+                        <span class="flex-1" *ngIf="item.username && !item.nickName && !item.name">{{item.username}}</span>
+                        <span class="flex-1" *ngIf="item.name && !item.nickName && !item.username">{{item.name}}</span>
+                        <div class="group-setting-host" *ngIf="item.flag === 1" [hoverEvent]="hostHover">
+                            <hover-tip-component [hidden]="!hostHover.show" [hoverInfo]="hostHover"></hover-tip-component>
+                        </div>
+                        <span (click)="deleteMemberAction(item)" class="group-setting-delete" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user">×</span>
+                    </li>
+                </ul>
+            </div>
+            <p class="group-setting-exit">
+                <button type="button" (click)="exitGroupAction()">退出群聊</button>
+            </p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>屏蔽@1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-2" transform="translate(-246.000000, -171.000000)" fill-rule="nonzero" fill="#D9D9D9">
+            <g id="Group-6-Copy" transform="translate(246.000000, 171.000000)">
+                <path d="M7,12.9230769 C10.2712251,12.9230769 12.9230769,10.2712251 12.9230769,7 C12.9230769,3.72877494 10.2712251,1.07692308 7,1.07692308 C3.72877494,1.07692308 1.07692308,3.72877494 1.07692308,7 C1.07692308,10.2712251 3.72877494,12.9230769 7,12.9230769 Z M7,14 C3.13400675,14 0,10.8659932 0,7 C0,3.13400675 3.13400675,0 7,0 C10.8659932,0 14,3.13400675 14,7 C14,10.8659932 10.8659932,14 7,14 Z" id="Oval-4"></path>
+                <polygon id="Line" points="1.66157731 2.42307692 11.5769231 12.3384227 12.3384227 11.5769231 2.42307692 1.66157731"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

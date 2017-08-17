@@ -1,0 +1,20 @@
+{
+    "dev": {
+        "url": "http://7xo28s.com1.z0.glb.clouddn.com/web-jchat/",
+        "ak": "",
+        "sk": "",
+        "bk": "test",
+        "remote": "xxxx",
+        "branch": "dev",
+        "api": "xxxx",
+        "env": "dev"
+    },
+    "prod": {
+        "url": "https://o8ci6tgz8.qnssl.com/web-jchat/",
+        "ak": "",
+        "sk": "",
+        "bk": "wwwpic",
+        "env": "dev"
+    },
+    "v": "1.1.2"
+}

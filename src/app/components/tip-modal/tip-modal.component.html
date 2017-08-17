@@ -1,0 +1,17 @@
+<div class="modal-shadow" (click)="stopPropagation($event)">
+    <div class="modal-content" [ngClass]="{'paddingBottomNone': info && info.success}">
+        <h2 class="modal-title">
+            {{info && info.title ? info.title : ''}}
+            <span class="modal-close" (click)="modalTip($event)"></span>
+        </h2>
+        <p class="modal-warn-tip">
+            <img src="../../../assets/images/success-tip.svg" class="tip-modal-success" *ngIf="info && info.success && info.success === 1">
+            <img src="../../../assets/images/send-message-error.svg" class="tip-modal-error" *ngIf="info && info.success && info.success === 2">
+            {{info && info.tip ? info.tip : ''}}
+            </p>
+        <p class="modal-btn" *ngIf="!info || !info.success">
+            <button *ngIf="!info.cancel" type="button" (click)="modalTip($event)" class="btn-cancel btn-white">取消</button>
+            <button type="button" (click)="modalTip($event, info)" class="btn-confirm btn-active">确定</button>            
+        </p>
+    </div>
+</div>

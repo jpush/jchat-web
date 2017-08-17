@@ -1,0 +1,34 @@
+<div class="modal-shadow" (click)="stopPropagation($event)">
+    <div class="other-info-container modal-content">
+        <span class="modal-close" (click)="otherClose($event)"></span>
+        <div class="other-info-avatar">
+            <div class="other-info-show-avatar">
+                <img (load)="avatarLoad($event)" [src]="otherInfo.info.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+            </div>
+            <div class="other-info-avatar-username">
+                {{otherInfo.info.nickname ? otherInfo.info.nickname : otherInfo.info.username}}
+                <div [ngClass]="{'black': otherInfo.info.black === 1}" class="self-info-blacklist-icon" [hoverEvent]="addBlackHover" (click)="addBlack()">
+                    <hover-tip-component [hidden]="!addBlackHover.show" [hoverInfo]="addBlackHover"></hover-tip-component>
+                </div>
+            </div>
+            <p class="other-info-signature">
+                <span [title]="otherInfo.info.signature ? otherInfo.info.signature : '暂无签名'">{{otherInfo.info.signature ? (otherInfo.info.signature | ellipsis: 32) : '暂无签名'}}</span>
+            </p>
+        </div>
+        <p class="other-info-p display-flex">
+            <span class="other-info-fixed-width">用户名：</span>
+            <span class="flex-1" [ngClass]="{'gray': isEdit}">{{otherInfo.info.username}}</span>
+        </p>
+        <p class="other-info-p display-flex">
+            <span class="other-info-fixed-width">性&ensp;&ensp;别：</span>
+            <span class="flex-1">{{otherInfo.info.gender}}</span>       
+        </p>
+        <p class="other-info-p display-flex">
+            <span class="other-info-fixed-width">地&ensp;&ensp;区：</span>
+            <span class="flex-1">{{otherInfo.info.region ? otherInfo.info.region : '无'}}</span>
+        </p>
+        <p class="modal-btn">        
+            <button type="button" class="btn-active" (click)="sendMsgBtn()">发消息</button>
+        </p>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="115px" height="41px" viewBox="0 0 115 41" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>Rectangle 8 Copy 5</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M852,541.935053 L947.262345,541.935053 L951.315146,537.411812 C951.469675,537.149279 951.616132,537.012197 951.754517,537.000566 C951.953148,536.98387 952.126635,537.341848 952.182879,537.411812 C952.259559,537.507198 953.512306,539.014945 955.94112,541.935053 L963,541.935053 L963,541.935053 C964.104569,541.935053 965,542.830484 965,543.935053 L965,577.848222 L850,577.848222 L850,543.935053 L850,543.935053 C850,542.830484 850.895431,541.935053 852,541.935053 Z" id="path-1"></path>
+    </defs>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-2" transform="translate(-850.000000, -537.000000)">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="Rectangle-8-Copy-5" fill="#F3F7FB" transform="translate(907.500000, 557.424111) scale(-1, 1) translate(-907.500000, -557.424111) " xlink:href="#path-1"></use>
+        </g>
+    </g>
+</svg>

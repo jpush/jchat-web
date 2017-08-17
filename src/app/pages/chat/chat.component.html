@@ -1,0 +1,17 @@
+<div class="display-flex chat-container flex-1">
+    <div class="chat-list">
+        <conversation-list-component [conversationList]="conversationList" [active]="active" (changeActive)="selectTargetEmit($event)" (deleteConversationItem)="deleteConversationItemEmit($event)"></conversation-list-component>   
+    </div>
+    <div class="chat-conversation flex-1">
+        <default-panel-component [hidden]="!defaultPanelIsShow"></default-panel-component>        
+        <chat-panel-component [changeActiveScrollBottom]="changeActiveScrollBottom" [otherOptionScrollBottom]="otherOptionScrollBottom" [hidden]="defaultPanelIsShow" [selfInfo]="selfInfo" [messageList]="messageList" [active]="active" (loadMore)="loadMoreEmit($event)" (videoPlay)="playVideoEmit($event)" (sendMsg)="sendMsgEmit($event)" (sendPic)="sendPicEmit($event)" (sendFile)="sendFileEmit($event)" (saveDraft) ="saveDraftEmit($event)" (otherInfo)="watchOtherInfoEmit($event)" (selfInfoEmit)="watchSelfInfoEmit()" (groupSetting)="groupSettingEmit()" (addGroup)="addGroupEmit()" (msgTransmit)="msgTransmitEmit($event)" (retract)="MsgRetractEmit($event)"></chat-panel-component>         
+        <group-setting-component [groupSetting]="groupSetting" (closeGroupSetting)="closeGroupSettingEmit()" (exitGroup)="exitGroupEmit($event)" (modifyGroupDescription)="modifyGroupDescriptionEmit()" (addMember)="addMemberEmit()" (watchOtherInfo)="watchOtherInfoEmit($event)" (watchSelfInfo)="watchSelfInfoEmit()" (deleteMember)="deleteMemberEmit($event)" (modifyGroupName)="modifyGroupNameEmit($event)"></group-setting-component>        
+    </div>
+</div>
+<video-component *ngIf="playVideoShow.show" [url]="playVideoShow.url" (closeVideo)="closeVideoEmit()"></video-component>
+<other-info-component *ngIf="otherInfo.show" [otherInfo]="otherInfo" (alreadyBlack)="alreadyBlackEmit()" (isShow)="OtherInfoEmit($event)" (addBlackList)="addBlackListEmit($event)"></other-info-component>
+<group-description-component *ngIf="groupDescription.show" [description]="groupDescription.description" (updateGroupInfo)="updateGroupInfoEmit($event)"></group-description-component>
+<message-transmit-component [messageTransmit]="messageTransmit" *ngIf="messageTransmit.show" (confirmTransmit)="confirmTransmitEmit($event)" (searchMessageTransmit)="searchMessageTransmitEmit($event)"></message-transmit-component>
+<div *ngIf="!isLoaded" class="modal-shadow chat-loading">
+    <img src="../../../assets/images/app-loading.gif" alt="">
+</div>

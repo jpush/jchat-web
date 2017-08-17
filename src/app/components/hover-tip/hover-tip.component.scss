@@ -1,0 +1,12 @@
+.hover-tip-container{
+    position: absolute;
+    display: inline-block;
+    padding: 0 6px;
+    line-height: 20px;
+    background: #808080;
+    border-radius: 2px;
+    font-size: 12px;
+    color: #FFFFFF;
+    white-space: nowrap;
+    z-index: 1;
+}

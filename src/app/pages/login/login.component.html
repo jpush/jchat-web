@@ -1,0 +1,37 @@
+<div class="login-wrap">
+    <div class="login-container">
+        <h1>
+            <img src="../../../assets/images/logo.svg" alt="">
+        </h1>
+        <div class="login-info">
+            <div class="login-username" (click)="inputFocus('loginUsername')" [ngClass]="{'login-tip-wrap': loginTip}">
+                <input autocomplete="off" spellcheck="false" id="loginUsername" class="input-focus" [ngClass]="{'input-error': loginTip}" [(ngModel)]="username" type="text" [placeholder]="usernamePlaceholderText" (keyup)="isButtonAvailableAction('usernameKeyup')" (change)="isButtonAvailableAction('usernameChange')">
+                <p class="login-tip" *ngIf="loginTip">{{loginTip}}</p>                
+            </div>
+            <div class="login-pwd" (click)="inputFocus('loginPassword')">
+                <input autocomplete="off" spellcheck="false" id="loginPassword" class="input-focus" [(ngModel)]="password" type="password" [placeholder]="passwordPlaceholderText" (keyup.enter)="login()" (keyup)="isButtonAvailableAction('passwordKeyup')" (change)="isButtonAvailableAction('passwordChange')">
+            </div>
+            <p class="login-remember clearfix">
+                <label for="remember" class="float-left">
+                    <input spellcheck="false" [(ngModel)]="loginRemember" id="remember" class="float-left" type="checkbox">                    
+                    <b></b>                    
+                    记住用户名和密码
+                </label>
+            </p>
+            <p class="login-btn" [ngClass]="{'loading': loginLoading}">
+                <button [ngClass]="{'disabled': !isButtonAvailable && !rememberPassword}" class="btn-active" type="button" (click)="login()">登录</button>
+            </p>
+            <p class="login-to-register">
+                没有账号？
+                <a routerLink="/register">立即注册</a>
+            </p>
+        </div>
+    </div>
+</div>
+<div class="copyright-container">
+    <img src="../../../assets/images/copyright.svg" alt="">
+    <p>
+        深圳市和讯华谷信息技术有限公司 版权所有 @2011-2017  粤ICP备12056275号-13
+    </p>
+</div>
+

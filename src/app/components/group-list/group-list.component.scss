@@ -1,0 +1,64 @@
+.group-list-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    h2{
+        font-size: 16px;
+        color: #2C2C2C;
+        font-weight: 100;
+        line-height: 40px;
+        margin-bottom: 10px;
+        padding-left: 18px;        
+    }
+    .group-list-no-data{
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        color: #808080;
+        font-size: 14px;
+        opacity: 0.4;
+    }
+   .group-list-letter{
+       padding-left: 25px;       
+       height: 20px;
+       line-height: 20px;
+       color: #808080;
+       font-size: 12px;
+       position: relative;
+       box-sizing: border-box;
+       cursor: default;
+       &:after{
+           content: '';
+           display: block;
+           position: absolute;
+           top: 4px;
+           left: 18px;
+           width: 2px;
+           height: 12px;
+           background: #2DD0CF;
+       }
+   }
+   .group-list-name{
+       padding-left: 18px;
+       cursor: pointer;
+       line-height: 50px;
+       height: 50px;
+       color: #2c2c2c;
+       font-size: 14px;
+       .group-list-avatar{
+           width: 30px;
+           height: 30px;
+           margin: 10px 10px 0 0;
+           overflow: hidden;
+           img{
+               width: 100%;
+           }
+       }
+       &:hover{
+           background-color: #F3F7FB !important;
+       }
+   }
+}

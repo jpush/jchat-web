@@ -1,0 +1,6 @@
+<div class="select-container" [ngStyle]="{'width': selectList.width + 'px'}">
+    <p class="select-active" (click)="showList($event)">{{selectList.active.name}}</p>
+    <ul class="select-list" [hidden]="!selectList.show">
+        <li class="menu-hover" *ngFor="let item of selectList.list" (click)="changeItemAction(item)">{{item.name}}</li>
+    </ul>
+</div>

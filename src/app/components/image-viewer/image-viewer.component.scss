@@ -1,0 +1,114 @@
+.image-viewer-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    .viewer-close{
+        width: 42px;
+        height: 42px;
+        border-radius: 21px;
+        background: url(../../../assets/images/viewer-close.svg) center center no-repeat;
+        background-size: 42px;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 1;
+    }
+    img{
+        cursor: move;
+        position: fixed;
+    }
+    .image-viewer-loading{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 32px;
+        height: 32px;
+        margin: -16px 0 0 -16px;
+        background: url(../../../assets/images/app-loading.gif) center center no-repeat;
+        background-size: 32px;
+    }
+    .viewer-ratio-tip{
+        display: inline-block;
+        padding: 0 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, 50%);
+                transform: translate(-50%, 50%);
+        line-height: 24px;
+        border-radius: 12px;
+        background: rgba(0,0,0,0.2);
+        color: #fff;
+        font-size: 14px;
+    }
+    .viewer-toolbar{
+        width: 354px;
+        height: 55px;
+        background-color: rgba(0, 0, 0, 0.85);
+        border-radius: 30px;
+        position: absolute;
+        bottom: 90px;
+        left: 50%;
+        margin-left: -177px;
+        .viewer-download{
+            cursor: pointer;
+            width: 26px;
+            height: 26px;
+            display: block;
+            position: absolute;
+            top: 15px;
+            background: url(../../../assets/images/download-normal.svg) center center no-repeat;
+            background-size: 26px;
+            right: 91px;
+            &:hover{
+                background-image: url(../../../assets/images/download-active.svg);
+            }
+        }
+        button{
+            background: #fff;
+            border: none;
+            width: 26px;
+            height: 26px;
+            display: block;
+            position: absolute;
+            top: 15px;
+            right: 92px;
+        }
+        .viewer-prev{
+            left: 22px;
+            background: url(../../../assets/images/prev-normal.svg) center center no-repeat;
+            background-size: 26px;
+            &:hover{
+                background-image: url(../../../assets/images/prev-active.svg);
+            }
+        }
+        .viewer-zoom-in{
+            left: 92px;
+            background: url(../../../assets/images/zoom-in-normal.svg) center center no-repeat;
+            background-size: 26px;
+            &:hover{
+                background-image: url(../../../assets/images/zoom-in-active.svg);
+            }
+        }
+        .viewer-zoom-out{
+            left: 166px;
+            background: url(../../../assets/images/zoom-out-normal.svg) center center no-repeat;
+            background-size: 26px;
+            &:hover{
+                background-image: url(../../../assets/images/zoom-out-active.svg);
+            }
+        }
+        .viewer-next{
+            right: 22px;
+            background: url(../../../assets/images/next-normal.svg) center center no-repeat;
+            background-size: 26px;
+            &:hover{
+                background-image: url(../../../assets/images/next-active.svg);
+            }
+        }
+    }
+}

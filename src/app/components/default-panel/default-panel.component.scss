@@ -1,0 +1,25 @@
+.default-panel-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .default-panel-content{
+        width: 99px;
+        height: 92px;
+        position: absolute;
+        top: 32%;
+        left: 50%;
+        margin: 0 0 0 -50px;
+        div{
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        p{
+            line-height: 20px;
+            font-size: 14px;
+            color: #808080;
+            opacity: 0.4;
+        }
+    }
+}

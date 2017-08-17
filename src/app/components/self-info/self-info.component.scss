@@ -1,0 +1,129 @@
+.self-info-container{
+    width: 320px;
+    overflow: hidden;
+    box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+    border-radius: 0;
+    padding: 0 30px;
+    color: #808080;    
+    .modal-close{
+        top: 22px;
+        right: 22px;
+    }
+    .self-info-avatar{
+        padding: 52px 0 19px 0;
+        margin-bottom: 14px;
+        text-align: center;
+        border-bottom: 1px solid #e3e6eb;
+        .self-info-show-avatar{
+            display: block;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        label{
+            display: block;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            &:hover:after, &.camera-shadow:after{
+                content: '';
+                display: block;
+                width: 24px;
+                height: 19px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                background: url(../../../assets/images/camera.svg) center center no-repeat;
+                margin: 20px 0 0 18px;
+            }
+            &:hover:before,  &.camera-shadow:before{
+                content: '';
+                display: block;
+                width: 24px;
+                height: 19px;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6);
+            }
+        }
+        .self-info-avatar-username{
+            line-height: 26px;
+            margin: 12px 0 6px;
+            font-size: 18px;
+            color: #0B1816;
+            text-align: center;
+        }
+        .self-info-signature{
+            line-height: 26px;
+            font-size: 14px;
+            input{
+                width: 100%;
+                height: 100%;
+                border: 1px solid #E3E6EB;
+                border-radius: 2px;
+                font-size: 14px;
+                padding-left: 12px;
+                box-sizing: border-box;
+            }
+        }
+    }
+    .self-info-p{
+        line-height: 26px;
+        margin-bottom: 12px;
+        color: #808080;
+        font-size: 14px;
+        .self-info-fixed-width{
+            width: 56px;
+            text-align: justify;
+        }
+        .flex-1{
+            color: #000C0A;
+            margin-left: 12px;
+        }
+        .flex-1.gray{
+            color: #808080;
+        }
+        input{
+            border: 1px solid #E3E6EB;
+            border-radius: 2px;
+            width: 160px;
+            height: 26px;
+            box-sizing: border-box;
+            padding-left: 12px;
+            font-size: 14px;
+            color: #000C0A;
+        }
+    }
+    .modal-btn{
+        margin: 25px 0 33px 0;
+        .btn-cancel{
+            width: 120px;
+            margin: 0;
+        }
+        .btn-confirm{
+            width: 120px;
+            margin: 0;
+            position: relative;
+            &.loading:after{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: block;
+                background: url(../../../assets/images/message-loading.gif) center center no-repeat;
+                background-size: 20px;
+            }
+        }
+    }
+    .self-info-edit-btn{
+        width: 260px;
+    }
+}

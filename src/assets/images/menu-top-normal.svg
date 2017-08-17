@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="119px" height="117px" viewBox="0 0 119 117" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>Rectangle 8 Copy 4</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M850,597.935288 C850,596.830589 850.900752,595.935053 852.009137,595.935053 L947.262345,595.935053 L951.315146,591.411812 C951.315146,591.411812 951.546939,591.018013 951.754517,591.000566 C951.953148,590.98387 952.126635,591.341848 952.182879,591.411812 C952.297899,591.554892 955.94112,595.935053 955.94112,595.935053 L963.000776,595.935053 C964.104917,595.935053 965,596.835556 965,597.935288 L965,701.847987 C965,702.952686 964.10768,703.848222 963.00396,703.848222 L851.99604,703.848222 C850.893658,703.848222 850,702.947719 850,701.847987 L850,597.935288 Z" id="path-1"></path>
+        <filter x="-2.6%" y="-2.7%" width="105.2%" height="105.3%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.197463768 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-2" transform="translate(-848.000000, -589.000000)">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <g id="Rectangle-8-Copy-4" transform="translate(907.500000, 647.424111) scale(-1, 1) translate(-907.500000, -647.424111) ">
+                <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-1"></use>
+                <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+            </g>
+        </g>
+    </g>
+</svg>

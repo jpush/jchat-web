@@ -1,0 +1,34 @@
+.contact-list-ul{
+    line-height: 40px;
+    li{
+        font-size: 14px;
+        color: #0B1816;
+        padding-left: 56px;
+        box-sizing: border-box;
+        background-size: 20px;
+        cursor: pointer;
+    }
+    li.active{
+        color: #2DD0CF;
+    }
+    .contact-linkman{
+        background: url('../../../assets/images/linkman-normal.svg') 20px 10px no-repeat;
+    }
+    .contact-linkman.active{
+        background: url('../../../assets/images/linkman-active.svg') 20px 10px no-repeat;
+    }
+    .contact-linkman:hover{
+        background: url('../../../assets/images/linkman-active.svg') 20px 10px no-repeat;
+        color: #2DD0CF;
+    }
+    .contact-group{
+        background: url('../../../assets/images/group-normal.svg') 20px 10px no-repeat;
+    }
+    .contact-group.active{
+        background: url('../../../assets/images/group-active.svg') 20px 10px no-repeat;
+    }
+    .contact-group:hover{
+        background: url('../../../assets/images/group-active.svg') 20px 10px no-repeat;
+        color: #2DD0CF;
+    }
+}
