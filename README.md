@@ -35,7 +35,7 @@ JChat 无需成为好友也可以聊天
 web jchat本地安装和用法：
 
 ```
-npm install
+npm install(如果安装后仍缺少依赖，则是该模块被墙掉了，推荐使用淘宝镜像cnpm安装依赖，安装方法自行google)
 ```
 ```
 npm run dll
