@@ -5,7 +5,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
-import { Http } from '@angular/Http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appAction } from '../../../actions';
 import { global, authPayload, StorageService } from '../../../services/common';

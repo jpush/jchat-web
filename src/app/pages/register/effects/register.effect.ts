@@ -5,7 +5,6 @@ import { Store, Action } from '@ngrx/store';
 import { AppStore } from '../../../app.store';
 import { registerAction } from '../actions';
 import { appAction } from '../../../actions';
-import { Http } from '@angular/Http';
 import { global } from '../../../services/common/global';
 import { md5 } from '../../../services/tools';
 
