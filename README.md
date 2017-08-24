@@ -49,6 +49,7 @@ localhost:3000
 说明：
 * 如果npm install安装后仍缺少依赖，如node-sass，则是该模块被墙掉了，推荐使用淘宝镜像cnpm install重新安装依赖，[淘宝镜像安装方法](http://npm.taobao.org/)
 * 如果使用的不是本地localhost服务器，则要在task/webpack.dev.js中的publicPath改成自己的ip和端口去访问项目
+
 * 项目打包并发布到测试环境(前提：已全局安装gulp)：
 
 1. 如果静态资源需要提交到七牛上，需在src/task/config.json中配置ak和sk以及url，使用gulp dev即可将项目打包到dist目录下，只需将index.html部署在测试环境服务器即可，其他静态资源已经自动提交到七牛
