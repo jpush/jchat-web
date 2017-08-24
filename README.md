@@ -51,15 +51,15 @@ localhost:3000
 * 如果使用的不是本地localhost服务器，则要在task/webpack.dev.js中的publicPath改成自己的ip和端口去访问项目
 * 项目打包并发布到测试环境：
 
-    1. 如果静态资源需要提交到七牛上，需在src/task/config.json中配置ak和sk以及url，使用gulp dev即可将项目打包到dist目录下，只需将index.html部署在测试环境服务器即可，其他静态资源已经自动提交到七牛
+1. 如果静态资源需要提交到七牛上，需在src/task/config.json中配置ak和sk以及url，使用gulp dev即可将项目打包到dist目录下，只需将index.html部署在测试环境服务器即可，其他静态资源已经自动提交到七牛
 
-    2. 如果静态资源无需提交到七牛，存放在自己服务器上，在task/webpack.prod.js中的publicPath改成自己的域名，使用gulp noqiniu-dev可将项目打包到dist目录下，将dist目录下的所有文件部署到服务器上
+2. 如果静态资源无需提交到七牛，存放在自己服务器上，在task/webpack.prod.js中的publicPath改成自己的域名，使用gulp noqiniu-dev可将项目打包到dist目录下，将dist目录下的所有文件部署到服务器上
 
 * 项目打包并发布到正式环境：
 
-    1. 如果静态资源需要提交到七牛上，需在src/task/config.json中配置ak和sk以及url，使用gulp prod即可将项目打包到dist目录下，只需将index.html部署在正式环境服务器即可，其他静态资源已经自动提交到七牛
+1. 如果静态资源需要提交到七牛上，需在src/task/config.json中配置ak和sk以及url，使用gulp prod即可将项目打包到dist目录下，只需将index.html部署在正式环境服务器即可，其他静态资源已经自动提交到七牛
 
-    2. 如果静态资源无需提交到七牛，存放在自己服务器上，在task/webpack.prod.js中的publicPath改成自己的域名，使用gulp noqiniu-prod可将项目打包到dist目录下，将dist目录下的所有文件部署到服务器上
+2. 如果静态资源无需提交到七牛，存放在自己服务器上，在task/webpack.prod.js中的publicPath改成自己的域名，使用gulp noqiniu-prod可将项目打包到dist目录下，将dist目录下的所有文件部署到服务器上
 
 ### 备注说明
 
