@@ -1,0 +1,11 @@
+<div class="menu-wrap">
+    <ul>
+        <li class="menu-hover" *ngFor="let item of menu.info; let num = index;" (click)="selectMenuItemAction(item)">
+            <div *ngIf="item.show">
+                {{item.name}}
+                <div *ngIf="num === 0" class="menu-arror"></div>
+                <div *ngIf="item.isRight" class="menu-right"></div>
+            </div>
+        </li>
+    </ul>
+</div>

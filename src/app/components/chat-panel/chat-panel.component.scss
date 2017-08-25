@@ -36,7 +36,6 @@
                 }
             }
             .chat-panel-setting-btn, .chat-panel-group-setting{
-                width: 20px;
                 height: 20px;
                 float: right;
                 margin-right: 20px;
@@ -45,6 +44,7 @@
                 position: relative;
             }
             .chat-panel-setting-btn{
+                width: 20px;                
                 background: #fff url(../../../assets/images/add-group-normal.svg) center center no-repeat;
                 background-size: 20px;
             }
@@ -53,11 +53,12 @@
                 background-size: 20px;
             }
             .chat-panel-group-setting{
+                width: 24px;                
                 background: #fff url(../../../assets/images/group-setting-normal.svg) center center no-repeat;
-                background-size: 20px;
+                background-size: 24px;
                 &:hover{
                     background-image: url(../../../assets/images/group-setting-active.svg);
-                    background-size: 20px;
+                    background-size: 24px;
                 }
             }
         }
@@ -100,6 +101,15 @@
                     margin: 0 auto;
                 }
             }
+            .chat-panel-file-container{
+                height: 112px;
+            }
+            .chat-panel-video-container{
+                height: 140px;
+            }
+            .chat-panel-location-container{
+                height: 150px;
+            }
             .chat-panel-add-members{
                 text-align: center;
                 margin: 10px 0;
@@ -124,14 +134,20 @@
                     border-radius: 5px;
                 }
                 .chat-panel-more{
+                    height: 100%;                
                     width: 24px;
                     margin: 0 8px;
-                    height: 20px;
                     position: relative;
                     .chat-panel-operation{
                         cursor: pointer;
                         height: 20px;
                         background: center center no-repeat;
+                        width: 100%;
+                        &.chat-panel-operation-bottom{
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                        }
                         &:hover{
                             background-image: url(../../../assets/images/more-active.svg) !important;
                         }
@@ -458,7 +474,7 @@
                         top: -1px;
                         left: -6px;
                         width: 6px;
-                        height: 6px;
+                        height: 10px;
                         display: block;
                         background: url(../../../assets/images/pao-you.svg) left top no-repeat;
                     }
@@ -479,19 +495,17 @@
                         top: -1px;
                         left: -6px;
                         width: 6px;
-                        height: 6px;
+                        height: 10px;
                         display: block;
                         background: url(../../../assets/images/pao-you.svg) left top no-repeat;
                     }
                 }
                 .chat-panel-download-file{
-                    width: 24px;
-                    height: 24px;
-                    background: url(../../../assets/images/download-file.svg) left top no-repeat;
-                    background-size: 24px;
-                    margin: 44px 0 0 14px;
                     cursor: pointer;
-                    position: relative;
+                    color: #2DD0CF;
+                    &:hover{
+                        color: #02BDBC;
+                    }
                 }
             }
             .chat-panel-send-error{
@@ -536,7 +550,7 @@
                         top: -1px;
                         right: -6px;
                         width: 6px;
-                        height: 6px;
+                        height: 10px;
                         display: block;
                         background: url(../../../assets/images/pao-me.svg) right top no-repeat;
                     }
@@ -583,7 +597,7 @@
                         top: -1px;
                         right: -6px;
                         width: 6px;
-                        height: 6px;
+                        height: 10px;
                         display: block;
                         background: url(../../../assets/images/pao-me-file.svg) right top no-repeat;
                     }
@@ -730,7 +744,7 @@
                     font-size: 14px;
                     color: #0B1816;
                     line-height: 20px;
-                    min-height: 60px;
+                    height: 60px;
                 }
              }
         }

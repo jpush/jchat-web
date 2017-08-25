@@ -47,5 +47,6 @@ export const mainInit = {
             title: '',
             tip: ''
         }
-    }
+    },
+    contactUnreadNum: 0
 };

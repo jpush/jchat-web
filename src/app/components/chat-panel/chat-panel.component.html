@@ -2,8 +2,8 @@
 <div class="chat-panel-container display-flex flex-direction-vertical">
     <div class="chat-panel-board flex-1 display-flex flex-direction-vertical">
         <div class="chat-panel-setting">
-            <span *ngIf="active.type === 3" (click)="watchOtherInfo(active)" class="chat-panel-username chat-panel-name">{{active.nickName ? active.nickName : active.name}}</span>
-            <span *ngIf="active.type === 4" class="chat-panel-name">{{active.nickName ? active.nickName : active.name}}</span>
+            <span *ngIf="active.type === 3" (click)="watchOtherInfo(active)" class="chat-panel-username chat-panel-name">{{active.memo_name || active.nickName || active.name}}</span>
+            <span *ngIf="active.type === 4" class="chat-panel-name">{{active.name}}</span>
             <div class="chat-panel-setting-btn" [hoverEvent]="groupConversationHover" *ngIf="active.type === 3" (click)="addGroupAction()">
                 <hover-tip-component [hidden]="!groupConversationHover.show" [hoverInfo]="groupConversationHover"></hover-tip-component>
             </div>
@@ -36,11 +36,11 @@
                     <div class="chat-panel-you-msg chat-panel-msg" *ngIf="global.user != i.content.from_id && i.msg_type !== 5">
                         <!-- 文本消息 -->
                         <div *ngIf="i.content.msg_type === 'text'" class="clearfix" (mouseleave)="msgMouseleave()">
-                            <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)" [title]="i.content.from_id">
+                            <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div class="float-left">
-                                <div *ngIf="active.type === 4" class="group-username">{{i.content.from_name !== '' ? i.content.from_name : i.content.from_id}}</div>
+                                <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="chat-panel-msgText-you" [ngClass]="{'jpush-emoji-container': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}">
                                     <p class="chat-panel-text-msg" [innerHTML]="i.content.msg_body.text | emoji: {nbsp: true, href: true} | sanitize: 'html'" [ngClass]="{'chat-panel-jpush-emoji': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}"></p>
                                 </div>
@@ -51,33 +51,33 @@
                         </div>
                         <!-- 图片消息 -->
                         <div *ngIf="i.content.msg_type === 'image'" (mouseleave)="msgMouseleave()" [ngStyle]="{height: i.content.msg_body.width > 219 || i.content.msg_body.height > 300 ? (i.content.msg_body.width/i.content.msg_body.height > 219/300 ? 219/i.content.msg_body.width * i.content.msg_body.height + (active.type === 4 ? 20 : 0) + 'px' : 300 + (active.type === 4 ? 20 : 0) + 'px' ) : i.content.msg_body.height + (active.type === 4 ? 20 : 0) + 'px'}" class="clearfix chat-panel-img">
-                            <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)" [title]="i.content.from_id">
+                            <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div *ngIf="!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.kLargeEmoticon)" class="float-left">
-                                <div *ngIf="active.type === 4" class="group-username">{{i.content.from_name !== '' ? i.content.from_name : i.content.from_id}}</div>
+                                <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div *ngIf="!i.content.msg_body.extras || i.content.msg_body.extras.kLargeEmoticon !== 'kLargeEmoticon'">
-                                    <img title="点击查看大图" (click)="imageViewerShow(i.content.msg_body.media_url, num)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img (error)="imageError($event)" title="点击查看大图" (click)="imageViewerShow(i.content.msg_body.media_url, num)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
                             <!-- 表情 -->
                             <div *ngIf="i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon'" class="float-left">
-                                <div *ngIf="active.type === 4" class="group-username">{{i.content.from_name !== '' ? i.content.from_name : i.content.from_id}}</div>
+                                <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="float-left">
-                                    <img style="cursor: default" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img (error)="imageError($event)" style="cursor: default" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" [ngStyle]="{'margin-top': i.msg_type === 4 ? '21px' : 0}" #youImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youImage)"></div>
+                            <div class="chat-panel-more float-left" #youImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youImage)"></div>
                             </div>
                         </div>
                         <!-- 文件消息 -->
-                        <div *ngIf="i.content.msg_type === 'file' && (!i.content.msg_body.extras || !i.content.msg_body.extras.video)" (mouseleave)="msgMouseleave()" class="clearfix">
-                            <div class="chat-panel-fromId-you float-left chat-panel-avatar" (click)="watchOtherInfo(i.content)" [title]="i.content.from_id">
+                        <div *ngIf="i.content.msg_type === 'file' && (!i.content.msg_body.extras || !i.content.msg_body.extras.video)" (mouseleave)="msgMouseleave()" [ngStyle]="{height: 112 + (active.type === 4 ? 20 : 0) + 'px'}" class="clearfix">
+                            <div class="chat-panel-fromId-you float-left chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div class="float-left clearfix">
-                                <div *ngIf="active.type === 4" class="group-username">{{i.content.from_name !== '' ? i.content.from_name : i.content.from_id}}</div>
+                                <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="float-left chat-panel-file-you">
                                     <div class="display-flex chat-panel-file-icon chat-panel-file-icon-you" [title]="i.content.msg_body.fname">
                                         <div [ngClass]="{'image': (i.content.msg_body?.extras?.fileType | fileType) === 'image', 'video': (i.content.msg_body?.extras?.fileType | fileType) === 'video', 'audio': (i.content.msg_body?.extras?.fileType | fileType) === 'audio', 'document': (i.content.msg_body?.extras?.fileType | fileType) === 'document'}"></div>
@@ -86,27 +86,22 @@
                                     <div class="chat-panel-range">
                                         <div>
                                             <span class="float-left">{{i.content.msg_body.fsize | fileSize}}</span>
-                                            <span class="float-right">已接收</span>
+                                            <span class="float-right chat-panel-download-file" (click)="fileDownload(i.content.msg_body.media_url)">下载文件</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="float-left">
-                                    <div class="chat-panel-more float-left" [ngStyle]="{'margin-top': i.msg_type === 4 ? '21px' : 0}" #youFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                        <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youFile)"></div>
-                                    </div>
-                                    <div class="chat-panel-download-file" [hoverEvent]="i.downloadHover" (click)="fileDownload(i.content.msg_body.media_url)">
-                                        <hover-tip-component [hidden]="!i.downloadHover.show" [hoverInfo]="i.downloadHover"></hover-tip-component>
-                                    </div>
-                                </div>
-                            </div>                 
+                            </div>
+                            <div class="chat-panel-more float-left" #youFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youFile)"></div>
+                            </div>            
                         </div>
                         <!-- 视频消息 -->
-                        <div *ngIf="i.content.msg_type === 'file' && i.content.msg_body.extras && i.content.msg_body.extras.video" (mouseleave)="msgMouseleave()" class="clearfix">
-                            <div class="chat-panel-fromId-you float-left chat-panel-avatar" (click)="watchOtherInfo(i.content)" [title]="i.content.from_id">
+                        <div *ngIf="i.content.msg_type === 'file' && i.content.msg_body.extras && i.content.msg_body.extras.video" [ngStyle]="{height: 140 + (active.type === 4 ? 20 : 0) + 'px'}" (mouseleave)="msgMouseleave()" class="clearfix">
+                            <div class="chat-panel-fromId-you float-left chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div class="float-left">
-                                <div *ngIf="active.type === 4" class="group-username">{{i.content.from_name !== '' ? i.content.from_name : i.content.from_id}}</div>
+                                <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="chat-panel-video">
                                     <video (click)="playVideo(i.content.msg_body.media_url)" [src]="i.content.msg_body.media_url | sanitize: 'url'" (loadstart)="videoLoadStart(num)" (loadeddata)="videoLoad(num)" [id]="'video' + num">
                                         <!--<source [src]="i.content.msg_body.media_url">-->
@@ -117,17 +112,17 @@
                                     <div class="chat-panel-video-shadow" *ngIf="i.content.load === 0">{{i.content.range}}%</div>
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" [ngStyle]="{'margin-top': i.msg_type === 4 ? '21px' : 0}" #youVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youVideo)"></div>
+                            <div class="chat-panel-more float-left" #youVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youVideo)"></div>
                             </div>
                         </div>
                         <!-- 地理定位 -->
-                        <div *ngIf="i.content.msg_type === 'location'" (mouseleave)="msgMouseleave()" class="chat-panel-location clearfix">
-                            <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)" [title]="i.content.from_id">
+                        <div *ngIf="i.content.msg_type === 'location'" (mouseleave)="msgMouseleave()" class="chat-panel-location clearfix" [ngStyle]="{height: 150 + (active.type === 4 ? 20 : 0) + 'px'}">
+                            <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div class="float-left">
-                                <div *ngIf="active.type === 4" class="group-username">{{i.content.from_name !== '' ? i.content.from_name : i.content.from_id}}</div>
+                                <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="chat-panel-map-wrap">
                                     <a [routerLink]="['/map', i.content.msg_body.longitude + '&' + i.content.msg_body.latitude]" target="_blank">                                
                                         <div [id]="'allmap' + num" class="float-left chat-panel-allmap" title="点击查看详细地图"></div>
@@ -135,17 +130,17 @@
                                     <p class="chat-panel-address" [title]="i.content.msg_body.label" *ngIf="i.content.msg_body.label">{{i.content.msg_body.label}}</p>
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" [ngStyle]="{'margin-top': i.msg_type === 4 ? '21px' : 0}" #youLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youLocation)"></div>
+                            <div class="chat-panel-more float-left" #youLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youLocation)"></div>
                             </div>
                         </div>
                         <!-- 语音 -->
                         <div *ngIf="i.content.msg_type === 'voice'" (mouseleave)="msgMouseleave()" class="chat-panel-voice clearfix">
-                            <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)" [title]="i.content.from_id">
+                            <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div class="float-left">
-                                <div *ngIf="active.type === 4" class="group-username">{{i.content.from_name !== '' ? i.content.from_name : i.content.from_id}}</div>
+                                <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="chat-panel-voice-sound chat-panel-voice-sound-you">
                                     <div (click)="playVoice(num)" [ngStyle]="{'width': i.content.msg_body.duration * 20 + 'px'}">
                                         <span class="float-right">{{i.content.msg_body.duration | floor}}''</span>
@@ -173,7 +168,7 @@
                                     </audio>
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" [ngStyle]="{'margin-top': i.msg_type === 4 ? '21px' : 0}" #youVoice [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                            <div class="chat-panel-more float-left" #youVoice [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youVoice)"></div>
                             </div>                  
                         </div>
@@ -199,7 +194,7 @@
                                 <div *ngIf="i.success === 3" class="chat-panel-send-error align-items-center display-flex" (click)="repeatSendMsgAction(i)"></div>                                
                                 <p class="chat-panel-text-msg" [innerHTML]="i.content.msg_body.text | emoji: {nbsp: true, href: true} | sanitize: 'html'" [ngClass]="{'chat-panel-jpush-emoji': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}"></p>
                             </div>
-                            <div class="chat-panel-more chat-panel-more-me float-right" #meText [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right" #meText [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreText($event, i, meText)"></div>
                             </div>
                         </div>
@@ -211,21 +206,21 @@
                             <div *ngIf="!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.kLargeEmoticon)" class="float-right chat-panel-message-img-wrap" [ngClass]="{'chat-panel-message-img-loading': i.success === 1}">
                                 <div *ngIf="i.success === 3" class="chat-panel-send-error" (click)="repeatSendPicAction(i)"></div>
                                 <div>
-                                    <img class="chat-panel-message-img" (click)="imageViewerShow(i.content.msg_body.media_url, num)" title="点击查看大图" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img class="chat-panel-message-img" (error)="imageError($event)" (click)="imageViewerShow(i.content.msg_body.media_url, num)" title="点击查看大图" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
                             <!-- 表情 -->
                             <div *ngIf="i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon'" class="float-right">
                                 <div class="float-left">
-                                    <img style="cursor: default" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img style="cursor: default" (error)="imageError($event)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
-                            <div class="chat-panel-more chat-panel-more-me float-right" #meImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meImage)"></div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right" #meImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meImage)"></div>
                             </div>
                         </div>
                         <!-- 文件消息 -->
-                        <div (mouseleave)="msgMouseleave()" *ngIf="i.content.msg_type === 'file' && (!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.video))" class="clearfix">
+                        <div (mouseleave)="msgMouseleave()" *ngIf="i.content.msg_type === 'file' && (!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.video))" class="clearfix chat-panel-file-container">
                             <div class="chat-panel-fromId-me float-right chat-panel-avatar" (click)="watchSelfInfo()">
                                 <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
@@ -248,12 +243,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="chat-panel-more chat-panel-more-me float-right" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meFile)"></div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meFile)"></div>
                             </div>
                         </div>
                         <!-- 视频消息 -->
-                        <div (mouseleave)="msgMouseleave()" *ngIf="i.content.msg_type === 'file' && i.content.msg_body.extras && i.content.msg_body.extras.video" class="clearfix">
+                        <div (mouseleave)="msgMouseleave()" *ngIf="i.content.msg_type === 'file' && i.content.msg_body.extras && i.content.msg_body.extras.video" class="clearfix chat-panel-video-container">
                             <div class="chat-panel-fromId-me float-right chat-panel-avatar" (click)="watchSelfInfo()">
                                 <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
@@ -266,12 +261,12 @@
                                 </div>
                                 <div class="chat-panel-video-shadow" *ngIf="i.content.load === 0">{{i.content.range}}%</div>
                             </div>
-                            <div class="chat-panel-more chat-panel-more-me float-right" #meVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meVideo)"></div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right" #meVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meVideo)"></div>
                             </div>
                         </div>
                         <!-- 地理定位 -->
-                        <div *ngIf="i.content.msg_type === 'location'" (mouseleave)="msgMouseleave()" class="chat-panel-location clearfix">
+                        <div *ngIf="i.content.msg_type === 'location'" (mouseleave)="msgMouseleave()" class="chat-panel-location clearfix chat-panel-location-container">
                             <div class="chat-panel-fromId-me float-right chat-panel-avatar" (click)="watchSelfInfo()">
                                 <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
@@ -281,8 +276,8 @@
                                 </a>                                    
                                 <p class="chat-panel-address" [title]="i.content.msg_body.label" *ngIf="i.content.msg_body.label">{{i.content.msg_body.label}}</p>
                             </div>
-                            <div class="chat-panel-more chat-panel-more-me float-right" #meLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meLocation)"></div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right" #meLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meLocation)"></div>
                             </div>
                         </div>
                         <!-- 语音 -->
@@ -334,7 +329,7 @@
             <input type="file" id="sendPic" class="chat-panel-singlePic" (change) = "sendPicAction($event)" value="发送图片">
             <label title="图片" for="sendPic" class="chat-panel-singlePic-label"></label>
         </div>
-        <div class="chat-panel-text-container" (click)="contentFocus($event)">
+        <div class="chat-panel-text-container" (drop)="dropArea($event)" (click)="contentFocus($event)">
             <perfect-scrollbar class="chat-panel-content-scroll">
                 <div (paste)="pasteMessage($event)" (click)="stopPropagation($event)" class="chat-panel-content-text" [myModel]="messageList[active.activeIndex]" id="contentDiv" spellcheck="false" contenteditable="true" (keydown)="preKeydown($event)" (blur)="msgContentChange($event)" (focus)="msgContentFocus()" (click)="msgContentClick($event)"></div>
             </perfect-scrollbar>
@@ -346,3 +341,5 @@
 <div [hidden]="!moreMenu.show" id="moreMenu" [ngStyle]="{'top': moreMenu.top + 'px', 'left': moreMenu.left + 'px'}" class="chat-panel-operation-board">
     <message-menu-component class="chat-panel-operation-component" [menu]="moreMenu" (menuItemEnter)="menuItemEnterEmit()" (menuItemLeave)="menuItemLeaveEmit()" (selectMenuItem)="selectMoreMenuItemEmit($event)"></message-menu-component>
 </div>
+<paste-image-component *ngIf="pasteImage.show" [pasteInfo]="pasteImage" (pasteImage)="pasteImageEmit()"></paste-image-component>
+<drop-file-component *ngIf="dropFileInfo.show" (dropFile)="dropFileEmit()" [dropFileInfo]="dropFileInfo"></drop-file-component>

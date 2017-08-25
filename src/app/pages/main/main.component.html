@@ -43,7 +43,7 @@
     <create-group-component *ngIf="createGroup.show" [createGroup]="createGroup" (isCreateGroup)="createGroupEmit($event)"></create-group-component>
     <modify-password-component [hidden]="!isModifyPasswordShow" (modifyPassword)="modifyPasswordEmit($event)"></modify-password-component>
     <tip-modal-component *ngIf="tipModal.show" [info]="tipModal.info" (modalTipEmit)="modalTipEmit($event)"></tip-modal-component>
-    <create-single-chat-component *ngIf="createSingleChat.show" [info]="createSingleChat.info" (emptySingleChatTip)="emptySingleChatTipEmit()" (createSingleChat)="createSingleChatEmit($event)"></create-single-chat-component>
+    <create-single-chat-component *ngIf="createSingleChat.show" [createSingleOption]="createSingleOption" [info]="createSingleChat.info" (emptySingleChatTip)="emptySingleChatTipEmit()" (createSingleChat)="createSingleChatEmit($event)"></create-single-chat-component>
     <black-menu-component [hidden]="!blackMenu.show" [menuInfo]="blackMenu.menu" (blockMenuConfirm)="blackMenuConfirmEmit()" (delSingleBlack)="delSingleBlackEmit($event)"></black-menu-component>
     <logout-kick-component *ngIf="logoutKick.show" [info]="logoutKick.info" (modalTipEmit)="logoutKickEmit($event)"></logout-kick-component>
 </div>

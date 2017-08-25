@@ -11,6 +11,7 @@ import { appAction } from '../../../actions';
 import { global, authPayload, StorageService, pageNumber } from '../../../services/common';
 import { AppStore } from '../../../app.store';
 import { chatAction } from '../actions';
+import { mainAction } from '../../main/actions';
 import { Util } from '../../../services/util';
 
 @Injectable()
@@ -305,17 +306,6 @@ export class ChatEffect {
                             }
                         }
                     }
-                    // 给文件消息添加下载按钮hover提示需要的数据
-                    if (dataItem.msgs[j].content.msg_type === 'file') {
-                        dataItem.msgs[j].downloadHover = {
-                            tip: '下载文件',
-                            position: {
-                                left: -20,
-                                top: 27
-                            },
-                            show: false
-                        };
-                    }
                 }
             }
             let conversationObj = global.JIM.getConversation()
@@ -421,14 +411,13 @@ export class ChatEffect {
             const that = this;
             let msgObj = global.JIM.sendSingleMsg(text.singleMsg)
             .onSuccess((data, msgs) => {
-                console.log(msgs);
                 that.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.key,
                         success: 2,
-                        msgId: msgs.msg_id
+                        msgs
                     }
                 });
             }).onFail((error) => {
@@ -480,14 +469,13 @@ export class ChatEffect {
                 msg_body: msgBody
             })
             .onSuccess((data, msgs) => {
-                console.log(555, text);
                 that.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.select.key,
                         success: 2,
-                        msgId: msgs.msg_id
+                        msgs
                     }
                 });
             }).onFail((error) => {
@@ -499,6 +487,7 @@ export class ChatEffect {
                         success: 3
                     }
                 });
+                error.text = text.select.name;
                 that.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -512,7 +501,10 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                const error = {code: 910000};
+                const error = {
+                    code: 910000,
+                    text: text.select.name
+                };
                 that.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -544,7 +536,7 @@ export class ChatEffect {
                         msgKey: text.msgs.msgKey,
                         key: text.key,
                         success: 2,
-                        msgId: msgs.msg_id
+                        msgs
                     }
                 });
             }).onFail((error) => {
@@ -602,7 +594,7 @@ export class ChatEffect {
                         msgKey: text.msgs.msgKey,
                         key: text.select.key,
                         success: 2,
-                        msgId: msgs.msg_id
+                        msgs
                     }
                 });
             }).onFail((error) => {
@@ -614,6 +606,7 @@ export class ChatEffect {
                         success: 3
                     }
                 });
+                error.text = text.select.name;
                 that.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -627,7 +620,10 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                const error = {code: 910000};
+                const error = {
+                    code: 910000,
+                    text: text.select.name
+                };
                 that.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -653,7 +649,7 @@ export class ChatEffect {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
                         success: 2,
-                        msgId: msgs.msg_id
+                        msgs
                     }
                 });
             }).onFail((error) => {
@@ -689,6 +685,73 @@ export class ChatEffect {
                         return {type: '[chat] send single picture useless'};
                     });
         });
+    // 转发单聊图片
+    @Effect()
+    private transmitSinglePic$: Observable<Action> = this.actions$
+        .ofType(chatAction.transmitSinglePic)
+        .map(toPayload)
+        .switchMap((img) => {
+            const body = img.msgs.content.msg_body;
+            const msgBody = {
+                media_id: body.media_id,
+                media_crc32: body.media_crc32,
+                width: body.width,
+                height: body.height,
+                format: body.format,
+                fsize: body.fsize,
+                extras : body.extras
+            };
+            let singlePicObj = global.JIM.sendSinglePic({
+                target_username: img.select.name,
+                msg_body: msgBody
+            })
+            .onSuccess((info, msgs) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: img.msgs.msgKey,
+                        key: img.key,
+                        success: 2,
+                        msgs
+                    }
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: img.msgs.msgKey,
+                        key: img.key,
+                        success: 3
+                    }
+                });
+                error.text = img.select.name;
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: img.msgs.msgKey,
+                        key: img.key,
+                        success: 3
+                    }
+                });
+                const error = {
+                    code: 910000,
+                    text: img.select.name
+                };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(singlePicObj)
+                    .map(() => {
+                        return {type: '[chat] send single picture useless'};
+                    });
+        });
     // 发送群组图片
     @Effect()
     private sendGroupPic$: Observable<Action> = this.actions$
@@ -704,7 +767,7 @@ export class ChatEffect {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
                         success: 2,
-                        msgId: msgs.msg_id
+                        msgs
                     }
                 });
             }).onFail((error, msgs) => {
@@ -740,6 +803,72 @@ export class ChatEffect {
                         return {type: '[chat] send group pic useless'};
                     });
         });
+    // 转发群组图片
+    @Effect()
+    private transmitGroupPic$: Observable<Action> = this.actions$
+        .ofType(chatAction.transmitGroupPic)
+        .map(toPayload)
+        .switchMap((img) => {
+            const body = img.msgs.content.msg_body;
+            const msgBody = {
+                media_id: body.media_id,
+                media_crc32: body.media_crc32,
+                width: body.width,
+                height: body.height,
+                format: body.format,
+                fsize: body.fsize,
+                extras : body.extras
+            };
+            let sendGroupPicObj = global.JIM.sendGroupPic({
+                target_gid: img.select.key,
+                msg_body: msgBody
+            }).onSuccess((info, msgs) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: img.msgs.msgKey,
+                        key: img.key,
+                        success: 2,
+                        msgs
+                    }
+                });
+            }).onFail((error, msgs) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: img.msgs.msgKey,
+                        key: img.key,
+                        success: 3
+                    }
+                });
+                error.text = img.select.name;
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: img.msgs.msgKey,
+                        key: img.key,
+                        success: 3
+                    }
+                });
+                const error = {
+                    code: 910000,
+                    text: img.select.name
+                };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(sendGroupPicObj)
+                    .map(() => {
+                        return {type: '[chat] send group pic useless'};
+                    });
+        });
     // 发送单聊文件
     @Effect()
     private sendSingleFile$: Observable<Action> = this.actions$
@@ -755,7 +884,7 @@ export class ChatEffect {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
                         success: 2,
-                        msgId: msgs.msg_id
+                        msgs
                     }
                 });
             }).onFail((error) => {
@@ -791,6 +920,72 @@ export class ChatEffect {
                         return {type: '[chat] send single file useless'};
                     });
         });
+    // 转发单聊文件
+    @Effect()
+    private transmitSingleFile$: Observable<Action> = this.actions$
+        .ofType(chatAction.transmitSingleFile)
+        .map(toPayload)
+        .switchMap((file) => {
+            const body = file.msgs.content.msg_body;
+            const msgBody = {
+                media_id: body.media_id,
+                media_crc32: body.media_crc32,
+                hash: body.hash,
+                fname: body.fname,
+                fsize: body.fsize,
+                extras : body.extras
+            };
+            let sendSingleFileObj = global.JIM.sendSingleFile({
+                target_username: file.select.name,
+                msg_body: msgBody
+            })
+            .onSuccess((data, msgs) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: file.msgs.msgKey,
+                        key: file.key,
+                        success: 2,
+                        msgs
+                    }
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: file.msgs.msgKey,
+                        key: file.key,
+                        success: 3
+                    }
+                });
+                error.text = file.select.name;
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: file.msgs.msgKey,
+                        key: file.key,
+                        success: 3
+                    }
+                });
+                const error = {
+                    code: 910000,
+                    text: file.select.name
+                };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(sendSingleFileObj)
+                    .map(() => {
+                        return {type: '[chat] send single file useless'};
+                    });
+        });
     // 发送群组文件
     @Effect()
     private sendGroupFile$: Observable<Action> = this.actions$
@@ -800,13 +995,14 @@ export class ChatEffect {
             const that = this;
             let sendgroupFileObj = global.JIM.sendGroupFile(file.groupFile)
             .onSuccess((data, msgs) => {
+                console.log(3333, msgs);
                 that.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
                         success: 2,
-                        msgId: msgs.msg_id
+                        msgs
                     }
                 });
             }).onFail((error) => {
@@ -842,6 +1038,72 @@ export class ChatEffect {
                         return {type: '[chat] send group file useless'};
                     });
         });
+    // 转发群组文件
+    @Effect()
+    private transmitGroupFile$: Observable<Action> = this.actions$
+        .ofType(chatAction.transmitGroupFile)
+        .map(toPayload)
+        .switchMap((file) => {
+            const body = file.msgs.content.msg_body;
+            const msgBody = {
+                media_id: body.media_id,
+                media_crc32: body.media_crc32,
+                hash: body.hash,
+                fname: body.fname,
+                fsize: body.fsize,
+                extras : body.extras
+            };
+            let sendgroupFileObj = global.JIM.sendGroupFile({
+                target_gid: file.select.key,
+                msg_body: msgBody
+            })
+            .onSuccess((data, msgs) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: file.msgs.msgKey,
+                        key: file.key,
+                        success: 2,
+                        msgs
+                    }
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: file.msgs.msgKey,
+                        key: file.key,
+                        success: 3
+                    }
+                });
+                error.text = file.select.name;
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: file.msgs.msgKey,
+                        key: file.key,
+                        success: 3
+                    }
+                });
+                const error = {
+                    code: 910000,
+                    text: file.select.name
+                };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(sendgroupFileObj)
+                    .map(() => {
+                        return {type: '[chat] send group file useless'};
+                    });
+        });
     // 查看别人的资料
     @Effect()
     private watchOtherInfo$: Observable<Action> = this.actions$
@@ -852,30 +1114,34 @@ export class ChatEffect {
             let OtherInfoObj = global.JIM.getUserInfo({
                 username: other.username
             }).onSuccess((data) => {
-                global.JIM.getBlacks()
-                .onSuccess((black) => {
-                    that.store$.dispatch({
-                        type: chatAction.watchOtherInfoSuccess,
-                        payload: {
-                            info: data.user_info,
-                            show: true,
-                            black: black.black_list
-                        }
-                    });
-                }).onFail((error) => {
-                    that.store$.dispatch({
-                        type: chatAction.watchOtherInfoSuccess,
-                        payload: {
-                            info: data.user_info,
-                            show: true,
-                            black: []
-                        }
-                    });
-                    that.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
+                data.user_info.infoType = 'watchInfo';
+                data.user_info.name = data.user_info.username;
+                data.user_info.nickName = data.user_info.nickname;
+                data.user_info.infoType = 'watchOtherInfo';
+                // global.JIM.getBlacks()
+                // .onSuccess((black) => {
+                //     that.store$.dispatch({
+                //         type: chatAction.watchOtherInfoSuccess,
+                //         payload: {
+                //             info: data.user_info,
+                //             show: true,
+                //             black: black.black_list
+                //         }
+                //     });
+                // }).onFail((error) => {
+                //     that.store$.dispatch({
+                //         type: chatAction.watchOtherInfoSuccess,
+                //         payload: {
+                //             info: data.user_info,
+                //             show: true,
+                //             black: []
+                //         }
+                //     });
+                //     that.store$.dispatch({
+                //         type: appAction.errorApiTip,
+                //         payload: error
+                //     });
+                // });
                 if (other.hasOwnProperty('avatarUrl') || data.user_info.avatar === '') {
                     data.user_info.avatarUrl = other.avatarUrl ? other.avatarUrl : '';
                     that.store$.dispatch({
@@ -1176,7 +1442,7 @@ export class ChatEffect {
                         global.JIM.getUserInfo({
                             username: userList.username
                         }).onSuccess((user) => {
-                            userList.key = user.uid;
+                            // userList.key = user.uid;
                             if (user.user_info.avatar === '') {
                                 count ++;
                                 if (count === eventData.to_usernames.length) {
@@ -1313,6 +1579,12 @@ export class ChatEffect {
                     type: chatAction.createGroupSuccessEvent,
                     payload: eventData
                 });
+            }).onTimeout((data) => {
+                const error = {code: 910000};
+                that.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
             });
             return Observable.of('createGroupEvent')
                     .map(() => {
@@ -1325,16 +1597,22 @@ export class ChatEffect {
         .ofType(chatAction.msgRetract)
         .map(toPayload)
         .switchMap((item) => {
-            const that = this;
+            console.log(444, item);
             const msgRetract = global.JIM.msgRetract({
                     msg_id: item.msg_id,
                 }).onSuccess((data , msg) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.msgRetractSuccess,
                         payload: item
                     });
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
@@ -1342,6 +1620,192 @@ export class ChatEffect {
             return Observable.of(msgRetract)
                     .map(() => {
                         return {type: '[chat] create group event useless'};
+                    });
+    });
+    // 添加好友
+    @Effect()
+    private addFriendConfirm$: Observable<Action> = this.actions$
+        .ofType(chatAction.addFriendConfirm)
+        .map(toPayload)
+        .switchMap((user) => {
+            const addFriendConfirm = global.JIM.addFriend({
+                    target_name: user.name,
+                    from_type: 1,
+                    why: user.verifyModalText
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: true,
+                            info: {
+                                title: '好友申请',
+                                tip: '好友申请发送成功',
+                                actionType: '[chat] add friend success',
+                                success: 1
+                            }
+                        }
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(addFriendConfirm)
+                    .map(() => {
+                        return {type: '[chat] create group event useless'};
+                    });
+    });
+    // 个人资料中取消黑名单
+    @Effect()
+    private deleteSingleBlack$: Observable<Action> = this.actions$
+        .ofType(chatAction.deleteSingleBlack)
+        .map(toPayload)
+        .switchMap((user) => {
+            const deleteSingleBlack = global.JIM.delSingleBlacks({
+                    member_usernames: [{username: user.name}]
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: true,
+                            info: {
+                                title: '取消黑名单',
+                                tip: '取消黑名单成功',
+                                actionType: '[chat] delete single black success useless',
+                                success: 1
+                            }
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: chatAction.deleteSingleBlackSuccess,
+                        payload: user
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(deleteSingleBlack)
+                    .map(() => {
+                        return {type: '[chat] delete single black useless'};
+                    });
+    });
+    // 个人资料中取消免打扰
+    @Effect()
+    private deleteSingleNoDisturb$: Observable<Action> = this.actions$
+        .ofType(chatAction.deleteSingleNoDisturb)
+        .map(toPayload)
+        .switchMap((user) => {
+            const deleteSingleNoDisturb = global.JIM.delSingleNoDisturb({
+                    target_name: user.name
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: true,
+                            info: {
+                                title: '取消消息免打扰',
+                                tip: '取消消息免打扰成功',
+                                actionType: '[chat] delete single no disturb success useless',
+                                success: 1
+                            }
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: chatAction.deleteSingleNoDisturbSuccess,
+                        payload: user
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(deleteSingleNoDisturb)
+                    .map(() => {
+                        return {type: '[chat] delete single black useless'};
+                    });
+    });
+    // 修改备注名
+    @Effect()
+    private saveMemoName$: Observable<Action> = this.actions$
+        .ofType(chatAction.saveMemoName)
+        .map(toPayload)
+        .switchMap((user) => {
+            const saveMemoName = global.JIM.updateFriendMemo({
+                    target_name: user.targetName,
+                    memo_name: user.memoName,
+                    memo_others: 'a'
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: chatAction.saveMemoNameSuccess,
+                        payload: user
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(saveMemoName)
+                    .map(() => {
+                        return {type: '[chat] save memo name useless'};
+                    });
+    });
+    // 修改备注名
+    @Effect()
+    private loadViewerImage$: Observable<Action> = this.actions$
+        .ofType(chatAction.loadViewerImage)
+        .map(toPayload)
+        .switchMap((info) => {
+            const loadViewerImage = global.JIM.getResource({media_id: info.mediaId})
+                .onSuccess((urlInfo) => {
+                    info.src = urlInfo.url;
+                    this.store$.dispatch({
+                        type: chatAction.loadViewerImageSuccess,
+                        payload: info
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: chatAction.loadViewerImageSuccess,
+                        payload: info
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(loadViewerImage)
+                    .map(() => {
+                        return {type: '[chat] save memo name useless'};
                     });
     });
     constructor(
@@ -1352,8 +1816,7 @@ export class ChatEffect {
     ) {}
     private dispatchConversation (count, that, info, data) {
         if (count <= 0) {
-            let msgId =
-                JSON.parse(that.storageService.get('msgId' + global.user));
+            let msgId = JSON.parse(that.storageService.get('msgId' + global.user));
             that.store$.dispatch({
                 type: chatAction.getConversationSuccess,
                 payload: {

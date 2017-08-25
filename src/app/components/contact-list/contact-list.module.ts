@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
 import { ContactListComponent } from './contact-list.component';
+import { BadgePipeModule } from '../../pipes';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { ContactListComponent } from './contact-list.component';
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    BadgePipeModule
   ],
   exports: [
       ContactListComponent

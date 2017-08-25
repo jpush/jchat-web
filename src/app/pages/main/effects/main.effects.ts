@@ -293,14 +293,14 @@ export class MainEffect {
                         return {type: '[main] modify password useless'};
                     });
     });
-    // 创建单聊
+    // 创建单聊/添加好友
     @Effect()
     private createSingleChatAction$: Observable<Action> = this.actions$
         .ofType(mainAction.createSingleChatAction)
         .map(toPayload)
-        .switchMap((singleName) => {
+        .switchMap((info) => {
             const that = this;
-            let createSingleChatObj = global.JIM.getUserInfo({username: singleName})
+            let createSingleChatObj = global.JIM.getUserInfo({username: info.singleName})
             .onSuccess((data) => {
                 let user = data.user_info;
                 let item = {
@@ -315,9 +315,10 @@ export class MainEffect {
                     signature: user.signature,
                     gender: user.gender,
                     region: user.region,
-                    avatarUrl: ''
+                    avatarUrl: '',
+                    infoType: info.type
                 };
-                if (item.avatar) {
+                if (item.avatar !== '') {
                     global.JIM.getResource({media_id: data.user_info.avatar})
                     .onSuccess((urlInfo) => {
                         item.avatarUrl = urlInfo.url;
@@ -418,7 +419,7 @@ export class MainEffect {
     private blackMenuShow$: Observable<Action> = this.actions$
         .ofType(mainAction.blackMenu)
         .map(toPayload)
-        .switchMap(() => {
+        .switchMap((isShow) => {
             const that = this;
             let blackMenuObj = global.JIM.getBlacks()
             .onSuccess((data) => {
@@ -426,7 +427,7 @@ export class MainEffect {
                     that.store$.dispatch({
                         type: mainAction.blackMenuSuccess,
                         payload: {
-                            show: true,
+                            show: isShow.show,
                             menu: data.black_list
                         }
                     });
@@ -439,7 +440,7 @@ export class MainEffect {
                         that.store$.dispatch({
                             type: mainAction.blackMenuSuccess,
                             payload: {
-                                show: true,
+                                show: isShow.show,
                                 menu: data.black_list
                             }
                         });
@@ -447,7 +448,7 @@ export class MainEffect {
                         that.store$.dispatch({
                             type: mainAction.blackMenuSuccess,
                             payload: {
-                                show: true,
+                                show: isShow.show,
                                 menu: data.black_list
                             }
                         });
@@ -685,6 +686,105 @@ export class MainEffect {
             return Observable.of(loginObj)
                     .map(() => {
                         return {type: '[main] login useless'};
+                    });
+    });
+    // 用户资料中删除免打扰
+    @Effect()
+    private addSingleNoDisturbAction$: Observable<Action> = this.actions$
+        .ofType(mainAction.addSingleNoDisturbAction)
+        .map(toPayload)
+        .switchMap((user) => {
+            let loginObj = global.JIM.addSingleNoDisturb({
+                    target_name: user.name
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: true,
+                            info: {
+                                title: '添加消息免打扰',
+                                tip: '添加消息免打扰成功',
+                                actionType: '[main] add single no disturb action useless',
+                                success: 1
+                            }
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.addSingleNoDisturbSuccess,
+                        payload: user
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.hideModalTip,
+                        payload: {
+                            show: false,
+                            info: {}
+                        }
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.hideModalTip,
+                        payload: {
+                            show: false,
+                            info: {}
+                        }
+                    });
+                });
+            return Observable.of(loginObj)
+                    .map(() => {
+                        return {type: '[main] add single no disturb action useless'};
+                    });
+    });
+    // 删除好友
+    @Effect()
+    private deleteFriend$: Observable<Action> = this.actions$
+        .ofType(mainAction.deleteFriend)
+        .map(toPayload)
+        .switchMap((user) => {
+            console.log(99999999, user);
+            const deleteFriend = global.JIM.delFriend({
+                    target_name: user.name
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: true,
+                            info: {
+                                title: '删除好友',
+                                tip: '删除好友成功',
+                                actionType: '[main] delete friend success useless',
+                                success: 1
+                            }
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.deleteFriendSuccess,
+                        payload: user
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(deleteFriend)
+                    .map(() => {
+                        return {type: '[main] delete friend useless'};
                     });
     });
     constructor(

@@ -7,8 +7,21 @@
         box-sizing: border-box;
         background-size: 20px;
         cursor: pointer;
+        .contact-list-unreadNum{
+            position: relative !important;
+        }
     }
     li.active{
+        color: #2DD0CF;
+    }
+    .contact-verify{
+        background: url('../../../assets/images/verify-normal.svg') 20px 10px no-repeat;
+    }
+    .contact-verify.active{
+        background: url('../../../assets/images/verify-active.svg') 20px 10px no-repeat;
+    }
+    .contact-verify:hover{
+        background: url('../../../assets/images/verify-active.svg') 20px 10px no-repeat;
         color: #2DD0CF;
     }
     .contact-linkman{

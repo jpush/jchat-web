@@ -16,7 +16,9 @@ export class ContactComponent implements OnInit, OnDestroy {
     private contactStream$;
     private groupList = [];
     private tab = 1;
-    private conversation = [];
+    private friendList = [];
+    private verifyMessageList = [];
+    private verifyUnreadNum = 0;
     constructor(
         private store$: Store<AppStore>
     ) {
@@ -62,13 +64,41 @@ export class ContactComponent implements OnInit, OnDestroy {
             case chatAction.dispatchConversationList:
 
             case contactAction.getFriendListSuccess:
-                this.conversation = contactState.friendList;
+                this.friendList = contactState.friendList;
                 break;
             case chatAction.updateContactInfo:
                 this.groupList = contactState.groupList;
                 break;
             case mainAction.exitGroupSuccess:
                 this.groupList = contactState.groupList;
+                break;
+            case mainAction.changeListTab:
+                this.verifyUnreadNum = contactState.verifyUnreadNum;
+                break;
+            case contactAction.changeTab:
+                this.tab = contactState.tab;
+                this.verifyUnreadNum = contactState.verifyUnreadNum;
+                break;
+            case chatAction.friendInvitationEvent:
+                this.verifyMessageList = contactState.verifyMessageList;
+                this.verifyUnreadNum = contactState.verifyUnreadNum;
+                this.store$.dispatch({
+                    type: contactAction.dispatchContactUnreadNum,
+                    payload: contactState.contactUnreadNum
+                });
+                break;
+            case contactAction.refuseAddFriendSuccess:
+                this.verifyMessageList = contactState.verifyMessageList;
+                break;
+            case chatAction.dispatchFriendList:
+                this.friendList = contactState.friendList;
+                break;
+            case chatAction.friendReplyEvent:
+                this.verifyMessageList = contactState.verifyMessageList;
+                this.friendList = contactState.friendList;
+                break;
+            case chatAction.addFriendConfirm:
+                this.verifyMessageList = contactState.verifyMessageList;
                 break;
             default:
         }
@@ -82,6 +112,15 @@ export class ContactComponent implements OnInit, OnDestroy {
         });
     }
     private changeTabEmit(tab) {
-        this.tab = tab;
+        this.store$.dispatch({
+            type: contactAction.changeTab,
+            payload: tab
+        });
+    }
+    private isAgreeAddFriendEmit(message) {
+        this.store$.dispatch({
+            type: contactAction.isAgreeAddFriend,
+            payload: message
+        });
     }
 }

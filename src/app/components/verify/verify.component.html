@@ -1,0 +1,26 @@
+<perfect-scrollbar class="verify-container">
+    <h2>验证信息</h2>
+    <div class="verify-no-data" *ngIf="verifyMessageList.length === 0">暂无验证消息</div>
+    <div class="display-flex verify-list" *ngFor="let message of verifyMessageList">
+        <div class="verify-avatar">
+            <img (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" [src]="message.avatarUrl" alt="">
+        </div>
+        <div class="flex-1 verify-text" *ngIf="message.stateType !== 5 && message.stateType !== 6 && message.stateType !== 7">
+            <h5>{{message.nickName && message.nickName !== '' ? message.nickName : message.name}}请求添加为好友</h5>
+            <p>附加消息：{{message.description && message.description !== '' ? message.description : '无'}}</p>
+        </div>
+        <div class="flex-1 verify-username" *ngIf="message.stateType === 5 || message.stateType === 6 || message.stateType === 7">{{message.nickName && message.nickName !== '' ? message.nickName : message.name}}</div>
+        <div class="verify-operation">
+            <div class="verify-btn-group clearfix" *ngIf="message.stateType === 0 || message.stateType === 1 || message.stateType === 2">
+                <button [ngClass]="{'loading': message.stateType === 2}" type="button" class="btn-active float-right verify-btn-agree" (click)="agreeAddFriend(message, 'agree')">同意</button>                    
+                <button [ngClass]="{'loading': message.stateType === 1}" type="button" class="btn-white float-right verify-btn-refuse" (click)="agreeAddFriend(message, 'refuse')">拒绝</button>
+                <div *ngIf="message.stateType === 1 || message.stateType === 2"></div>
+            </div>
+            <p *ngIf="message.stateType === 3">已拒绝</p>
+            <p *ngIf="message.stateType === 4">已同意</p>
+            <p *ngIf="message.stateType === 5">同意了您的好友请求</p>
+            <p *ngIf="message.stateType === 6">等待对方验证</p>
+            <p *ngIf="message.stateType === 7">拒绝了您的好友请求</p>
+        </div>
+    </div>
+</perfect-scrollbar>

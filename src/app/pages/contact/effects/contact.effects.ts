@@ -49,7 +49,7 @@ export class ContactEffect {
                                 type: appAction.errorApiTip,
                                 payload: error
                             });
-                            group.name = '#群名获取失败';
+                            group.name = '#群名获取失败？？';
                             that.store$.dispatch({
                                 type: contactAction.getGroupListSuccess,
                                 payload: groupList
@@ -77,12 +77,13 @@ export class ContactEffect {
     // 获取好友列表
     @Effect()
     private getFriendList$: Observable<Action> = this.actions$
-        .ofType(contactAction.getGroupList)
+        .ofType(contactAction.getFriendList)
         .map(toPayload)
         .switchMap(() => {
             const that = this;
             const friendListObj = global.JIM.getFriendList()
                 .onSuccess((data) => {
+                    console.log(3333333, data.friend_list);
                     that.store$.dispatch({
                         type: contactAction.getFriendListSuccess,
                         payload: data.friend_list
@@ -111,6 +112,43 @@ export class ContactEffect {
             return Observable.of(friendListObj)
                     .map(() => {
                         return {type: '[main] get friend list useless'};
+                    });
+        });
+    // 同意或拒绝好友请求
+    @Effect()
+    private isAgreeAddFriend$: Observable<Action> = this.actions$
+        .ofType(contactAction.isAgreeAddFriend)
+        .map(toPayload)
+        .switchMap((message) => {
+            let why = '';
+            if (message.stateType === 1) {
+                why = '拒绝';
+            }
+            const friendObj = global.JIM.addFriend({
+                    target_name: message.name,
+                    from_type: 2,
+                    why
+                }).onSuccess((data) => {
+                    if (message.stateType === 1) {
+                        this.store$.dispatch({
+                            type: contactAction.refuseAddFriendSuccess,
+                            payload: message
+                        });
+                    } else if (message.stateType === 2) {
+                        this.store$.dispatch({
+                            type: contactAction.agreeAddFriendSuccess,
+                            payload: message
+                        });
+                    }
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(friendObj)
+                    .map(() => {
+                        return {type: '[main] is agree add friend useless'};
                     });
         });
     constructor(

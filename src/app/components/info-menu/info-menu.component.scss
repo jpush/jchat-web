@@ -1,0 +1,67 @@
+.menu-wrap{
+    position: absolute;
+    top: 40px;
+    right: 46px;
+    width: 115px;
+    background-color: #fff;
+    -webkit-box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
+            box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
+    border-radius: 2px;
+    z-index: 2;
+    ul{
+        cursor: pointer;
+        line-height: 42px;
+        font-size: 14px;
+        color: #808080;
+        position: relative;
+        border-radius: 2px;
+        li{
+            position: relative;
+            padding-left: 28px;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
+            .menu-arror{
+                width: 14px;
+                height: 8px;
+                position: absolute;
+                top: -8px;
+                right: 8px;
+                background: url(../../../assets/images/menu-top-normal.svg) -8px 1px no-repeat;
+            }
+            &:hover .menu-arror{
+                background: url(../../../assets/images/menu-top-active.svg) -6px 1px no-repeat !important;
+            }
+            .menu-right{
+                width: 12px;
+                height: 8px;
+                position: absolute;
+                top: 17px;
+                left: 10px;
+                &:after{
+                    content: '';
+                    display: block;
+                    width: 5px;
+                    height: 1px;
+                    background-color: #808080;
+                    position: absolute;
+                    top: 4px;
+                    left: -3px;
+                    -webkit-transform: rotateZ(49deg);
+                            transform: rotateZ(49deg);
+                }
+                &:before{
+                    content: '';
+                    display: block;
+                    width: 10px;
+                    height: 1px;
+                    background-color: #808080;
+                    position: absolute;
+                    top: 4px;
+                    left: 0;
+                    -webkit-transform: rotateZ(-27deg);
+                            transform: rotateZ(-27deg);
+                }
+            }
+        }
+    }
+}

@@ -1,15 +1,15 @@
 <perfect-scrollbar class="linkman-list-container">
     <h2>好友</h2>
     <div class="linkman-list-no-data" *ngIf="!isEmpty">暂无好友</div>
-    <div *ngIf="conversation">
-        <div *ngFor="let item of conversation">
+    <div *ngIf="friendList">
+        <div *ngFor="let item of friendList">
             <div *ngIf="item.data.length > 0" class="linkman-list-letter">{{item.letter}}</div>
             <div>
                 <div *ngFor="let data of item.data" class="linkman-list-name display-flex" (click)="selectLinkmanItem(data)">
                     <div class="linkman-list-avatar">
                         <img (load)="avatarLoad($event)" [src]="data.avatarUrl ? (data.avatarUrl | sanitize: 'url') : ''" (error)="avatarErrorIcon($event)" alt="">
                     </div>
-                    <span class="flex-1">{{(data.nickName && data.nickName !== '') ? data.nickName : data.name}}</span>
+                    <span class="flex-1">{{data.memo_name || data.nickName || data.name}}</span>
                 </div>
             </div>
         </div>

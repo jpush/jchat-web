@@ -7,4 +7,9 @@ export interface ContactStore {
     hasConversation: boolean;
     conversation: Array<any>;
     messageList: Array<any>;
+    verifyMessageList: Array<any>;
+    verifyUnreadNum: number;
+    contactUnreadNum: number;
+    tab: number;
+    listTab: number;
 }

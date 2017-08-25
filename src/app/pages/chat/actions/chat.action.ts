@@ -45,6 +45,8 @@ export const chatAction = {
     exitGroupEvent: '[chat] exit group event',
     createGroupEvent: '[chat] create group event',
     createGroupSuccessEvent: '[chat] create group success event',
+    friendInvitationEvent: '[chat] friend invitation event',
+    friendReplyEvent: '[chat] friend reply event',
     init: '[chat] init state',
     msgRetract: '[chat] message retract',
     msgRetractSuccess: '[chat] message retract success',
@@ -60,5 +62,16 @@ export const chatAction = {
     transmitGroupFile: '[chat] transmit group file',
     transmitSingleLocation: '[chat] transmit single location',
     transmitGroupLocation: '[chat] transmit group location',
-    transmitMessageComplete: '[chat] transmit message complete'
+    transmitMessageComplete: '[chat] transmit message complete',
+    showVerifyModal: '[chat] show verify modal',
+    addFriendConfirm: '[chat] add friend confirm',
+    deleteSingleBlack: '[chat] delete single black',
+    deleteSingleBlackSuccess: '[chat] delete single black success',
+    deleteSingleNoDisturb: '[chat] delete single no disturb',
+    deleteSingleNoDisturbSuccess: '[chat] delete single no disturb success',
+    saveMemoName: '[chat] save memo name',
+    saveMemoNameSuccess: '[chat] save memo name success',
+    dispatchFriendList: '[chat] dispatch friend list',
+    loadViewerImage: '[chat] load viewer image',
+    loadViewerImageSuccess: '[chat] load viewer image success'
 };

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
 
 @Component({
     selector: 'tip-modal-component',
@@ -6,7 +6,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
     styleUrls: ['./tip-modal.component.scss']
 })
 
-export class TipModalComponent implements OnInit {
+export class TipModalComponent implements OnInit, DoCheck {
     @Input()
         private info;
     @Output()
@@ -15,6 +15,9 @@ export class TipModalComponent implements OnInit {
         // pass
     }
     public ngOnInit() {
+        // pass
+    }
+    public ngDoCheck() {
         // 自动消失
         if (this.info && this.info.success) {
             setTimeout(() => {

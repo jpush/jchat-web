@@ -37,6 +37,7 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
 
     }
     public ngOnInit() {
+        this.init();
         this.messageTransmitStream$ = this.store$.select((state) => {
             let chatState = state['chatReducer'];
             this.stateChanged(chatState);
@@ -47,6 +48,11 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
     }
     public ngOnDestroy() {
         this.messageTransmitStream$.unsubscribe();
+    }
+    private init() {
+        for ( let item of this.messageTransmit.list) {
+            item.checked = false;
+        }
     }
     private stateChanged(chatState) {
         switch (chatState.actionType) {
@@ -125,6 +131,7 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
     }
     private confirmMessageTransmit() {
         this.confirmTransmit.emit(this.selectList);
+        this.messageTransmit.show = false;
     }
     private cancelMessageTransmit() {
         this.messageTransmit.show = false;

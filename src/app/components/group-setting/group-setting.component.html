@@ -13,12 +13,12 @@
                 <span class="float-left group-setting-dec" id="groupSettingDec" [title]="groupSetting.groupInfo.desc ? groupSetting.groupInfo.desc : ''" (click)="modifyGroupDescriptionAction()">{{groupSetting.groupInfo.desc ? (groupSetting.groupInfo.desc | ellipsis: 26) : '未填写'}}</span>
             </div>
             <div class="clearfix group-setting-text">
-                <span class="float-left">屏蔽群消息&nbsp;:&nbsp;</span>
-                <switch-component [state]="groupSetting.active.shield" (changeSwitch)="changeGroupShieldEmit()" class="float-right group-setting-switch"></switch-component>
-            </div>
-            <div class="clearfix group-setting-text">
                 <span class="float-left">消息免打扰&nbsp;:&nbsp;</span>
                 <switch-component [state]="groupSetting.active.noDisturb" (changeSwitch)="changeGroupNoDisturbEmit()" class="float-right group-setting-switch"></switch-component>
+            </div>
+            <div class="clearfix group-setting-text">
+                <span class="float-left">屏蔽群消息&nbsp;:&nbsp;</span>
+                <switch-component [state]="groupSetting.active.shield" (changeSwitch)="changeGroupShieldEmit()" class="float-right group-setting-switch"></switch-component>
             </div>
             <div class="group-setting-search">
                 <search-member-component [searchResult]="searchResult" (searchKeyup)="seachKeyupEmit($event)" (searchItem)="searchItemEmit($event)" (clearInput)="clearInputEmit()"></search-member-component>

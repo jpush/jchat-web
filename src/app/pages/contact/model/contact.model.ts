@@ -5,5 +5,10 @@ export const contactInit = {
     hasNoSortFriendList: [],
     hasConversation: false,
     conversation: [],
-    messageList: []
+    messageList: [],
+    verifyMessageList: [],
+    verifyUnreadNum: 0,
+    contactUnreadNum: 0,
+    tab: 1,
+    listTab: 0
 };

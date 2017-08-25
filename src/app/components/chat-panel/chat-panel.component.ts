@@ -13,6 +13,7 @@ import{ StorageService } from '../../services/common';
 import { Emoji } from '../../services/tools';
 import * as download from 'downloadjs';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
+const imageError = '../../../assets/images/image-error.svg';
 
 @Component({
     selector: 'chat-panel-component',
@@ -133,6 +134,19 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         ],
         item: null
     };
+    private pasteImage: any = {
+        show: false,
+        info: {
+            src: '',
+            width: 0,
+            height: 0,
+            pasteFile: {}
+        }
+    };
+    private dropFileInfo: any = {
+        show: false,
+        info: {}
+    };
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -183,6 +197,18 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 this.loadFlag = true;
             }
         }, 150);
+    }
+    @HostListener('document:drop', ['$event']) private onDrop(event) {
+        event.preventDefault();
+    }
+    @HostListener('document:dragleave', ['$event']) private onDragleave(event) {
+        event.preventDefault();
+    }
+    @HostListener('document:dragenter', ['$event']) private ondDagenter(event) {
+        event.preventDefault();
+    }
+    @HostListener('document:dragover', ['$event']) private onDragover(event) {
+        event.preventDefault();
     }
     @HostListener('window:click') private onClickWindow() {
         this.inputToLast = true;
@@ -253,37 +279,36 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
 
                 // 发送群组文件消息
             case chatAction.sendGroupFile:
-                let msgs = chatState.messageList[chatState.activePerson.activeIndex].msgs;
-                if (msgs.length > pageNumber) {
-                    this.msg = msgs.slice(msgs.length - this.msg.length);
-                } else {
-                    this.msg = msgs;
-                }
+                this.updateMsg(chatState);
                 this.imageViewer.result = chatState.imageViewer;
-                this.messageList = chatState.messageList;
                 break;
             case chatAction.getAllMessageSuccess:
                 if (chatState.imageViewer !== []) {
                     this.imageViewer.result = chatState.imageViewer;
                 }
                 break;
+            case chatAction.sendMsgComplete:
+
             case chatAction.addGroupMembersEventSuccess:
-                this.messageList = chatState.messageList;
+                this.updateMsg(chatState);
                 break;
             case chatAction.msgRetractEvent:
-                if (chatState.activePerson.activeIndex < 0) {
-                    break;
-                }
-                let msgss = chatState.messageList[chatState.activePerson.activeIndex].msgs;
-                if (msgss.length > pageNumber) {
-                    this.msg = msgss.slice(msgss.length - this.msg.length);
-                } else {
-                    this.msg = msgss;
-                }
-                this.messageList = chatState.messageList;
+                this.updateMsg(chatState);
                 break;
             default:
         }
+    }
+    private updateMsg(chatState) {
+        if (chatState.activePerson.activeIndex < 0) {
+            return ;
+        }
+        let list = chatState.messageList[chatState.activePerson.activeIndex];
+        if (list.msgs.length > pageNumber) {
+            this.msg = list.msgs.slice(list.msgs.length - this.msg.length);
+        } else {
+            this.msg = list.msgs;
+        }
+        this.messageList = chatState.messageList;
     }
     private msgMouseleave() {
         this.moreMenu.show = false;
@@ -424,16 +449,77 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             }, 100);
         }
     }
-    // 粘贴文本，将文本多余的样式代码去掉
+    // 粘贴文本，将文本多余的样式代码去掉/粘贴图片
     private pasteMessage(event) {
         let clipboardData = event.clipboardData || (<any> window).clipboardData;
+        for (let i = 0, len = clipboardData.items.length; i < len; i++) {
+            let item = clipboardData.items[i];
+            if (item.kind === 'file') {
+                this.getImgObj(item.getAsFile());
+                return false;
+            }
+        }
         let pastedData = clipboardData.getData('Text');
         pastedData = pastedData.replace(/</g, '&lt;');
         pastedData = pastedData.replace(/>/g, '&gt;');
         pastedData = pastedData.replace(/\n/g, '<br>');
         pastedData = pastedData.replace(/ /g, '&nbsp;');
+        pastedData = Emoji.emoji(pastedData);
         this.util.insertAtCursor(this.contentDiv, pastedData, false);
         return false;
+    }
+    // 粘贴图片发送
+    private pasteImageEmit() {
+        let img = new FormData();
+        img.append(this.pasteImage.info.pasteFile.name, this.pasteImage.info.pasteFile);
+        this.sendPic.emit({
+            img,
+            type: 'paste',
+            info: this.pasteImage.info
+        });
+    }
+    private dropArea(event) {
+        event.preventDefault();
+        let fileList = event.dataTransfer.files;
+        if (fileList.length === 0) {
+            return false;
+        }
+        // 检测文件是不是图片
+        if (fileList[0].type.indexOf('image') === -1) {
+            this.dropFileInfo.info = fileList[0];
+            this.dropFileInfo.show = true;
+        } else {
+            this.getImgObj(fileList[0]);
+        }
+    }
+    private dropFileEmit() {
+        let file = new FormData();
+        file.append(this.dropFileInfo.info.name, this.dropFileInfo.info);
+        this.sendFile.emit({
+            file,
+            fileData: this.dropFileInfo.info
+        });
+    }
+    // 获取拖拽时或者粘贴图片时的图片对象
+    private getImgObj(file) {
+        const that = this;
+        let img = new Image();
+        let pasteFile = file;
+        let reader = new FileReader();
+        reader.readAsDataURL(pasteFile);
+        reader.onload = function(e){
+            img.src = this.result;
+            const _this = this;
+            img.onload = function(){
+                that.pasteImage.info = {
+                    src: _this.result,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    pasteFile
+                };
+                that.pasteImage.show = true;
+            };
+        };
     }
     // 发送文本
     private sendMsgAction() {
@@ -469,7 +555,10 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             return;
         }
         let img = this.util.getFileFormData(pic);
-        this.sendPic.emit(img);
+        this.sendPic.emit({
+            img,
+            type: 'send'
+        });
         this.contentDiv.focus();
         this.util.focusLast(this.contentDiv);
         event.target.value = '';
@@ -571,6 +660,20 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         } else if (event.keyCode === 13) {
             this.sendMsgAction();
             event.preventDefault();
+        } else if (event.keyCode === 229) {
+            // @用户
+            // let range = window.getSelection().getRangeAt(0);
+            // let strongNode = document.createElement('strong');
+            // // 选中区域文本
+            // strongNode.innerHTML = range.toString();
+            // // 删除选中区
+            // range.deleteContents();
+            // // 在光标处插入新节点
+            // range.insertNode(strongNode);
+
+            // let range = window.getSelection().getRangeAt(0);
+            // // 当前光标的ui位置
+            // range.getBoundingClientRect();
         }
     }
     // 消息发送失败后点击重发消息
@@ -740,5 +843,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private fileDownload(url) {
         // 为了兼容火狐下a链接下载，引入downloadjs
         download(url);
+    }
+    // 3s内图片没有加载成功，则显示默认图
+    private imageError(event) {
+        setTimeout(() => {
+            if (event.target.src.indexOf('undefined') !== -1) {
+                event.target.src = imageError;
+            }
+        }, 3000);
     }
 }

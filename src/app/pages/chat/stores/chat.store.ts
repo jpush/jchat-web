@@ -20,13 +20,12 @@ export interface ChatStore {
     actionType: string;
     otherInfo: {
         show: boolean,
-        info: object,
-        black: Array<any>
+        info: {
+            black: boolean,
+            noDisturb: boolean
+        }
     };
-    blackMenu: {
-        menu: Array<any>,
-        show: boolean
-    };
+    blackMenu: Array<any>;
     searchUserResult: {
         result: object,
         isSearch: boolean
@@ -54,4 +53,14 @@ export interface ChatStore {
         searchResult: object,
         list: Array<any>
     };
+    transmitSuccess: boolean;
+    verifyModal: {
+        info: object,
+        show: boolean
+    };
+    noDisturb: {
+        users: Array<any>,
+        groups: Array<any>
+    };
+    viewerImageUrl: object;
 }

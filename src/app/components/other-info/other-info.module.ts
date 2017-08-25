@@ -6,6 +6,7 @@ import { OtherInfoComponent } from './other-info.component';
 import { HoverTipModule } from '../hover-tip';
 import { HoverEventModule } from '../../directives';
 import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
+import { InfoMenuModule } from '../info-menu';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
     HoverTipModule,
     HoverEventModule,
     EllipsisPipeModule,
-    SanitizePipeModule
+    SanitizePipeModule,
+    InfoMenuModule
   ],
   exports: [
       OtherInfoComponent

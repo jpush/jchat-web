@@ -26,6 +26,8 @@ import { HoverEventModule } from '../../directives';
 import { ImageViewerModule } from '../image-viewer';
 import { StorageService } from '../../services/common';
 import { MessageMenuModule } from '../message-menu';
+import { PasteImageModule } from '../paste-image';
+import { DropFileModule } from '../drop-file';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { MessageMenuModule } from '../message-menu';
     FileSizePipeModule,
     VideoTimePipeModule,
     SanitizePipeModule,
-    MessageMenuModule
+    MessageMenuModule,
+    PasteImageModule,
+    DropFileModule
   ],
   exports: [
       ChatPanelComponent

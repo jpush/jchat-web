@@ -11,6 +11,7 @@ import { GroupSettingModule } from '../../components/group-setting';
 import { GroupDescriptionModule } from '../../components/group-description';
 import { VideoModule } from '../../components/video';
 import { MessageTransmitModule } from '../../components/message-transmit';
+import { VerifyModalModule } from '../../components/verify-modal';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { MessageTransmitModule } from '../../components/message-transmit';
     GroupSettingModule,
     GroupDescriptionModule,
     VideoModule,
-    MessageTransmitModule
+    MessageTransmitModule,
+    VerifyModalModule
   ],
   exports: [
       ChatComponent

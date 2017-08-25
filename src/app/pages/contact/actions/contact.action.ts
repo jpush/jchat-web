@@ -4,5 +4,10 @@ export const contactAction = {
     getGroupListSuccess: '[contact] get group list success',
     getFriendList: '[contact] get friend list',
     getFriendListSuccess: '[contact] get friend list success',
-    init: '[contact] init'
+    init: '[contact] init',
+    isAgreeAddFriend: '[contact] is agree add friend',
+    agreeAddFriendSuccess: '[contact] agree add friend success',
+    refuseAddFriendSuccess: '[contact] refuse add friend success',
+    changeTab: '[contact] change tab',
+    dispatchContactUnreadNum: '[contact] dispatch contact unread num'
 };

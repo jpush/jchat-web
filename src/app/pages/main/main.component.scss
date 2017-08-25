@@ -61,6 +61,8 @@
                     .main-unreadNum{
                         top: -7px;
                         right: 10px;
+                        -webkit-transform: translate(-50%, 0);
+                                transform: translate(-50%, 0);
                     }
                 }
             }

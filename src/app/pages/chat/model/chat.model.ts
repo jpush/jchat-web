@@ -16,14 +16,13 @@ export const chatInit = {
     defaultPanelIsShow: true,
     actionType: '',
     otherInfo: {
-        info: {},
-        show: false,
-        black: []
-    },
-    blackMenu: {
-        menu: [],
+        info: {
+            black: false,
+            noDisturb: false
+        },
         show: false
     },
+    blackMenu: [],
     searchUserResult: {
         result: {},
         isSearch: false
@@ -49,5 +48,15 @@ export const chatInit = {
     messageTransmit: {
         searchResult: {},
         list: []
-    }
+    },
+    transmitSuccess: true,
+    verifyModal: {
+        info: {},
+        show: false
+    },
+    noDisturb: {
+        users: [],
+        groups: []
+    },
+    viewerImageUrl: {}
 };

@@ -42,8 +42,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private defaultPanelIsShow = true;
     private otherInfo = {
         show: false,
-        info: {},
-        black: []
+        info: {}
     };
     private blackMenu = {
         show: false,
@@ -91,8 +90,17 @@ export class ChatComponent implements OnInit, OnDestroy {
         content: {
             msg_type: ''
         },
-        msgKey: -1
+        msgKey: -1,
+        totalTransmitNum: 0,
+        ctime_ms: 0,
+        conversation_time_show: ''
     };
+    private transmitCount = 0;
+    private verifyModal = {
+        info: {},
+        show: false
+    };
+    private changeOtherInfoFlag = false;
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -154,6 +162,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 监听离线事件消息
         global.JIM.onSyncEvent((data) => {
+            console.log('asyncEvent', data);
             if (!this.isLoaded) {
                 that.eventArr = data;
             } else {
@@ -229,6 +238,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         let messageListActive = chatState.messageList[activeIndex];
         console.log(chatState);
         switch (chatState.actionType) {
+            case contactAction.getFriendListSuccess:
+                this.conversationList = chatState.conversation;
+                break;
             case chatAction.getConversationSuccess:
                 this.conversationList = chatState.conversation;
                 this.messageList = chatState.messageList;
@@ -257,7 +269,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 }
                 this.messageList = chatState.messageList;
-                this.notification(chatState.newMessage);
+                if (!chatState.newMessageIsDisturb) {
+                    this.notification(chatState.newMessage);
+                }
                 break;
             case chatAction.sendSingleMessage:
 
@@ -281,6 +295,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
                 break;
             case chatAction.changeActivePerson:
+                this.messageList = chatState.messageList;
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.storageMsgId(chatState.msgId);
@@ -288,6 +303,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             case contactAction.selectContactItem:
 
             case mainAction.selectSearchUser:
+                this.messageList = chatState.messageList;
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.storageMsgId(chatState.msgId);
@@ -326,10 +342,12 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.groupSetting.active = this.active;
                 break;
             case mainAction.createGroupSuccess:
+                this.messageList = chatState.messageList;
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 break;
             case chatAction.createOtherChat:
+                this.messageList = chatState.messageList;
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 if (chatState.msgId.length > 0) {
@@ -403,10 +421,76 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.storageMsgId(chatState.msgId);
                 }
                 break;
+                // 转发单聊文本消息
             case chatAction.transmitSingleMessage:
+
+                // 转发单聊图片消息
+            case chatAction.transmitSinglePic:
+
+                // 转发单聊文件消息
+            case chatAction.transmitSingleFile:
+
+                // 转发群聊文本消息
+            case chatAction.transmitGroupMessage:
+
+                // 转发单聊图片消息
+            case chatAction.transmitGroupPic:
+
+                // 转发单聊文件消息
+            case chatAction.transmitGroupFile:
                 this.conversationList = chatState.conversation;
                 break;
+                // 转发消息成功(如果全部成功则为成功，有一个用户失败则不成功，会提示相关信息)
+            case chatAction.transmitMessageComplete:
+                this.modalTipTransmitSuccess(chatState);
+                break;
+            case contactAction.agreeAddFriendSuccess:
+                this.conversationList = chatState.conversation;
+                break;
+            case chatAction.showVerifyModal:
+                this.verifyModal = chatState.verifyModal;
+                break;
+            case chatAction.deleteSingleBlackSuccess:
+
+            case mainAction.addSingleNoDisturbSuccess:
+
+            case chatAction.deleteSingleNoDisturbSuccess:
+
+            case chatAction.friendReplyEvent:
+                this.otherInfo = chatState.otherInfo;
+                this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
+                break;
+            case chatAction.saveMemoNameSuccess:
+                this.conversationList = chatState.conversation;
+            case mainAction.deleteFriendSuccess:
+                this.store$.dispatch({
+                    type: chatAction.dispatchFriendList,
+                    payload: chatState.friendList
+                });
+                this.otherInfo = chatState.otherInfo;
+                this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
+                break;
             default:
+        }
+    }
+    private modalTipTransmitSuccess (chatState) {
+        if (!chatState.transmitSuccess) {
+            return;
+        }
+        this.transmitCount ++;
+        if (this.transmitCount === this.transmitItem.totalTransmitNum) {
+            this.store$.dispatch({
+                type: mainAction.showModalTip,
+                payload: {
+                    show: true,
+                    info: {
+                        title: '成功',          // 模态框标题
+                        tip: '转发成功',   // 模态框内容
+                        actionType: '[main] transmit success', // 哪种操作，点击确定时可以执行对应操作
+                        success: 1              // 成功的提示框/失败的提示框，1.5s后会自动消失
+                    }
+                }
+            });
         }
     }
     private asyncEvent(data) {
@@ -435,6 +519,20 @@ export class ChatComponent implements OnInit, OnDestroy {
                         }
                     }
                 });
+                break;
+            case 5:
+                if (data.extra === 1) {
+                    this.store$.dispatch({
+                        type: chatAction.friendInvitationEvent,
+                        payload: data
+                    });
+                } else if (data.extra === 2) {
+                    this.store$.dispatch({
+                        type: chatAction.friendReplyEvent,
+                        payload: data
+                    });
+                }
+                this.notification(data);
                 break;
             case 8:
                 if (data.from_username === '') {
@@ -465,6 +563,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 });
                 break;
             case 55:
+                // 不考虑离线的消息撤回事件
+                if (data.isOffline) {
+                    break;
+                }
                 this.store$.dispatch({
                     type: chatAction.msgRetractEvent,
                     payload: data
@@ -478,35 +580,52 @@ export class ChatComponent implements OnInit, OnDestroy {
         if (!this.windowIsFocus) {
             let title = '';
             let body = '';
-            if (newMessage.msg_type === 4) {
-                title = newMessage.content.target_name;
-            } else {
-                title = newMessage.content.from_name !== '' ?
-                        newMessage.content.from_name : newMessage.content.from_id;
-            }
-            switch (newMessage.content.msg_type) {
-                case 'text':
-                    body = newMessage.content.msg_body.text;
-                    break;
-                case 'image':
-                    body = '[图片]';
-                    break;
-                case 'location':
-                    body = '[位置]';
-                    break;
-                case 'voice':
-                    body = '[语音]';
-                    break;
-                case 'file':
-                    let extras = newMessage.content.msg_body.extras;
-                    if (extras && extras.video) {
-                        body = '[视频]';
+            // 验证消息
+            if (newMessage.hasOwnProperty('isOffline')) {
+                if (newMessage.extra === 1) {
+                    title = '好友邀请';
+                    body = `${newMessage.from_username}申请添加您为好友`;
+                } else if (newMessage.extra === 2) {
+                    if (newMessage.description === '') {
+                        title = '同意好友申请';
+                        body = `${newMessage.from_username}同意了您的好友申请`;
                     } else {
-                        body = '[文件]';
+                        title = '拒绝好友申请';
+                        body = `${newMessage.from_username}拒绝了您的好友申请`;
                     }
-                    break;
-                default:
-                    body = '消息';
+                }
+            // 普通消息
+            } else {
+                if (newMessage.msg_type === 4) {
+                    title = newMessage.content.target_name;
+                } else {
+                    title = newMessage.content.from_name !== '' ?
+                            newMessage.content.from_name : newMessage.content.from_id;
+                }
+                switch (newMessage.content.msg_type) {
+                    case 'text':
+                        body = newMessage.content.msg_body.text;
+                        break;
+                    case 'image':
+                        body = '[图片]';
+                        break;
+                    case 'location':
+                        body = '[位置]';
+                        break;
+                    case 'voice':
+                        body = '[语音]';
+                        break;
+                    case 'file':
+                        let extras = newMessage.content.msg_body.extras;
+                        if (extras && extras.video) {
+                            body = '[视频]';
+                        } else {
+                            body = '[文件]';
+                        }
+                        break;
+                    default:
+                        body = '消息';
+                }
             }
             Push.create(title, {
                 body,
@@ -631,14 +750,14 @@ export class ChatComponent implements OnInit, OnDestroy {
          */
         let msgs: any = {
             content: {
-                create_time: (new Date()).getTime(),
+                create_time: new Date().getTime(),
                 msg_type: 'text',
                 from_id: global.user,
                 msg_body: {
                     text: data.content
                 }
             },
-            ctime_ms: (new Date()).getTime(),
+            ctime_ms: new Date().getTime(),
             success: 1,
             msgKey: this.msgKey ++
         };
@@ -646,7 +765,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         if (this.active.type === 3 && !data.repeatSend) {
             let singleMsg = {
                 target_username: this.active.name,
-                target_nickname: this.active.nickName,
+                // target_nickname: this.active.nickName,
                 content: data.content
             };
             msgs.singleMsg = singleMsg;
@@ -663,7 +782,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         }else if (this.active.type === 4 && !data.repeatSend) {
             let groupMsg = {
                 target_gid: this.active.key,
-                target_gname: this.active.name,
+                // target_gname: this.active.name,
                 content: data.content
             };
             msgs.groupMsg = groupMsg;
@@ -723,72 +842,81 @@ export class ChatComponent implements OnInit, OnDestroy {
             });
             return ;
         }
-        this.util.imgReader(file, () => {
-            that.store$.dispatch({
-                type: mainAction.showModalTip,
-                payload: {
-                    show: true,
-                    info: {
-                        title: '提示',
-                        tip: '选择的文件必须是图片',
-                        actionType: '[chat] must be image',
-                        cancel: true
+        // 粘贴图片发送
+        if (data.type === 'paste') {
+            this.sendPicContent(msgs, data.info, data.img, that);
+        // 正常发送图片
+        } else {
+            this.util.imgReader(file, () => {
+                that.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '提示',
+                            tip: '选择的文件必须是图片',
+                            actionType: '[chat] must be image',
+                            cancel: true
+                        }
                     }
+                });
+            }, (value) => {
+                this.sendPicContent(msgs, value, data.img, that);
+            });
+        }
+    }
+    private sendPicContent(msgs, value, data, that) {
+        msgs = {
+            content: {
+                from_id: global.user,
+                create_time: new Date().getTime(),
+                msg_type: 'image',
+                msg_body: {
+                    media_url: value.src,
+                    width: value.width,
+                    height: value.height
+                }
+            },
+            ctime_ms: new Date().getTime(),
+            success: 1,
+            msgKey: that.msgKey ++
+        };
+        // 发送单聊图片
+        if (that.active.type === 3) {
+            let singlePicFormData = {
+                target_username: that.active.name,
+                // target_nickname: that.active.nickName,
+                appkey: authPayload.appKey,
+                image: data
+            };
+            msgs.singlePicFormData = singlePicFormData;
+            msgs.msg_type = 3;
+            that.store$.dispatch({
+                type: chatAction.sendSinglePic,
+                payload: {
+                    singlePicFormData,
+                    key: that.active.key,
+                    msgs
                 }
             });
-        }, (value) => {
-            msgs = {
-                content: {
-                    from_id: global.user,
-                    create_time: (new Date()).getTime(),
-                    msg_type: 'image',
-                    msg_body: {
-                        media_url: value.src,
-                        width: value.width,
-                        height: value.height
-                    }
-                },
-                ctime_ms: (new Date()).getTime(),
-                success: 1,
-                msgKey: that.msgKey ++
+        // 发送群聊图片
+        }else if (that.active.type === 4) {
+            let groupPicFormData = {
+                target_gid: that.active.key,
+                // target_gname: that.active.name,
+                image: data
             };
-            // 发送单聊图片
-            if (that.active.type === 3) {
-                let singlePicFormData = {
-                    target_username: that.active.name,
-                    target_nickname: that.active.nickName,
-                    appkey: authPayload.appKey,
-                    image: data
-                };
-                msgs.singlePicFormData = singlePicFormData;
-                msgs.msg_type = 3;
-                that.store$.dispatch({
-                    type: chatAction.sendSinglePic,
-                    payload: {
-                        singlePicFormData,
-                        key: that.active.key,
-                        msgs
-                    }
-                });
-            // 发送群聊图片
-            }else if (that.active.type === 4) {
-                let groupPicFormData = {
-                    target_gid: that.active.key,
-                    target_gname: that.active.name,
-                    image: data
-                };
-                msgs.groupPicFormData = groupPicFormData;
-                msgs.msg_type = 4;
-                that.store$.dispatch({
-                    type: chatAction.sendGroupPic,
-                    payload: {
-                        groupPicFormData,
-                        key: that.active.key,
-                        msgs
-                    }
-                });
-            }
-        });
+            msgs.groupPicFormData = groupPicFormData;
+            msgs.msg_type = 4;
+            that.store$.dispatch({
+                type: chatAction.sendGroupPic,
+                payload: {
+                    groupPicFormData,
+                    key: that.active.key,
+                    msgs
+                }
+            });
+        }
     }
     private sendFileEmit(data) {
         // repeatSend = true重发消息
@@ -820,7 +948,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             let singleFile = {
                 file: data.file,
                 target_username: this.active.name,
-                target_nickname: this.active.nickName,
                 appkey: authPayload.appKey,
                 extras: {
                     fileSize: data.fileData.size,
@@ -843,7 +970,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             let groupFile = {
                 file : data.file,
                 target_gid: this.active.key,
-                target_gname: this.active.name,
                 extras: {
                     fileSize: data.fileData.size,
                     fileType: ext
@@ -954,20 +1080,49 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
         });
     }
-    // 添加黑名单
-    private addBlackListEmit(otherInfo) {
-        this.store$.dispatch({
-            type: mainAction.showModalTip,
-            payload: {
-                show: true,
-                info: {
-                    active: otherInfo,
-                    title: '加入黑名单',
-                    tip: `确定将 ${otherInfo.nickname || otherInfo.username} 加入黑名单吗？`,
-                    actionType: '[chat] add black list'
+    // 增加或者取消单聊黑名单
+    private changeSingleBlackEmit(otherInfo) {
+        if (otherInfo.black) {
+            this.store$.dispatch({
+                type: chatAction.deleteSingleBlack,
+                payload: otherInfo
+            });
+        } else {
+            this.store$.dispatch({
+                type: mainAction.showModalTip,
+                payload: {
+                    show: true,
+                    info: {
+                        active: otherInfo,
+                        title: '加入黑名单',
+                        tip: `确定将 ${otherInfo.nickname || otherInfo.username} 加入黑名单吗？`,
+                        actionType: '[chat] add black list'
+                    }
                 }
-            }
-        });
+            });
+        }
+    }
+    // 增加或者取消单聊免打扰
+    private changeSingleNoDisturbEmit(otherInfo) {
+        if (otherInfo.noDisturb) {
+            this.store$.dispatch({
+                type: chatAction.deleteSingleNoDisturb,
+                payload: otherInfo
+            });
+        } else {
+            this.store$.dispatch({
+                type: mainAction.showModalTip,
+                payload: {
+                    show: true,
+                    info: {
+                        active: otherInfo,
+                        title: '添加消息免打扰',
+                        tip: `确定将 ${otherInfo.nickname || otherInfo.username} 加入消息免打扰吗？`,
+                        actionType: '[chat] add single no disturb modal'
+                    }
+                }
+            });
+        }
     }
     // 删除群成员
     private deleteMemberEmit(item) {
@@ -1067,21 +1222,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
         });
     }
-    // 用户已经存在黑名单
-    private alreadyBlackEmit() {
-        this.store$.dispatch({
-            type: mainAction.showModalTip,
-            payload: {
-                show: true,
-                info: {
-                    title: '加入黑名单',
-                    tip: '此用户已在黑名单列表，不可重复添加',
-                    actionType: '[chat] already black',
-                    cancel: true
-                }
-            }
-        });
-    }
     // 消息撤回
     private MsgRetractEmit(item) {
         this.store$.dispatch({
@@ -1094,10 +1234,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.messageTransmit.list = this.conversationList;
         this.messageTransmit.show = true;
         this.transmitItem = item;
-        // this.store$.dispatch({
-        //     type: chatAction.msgRetract,
-        //     payload: item
-        // });
     }
     // 转发弹窗搜索
     private searchMessageTransmitEmit(keywords) {
@@ -1110,6 +1246,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     private confirmTransmitEmit(select) {
         console.log(7777, select);
         this.transmitItem.msgKey = this.msgKey ++;
+        this.transmitItem.totalTransmitNum = select.length;
+        this.transmitItem.ctime_ms = new Date().getTime();
+        this.transmitItem.conversation_time_show = 'today';
+        this.transmitCount = 0;
         for (let item of select) {
             let data = {
                 select: item,
@@ -1152,5 +1292,53 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: data
             });
         }
+    }
+    private addFriendEmit(user) {
+        this.store$.dispatch({
+            type: chatAction.showVerifyModal,
+            payload: {
+                info: user,
+                show: true
+            }
+        });
+    }
+    // 验证消息模态框的按钮
+    private verifyModalBtnEmit(verifyModalText) {
+        if (verifyModalText) {
+            let userInfo = Object.assign({}, this.verifyModal.info, {verifyModalText});
+            this.store$.dispatch({
+                type: chatAction.addFriendConfirm,
+                payload: userInfo
+            });
+        }
+        this.store$.dispatch({
+            type: chatAction.showVerifyModal,
+            payload: {
+                info: {},
+                show: false
+            }
+        });
+    }
+    // 修改备注名
+    private saveMemoNameEmit(info) {
+        this.store$.dispatch({
+            type: chatAction.saveMemoName,
+            payload: info
+        });
+    }
+    // 删除好友
+    private deleteFriendEmit(info) {
+        this.store$.dispatch({
+            type: mainAction.showModalTip,
+            payload: {
+                show: true,
+                info: {
+                    active: info,
+                    title: '删除好友',
+                    tip: `确定删除好友 ${info.memo_name || info.nickName || info.name} 吗？`,
+                    actionType: '[chat] delete friend modal'
+                }
+            }
+        });
     }
 }

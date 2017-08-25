@@ -37,5 +37,9 @@ export const mainAction = {
     login: '[main] login',
     logoutKickShow: '[main] logout kick show',
     init: '[main] init',
-    messageTransmitSearchComplete: '[main] message transmit search complete'
+    messageTransmitSearchComplete: '[main] message transmit search complete',
+    addSingleNoDisturbAction: '[main] add single no disturb action',
+    addSingleNoDisturbSuccess: '[main] add single no disturb success',
+    deleteFriend: '[chat] delete friend',
+    deleteFriendSuccess: '[chat] delete friend success',
 };

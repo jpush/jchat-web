@@ -68,6 +68,10 @@ export class MainComponent implements OnInit, OnDestroy {
             {
                 key: 1,
                 name: '发起群聊'
+            },
+            {
+                key: 2,
+                name: '添加好友'
             }
         ]
     };
@@ -132,6 +136,10 @@ export class MainComponent implements OnInit, OnDestroy {
         conversation: 0,
         contact: 0
     };
+    private createSingleOption = {
+        title: '发起单聊',
+        placeholder: '输入用户名查找'
+    };
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -148,6 +156,12 @@ export class MainComponent implements OnInit, OnDestroy {
         this.store$.dispatch({
             type: mainAction.getSelfInfo,
             payload: null
+        });
+        this.store$.dispatch({
+            type: mainAction.blackMenu,
+            payload: {
+                show: false
+            }
         });
     }
     public ngOnDestroy() {
@@ -229,6 +243,7 @@ export class MainComponent implements OnInit, OnDestroy {
                 break;
             case mainAction.createSingleChatShow:
                 this.createSingleChat = mainState.createSingleChat;
+                break;
             case mainAction.createSingleChatSuccess:
                 this.createSingleChat = mainState.createSingleChat;
                 this.listTab = mainState.listTab;
@@ -255,6 +270,9 @@ export class MainComponent implements OnInit, OnDestroy {
                 if (this.listTab === 1) {
                     this.badge.conversation ++;
                 }
+                break;
+            case contactAction.dispatchContactUnreadNum:
+                this.badge.contact = mainState.contactUnreadNum;
                 break;
             default:
 
@@ -374,25 +392,29 @@ export class MainComponent implements OnInit, OnDestroy {
             payload: item
         });
     }
-    // 点击创建单聊模态框确定取消按钮
-    private createSingleChatEmit(singleName) {
-        this.createSingleChat = {
-            show: true,
-            info: ''
-        };
-        if (singleName === '') {
+    // 创建单聊/添加好友模态框确定取消按钮
+    private createSingleChatEmit(info) {
+        // 点击取消
+        if (!info) {
+            this.store$.dispatch({
+                type: mainAction.createSingleChatShow,
+                payload: {
+                    show: false,
+                    info: ''
+                }
+            });
+        // 点击确定 输入为空
+        } else if (info.singleName === '') {
+            const text = info.type === 'addFriend' ? '请输入要添加好友的用户名' : '请输入要单聊的用户名';
             this.store$.dispatch({
                 type: mainAction.createSingleChatShow,
                 payload: {
                     show: true,
-                    info: '请输入要单聊的用户名'
+                    info: text
                 }
             });
-            return ;
-        }
-        // 点击确定
-        if (singleName === global.user) {
-            // 如果单聊搜索到自己
+        // 点击确定 如果单聊搜索到自己
+        } else if (info.singleName === global.user) {
             this.store$.dispatch({
                 type: mainAction.showSelfInfo,
                 payload: {
@@ -406,19 +428,11 @@ export class MainComponent implements OnInit, OnDestroy {
                     info: ''
                 }
             });
-        } else if (singleName) {
+        // 点击确定
+        } else if (info.singleName) {
             this.store$.dispatch({
                 type: mainAction.createSingleChatAction,
-                payload: singleName
-            });
-        // 点击取消
-        } else {
-            this.store$.dispatch({
-                type: mainAction.createSingleChatShow,
-                payload: {
-                    show: false,
-                    info: ''
-                }
+                payload: info
             });
         }
     }
@@ -479,6 +493,18 @@ export class MainComponent implements OnInit, OnDestroy {
                         }
                     });
                     break;
+                case '[chat] add single no disturb modal':
+                    this.store$.dispatch({
+                        type: mainAction.addSingleNoDisturbAction,
+                        payload: info.active
+                    });
+                    break;
+                case '[chat] delete friend modal':
+                    this.store$.dispatch({
+                        type: mainAction.deleteFriend,
+                        payload: info.active
+                    });
+                    break;
                 default:
                     this.store$.dispatch({
                         type: mainAction.hideModalTip,
@@ -510,23 +536,34 @@ export class MainComponent implements OnInit, OnDestroy {
         }
     }
     private selectChatMenuItemEmit(item) {
-        if (item.key === 0) {
-            this.store$.dispatch({
-                type: mainAction.createSingleChatShow,
-                payload: {
-                    show: true,
-                    info: ''
-                }
-            });
-        }else if (item.key === 1) {
-            this.store$.dispatch({
-                type: mainAction.createGroupShow,
-                payload: {
-                    show: true,
-                    info: {}
-                }
-            });
+        let type = '';
+        switch (item.key) {
+            case 0:
+                type = mainAction.createSingleChatShow;
+                this.createSingleOption = {
+                    title: '发起单聊',
+                    placeholder: '输入用户名查找'
+                };
+                break;
+            case 1:
+                type = mainAction.createGroupShow;
+                break;
+            case 2:
+                type = mainAction.createSingleChatShow;
+                this.createSingleOption = {
+                    title: '添加好友',
+                    placeholder: '输入用户名'
+                };
+                break;
+            default:
         }
+        this.store$.dispatch({
+            type,
+            payload: {
+                show: true,
+                info: item.key !== 1 ? '' : {}
+            }
+        });
         this.chatMenu.show = false;
     }
     // 点击左下角设置按钮
@@ -553,7 +590,9 @@ export class MainComponent implements OnInit, OnDestroy {
             case 1:
                 this.store$.dispatch({
                     type: mainAction.blackMenu,
-                    payload: null
+                    payload: {
+                        show: true
+                    }
                 });
                 break;
             case 2:

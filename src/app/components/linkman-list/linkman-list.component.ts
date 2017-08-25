@@ -10,7 +10,7 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 export class LinkmanListComponent implements OnInit, DoCheck {
     @Input()
-        private conversation;
+        private friendList;
     @Output()
         private selectLinkmanItemEmit: EventEmitter<any> = new EventEmitter();
     private isEmpty = false;
@@ -21,7 +21,7 @@ export class LinkmanListComponent implements OnInit, DoCheck {
         // pass
     }
     public ngDoCheck() {
-        for (let item of this.conversation) {
+        for (let item of this.friendList) {
             if (item.data.length > 0) {
                 this.isEmpty = true;
                 break;

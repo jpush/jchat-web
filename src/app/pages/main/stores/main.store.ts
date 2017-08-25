@@ -42,4 +42,5 @@ export interface MainStore {
             tip: string
         }
     };
+    contactUnreadNum: number;
 }

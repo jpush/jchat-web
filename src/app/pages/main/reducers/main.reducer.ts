@@ -116,6 +116,9 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case mainAction.logoutKickShow:
             state.logoutKick = payload;
             break;
+        case contactAction.dispatchContactUnreadNum:
+            state.contactUnreadNum = payload;
+            break;
         default:
     }
     return state;
