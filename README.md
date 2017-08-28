@@ -26,14 +26,16 @@ JChat 无需成为好友也可以聊天
 
 ### 在线体验地址
 
-<a href="https://jchat.im.jiguang.cn/#/login" target="_blank">JChat-web在线体验</a>
+[JChat-web在线体验](https://jchat.im.jiguang.cn/#/login)
 
 ### 环境配置
 
-前提：安装 node (node 6.0以上版本 and npm 3.0以上版本)
+前提：安装 node (node版本6.0以上、 npm版本3.0以上)
 
 web jchat本地安装和用法：
-
+```
+cd jchat-web-master
+```
 ```
 npm install
 ```
@@ -43,24 +45,25 @@ npm run dll
 ```
 npm run dev
 ```
-打开浏览器：
+打开浏览器输入url地址：
 localhost:3000
 
 说明：
 * 如果npm install安装后仍缺少依赖，如node-sass，则是该模块被墙掉了，推荐使用淘宝镜像cnpm install重新安装依赖，[淘宝镜像安装方法](http://npm.taobao.org/)
-* 如果使用的不是本地localhost服务器，则要在task/webpack.dev.js中的publicPath改成自己的ip和端口去访问项目
+* 如果使用的不是本地localhost服务器，则要在task/webpack.dev.js中的publicPath改成自己的ip和端口，在浏览器输入ip和端口去访问项目
+* appkey和masterKey在src/services/common/config.ts中配置
 
-* 项目打包并发布到测试环境(前提：已全局安装gulp)：
+* 项目压缩打包并发布到测试环境(前提：已全局安装gulp)：
 
-1. 如果静态资源需要提交到七牛上，需在src/task/config.json中配置ak和sk以及url，使用gulp dev即可将项目打包到dist目录下，只需将index.html部署在测试环境服务器即可，其他静态资源已经自动提交到七牛
+1. 如果静态资源需要提交到七牛上，需在src/task/config.json中配置ak和sk以及url，使用gulp dev即可将整个项目打包到dist目录下，只需将dist目录下的index.html部署在测试环境服务器即可，其他静态资源已经自动提交到七牛
 
-2. 如果静态资源无需提交到七牛，存放在自己服务器上，在task/webpack.prod.js中的publicPath改成自己的域名，使用gulp noqiniu-dev可将项目打包到dist目录下，将dist目录下的所有文件部署到服务器上
+2. 如果静态资源无需提交到七牛，存放在自己服务器上，在task/webpack.prod.js中的publicPath改成自己的域名，使用gulp noqiniu-dev可将整个项目打包到dist目录下，将dist目录下的所有文件部署到服务器上
 
-* 项目打包并发布到正式环境(前提：已全局安装gulp)：
+* 项目压缩打包并发布到正式环境(前提：已全局安装gulp)：
 
-1. 如果静态资源需要提交到七牛上，需在src/task/config.json中配置ak和sk以及url，使用gulp prod即可将项目打包到dist目录下，只需将index.html部署在正式环境服务器即可，其他静态资源已经自动提交到七牛
+1. 如果静态资源需要提交到七牛上，需在src/task/config.json中配置ak和sk以及url，使用gulp prod即可将整个项目打包到dist目录下，只需将dist目录下的index.html部署在正式环境服务器即可，其他静态资源已经自动提交到七牛
 
-2. 如果静态资源无需提交到七牛，存放在自己服务器上，在task/webpack.prod.js中的publicPath改成自己的域名，使用gulp noqiniu-prod可将项目打包到dist目录下，将dist目录下的所有文件部署到服务器上
+2. 如果静态资源无需提交到七牛，存放在自己服务器上，在task/webpack.prod.js中的publicPath改成自己的域名，使用gulp noqiniu-prod可将整个项目打包到dist目录下，将dist目录下的所有文件部署到服务器上
 
 ### 备注说明
 
