@@ -25,7 +25,10 @@ export class ChatComponent implements OnInit, OnDestroy {
         {
             key: 0,
             msgs: [],
-            groupSetting: {}
+            groupSetting: {
+                groupInfo: {},
+                memberList: []
+            }
         }
     ];
     private global = global;
@@ -269,6 +272,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 }
                 this.messageList = chatState.messageList;
+                console.log(666, chatState.newMessageIsDisturb);
                 if (!chatState.newMessageIsDisturb) {
                     this.notification(chatState.newMessage);
                 }
@@ -299,6 +303,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.storageMsgId(chatState.msgId);
+                this.conversationList = chatState.conversation;
                 break;
             case contactAction.selectContactItem:
 
@@ -665,6 +670,13 @@ export class ChatComponent implements OnInit, OnDestroy {
         if (this.isCacheArr.indexOf(this.active.key) === -1 &&
             this.messageList[this.active.activeIndex].msgs.length > 0) {
             this.isCacheArr.push(this.active.key);
+            console.log(222222);
+            if (this.active.type === 4) {
+                this.store$.dispatch({
+                    type: chatAction.getGroupMembers,
+                    payload: this.active
+                });
+            }
             this.store$.dispatch({
                 type: chatAction.getSourceUrl,
                 payload: {
@@ -780,11 +792,17 @@ export class ChatComponent implements OnInit, OnDestroy {
             });
             // 发送群组消息
         }else if (this.active.type === 4 && !data.repeatSend) {
-            let groupMsg = {
+            let groupMsg: any = {
                 target_gid: this.active.key,
                 // target_gname: this.active.name,
                 content: data.content
             };
+            if (data.isAtAll) {
+                groupMsg.at_list = [];
+            } else if (data.atList.length > 0) {
+                groupMsg.at_list = data.atList;
+            }
+            console.log(222, groupMsg.at_list);
             msgs.groupMsg = groupMsg;
             msgs.msg_type = 4;
             this.store$.dispatch({
@@ -1052,7 +1070,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 active: this.active,
                 show: true,
                 // 是否已经请求过
-                isCache: this.messageList[this.active.activeIndex].groupSetting
+                isCache: this.messageList[this.active.activeIndex].groupSetting.groupInfo
             }
         });
     }

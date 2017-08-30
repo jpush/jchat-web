@@ -1,4 +1,4 @@
-<div class="emoji-container" (click)="stopPagation($event)" [ngStyle]="{top: emojiInfo.position.top - 280 + 'px', left: emojiInfo.position.left + 2 + 'px'}">
+<div class="emoji-container" (click)="stopPropagation($event)" [ngStyle]="{top: emojiInfo.position.top - 280 + 'px', left: emojiInfo.position.left + 2 + 'px'}">
     <div *ngIf="tab === 0" class="emoji-normal clearfix">
         <ul class="clearfix">
             <li *ngFor="let item of emojiInfo.emojiAlias; let num = index;">

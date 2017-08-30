@@ -321,6 +321,9 @@ ul,li,ol{
 .search-member-scroll-search .ps-content, .search-member-scroll-search .ps--active-y{
     max-height: 275px;
 }
+.at-list-contianer .ps-content, .at-list-contianer .ps{
+    max-height: 216px;
+}
 /* emoji*/
 .emoji-normal .emoji{
     position: relative;
@@ -355,6 +358,13 @@ ul,li,ol{
 // menu
 .chat-panel-operation-board .menu-wrap{
     position: static !important;
+}
+// @xxx
+.chat-panel-at-input{
+    background-color: #fff;
+    line-height: 18px;
+    font-size: 14px;
+    padding: 0;
 }
 
 

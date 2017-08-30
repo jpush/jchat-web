@@ -147,6 +147,15 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         show: false,
         info: {}
     };
+    private atList = {
+        show: false,
+        list: [],
+        left: 0,
+        top: 0,
+        showAll: true,
+        hasMyself: true
+    };
+    private atDeleteNum = 1;
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -213,6 +222,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     @HostListener('window:click') private onClickWindow() {
         this.inputToLast = true;
         this.inputNoBlur = true;
+        this.atList.show = false;
     }
     private subscribeStore() {
         this.chatStream$ = this.store$.select((state) => {
@@ -524,6 +534,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 发送文本
     private sendMsgAction() {
         let draft = this.contentDiv.innerHTML;
+        console.log(777, draft);
         if (draft) {
             draft = draft.replace(/^(<br>){1,}$/g, '');
             draft = draft.replace(/&nbsp;/g, ' ');
@@ -537,10 +548,43 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     draft = draft.replace(item, Emoji.convert(str2));
                 }
             }
+            const atInputReg = new RegExp(`<input.+?class="chat-panel-at-input".+?>`, 'g');
+            let atList = [];
+            let isAtAll = false;
+            if (draft.match(atInputReg)) {
+                let arr = draft.match(atInputReg);
+                let usernameArr = [];
+                for (let item of arr) {
+                    let str1 = item.split('username="')[1];
+                    let username = str1.split(' ')[0];
+                    let str2 = item.split('appkey="')[1];
+                    let appkey = str2.split(' ')[0];
+                    draft = draft.replace(item, '@' + username + ' ');
+                    usernameArr.push({
+                        username,
+                        appkey
+                    });
+                    if (username === '所有成员') {
+                        isAtAll = true;
+                    }
+                }
+                if (!isAtAll) {
+                    for (let item of usernameArr){
+                        let result = atList.filter((atItem) => {
+                            return atItem.username === item.username;
+                        });
+                        if (result.length === 0) {
+                            atList.push(item);
+                        }
+                    }
+                }
+            }
             draft = draft.replace(new RegExp('&lt;', 'g'), '<');
             draft = draft.replace(new RegExp('&gt;', 'g'), '>');
             this.sendMsg.emit({
-                content: draft
+                content: draft,
+                atList,
+                isAtAll
             });
             this.messageList[this.active.activeIndex].draft = '';
             this.flag = true;
@@ -549,12 +593,11 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 发送图片
     private sendPicAction(event) {
-        const pic = this.elementRef.nativeElement.querySelector('#sendPic');
         // 为了防止首次选择了文件，第二次选择文件的时候点击取消按钮时触发change事件的报错
-        if (!pic.files[0]) {
+        if (!event.target.files[0]) {
             return;
         }
-        let img = this.util.getFileFormData(pic);
+        let img = this.util.getFileFormData(event.target);
         this.sendPic.emit({
             img,
             type: 'send'
@@ -565,15 +608,14 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 发送文件
     private sendFileAction(event) {
-        const fileData = this.elementRef.nativeElement.querySelector('#sendFile');
         // 为了防止首次选择了文件，第二次选择文件的时候点击取消按钮时触发change事件的报错
-        if (!fileData.files[0]) {
+        if (!event.target.files[0]) {
             return;
         }
-        let file = this.util.getFileFormData(fileData);
+        let file = this.util.getFileFormData(event.target);
         this.sendFile.emit({
             file,
-            fileData: fileData.files[0]
+            fileData: event.target.files[0]
         });
         this.contentDiv.focus();
         this.util.focusLast(this.contentDiv);
@@ -582,6 +624,15 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private msgContentChange(event) {
         let active = Object.assign({}, this.active, {});
         let value = event.target.innerHTML;
+        const atInputReg = new RegExp(`<input.+?class="chat-panel-at-input".+?>`, 'g');
+        if (value.match(atInputReg)) {
+            let arr = value.match(atInputReg);
+            for (let item of arr) {
+                let str1 = item.split('value="@')[1];
+                let username = str1.split(' ')[0];
+                value = value.replace(item, '@' + username + ' ');
+            }
+        }
         value = value.replace(/^<br>?/, '');
         // 防止点击发送的时候或者点击emoji的时候触发保存草稿
         setTimeout(() => {
@@ -631,11 +682,14 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             this.emojiInfo.show = true;
         }
     }
-    private msgContentClick() {
+    private msgContentClick(event) {
         this.inputToLast = false;
+        event.stopPropagation();
+        this.atList.show = false;
     }
-    // ctrl + enter换行，enter发送消息
+    // 输入框keydown，ctrl + enter换行，enter发送消息，@用户
     private preKeydown(event) {
+        console.log(event.keyCode);
         if (event.keyCode === 13 && event.ctrlKey) {
             const contentId =
                 this.elementRef.nativeElement.querySelector('#' + this.emojiInfo.contentId);
@@ -660,21 +714,115 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         } else if (event.keyCode === 13) {
             this.sendMsgAction();
             event.preventDefault();
-        } else if (event.keyCode === 229) {
-            // @用户
-            // let range = window.getSelection().getRangeAt(0);
-            // let strongNode = document.createElement('strong');
-            // // 选中区域文本
-            // strongNode.innerHTML = range.toString();
-            // // 删除选中区
-            // range.deleteContents();
-            // // 在光标处插入新节点
-            // range.insertNode(strongNode);
-
-            // let range = window.getSelection().getRangeAt(0);
-            // // 当前光标的ui位置
-            // range.getBoundingClientRect();
         }
+    }
+    // 输入框keyup
+    private preKeyup(event) {
+        if (this.active.type === 3) {
+            return ;
+        }
+        let selection = window.getSelection();
+        let range = selection.getRangeAt(0);
+        let memberList = this.messageList[this.active.activeIndex].groupSetting.memberList;
+        if (event.code === 'Digit2' && event.shiftKey) {
+            this.showAtList(range, memberList, true);
+        } else {
+            const text = range.endContainer.nodeValue;
+            const index = range.endOffset;
+            let letter = '';
+            let at = '';
+            if (text) {
+                letter = text.substring(index - 1, index).toUpperCase();
+                if (letter !== '@') {
+                    at = text.substring(index - 2, index - 1);
+                    let hasAt = text.substring(0, index).lastIndexOf('@');
+                    if (at === '@') {
+                        let newList = [];
+                        for (let item of memberList) {
+                            if (item.nickName.toUpperCase().indexOf(letter) !== -1 ||
+                                item.username.toUpperCase().indexOf(letter) !== -1) {
+                                item.letter = letter;
+                                newList.push(item);
+                                continue ;
+                            }
+                            if (item.usernameFirstLetter === letter ||
+                                item.nickNameFirstLetter === letter) {
+                                item.letter = letter;
+                                newList.push(item);
+                            }
+                        }
+                        this.atDeleteNum = 2;
+                        if (newList.length > 0) {
+                            this.showAtList(range, newList, false);
+                        } else {
+                            this.atList.show = false;
+                        }
+                    } else if (hasAt !== -1) {
+                        this.atDeleteNum = index - hasAt;
+                        letter = text.substr(hasAt + 1, this.atDeleteNum - 1).toUpperCase();
+                        let newList = [];
+                        for (let item of memberList) {
+                            if (item.nickName.toUpperCase().indexOf(letter) !== -1 ||
+                                item.username.toUpperCase().indexOf(letter) !== -1) {
+                                item.letter = letter;
+                                newList.push(item);
+                            }
+                        }
+                        if (newList.length > 0) {
+                            this.showAtList(range, newList, false);
+                        } else {
+                            this.atList.show = false;
+                        }
+                    } else {
+                        this.atList.show = false;
+                    }
+                } else {
+                    this.atDeleteNum = 1;
+                    this.showAtList(range, memberList, true);
+                }
+            } else {
+                this.atList.show = false;
+            }
+        }
+    }
+    // 显示@列表
+    private showAtList(range, list, showAll) {
+        let hasMyself = false;
+        for (let item of list) {
+            if (item.username === global.user) {
+                hasMyself = true;
+                break;
+            }
+        }
+        const position = range.getBoundingClientRect();
+        this.atList = {
+            show: true,
+            left: position.left,
+            top: position.top,
+            list,
+            showAll,
+            hasMyself
+        };
+    }
+    // 选择@列表
+    private selectAtItemEmit(item) {
+        let selection = window.getSelection();
+        let range = selection.getRangeAt(0);
+        this.inputNoBlur = false;
+        // 删除@ 或者 @xxx
+        let textNode = range.startContainer;
+        range.setStart(textNode, range.endOffset - this.atDeleteNum);
+        range.setEnd(textNode, range.endOffset);
+        range.deleteContents();
+        // 输入框中插入@XXX
+        const content = `<input type="button" class="chat-panel-at-input"
+                        value="@${item.nickName || item.username} "
+                        username="${item.username} " appkey="${item.appkey} "/>`;
+        this.util.insertAtCursor(this.contentDiv, content, false);
+        this.atList.show = false;
+        setTimeout(() => {
+            this.inputNoBlur = true;
+        }, 300);
     }
     // 消息发送失败后点击重发消息
     private repeatSendMsgAction(item) {

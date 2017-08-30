@@ -47,7 +47,7 @@ export class ChatEffect {
             let flag = false;
             // 判断是否消息列表中已经加载过头像
             for (let list of messageList) {
-                if (Number(list.key) === Number(messages.from_gid) && list.msgs.length > 0) {
+                if (Number(list.key) === Number(messages.key) && list.msgs.length > 0) {
                     for (let i = list.msgs.length - 1; i >= 0; i--) {
                         let hasLoadAvatar = list.msgs[i].content.hasOwnProperty('avatarUrl');
                         if (list.msgs[i].content.from_id === messages.content.from_id
@@ -116,7 +116,7 @@ export class ChatEffect {
             });
             // 如果消息所在的群聊不在消息列表中，且群名为空，需要获取群的成员，将群成员的昵称或用户名拼接
             let result = obj.conversation.filter((item) => {
-                return Number(messages.from_gid) === Number(item.key);
+                return Number(messages.key) === Number(item.key);
             });
             if (result.length === 0 && !messages.content.target_name) {
                 increase ++;
@@ -411,6 +411,8 @@ export class ChatEffect {
             const that = this;
             let msgObj = global.JIM.sendSingleMsg(text.singleMsg)
             .onSuccess((data, msgs) => {
+                console.log(555, data, msgs);
+                msgs.key = data.key;
                 that.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -469,6 +471,7 @@ export class ChatEffect {
                 msg_body: msgBody
             })
             .onSuccess((data, msgs) => {
+                msgs.key = data.key;
                 that.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -527,9 +530,11 @@ export class ChatEffect {
             return data;
         })
         .switchMap((text) => {
+            console.log(3333, text.groupMsg);
             const that = this;
             let groupMessageObj = global.JIM.sendGroupMsg(text.groupMsg)
             .onSuccess((data, msgs) => {
+                console.log(555, msgs);
                 that.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -643,6 +648,7 @@ export class ChatEffect {
             const that = this;
             let singlePicObj = global.JIM.sendSinglePic(img.singlePicFormData)
             .onSuccess((info, msgs) => {
+                msgs.key = info.key;
                 that.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -706,6 +712,7 @@ export class ChatEffect {
                 msg_body: msgBody
             })
             .onSuccess((info, msgs) => {
+                msgs.key = info.key;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -878,6 +885,7 @@ export class ChatEffect {
             const that = this;
             let sendSingleFileObj = global.JIM.sendSingleFile(file.singleFile)
             .onSuccess((data, msgs) => {
+                msgs.key = data.key;
                 that.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -940,6 +948,7 @@ export class ChatEffect {
                 msg_body: msgBody
             })
             .onSuccess((data, msgs) => {
+                msgs.key = data.key;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -1222,20 +1231,68 @@ export class ChatEffect {
                     payload: error
                 });
             });
-            let groupMemberObj = global.JIM.getGroupMembers({gid: info.active.key})
+            // let groupMemberObj = global.JIM.getGroupMembers({gid: info.active.key})
+            // .onSuccess((data) => {
+            //     that.store$.dispatch({
+            //         type: chatAction.groupInfo,
+            //         payload: {
+            //             memberList: data.member_list
+            //         }
+            //     });
+            //     for (let member of data.member_list) {
+            //         if (member.avatar) {
+            //             global.JIM.getResource({media_id: member.avatar})
+            //             .onSuccess((urlInfo) => {
+            //                 member.avatarUrl = urlInfo.url;
+            //                 that.store$.dispatch({
+            //                     type: chatAction.groupInfo,
+            //                     payload: {
+            //                         memberList: data.member_list
+            //                     }
+            //                 });
+            //             }).onFail((error) => {
+            //                 //
+            //             });
+            //         }
+            //     }
+            // }).onFail((error) => {
+            //     that.store$.dispatch({
+            //         type: appAction.errorApiTip,
+            //         payload: error
+            //     });
+            // }).onTimeout((data) => {
+            //     const error = {code: 910000};
+            //     that.store$.dispatch({
+            //         type: appAction.errorApiTip,
+            //         payload: error
+            //     });
+            // });
+            return Observable.of(groupInfoObj)
+                    .map(() => {
+                        return {type: '[chat] group info useless'};
+                    });
+    });
+    // 获取群组信息和群成员信息
+    @Effect()
+    private getGroupMembers$: Observable<Action> = this.actions$
+        .ofType(chatAction.getGroupMembers)
+        .map(toPayload)
+        .switchMap((info) => {
+            let groupMemberObj = global.JIM.getGroupMembers({gid: info.key})
             .onSuccess((data) => {
-                that.store$.dispatch({
+                this.util.getMembersFirstLetter(data.member_list);
+                this.store$.dispatch({
                     type: chatAction.groupInfo,
                     payload: {
                         memberList: data.member_list
                     }
                 });
                 for (let member of data.member_list) {
-                    if (member.avatar) {
+                    if (member.avatar !== '') {
                         global.JIM.getResource({media_id: member.avatar})
                         .onSuccess((urlInfo) => {
                             member.avatarUrl = urlInfo.url;
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: chatAction.groupInfo,
                                 payload: {
                                     memberList: data.member_list
@@ -1247,20 +1304,20 @@ export class ChatEffect {
                     }
                 }
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
-            return Observable.of(groupInfoObj)
+            return Observable.of(groupMemberObj)
                     .map(() => {
-                        return {type: '[chat] group info useless'};
+                        return {type: '[chat] get group memebers useless'};
                     });
     });
     // 更新群组资料

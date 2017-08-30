@@ -181,6 +181,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 获取群组信息
         case chatAction.groupInfo:
+            console.log(7777, payload);
             let name = '';
             if (payload.groupInfo) {
                 state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo =
@@ -192,7 +193,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             if (payload.memberList) {
                 sortGroupMember(payload.memberList);
+                state.messageList[state.activePerson.activeIndex].groupSetting = {memberList: []};
                 let groupSetting = state.messageList[state.activePerson.activeIndex].groupSetting;
+                console.log(666, groupSetting);
                 groupSetting.memberList = payload.memberList;
                 // 如果群没有名字，用其群成员名字代替
                 name = '';
@@ -1231,9 +1234,12 @@ function unreadNum(state: ChatStore, payload) {
                     if (memberListId === payloadId) {
                         idFlag = true;
                         let unreadNum = 0;
+                        let atUser = '';
                         for (let c = j + 1; c < stateMessageList.msgs.length; c++) {
                             if (stateMessageList.msgs[c].content.from_id !== global.user) {
                                 unreadNum ++;
+                                let atList = stateMessageList.msgs[c].content.at_list;
+                                atUser = messageHasAtList(atList);
                             }
                         }
                         for (let conversation of state.conversation) {
@@ -1241,6 +1247,7 @@ function unreadNum(state: ChatStore, payload) {
                             let conversationLey = Number(conversation.key);
                             if (memberListKey === conversationLey) {
                                 conversation.unreadNum = unreadNum;
+                                conversation.atUser = atUser;
                                 break;
                             }
                         }
@@ -1263,14 +1270,17 @@ function unreadNum(state: ChatStore, payload) {
 // 会话没有存储该msgId
 function hasNoMsgId(state, stateMessageList) {
     let unreadNum = 0;
+    let atUser = '';
     for (let msg of stateMessageList.msgs) {
         if (msg.content.from_id !== global.user) {
             unreadNum ++;
+            atUser = messageHasAtList(msg.content.at_list);
         }
     }
     for (let conversation of state.conversation) {
         if (Number(stateMessageList.key) === Number(conversation.key)) {
             conversation.unreadNum = unreadNum;
+            conversation.atUser = atUser;
             break;
         }
     }
@@ -1474,12 +1484,14 @@ function addMessage(state: ChatStore, payload) {
                     } else {
                         state.conversation[a].unreadNum ++;
                     }
+                    state.conversation[a].recentMsg = payload.messages[0];
+                    state.conversation[a].atUser =
+                        messageHasAtList(payload.messages[0].content.at_list);
                 }
                 flag = true;
                 let item = state.conversation.splice(a, 1);
                 state.conversation.unshift(item[0]);
                 payload.messages[0].conversation_time_show = 'today';
-                state.conversation[0].recentMsg = payload.messages[0];
                 state.newMessageIsDisturb = state.conversation[a].noDisturb ? true : false;
                 return ;
             }
@@ -1533,8 +1545,23 @@ function addMessage(state: ChatStore, payload) {
             state.messageList.push(msg);
             state.conversation.unshift(conversationItem);
             state.conversation[0].recentMsg = payload.messages[0];
+            state.conversation[0].atUser = messageHasAtList(payload.messages[0].content.at_list);
         }
     }
+}
+function messageHasAtList(atList) {
+    let atUser = '';
+    if (atList && atList.length === 0) {
+        atUser = '@所有成员';
+    } else if (atList && atList.length > 0) {
+        for (let atItem of atList) {
+            if (atItem.username === global.user) {
+                atUser = '有人@我';
+                break;
+            }
+        }
+    }
+    return atUser;
 }
 // 搜索用户、群组
 function searchUser(state: ChatStore, payload) {
@@ -1633,6 +1660,7 @@ function selectUserResult(state, payload) {
 function emptyUnreadNum(state: ChatStore, payload) {
     for (let item of state.conversation) {
         if (Number(item.key) === Number(payload.key)) {
+            item.atUser = '';
             if (item.unreadNum) {
                 item.unreadNum = 0;
                 break;

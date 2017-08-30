@@ -331,7 +331,7 @@
         </div>
         <div class="chat-panel-text-container" (drop)="dropArea($event)" (click)="contentFocus($event)">
             <perfect-scrollbar class="chat-panel-content-scroll">
-                <div (paste)="pasteMessage($event)" (click)="stopPropagation($event)" class="chat-panel-content-text" [myModel]="messageList[active.activeIndex]" id="contentDiv" spellcheck="false" contenteditable="true" (keydown)="preKeydown($event)" (blur)="msgContentChange($event)" (focus)="msgContentFocus()" (click)="msgContentClick($event)"></div>
+                <div (paste)="pasteMessage($event)" (click)="stopPropagation($event)" class="chat-panel-content-text" [myModel]="messageList[active.activeIndex]" id="contentDiv" spellcheck="false" contenteditable="true" (keydown)="preKeydown($event)" (keyup)="preKeyup($event)" (blur)="msgContentChange($event)" (focus)="msgContentFocus()" (click)="msgContentClick($event)"></div>
             </perfect-scrollbar>
         </div>
         <button class="chat-panel-send-btn btn-white" type="button" (click) = "sendMsgAction()">发送</button>
@@ -343,3 +343,4 @@
 </div>
 <paste-image-component *ngIf="pasteImage.show" [pasteInfo]="pasteImage" (pasteImage)="pasteImageEmit()"></paste-image-component>
 <drop-file-component *ngIf="dropFileInfo.show" (dropFile)="dropFileEmit()" [dropFileInfo]="dropFileInfo"></drop-file-component>
+<at-list-component *ngIf="atList.show" [atList]="atList" (selectAtItem)="selectAtItemEmit($event)"></at-list-component>

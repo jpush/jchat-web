@@ -28,6 +28,7 @@ import { StorageService } from '../../services/common';
 import { MessageMenuModule } from '../message-menu';
 import { PasteImageModule } from '../paste-image';
 import { DropFileModule } from '../drop-file';
+import { AtListModule } from '../../components/at-list';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { DropFileModule } from '../drop-file';
     SanitizePipeModule,
     MessageMenuModule,
     PasteImageModule,
-    DropFileModule
+    DropFileModule,
+    AtListModule
   ],
   exports: [
       ChatPanelComponent

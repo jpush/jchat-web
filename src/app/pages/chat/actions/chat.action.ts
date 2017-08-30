@@ -73,5 +73,6 @@ export const chatAction = {
     saveMemoNameSuccess: '[chat] save memo name success',
     dispatchFriendList: '[chat] dispatch friend list',
     loadViewerImage: '[chat] load viewer image',
-    loadViewerImageSuccess: '[chat] load viewer image success'
+    loadViewerImageSuccess: '[chat] load viewer image success',
+    getGroupMembers: '[chat] get group members'
 };

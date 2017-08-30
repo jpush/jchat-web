@@ -214,6 +214,30 @@ export class Util {
      */
     public insertSortByLetter(arr, payload) {
         let name = (payload.nickName && payload.nickName !== '') ? payload.nickName : payload.name;
+        // let firstLetter = name.charAt(0);
+        // if (name.match(/^[a-zA-Z]/)) {
+        //     firstLetter = firstLetter.toUpperCase();
+        // } else if (this.firstLetterIsChinese(name)) {
+        //     let py = pinyin(firstLetter, {
+        //         style: pinyin.STYLE_NORMAL
+        //     });
+        //     firstLetter = py[0][0].charAt(0).toUpperCase();
+        // } else {
+        //     firstLetter = '#';
+        // }
+        let firstLetter = this.getFirstLetter(name);
+        for (let item of arr) {
+            if (item.letter === firstLetter) {
+                item.data.push(payload);
+                break;
+            }
+        }
+        return arr;
+    }
+    /**
+     * 获取首字母
+     */
+    public getFirstLetter(name) {
         let firstLetter = name.charAt(0);
         if (name.match(/^[a-zA-Z]/)) {
             firstLetter = firstLetter.toUpperCase();
@@ -225,13 +249,17 @@ export class Util {
         } else {
             firstLetter = '#';
         }
+        return firstLetter;
+    }
+    public getMembersFirstLetter(arr) {
         for (let item of arr) {
-            if (item.letter === firstLetter) {
-                item.data.push(payload);
-                break;
+            if (item.nickName !== '') {
+                item.nickNameFirstLetter = this.getFirstLetter(item.nickName);
+            }
+            if (item.username !== '') {
+                item.usernameFirstLetter = this.getFirstLetter(item.username);
             }
         }
-        return arr;
     }
     /**
      * 将接收到的地理定位坐标转化为地图

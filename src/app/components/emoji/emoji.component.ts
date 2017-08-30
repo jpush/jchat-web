@@ -32,7 +32,7 @@ export class EmojiComponent implements OnInit {
             this.emojiInfo.show = false;
         }
     }
-    private stopPagation(event) {
+    private stopPropagation(event) {
         event.stopPropagation();
     }
     private emojiSelectAction(idName) {
