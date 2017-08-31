@@ -300,98 +300,82 @@
                     max-width: 150px;
                     height: 38px;
                     position: relative;
-                    border: 1px solid #E2E9F0;
-                    background-color: #F2F6FB;
                     display: inline-block;
+                    &.loading:before{
+                        content: '';
+                        position: absolute;
+                        display: block;
+                        top: 0;
+                        left: 0;
+                        bottom: 0;
+                        right: 0;
+                        z-index: 1;
+                        background: url(../../../assets/images/message-loading.gif) center center no-repeat;
+                        background-size: 18px;
+                    }
                     div{
                         height: 100%;
                         max-width: 150px;
                         min-width: 60px;
-                        color: #999;
                         cursor: pointer;
                         position: relative;
                         >span{
                             margin-right: 5px;
                         }
-                        >div{
+                        .chat-panel-voice-animate{
                             width: 20px;
                             height: 100%;
                             margin-left: 10px;
-                            p{
-                                width: 1px;
-                                margin-right: 3px;
-                                height: 100%;
-                                span{
-                                    background-color: #999;
-                                    width: 1px;
-                                }
-                                .one, .five{
-                                    height: 7px;
-                                    margin-top: 16px;
-                                }
-                                .two, .four{
-                                    height: 11px;
-                                    margin-top: 14px;
-                                }
-                                .three{
-                                    height: 15px;
-                                    margin-top: 11px;
-                                }
-                                .one.active, .five.active{
-                                    animation: playVoice 1.5s 0.2s infinite;
-                                    -webkit-animation: playVoice 1.5s 0.2s infinite;
-                                    -moz-animation: playVoice 1.5s 0.2s infinite;
-                                }
-                                .two.active, .four.active{
-                                    animation: playVoice 1.5s 0.2s infinite;
-                                    -webkit-animation: playVoice 1.5s 0.2s infinite;
-                                    -moz-animation: playVoice 1.5s 0.2s infinite;
-                                }
-                                span.no-active{
-                                    animation-play-state: paused;
-                                }
-                            }
                         }
-                        b{
-                            position: absolute;
-                            top: 16px;
-                            height: 8px;
-                            width: 8px;
-                            display: block;
-                            background-color: #EA424A;
-                            border-radius: 4px;
-                        }
+                    }
+                    b{
+                        position: absolute;
+                        top: 16px;
+                        right: -19px;
+                        height: 8px;
+                        width: 8px;
+                        display: block;
+                        background-color: #EA424A;
+                        border-radius: 4px;
                     }
                     &:after{
                         content: '';
                         position: absolute;
                         top: -1px;
                         width: 6px;
-                        height: 6px;
+                        height: 10px;
                         display: block;
                     }
                 }
                 .chat-panel-voice-sound-you{
-                    border-radius: 0 5px 5px 5px;                    
+                    border: 1px solid #E2E9F0;                    
+                    border-radius: 0 5px 5px 5px;
+                    background-color: #F2F6FB;
+                    color: #999;                    
                     &:after{
                         left: -6px;                        
                         background: url(../../../assets/images/pao-you.svg) left top no-repeat;
                     }
-                    div{
-                        b{
-                            right: -19px;
+                    .chat-panel-voice-animate{
+                        background: url(../../../assets/images/voice-normal-you.png) left center no-repeat;
+                        &.active{
+                            background-image: url(../../../assets/images/voice-active-you.gif);
                         }
                     }
                 }
                 .chat-panel-voice-sound-me{
-                    border-radius: 5px 0 5px 5px;                    
+                    border: 1px solid #67D6D0; 
+                    border-radius: 5px 0 5px 5px;
+                    background-color: #71E1DB; 
+                    color: #0B1816;
                     &:after{
                         right: -6px;
-                        background: url(../../../assets/images/pao-me-file.svg) right top no-repeat;
+                        background: url(../../../assets/images/pao-me.svg) right top no-repeat;
                     }
-                    div{
-                        b{
-                            left: -19px;
+                    .chat-panel-voice-animate{
+                        background: url(../../../assets/images/voice-normal-me.png) left center no-repeat;
+                        &.active{
+                            background-image: url(../../../assets/images/voice-active-me.gif);
                         }
                     }
                 }
@@ -813,38 +797,5 @@
 @media (max-width: 900px){
     .chat-panel-text-msg{
         max-width: 300px !important;
-    }
-}
-@keyframes playVoice{
-    0%{
-        opacity: 1;
-    }
-    50%{
-        opacity: 0;
-    }
-    100%{
-        opacity: 1;
-    }
-}
-@-webkit-keyframes playVoice{
-    0%{
-        opacity: 1;
-    }
-    50%{
-        opacity: 0;
-    }
-    100%{
-        opacity: 1;
-    }
-}
-@-moz-keyframes playVoice{
-    0%{
-        opacity: 1;
-    }
-    50%{
-        opacity: 0;
-    }
-    100%{
-        opacity: 1;
     }
 }

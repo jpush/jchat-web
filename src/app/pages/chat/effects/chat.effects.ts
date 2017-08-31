@@ -411,7 +411,7 @@ export class ChatEffect {
             const that = this;
             let msgObj = global.JIM.sendSingleMsg(text.singleMsg)
             .onSuccess((data, msgs) => {
-                console.log(555, data, msgs);
+                console.log(555, data, msgs, text);
                 msgs.key = data.key;
                 that.store$.dispatch({
                     type: chatAction.sendMsgComplete,

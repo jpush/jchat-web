@@ -952,6 +952,11 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         audio.currentTime = 0;
         audio.pause();
     }
+    // 语音加载完成
+    private voiceLoad(index) {
+        const audio = this.elementRef.nativeElement.querySelector('#audio' + index);
+        this.msg[index].content.load = 1;
+    }
     // 视频开始加载
     private videoLoadStart(index) {
         const that = this;

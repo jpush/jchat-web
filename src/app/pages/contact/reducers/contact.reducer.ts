@@ -275,7 +275,8 @@ function addInfoToContact(state, payload) {
     }
     for (let friend of state.friendList) {
         for (let i = 0; i < friend.data.length; i++) {
-            if (Number(payload.item.key) === Number(friend.data[i].key)) {
+            console.log(222, payload.item.name, friend.data[i].name);
+            if (payload.item.name === friend.data[i].name) {
                 friend.data[i] = Object.assign({}, friend.data[i], payload.item);
                 return ;
             }

@@ -667,10 +667,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.changeActiveScrollBottom = !this.changeActiveScrollBottom;
         this.groupSetting.show = false;
         // 判断是否已经缓存
-        if (this.isCacheArr.indexOf(this.active.key) === -1 &&
-            this.messageList[this.active.activeIndex].msgs.length > 0) {
+        if (this.isCacheArr.indexOf(this.active.key) === -1) {
             this.isCacheArr.push(this.active.key);
-            console.log(222222);
             if (this.active.type === 4) {
                 this.store$.dispatch({
                     type: chatAction.getGroupMembers,

@@ -141,36 +141,17 @@
                             </div>
                             <div class="float-left">
                                 <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
-                                <div class="chat-panel-voice-sound chat-panel-voice-sound-you">
+                                <div class="chat-panel-voice-sound chat-panel-voice-sound-you" [ngClass]="{loading: i.content.load === 0}">
                                     <div (click)="playVoice(num)" [ngStyle]="{'width': i.content.msg_body.duration * 20 + 'px'}">
                                         <span class="float-right">{{i.content.msg_body.duration | floor}}''</span>
-                                        <div>
-                                            <p class="float-left">
-                                                <span class="one float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>
-                                            </p>
-                                            <p class="float-left">
-                                                <span class="two float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>                                            
-                                            </p>
-                                            <p class="float-left">
-                                                <span class="three float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>                                            
-                                            </p>
-                                            <p class="float-left">
-                                                <span class="four float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>                                            
-                                            </p>
-                                            <p class="float-left">
-                                                <span class="five float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>                                            
-                                            </p>
-                                        </div>
-                                        <b *ngIf="!i.content.havePlay"></b>
+                                        <div class="chat-panel-voice-animate" [ngClass]="{'active': i.content.playing}"></div>
                                     </div>
-                                    <audio [id]="'audio' + num" (ended)="voiceEnded(num)" [src]="i.content.msg_body.media_url | sanitize: 'url'">
+                                    <b *ngIf="!i.content.havePlay"></b>                                    
+                                    <audio [id]="'audio' + num" (ended)="voiceEnded(num)" (loadeddata)="voiceLoad(num)" [src]="i.content.msg_body.media_url | sanitize: 'url'">
                                         <source [src]="i.content.msg_body.media_url">
                                     </audio>
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" #youVoice [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youVoice)"></div>
-                            </div>                  
                         </div>
                     </div>
                     <!-- 自己发送的消息  -->
@@ -285,35 +266,15 @@
                             <div class="float-right chat-panel-fromId-me chat-panel-avatar" (click)="watchSelfInfo()">
                                 <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
-                            <div class="float-right chat-panel-voice-sound chat-panel-voice-sound-me">
+                            <div class="float-right chat-panel-voice-sound chat-panel-voice-sound-me" [ngClass]="{loading: i.content.load === 0}">
                                 <div (click)="playVoice(num)" [ngStyle]="{'width': i.content.msg_body.duration * 20 + 'px'}">
                                     <span class="float-right">{{i.content.msg_body.duration | floor}}''</span>
-                                    <div>
-                                        <p class="float-left">
-                                            <span class="one float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>
-                                        </p>
-                                        <p class="float-left">
-                                            <span class="two float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>                                            
-                                        </p>
-                                        <p class="float-left">
-                                            <span class="three float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>                                            
-                                        </p>
-                                        <p class="float-left">
-                                            <span class="four float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>                                            
-                                        </p>
-                                        <p class="float-left">
-                                            <span class="five float-left" [ngClass]="{'active': i.content.playing, 'no-active': !i.content.playing}"></span>                                            
-                                        </p>
-                                    </div>
-                                    <b *ngIf="!i.content.havePlay && global.user !== i.content.from_id"></b>
+                                    <div class="chat-panel-voice-animate" [ngClass]="{'active': i.content.playing}"></div>
                                 </div>
-                                <audio [id]="'audio' + num" (ended)="voiceEnded(num)" [src]="i.content.msg_body.media_url | sanitize: 'url'">
-                                    <source [src]="i.content.msg_body.media_url">
+                                <audio [id]="'audio' + num" (ended)="voiceEnded(num)" (loadeddata)="voiceLoad(num)" [src]="i.content.msg_body.media_url | sanitize: 'url'">
+                                    <!-- <source [src]="i.content.msg_body.media_url"> -->
                                 </audio>
                             </div>
-                            <div class="chat-panel-more chat-panel-more-me float-right" #meVoice [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meVoice)"></div>
-                            </div>                     
                         </div>
                     </div>
                 </div>

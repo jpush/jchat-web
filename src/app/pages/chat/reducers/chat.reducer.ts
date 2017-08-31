@@ -52,13 +52,13 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.receiveMessageSuccess:
             addMessage(state, payload);
             let newMsgKey = [];
-            for (let item of payload.messages) {
-                let key = item.msg_type === 4 ? item.from_gid : item.from_uid;
-                newMsgKey.push({key});
-            }
-            let singleFlag = Number(state.activePerson.key) === Number(state.newMessage.from_uid)
+            // for (let item of payload.messages) {
+                // let key = item.msg_type === 4 ? item.from_gid : item.from_uid;
+            newMsgKey.push({key: payload.messages[0].key});
+            // }
+            let singleFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
                             && state.newMessage.msg_type === 3;
-            let groupFlag = Number(state.activePerson.key) === Number(state.newMessage.from_gid)
+            let groupFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
                             && state.newMessage.msg_type === 4;
             state.newMessageIsActive = (singleFlag || groupFlag) ? true : false;
             state.msgId = updateFilterMsgId(state, newMsgKey);
@@ -112,6 +112,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.transmitSuccess = true;
             transmitMessage(state, payload);
             break;
+            // 转发消息发送成功（包括所有类型的转发消息）
         case chatAction.transmitMessageComplete:
             if (payload.success !== 2) {
                 state.transmitSuccess = false;
@@ -372,6 +373,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.msgRetractEvent:
             msgRetract(state, payload);
             break;
+            // 转发消息模态框搜索用户成功
         case mainAction.messageTransmitSearchComplete:
             state.messageTransmit.searchResult = {
                 result: {
@@ -381,39 +383,51 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 isSearch: true
             };
             break;
+            // 同意添加好友
         case contactAction.agreeAddFriendSuccess:
             addNewFriendToConversation(state, payload);
             break;
+            // 显示验证消息模态框
         case chatAction.showVerifyModal:
             state.verifyModal = payload;
             break;
+            // 在黑名单列表中删除黑名单
         case mainAction.delSingleBlackSuccess:
             updateBlackMenu(state, payload);
             break;
+            // 获取黑名单成功
         case mainAction.blackMenuSuccess:
             state.blackMenu = payload.menu;
             break;
+            // 在个人资料中删除黑名单
         case chatAction.deleteSingleBlackSuccess:
             updateBlackMenu(state, payload);
             state.otherInfo.info.black = false;
             break;
+            // 添加单聊用户免打扰成功
         case mainAction.addSingleNoDisturbSuccess:
             state.otherInfo.info.noDisturb = true;
+            changeSingleNoDisturb(state, payload);
             break;
+            // 删除单聊用户免打扰成功
         case chatAction.deleteSingleNoDisturbSuccess:
             state.otherInfo.info.noDisturb = false;
+            changeSingleNoDisturb(state, payload);
             break;
+            // 个人资料中保存备注名
         case chatAction.saveMemoNameSuccess:
             modifyOtherInfoMemoName(state, payload);
             modifyFriendListMemoName(state, payload);
             modifyConversationMemoName(state, payload);
             break;
+            // 删除好友
         case mainAction.deleteFriendSuccess:
             otherInfoDeleteFriend(state, payload);
             break;
             // 如果在好友应答时正好打开了该好友的资料
         case chatAction.friendReplyEvent:
             updateOtherInfo(state, payload);
+            addNewFriendToConversation(state, payload);
             break;
             // 加载图片预览没有加载的图片url
         case chatAction.loadViewerImageSuccess:
@@ -510,6 +524,7 @@ function filterSingleBlack(state, payload) {
 }
 // 判断用户是否是免打扰
 function filterSingleNoDisturb(state, payload) {
+    console.log(333, state.noDisturb.users, payload)
     for (let user of state.noDisturb.users) {
         if (user.username === payload.name) {
             payload.noDisturb = true;
@@ -530,6 +545,9 @@ function filterFriend(state, payload) {
 }
 // 同意添加好友后添加好友到会话列表
 function addNewFriendToConversation(state, payload) {
+    if (payload.from_username) {
+        payload.name = payload.from_username;
+    }
     let item = null;
     for (let i = 0; i < state.conversation.length; i++) {
         if (state.conversation[i].type === 3 && state.conversation[i].name === payload.name) {
@@ -559,12 +577,10 @@ function addNewFriendToConversation(state, payload) {
             ]
         });
     } else {
-        for (let conversation of state.conversation) {
-            for (let list of state.messageList) {
-                if (Number(conversation.key) === Number(list.key)) {
-                    list.msgs.push(msg);
-                    break;
-                }
+        for (let list of state.messageList) {
+            if (Number(item.key) === Number(list.key)) {
+                list.msgs.push(msg);
+                break;
             }
         }
     }
@@ -985,6 +1001,22 @@ function completionMessageList(state: ChatStore) {
         }
     }
 }
+// 切换单聊用户免打扰
+function changeSingleNoDisturb(state, payload) {
+    let flag = true;
+    for (let i = 0; i < state.noDisturb.users.length; i++) {
+        if (payload.name === state.noDisturb.users[i].username) {
+            flag = false;
+            state.noDisturb.users.splice(i, 1);
+        }
+    }
+    if (flag) {
+        state.noDisturb.users.push({
+            username: payload.name,
+            appkey: payload.appkey
+        });
+    }
+}
 // 初始化群免打扰
 function initNoDisturb(state, noDisturb) {
     console.log(55555, noDisturb);
@@ -1096,6 +1128,7 @@ function changeActivePerson(state: ChatStore) {
         } else if (msg.content.msg_type === 'voice') {
             // voice 播放时的动画
             msg.content.playing = false;
+            msg.content.load = 0;
         }
         // 给群聊消息中的好友添加备注名
         for (let friend of state.friendList) {
@@ -1174,7 +1207,7 @@ function updateFilterMsgId(state: ChatStore, payload ? ) {
         for (let pay of payload) {
             if (Number(messageList.key) === Number(pay.key)) {
                 if (messageList.msgs.length > 0) {
-                    for (let i = messageList.msgs.length - 1; i > 0; i--) {
+                    for (let i = messageList.msgs.length - 1; i >= 0; i--) {
                         if (messageList.msgs[i].msg_id) {
                             msgId = messageList.msgs[i].msg_id;
                             break;
@@ -1182,6 +1215,7 @@ function updateFilterMsgId(state: ChatStore, payload ? ) {
                     }
                 }
                 let flag = true;
+                console.log(444, msgId);
                 if (msgId) {
                     for (let a = 0; a < state.msgId.length; a++) {
                         if (Number(state.msgId[a].key) === Number(pay.key)) {
@@ -1287,8 +1321,19 @@ function hasNoMsgId(state, stateMessageList) {
 }
 // 完成消息的发送接口的调用后，返回成功或者失败状态
 function sendMsgComplete(state: ChatStore, payload) {
+    if (Number(payload.key) < 0) {
+        for (let conversation of state.conversation) {
+            if (Number(payload.key) === conversation.key) {
+                conversation.key = payload.msgs.key;
+                break;
+            }
+        }
+    }
     for (let messageList of state.messageList) {
         if (Number(messageList.key) === Number(payload.key)) {
+            if (Number(payload.key) < 0) {
+                messageList.key = payload.msgs.key;
+            }
             let msgs = messageList.msgs;
             for (let j = msgs.length - 1; j >= 0; j--) {
                 if (msgs[j].msgKey && Number(payload.msgKey) === Number(msgs[j].msgKey)) {
@@ -1416,43 +1461,51 @@ function addMessage(state: ChatStore, payload) {
     // 接收到别人的消息添加到消息列表
     } else {
         let message = payload.messages[0];
-        // 更新imageViewer的数组
-        let activeKey = Number(state.activePerson.key);
-        let isGroupMessage = message.msg_type === 4 &&
-            Number(message.from_gid) === Number(activeKey);
-        let isSingleMessage = message.msg_type === 3 &&
-            Number(message.from_uid) === Number(activeKey);
-        let isImage = message.content.msg_type === 'image';
-
-        if ((isGroupMessage || isSingleMessage) && isImage) {
-            state.imageViewer.push({
-                src: message.content.msg_body.media_url,
-                width: message.content.msg_body.width,
-                height: message.content.msg_body.height,
-                index: state.messageList[state.activePerson.activeIndex].msgs.length
-            });
-        }
-        // 接收到语音初始化播放动画
-        let isVoice = message.content.msg_type === 'voice';
-        if (isVoice) {
-            payload.messages[0].content.playing = false;
-            payload.messages[0].content.havePlay = false;
-        }
-        // 接收到小视频初始化loading
-        let isVideo = message.content.msg_type === 'file' &&
-            message.content.msg_body.extras &&
-            message.content.msg_body.extras.video;
-        if (isVideo) {
-            payload.messages[0].content.load = 0;
-            payload.messages[0].content.range = 0;
-        }
+        filterNewMessage(state, payload, message);
         let flag = false;
         // 如果发送人在会话列表里
+        for (let a = 0; a < state.conversation.length; a ++) {
+            let groupMsg = message.msg_type === 4 &&
+                    Number(state.conversation[a].key) === Number(message.key);
+            let singleMsg = message.msg_type === 3 &&
+                    state.conversation[a].name === message.content.from_id;
+            if (groupMsg || singleMsg) {
+                let groupNoActive = message.msg_type === 4 &&
+                    Number(state.activePerson.key) !== Number(message.key);
+                let singleNoActive = message.msg_type === 3 &&
+                    state.activePerson.name !== message.content.from_id;
+                if (groupNoActive || singleNoActive) {
+                    if (!state.conversation[a].unreadNum) {
+                        state.conversation[a].unreadNum = 1;
+                    } else {
+                        state.conversation[a].unreadNum ++;
+                    }
+                    state.conversation[a].atUser =
+                        messageHasAtList(payload.messages[0].content.at_list);
+                }
+                flag = true;
+                let item = state.conversation.splice(a, 1);
+                if (item[0].key < 0) {
+                    let oldKey = Number(item[0].key);
+                    item[0].key = message.key;
+                    for (let messageList of state.messageList) {
+                        if (oldKey === Number(messageList.key)) {
+                            messageList.key = message.key;
+                            break;
+                        }
+                    }
+                }
+                state.conversation.unshift(item[0]);
+                state.conversation[0].recentMsg = payload.messages[0];
+                payload.messages[0].conversation_time_show = 'today';
+                state.newMessageIsDisturb = state.conversation[0].noDisturb ? true : false;
+            }
+        }
         for (let messageList of state.messageList) {
             let groupMsg = message.msg_type === 4 &&
-                Number(messageList.key) === Number(message.from_gid);
+                Number(messageList.key) === Number(message.key);
             let singleMsg = message.msg_type === 3 &&
-                Number(messageList.key) === Number(message.from_uid);
+                Number(messageList.key) === Number(message.key);
             // 给单聊会话人的消息添加头像
             if (singleMsg) {
                 payload.messages[0].content.avatarUrl = state.activePerson.avatarUrl;
@@ -1468,87 +1521,97 @@ function addMessage(state: ChatStore, payload) {
                 break;
             }
         }
-        for (let a = 0; a < state.conversation.length; a ++) {
-            let groupMsg = message.msg_type === 4 &&
-                    Number(state.conversation[a].key) === Number(message.from_gid);
-            let singleMsg = message.msg_type === 3 &&
-                    Number(state.conversation[a].key) === Number(message.from_uid);
-            if (groupMsg || singleMsg) {
-                let groupNoActive = message.msg_type === 4 &&
-                    Number(state.activePerson.key) !== Number(message.from_gid);
-                let singleNoActive = message.msg_type === 3 &&
-                    Number(state.activePerson.key) !== Number(message.from_uid);
-                if (groupNoActive || singleNoActive) {
-                    if (!state.conversation[a].unreadNum) {
-                        state.conversation[a].unreadNum = 1;
-                    } else {
-                        state.conversation[a].unreadNum ++;
-                    }
-                    state.conversation[a].recentMsg = payload.messages[0];
-                    state.conversation[a].atUser =
-                        messageHasAtList(payload.messages[0].content.at_list);
-                }
-                flag = true;
-                let item = state.conversation.splice(a, 1);
-                state.conversation.unshift(item[0]);
-                payload.messages[0].conversation_time_show = 'today';
-                state.newMessageIsDisturb = state.conversation[a].noDisturb ? true : false;
-                return ;
-            }
-        }
         // 如果发送人不在会话列表里
         if (!flag) {
-            let msg;
-            let conversationItem;
-            if (message.msg_type === 3) {
-                msg = {
-                    key: message.from_uid,
-                    msgs: [
-                        message
-                    ],
-                    draft: '',
-                    content: message.content
-                };
-                conversationItem = {
-                    avatar: '',
-                    avatarUrl: message.content.avatarUrl,
-                    key: message.from_uid,
-                    mtime: message.ctime_ms,
-                    name: message.content.from_id,
-                    nickName: message.content.from_name,
-                    type: 3,
-                    unreadNum: 1
-                };
-            } else {
-                msg = {
-                    key: message.from_gid,
-                    msgs: [
-                        message
-                    ],
-                    draft: '',
-                    content: message.content
-                };
-                conversationItem = {
-                    avatar: '',
-                    avatarUrl: '',
-                    key: message.from_gid,
-                    mtime: message.ctime_ms,
-                    name: message.content.target_name,
-                    type: 4,
-                    unreadNum: 1
-                };
-            }
-            state.newMessageIsDisturb = false;
-            payload.messages[0].conversation_time_show = 'today';
-            payload.messages[0].time_show = 'today';
-            state.newMessage = msg;
-            state.messageList.push(msg);
-            state.conversation.unshift(conversationItem);
-            state.conversation[0].recentMsg = payload.messages[0];
-            state.conversation[0].atUser = messageHasAtList(payload.messages[0].content.at_list);
+            addMessageUserNoConversation(state, payload, message);
         }
     }
 }
+// 处理新消息
+function filterNewMessage(state, payload, message) {
+    // 更新imageViewer的数组
+    let isGroupMessage = message.msg_type === 4 &&
+        Number(message.key) === Number(state.activePerson.key);
+    let isSingleMessage = message.msg_type === 3 &&
+        message.content.from_id === state.activePerson.name;
+    let isImage = message.content.msg_type === 'image';
+
+    if ((isGroupMessage || isSingleMessage) && isImage) {
+        state.imageViewer.push({
+            src: message.content.msg_body.media_url,
+            width: message.content.msg_body.width,
+            height: message.content.msg_body.height,
+            index: state.messageList[state.activePerson.activeIndex].msgs.length
+        });
+    }
+    // 接收到语音初始化播放动画
+    let isVoice = message.content.msg_type === 'voice';
+    if (isVoice) {
+        payload.messages[0].content.playing = false;
+        payload.messages[0].content.havePlay = false;
+        payload.messages[0].content.load = 0;
+    }
+    // 接收到小视频初始化loading
+    let isVideo = message.content.msg_type === 'file' &&
+        message.content.msg_body.extras &&
+        message.content.msg_body.extras.video;
+    if (isVideo) {
+        payload.messages[0].content.load = 0;
+        payload.messages[0].content.range = 0;
+    }
+}
+// 新消息用户不在会话列表中
+function addMessageUserNoConversation(state, payload, message) {
+    let msg;
+    let conversationItem;
+    if (message.msg_type === 3) {
+        msg = {
+            key: message.key,
+            msgs: [
+                message
+            ],
+            draft: '',
+            content: message.content
+        };
+        conversationItem = {
+            avatar: '',
+            avatarUrl: message.content.avatarUrl,
+            key: message.key,
+            mtime: message.ctime_ms,
+            name: message.content.from_id,
+            nickName: message.content.from_name,
+            type: 3,
+            unreadNum: 1
+        };
+    } else {
+        msg = {
+            key: message.key,
+            msgs: [
+                message
+            ],
+            draft: '',
+            content: message.content
+        };
+        conversationItem = {
+            avatar: '',
+            avatarUrl: '',
+            key: message.key,
+            mtime: message.ctime_ms,
+            name: message.content.target_name,
+            type: 4,
+            unreadNum: 1
+        };
+    }
+    state.newMessageIsDisturb = false;
+    payload.messages[0].conversation_time_show = 'today';
+    payload.messages[0].time_show = 'today';
+    state.newMessage = msg;
+    state.messageList.push(msg);
+    state.conversation.unshift(conversationItem);
+    state.conversation[0].recentMsg = payload.messages[0];
+    state.conversation[0].atUser = messageHasAtList(payload.messages[0].content.at_list);
+}
+// 添加会话列表中的@文本
 function messageHasAtList(atList) {
     let atUser = '';
     if (atList && atList.length === 0) {
@@ -1599,6 +1662,7 @@ function searchUser(state: ChatStore, payload) {
         isSearch: true
     };
 }
+// 搜索单聊用户或好友
 function searchSingle(payload, singleArr, item) {
     let existNickName = item.nickName &&
         item.nickName.toLowerCase().indexOf(payload.toLowerCase()) !== -1;
