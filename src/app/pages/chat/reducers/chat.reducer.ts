@@ -388,7 +388,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.messageTransmit.searchResult = {
                 result: {
                     groupArr: [],
-                    singleArr: [payload]
+                    singleArr: payload ? [payload] : []
                 },
                 isSearch: true
             };

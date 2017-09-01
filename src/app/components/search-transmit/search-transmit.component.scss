@@ -49,8 +49,8 @@
         position: absolute;
         z-index: 4;
         width: 100%;
-        top: 46px;
-        right: 20px;
+        top: 36px;
+        right: 0;
         box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
         border-radius: 4px;
         font-size: 14px;
@@ -120,6 +120,9 @@
                 height: 30px;
                 margin: 10px 10px 0 0;
                 overflow: hidden;
+                img{
+                    width: 100%;
+                }
             }
             .search-user-name{
                 white-space: nowrap;

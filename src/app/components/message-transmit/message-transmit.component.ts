@@ -99,6 +99,16 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
         this.searchMessageTransmit.emit(value);
     }
     private searchBtnEmit(keywords) {
+        // 如果搜索到左边列表有的用户
+        for (let member of this.messageTransmit.list) {
+            if (member.type === 3 && keywords === member.name) {
+                this.searchResult.result = {
+                    singleArr: [member],
+                    groupArr: []
+                };
+                return ;
+            }
+        }
         this.store$.dispatch({
             type: mainAction.createGroupSearchAction,
             payload: {
@@ -144,7 +154,6 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
         event.target.src = avatarErrorIcon;
     }
     private confirmMessageTransmit() {
-        console.log(5555, this.selectList);
         this.confirmTransmit.emit(this.selectList);
         this.messageTransmit.show = false;
     }
@@ -162,10 +171,17 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
             this.selectList.push(user);
         }
         for (let member of this.messageTransmit.list) {
-            if (Number(member.key) === Number(user.key)) {
+            if (member.type === 4 && Number(member.key) === Number(user.key)) {
+                member.checked = event.target.checked;
+                return ;
+            } else if (member.type === 3 && member.name === user.name) {
                 member.checked = event.target.checked;
                 return ;
             }
+            // if (Number(member.key) === Number(user.key)) {
+            //     member.checked = event.target.checked;
+            //     return ;
+            // }
         }
     }
     private cancelSelect(user) {

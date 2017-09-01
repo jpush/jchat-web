@@ -15,7 +15,7 @@
                 <div class="search-user-avatar-container">
                     <img (load)="avatarLoad($event)" [src]="item.avatarUrl | sanitize: 'url'" alt="" (error)="avatarErrorIcon($event)">
                 </div>
-                <span class="search-user-name flex-1">{{item.nickName ? item.nickName: item.name}}</span>
+                <span class="search-user-name flex-1">{{item.memo_name || item.nickName || item.name}}</span>
                 <label class="search-member-label">
                     <input spellcheck="false" type="checkbox" [ngModel]="item.checked" [disabled]="item.disabled" (click)="changeChecked(item)">
                     <b></b>
