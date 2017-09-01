@@ -13,8 +13,8 @@
                 <div class="float-left at-list-avatar">
                     <img [src]="item.avatarUrl" alt="" (error)="avatarErrorIcon($event)">                
                 </div>
-                <span class="float-left at-list-text" *ngIf="atList.showAll">{{item.nickName || item.username}}</span>
-                <span class="float-left at-list-text" *ngIf="!atList.showAll">{{item.nickName !== '' && item.nickName.toUpperCase().indexOf(item.letter) !== -1 ? item.nickName : (item.username.toUpperCase().indexOf(item.letter) !== -1 ? item.username : (item.nickNameFirstLetter === item.letter ? item.nickName : item.username))}}</span>
+                <span class="float-left at-list-text" *ngIf="atList.showAll">{{item.memo_name || item.nickName || item.username}}</span>
+                <span class="float-left at-list-text" *ngIf="!atList.showAll">{{item.match === 'memo_name' ? item.memo_name : (item.match === 'nickName' ? item.nickName : item.username)}}</span>
             </li>
         </a>
     </ul>

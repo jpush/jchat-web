@@ -24,10 +24,19 @@ export class ChatEffect {
         .ofType(chatAction.receiveSingleMessage)
         .map(toPayload)
         .switchMap((data) => {
-            this.store$.dispatch({
-                type: chatAction.receiveMessageSuccess,
-                payload: data
-            });
+            if (data.messages[0].isMediaId) {
+                this.requestMediaUrl(data, () => {
+                    this.store$.dispatch({
+                        type: chatAction.receiveMessageSuccess,
+                        payload: data
+                    });
+                });
+            } else {
+                this.store$.dispatch({
+                    type: chatAction.receiveMessageSuccess,
+                    payload: data
+                });
+            }
             return Observable.of('receiveSingleMessage')
                     .map(() => {
                         return {type: '[chat] receive single message useless'};
@@ -45,75 +54,6 @@ export class ChatEffect {
             let messages = obj.data.messages[0];
             let messageList = obj.messageList;
             let flag = false;
-            // 判断是否消息列表中已经加载过头像
-            for (let list of messageList) {
-                if (Number(list.key) === Number(messages.key) && list.msgs.length > 0) {
-                    for (let i = list.msgs.length - 1; i >= 0; i--) {
-                        let hasLoadAvatar = list.msgs[i].content.hasOwnProperty('avatarUrl');
-                        if (list.msgs[i].content.from_id === messages.content.from_id
-                            && hasLoadAvatar) {
-                            messages.content.avatarUrl = list.msgs[i].content.avatarUrl;
-                            that.store$.dispatch({
-                                type: chatAction.receiveMessageSuccess,
-                                payload: obj.data
-                            });
-                            flag = true;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-            if (flag) {
-                return Observable.of('receiveMessage')
-                    .map(() => {
-                        return {type: '[chat] receive message useless'};
-                    });
-            }
-            // 消息列表中没有加载过头像
-            global.JIM.getUserInfo({
-                username: messages.content.from_id
-            }).onSuccess((user) => {
-                if (!user.user_info.avatar || user.user_info.avatar === '') {
-                    count ++;
-                    messages.content.avatarUrl = '';
-                    if (count === 1 + increase) {
-                        that.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: obj.data
-                        });
-                    }
-                    return;
-                }
-                global.JIM.getResource({media_id: user.user_info.avatar})
-                .onSuccess((urlInfo) => {
-                    messages.content.avatarUrl = urlInfo.url;
-                    count ++;
-                    if (count === 1 + increase) {
-                        that.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: obj.data
-                        });
-                    }
-                }).onFail((error) => {
-                    messages.content.avatarUrl = '';
-                    count ++;
-                    if (count === 1 + increase) {
-                        that.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: obj.data
-                        });
-                    }
-                });
-            }).onFail((error) => {
-                count ++;
-                if (count === 1 + increase) {
-                    that.store$.dispatch({
-                        type: chatAction.receiveMessageSuccess,
-                        payload: obj.data
-                    });
-                }
-            });
             // 如果消息所在的群聊不在消息列表中，且群名为空，需要获取群的成员，将群成员的昵称或用户名拼接
             let result = obj.conversation.filter((item) => {
                 return Number(messages.key) === Number(item.key);
@@ -133,7 +73,7 @@ export class ChatEffect {
                         messages.content.target_name =
                             name.substr(0, name.length - 1);
                     }
-                    if (count === 1 + increase) {
+                    if (count === increase) {
                         that.store$.dispatch({
                             type: chatAction.receiveMessageSuccess,
                             payload: obj.data
@@ -142,7 +82,7 @@ export class ChatEffect {
                 }).onFail((error) => {
                     count ++;
                     messages.content.target_name = '群名获取失败？？';
-                    if (count === 1 + increase) {
+                    if (count === increase) {
                         that.store$.dispatch({
                             type: chatAction.receiveMessageSuccess,
                             payload: obj.data
@@ -152,6 +92,86 @@ export class ChatEffect {
                         type: appAction.errorApiTip,
                         payload: error
                     });
+                });
+            }
+            if (messages.isMediaId) {
+                increase ++;
+                this.requestMediaUrl(obj.data, () => {
+                    count ++;
+                    if (count === increase) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: obj.data
+                        });
+                    }
+                });
+            }
+            // 判断是否消息列表中已经加载过头像
+            for (let list of messageList) {
+                if (Number(list.key) === Number(messages.key) && list.msgs.length > 0) {
+                    for (let i = list.msgs.length - 1; i >= 0; i--) {
+                        let hasLoadAvatar = list.msgs[i].content.hasOwnProperty('avatarUrl');
+                        if (list.msgs[i].content.from_id === messages.content.from_id
+                            && hasLoadAvatar) {
+                            messages.content.avatarUrl = list.msgs[i].content.avatarUrl;
+                            if (increase === 0) {
+                                that.store$.dispatch({
+                                    type: chatAction.receiveMessageSuccess,
+                                    payload: obj.data
+                                });
+                            }
+                            flag = true;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            if (!flag) {
+                increase ++;
+                // 消息列表中没有加载过头像
+                global.JIM.getUserInfo({
+                    username: messages.content.from_id
+                }).onSuccess((user) => {
+                    if (!user.user_info.avatar || user.user_info.avatar === '') {
+                        count ++;
+                        messages.content.avatarUrl = '';
+                        if (count === increase) {
+                            that.store$.dispatch({
+                                type: chatAction.receiveMessageSuccess,
+                                payload: obj.data
+                            });
+                        }
+                        return;
+                    }
+                    global.JIM.getResource({media_id: user.user_info.avatar})
+                    .onSuccess((urlInfo) => {
+                        messages.content.avatarUrl = urlInfo.url;
+                        count ++;
+                        if (count === increase) {
+                            that.store$.dispatch({
+                                type: chatAction.receiveMessageSuccess,
+                                payload: obj.data
+                            });
+                        }
+                    }).onFail((error) => {
+                        messages.content.avatarUrl = '';
+                        count ++;
+                        if (count === increase) {
+                            that.store$.dispatch({
+                                type: chatAction.receiveMessageSuccess,
+                                payload: obj.data
+                            });
+                        }
+                    });
+                }).onFail((error) => {
+                    count ++;
+                    if (count === increase) {
+                        that.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: obj.data
+                        });
+                    }
                 });
             }
             return Observable.of('receiveMessage')
@@ -169,7 +189,7 @@ export class ChatEffect {
             if (voiceState) {
                 this.store$.dispatch({
                     type: chatAction.getVoiceStateSuccess,
-                    payload: eval(voiceState)
+                    payload: JSON.parse(voiceState)
                 });
             }
             return Observable.of('getVoiceState')
@@ -1884,5 +1904,25 @@ export class ChatEffect {
                 }
             });
         }
+    }
+    private requestMediaUrl(data, callback) {
+        global.JIM.getResource({media_id: data.messages[0].content.msg_body.media_id})
+        .onSuccess((urlInfo) => {
+            data.messages[0].content.msg_body.media_url = urlInfo.url;
+            callback();
+        }).onFail((error) => {
+            callback();
+            this.store$.dispatch({
+                type: appAction.errorApiTip,
+                payload: error
+            });
+        }).onTimeout((errorInfo) => {
+            callback();
+            const error = {code: 910000};
+            this.store$.dispatch({
+                type: appAction.errorApiTip,
+                payload: error
+            });
+        });
     }
 }

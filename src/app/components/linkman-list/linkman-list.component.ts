@@ -21,11 +21,16 @@ export class LinkmanListComponent implements OnInit, DoCheck {
         // pass
     }
     public ngDoCheck() {
+        let flag = true;
         for (let item of this.friendList) {
             if (item.data.length > 0) {
                 this.isEmpty = true;
+                flag = false;
                 break;
             }
+        }
+        if (flag) {
+            this.isEmpty = false;
         }
     }
     private avatarErrorIcon(event) {

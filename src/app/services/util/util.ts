@@ -228,7 +228,12 @@ export class Util {
         let firstLetter = this.getFirstLetter(name);
         for (let item of arr) {
             if (item.letter === firstLetter) {
-                item.data.push(payload);
+                let result = item.data.filter((friend) => {
+                    return friend.name === payload.name;
+                });
+                if (result.length === 0) {
+                    item.data.push(payload);
+                }
                 break;
             }
         }
@@ -253,12 +258,20 @@ export class Util {
     }
     public getMembersFirstLetter(arr) {
         for (let item of arr) {
-            if (item.nickName !== '') {
+            if (item.nickName && item.nickName !== '') {
                 item.nickNameFirstLetter = this.getFirstLetter(item.nickName);
             }
-            if (item.username !== '') {
+            if (item.username && item.username !== '') {
                 item.usernameFirstLetter = this.getFirstLetter(item.username);
             }
+            if (item.memo_name && item.memo_name !== '') {
+                item.memo_nameFirstLetter = this.getFirstLetter(item.memo_name);
+            }
+        }
+    }
+    public getMemo_nameFirstLetter(member) {
+        if (member.memo_name && member.memo_name !== '') {
+            member.memo_nameFirstLetter = this.getFirstLetter(member.memo_name);
         }
     }
     /**

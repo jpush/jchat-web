@@ -34,7 +34,6 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             state.groupList = util.insertSortByLetter(state.groupList, payload);
             break;
         case contactAction.getFriendListSuccess:
-            console.log('friendList', payload[0].name);
             state.hasNoSortFriendList = payload;
             if (state.hasConversation) {
                 filterConversation(state);
@@ -149,6 +148,7 @@ function friendReply(state, payload) {
         }
     }
     state.contactUnreadNum ++;
+    state.verifyUnreadNum ++;
     state.verifyMessageList.unshift(verifyMessage);
 }
 function changeFirstOne(state, type) {

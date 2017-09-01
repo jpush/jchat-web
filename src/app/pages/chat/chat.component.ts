@@ -96,7 +96,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         msgKey: -1,
         totalTransmitNum: 0,
         ctime_ms: 0,
-        conversation_time_show: ''
+        conversation_time_show: '',
+        hasLoad: false,
+        showMoreIcon: false
     };
     private transmitCount = 0;
     private verifyModal = {
@@ -123,6 +125,15 @@ export class ChatComponent implements OnInit, OnDestroy {
         const that = this;
         global.JIM.onMsgReceive((data) => {
             console.log(data);
+            let mediaId = data.messages[0].content.msg_body.media_id;
+            // 判断是否是当前会话人并且有media_id
+            if (data.messages[0].msg_type === 4 &&
+                Number(this.active.key) === Number(data.messages[0].key) && mediaId) {
+                data.messages[0].isMediaId = true;
+            } else if (data.messages[0].msg_type === 3 &&
+                data.messages[0].content.from_id === this.active.name && mediaId) {
+                data.messages[0].isMediaId = true;
+            }
             // 群聊消息
             if (data.messages[0].msg_type === 4) {
                 that.store$.dispatch({
@@ -634,7 +645,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
             Push.create(title, {
                 body,
-                icon: 'http://7xo28s.com1.z0.glb.clouddn.com/web-jchat/0.0.1/assets/images/favicon.ico',
+                icon: '../../../assets/images/notification-icon.png',
                 timeout: 4000,
                 onClick () {
                     window.focus();
@@ -667,6 +678,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.changeActiveScrollBottom = !this.changeActiveScrollBottom;
         this.groupSetting.show = false;
         // 判断是否已经缓存
+        console.log(333, this.isCacheArr, this.active.key);
         if (this.isCacheArr.indexOf(this.active.key) === -1) {
             this.isCacheArr.push(this.active.key);
             if (this.active.type === 4) {
@@ -1249,7 +1261,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private msgTransmitEmit(item) {
         this.messageTransmit.list = this.conversationList;
         this.messageTransmit.show = true;
-        this.transmitItem = item;
+        this.transmitItem = Object.assign({}, item, {});
     }
     // 转发弹窗搜索
     private searchMessageTransmitEmit(keywords) {
@@ -1265,6 +1277,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.transmitItem.totalTransmitNum = select.length;
         this.transmitItem.ctime_ms = new Date().getTime();
         this.transmitItem.conversation_time_show = 'today';
+        this.transmitItem.showMoreIcon = false;
+        this.transmitItem.hasLoad = false;
         this.transmitCount = 0;
         for (let item of select) {
             let data = {

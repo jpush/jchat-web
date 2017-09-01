@@ -5,7 +5,7 @@
     top: 40px;
     right: 0;
     background: #fff;
-    z-index: 1;
+    z-index: 3;
 }
 .chat-panel-operation-board{
     position: fixed;
@@ -18,10 +18,11 @@
     bottom: 0;
     .chat-panel-board{
         border-bottom: 1px solid #D9DEE4;
-        padding-left: 20px;
         .chat-panel-setting{
             height: 40px;
             line-height: 40px;
+            padding-left: 20px;
+            box-sizing: border-box;      
             .chat-panel-name{
                 max-width: 80%;
                 float: left;

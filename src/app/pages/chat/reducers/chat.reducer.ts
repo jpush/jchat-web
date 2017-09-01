@@ -198,10 +198,20 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 let groupSetting = state.messageList[state.activePerson.activeIndex].groupSetting;
                 console.log(666, groupSetting);
                 groupSetting.memberList = payload.memberList;
+                for (let member of payload.memberList) {
+                    for (let friend of state.friendList) {
+                        if (friend.name === member.username) {
+                            member.memo_name = friend.memo_name;
+                            util.getMemo_nameFirstLetter(member);
+                            break;
+                        }
+                    }
+                }
                 // 如果群没有名字，用其群成员名字代替
                 name = '';
                 for (let item of groupSetting.memberList) {
-                    name += (item.nickName !== '' ? item.nickName : item.username) + '、';
+                    name += item.memo_name ? item.memo_name :
+                        (item.nickName !== '' ? item.nickName : item.username) + '、';
                 }
                 if (name.length > 20) {
                     name = name.slice(0, 20);
@@ -419,13 +429,14 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             modifyOtherInfoMemoName(state, payload);
             modifyFriendListMemoName(state, payload);
             modifyConversationMemoName(state, payload);
+            modifyActiveMessageList(state, payload);
             break;
             // 删除好友
         case mainAction.deleteFriendSuccess:
             otherInfoDeleteFriend(state, payload);
             break;
-            // 如果在好友应答时正好打开了该好友的资料
         case chatAction.friendReplyEvent:
+            // 如果在好友应答时正好打开了该好友的资料
             updateOtherInfo(state, payload);
             addNewFriendToConversation(state, payload);
             break;
@@ -474,7 +485,10 @@ function modifyConversationMemoName(state, payload) {
     for (let conversation of state.conversation) {
         if (conversation.name === payload.targetName && conversation.type === 3) {
             conversation.memo_name = payload.memoName;
-            break;
+        }
+        if (conversation.recentMsg &&
+            conversation.recentMsg.content.from_id === payload.targetName) {
+            conversation.recentMsg.content.memo_name = payload.memoName;
         }
     }
     if (state.activePerson.name === payload.targetName) {
@@ -494,6 +508,24 @@ function modifyFriendListMemoName(state, payload) {
 function modifyOtherInfoMemoName(state, payload) {
     if (payload.targetName === state.otherInfo.info.name) {
         state.otherInfo.info.memo_name = payload.memoName;
+    }
+}
+// 当前会话有修改了备注的用户时，修改消息列表的备注和群成员的备注
+function modifyActiveMessageList(state, payload) {
+    if (state.activePerson.type === 4 && state.activePerson.activeIndex > 0) {
+        let messageList = state.messageList[state.activePerson.activeIndex];
+        let msgs = messageList.msgs;
+        for (let message of msgs) {
+            if (message.content.from_id === payload.targetName) {
+                message.content.memo_name = payload.memoName;
+            }
+        }
+        for (let member of messageList.groupSetting.memberList) {
+            if (member.username === payload.targetName) {
+                member.memo_name = payload.memoName;
+                util.getMemo_nameFirstLetter(member);
+            }
+        }
     }
 }
 // 更新（增加或删除）黑名单列表里的用户
@@ -545,6 +577,9 @@ function filterFriend(state, payload) {
 }
 // 同意添加好友后添加好友到会话列表
 function addNewFriendToConversation(state, payload) {
+    if (payload.description !== '') {
+        return ;
+    }
     if (payload.from_username) {
         payload.name = payload.from_username;
     }
@@ -613,7 +648,6 @@ function currentIsActive(state, payload) {
 function msgRetract(state, payload) {
     let name = '';
     let recentMsg = {};
-    let index = 0;
     for (let i = 0; i < state.conversation.length; i++) {
         const isGroup = payload.type === 1 &&
             Number(payload.from_gid) === Number(state.conversation[i].key);
@@ -633,7 +667,6 @@ function msgRetract(state, payload) {
             } else if (msgType === 3) {
                 name = '对方';
             }
-            index = i;
             recentMsg = {
                 ctime_ms: payload.ctime_ms,
                 content: {
@@ -670,9 +703,9 @@ function msgRetract(state, payload) {
                     eventMsg.time_show = item[0].time_show;
                     list.msgs.splice(i, 0, eventMsg);
                     if (i === list.msgs.length - 1) {
-                        state.conversation[index].recentMsg = recentMsg;
+                        state.conversation[0].recentMsg = recentMsg;
                         state.msgId =
-                            updateFilterMsgId(state, [{key: state.conversation[index].key}]);
+                            updateFilterMsgId(state, [{key: state.conversation[0].key}]);
                     }
                     break;
                 }
@@ -911,10 +944,10 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
     if (payload.isOffline) {
         sortConversationByRecentMsg(state);
     }
-    addEventMsgToMessageList (state, payload, addGroupOther, operation);
+    addEventMsgToMessageList(state, payload, addGroupOther, operation);
 }
 // 将群聊事件消息添加到消息列表
-function addEventMsgToMessageList (state, payload, addGroupOther, operation) {
+function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
     let message = {
         ctime_ms: payload.ctime_ms,
         msg_type: 5,
@@ -965,12 +998,11 @@ function addEventMsgToMessageList (state, payload, addGroupOther, operation) {
         }
     }
     if (flag2) {
+        message.time_show = util.reducerDate(payload.ctime_ms);
         state.messageList.push({
             key: payload.gid,
-            msgs: []
+            msgs: [message]
         });
-        message.time_show = util.reducerDate(payload.ctime_ms);
-        state.messageList.push(message);
     }
 }
 // 删除群成员
@@ -1135,6 +1167,19 @@ function changeActivePerson(state: ChatStore) {
             if (friend.name === msg.content.from_id && msg.msg_type === 4) {
                 msg.content.memo_name = friend.memo_name;
                 break;
+            }
+        }
+    }
+    // 给群成员中的好友添加备注名
+    if (state.activePerson.type === 4 &&
+        list && list.groupSetting && list.groupSetting.memberList) {
+        for (let member of list.groupSetting.memberList) {
+            for (let friend of state.friendList) {
+                if (friend.name === member.username) {
+                    member.memo_name = friend.memo_name;
+                    util.getMemo_nameFirstLetter(member);
+                    break;
+                }
             }
         }
     }
@@ -1333,6 +1378,9 @@ function sendMsgComplete(state: ChatStore, payload) {
         if (Number(messageList.key) === Number(payload.key)) {
             if (Number(payload.key) < 0) {
                 messageList.key = payload.msgs.key;
+                if (Number(payload.key) === Number(state.activePerson.key)) {
+                    state.activePerson.key = payload.msgs.key;
+                }
             }
             let msgs = messageList.msgs;
             for (let j = msgs.length - 1; j >= 0; j--) {
@@ -1400,6 +1448,7 @@ function transmitMessage (state, payload) {
     for (let messageList of state.messageList) {
         if (messageList.key && Number(messageList.key) === Number(payload.select.key)) {
             let msgs = messageList.msgs;
+            console.log(666, msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms);
             if (msgs.length === 0 ||
                 util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
                 payload.msgs.time_show = 'today';

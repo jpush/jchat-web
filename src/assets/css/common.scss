@@ -314,6 +314,8 @@ ul,li,ol{
 /* 模拟滚动条*/
 .chat-panel-scroll .ps-content{
     padding-right: 20px;
+    padding-left: 20px;
+    box-sizing: border-box;
 }
 .search-user-result .ps-content,.search-user-result .ps--active-y{
     max-height: 452px;
@@ -365,6 +367,10 @@ ul,li,ol{
     line-height: 18px;
     font-size: 14px;
     padding: 0;
+    cursor: text;
+    box-sizing: border-box;
+    letter-spacing: 0;
+    word-spacing: 0;
 }
 
 

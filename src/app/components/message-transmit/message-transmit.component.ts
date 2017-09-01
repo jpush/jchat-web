@@ -6,6 +6,7 @@ import { AppStore } from '../../app.store';
 import { mainAction } from '../../pages/main/actions';
 import { chatAction } from '../../pages/chat/actions';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
+import { global } from '../../services/common';
 
 @Component({
     selector: 'message-transmit-component',
@@ -76,6 +77,19 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
                 }
                 break;
             case mainAction.messageTransmitSearchComplete:
+                let result = chatState.messageTransmit.searchResult.result.singleArr;
+                if (result.length > 0 && result[0].name === global.user) {
+                    result[0].checked = true;
+                    result[0].disabled = true;
+                }
+                for (let item of result) {
+                    item.checked = false;
+                    for (let select of this.selectList) {
+                        if (item.username === select.name) {
+                            item.checked = true;
+                        }
+                    }
+                }
                 this.searchResult = chatState.messageTransmit.searchResult;
                 break;
             default:
@@ -130,6 +144,7 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
         event.target.src = avatarErrorIcon;
     }
     private confirmMessageTransmit() {
+        console.log(5555, this.selectList);
         this.confirmTransmit.emit(this.selectList);
         this.messageTransmit.show = false;
     }

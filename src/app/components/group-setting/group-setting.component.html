@@ -36,9 +36,7 @@
                         <div class="group-setting-avatar" (click)="watchInfoAction(item)">
                             <img [src]="item.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                         </div>
-                        <span class="flex-1" *ngIf="item.nickName">{{item.nickName}}</span>
-                        <span class="flex-1" *ngIf="item.username && !item.nickName && !item.name">{{item.username}}</span>
-                        <span class="flex-1" *ngIf="item.name && !item.nickName && !item.username">{{item.name}}</span>
+                        <span class="flex-1">{{item.memo_name || item.nickName || item.username}}</span>
                         <div class="group-setting-host" *ngIf="item.flag === 1" [hoverEvent]="hostHover">
                             <hover-tip-component [hidden]="!hostHover.show" [hoverInfo]="hostHover"></hover-tip-component>
                         </div>

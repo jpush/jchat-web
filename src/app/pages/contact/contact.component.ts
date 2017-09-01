@@ -87,14 +87,19 @@ export class ContactComponent implements OnInit, OnDestroy {
                     payload: contactState.contactUnreadNum
                 });
                 break;
+            case chatAction.friendReplyEvent:
+                this.verifyMessageList = contactState.verifyMessageList;
+                this.friendList = contactState.friendList;
+                this.verifyUnreadNum = contactState.verifyUnreadNum;
+                this.store$.dispatch({
+                    type: contactAction.dispatchContactUnreadNum,
+                    payload: contactState.contactUnreadNum
+                });
+                break;
             case contactAction.refuseAddFriendSuccess:
                 this.verifyMessageList = contactState.verifyMessageList;
                 break;
             case chatAction.dispatchFriendList:
-                this.friendList = contactState.friendList;
-                break;
-            case chatAction.friendReplyEvent:
-                this.verifyMessageList = contactState.verifyMessageList;
                 this.friendList = contactState.friendList;
                 break;
             case chatAction.addFriendConfirm:

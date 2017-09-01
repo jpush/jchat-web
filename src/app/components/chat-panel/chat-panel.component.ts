@@ -300,9 +300,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.sendMsgComplete:
 
             case chatAction.addGroupMembersEventSuccess:
-                this.updateMsg(chatState);
-                break;
+
+            case chatAction.transmitMessageComplete:
+
             case chatAction.msgRetractEvent:
+
+            case chatAction.saveMemoNameSuccess:
                 this.updateMsg(chatState);
                 break;
             default:
@@ -360,7 +363,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private showYouMoreOther(event, item, more) {
         const showArr = [false, true, false];
         const isFirstArr = [false, true, false];
-        const isLastArr = [false, false, true];
+        const isLastArr = [false, true, false];
         this.menuOption(this.moreMenu.info, showArr, isFirstArr, isLastArr);
         this.moreOperation(event, item, more);
     }
@@ -375,6 +378,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         const showArr = [true, true, false];
         const isFirstArr = [true, false, false];
         const isLastArr = [false, true, false];
+        this.menuOption(this.moreMenu.info, showArr, isFirstArr, isLastArr);
+        this.moreOperation(event, item, more);
+    }
+    private showMeMoreVoice(event, item, more) {
+        const showArr = [true, false, false];
+        const isFirstArr = [true, false, false];
+        const isLastArr = [true, false, false];
         this.menuOption(this.moreMenu.info, showArr, isFirstArr, isLastArr);
         this.moreOperation(event, item, more);
     }
@@ -739,17 +749,39 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     if (at === '@') {
                         let newList = [];
                         for (let item of memberList) {
-                            if (item.nickName.toUpperCase().indexOf(letter) !== -1 ||
-                                item.username.toUpperCase().indexOf(letter) !== -1) {
-                                item.letter = letter;
+                            if (item.memo_name &&
+                                item.memo_name.toUpperCase().indexOf(letter) !== -1) {
+                                item.match = 'memo_name';
                                 newList.push(item);
                                 continue ;
                             }
-                            if (item.usernameFirstLetter === letter ||
-                                item.nickNameFirstLetter === letter) {
-                                item.letter = letter;
+                            if (item.nickName &&
+                                item.nickName.toUpperCase().indexOf(letter) !== -1) {
+                                item.match = 'nickName';
                                 newList.push(item);
+                                continue ;
                             }
+                            if (item.username.toUpperCase().indexOf(letter) !== -1) {
+                                item.match = 'username';
+                                newList.push(item);
+                                continue ;
+                            }
+                            if (item.memo_nameFirstLetter && item.memo_nameFirstLetter === letter) {
+                                item.match = 'memo_name';
+                                newList.push(item);
+                                continue ;
+                            }
+                            if (item.nickNameFirstLetter && item.nickNameFirstLetter === letter) {
+                                item.match = 'nickName';
+                                newList.push(item);
+                                continue ;
+                            }
+                            if (item.usernameFirstLetter === letter) {
+                                item.match = 'username';
+                                newList.push(item);
+                                continue ;
+                            }
+                            item.match = '';
                         }
                         this.atDeleteNum = 2;
                         if (newList.length > 0) {
@@ -762,11 +794,24 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                         letter = text.substr(hasAt + 1, this.atDeleteNum - 1).toUpperCase();
                         let newList = [];
                         for (let item of memberList) {
-                            if (item.nickName.toUpperCase().indexOf(letter) !== -1 ||
-                                item.username.toUpperCase().indexOf(letter) !== -1) {
-                                item.letter = letter;
+                            if (item.memo_name &&
+                                item.memo_name.toUpperCase().indexOf(letter) !== -1) {
+                                item.match = 'memo_name';
                                 newList.push(item);
+                                continue ;
                             }
+                            if (item.nickName &&
+                                item.nickName.toUpperCase().indexOf(letter) !== -1) {
+                                item.match = 'nickName';
+                                newList.push(item);
+                                continue ;
+                            }
+                            if (item.username.toUpperCase().indexOf(letter) !== -1) {
+                                item.match = 'username';
+                                newList.push(item);
+                                continue ;
+                            }
+                            item.match = '';
                         }
                         if (newList.length > 0) {
                             this.showAtList(range, newList, false);
@@ -809,20 +854,46 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         let selection = window.getSelection();
         let range = selection.getRangeAt(0);
         this.inputNoBlur = false;
-        // 删除@ 或者 @xxx
+        // 计算@xxx的宽度
+        let span = document.createElement('span');
+        span.innerHTML = `@${item.memo_name || item.nickName || item.username}&nbsp;`;
+        span.style.fontSize = '14px';
+        document.body.appendChild(span);
+        const inputWidth = span.offsetWidth;
+        document.body.removeChild(span);
+        // 删除原来的@ 或者 @xxx
         let textNode = range.startContainer;
         range.setStart(textNode, range.endOffset - this.atDeleteNum);
         range.setEnd(textNode, range.endOffset);
         range.deleteContents();
         // 输入框中插入@XXX
-        const content = `<input type="button" class="chat-panel-at-input"
-                        value="@${item.nickName || item.username} "
+        const content = `<input style="width: ${inputWidth + 'px'}"
+                        type="text" class="chat-panel-at-input"
+                        value="@${item.memo_name || item.nickName || item.username} "
                         username="${item.username} " appkey="${item.appkey} "/>`;
         this.util.insertAtCursor(this.contentDiv, content, false);
         this.atList.show = false;
         setTimeout(() => {
             this.inputNoBlur = true;
+            this.inputAtEvent();
         }, 300);
+    }
+    // 给@xxx绑定事件
+    private inputAtEvent() {
+        let inputArray: any = document.getElementsByClassName('chat-panel-at-input');
+        for (let input of inputArray) {
+            input.onclick = null;
+            input.addEventListener('click', (event) => {
+                event.stopPropagation();
+                this.inputNoBlur = false;
+                let selection = window.getSelection();
+                let range = selection.getRangeAt(0);
+                let textNode = range.startContainer;
+                range.setStart(textNode, range.endOffset);
+                range.setEnd(textNode, range.endOffset);
+                this.contentDiv.focus();
+            }, false);
+        }
     }
     // 消息发送失败后点击重发消息
     private repeatSendMsgAction(item) {
@@ -998,10 +1069,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         download(url);
     }
     // 3s内图片没有加载成功，则显示默认图
-    private imageError(event) {
+    private imageError(event, i) {
         setTimeout(() => {
             if (event.target.src.indexOf('undefined') !== -1) {
                 event.target.src = imageError;
+                i.content.msg_body.width = 128;
+                i.content.msg_body.height = 91;
             }
         }, 3000);
     }

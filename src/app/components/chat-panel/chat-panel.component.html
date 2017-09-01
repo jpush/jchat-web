@@ -57,14 +57,14 @@
                             <div *ngIf="!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.kLargeEmoticon)" class="float-left">
                                 <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div *ngIf="!i.content.msg_body.extras || i.content.msg_body.extras.kLargeEmoticon !== 'kLargeEmoticon'">
-                                    <img (error)="imageError($event)" title="点击查看大图" (click)="imageViewerShow(i.content.msg_body.media_url, num)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img (error)="imageError($event, i)" title="点击查看大图" (click)="imageViewerShow(i.content.msg_body.media_url, num)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
                             <!-- 表情 -->
                             <div *ngIf="i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon'" class="float-left">
                                 <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="float-left">
-                                    <img (error)="imageError($event)" style="cursor: default" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img (error)="imageError($event, i)" style="cursor: default" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
                             <div class="chat-panel-more float-left" #youImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
@@ -187,13 +187,13 @@
                             <div *ngIf="!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.kLargeEmoticon)" class="float-right chat-panel-message-img-wrap" [ngClass]="{'chat-panel-message-img-loading': i.success === 1}">
                                 <div *ngIf="i.success === 3" class="chat-panel-send-error" (click)="repeatSendPicAction(i)"></div>
                                 <div>
-                                    <img class="chat-panel-message-img" (error)="imageError($event)" (click)="imageViewerShow(i.content.msg_body.media_url, num)" title="点击查看大图" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img class="chat-panel-message-img" (error)="imageError($event, i)" (click)="imageViewerShow(i.content.msg_body.media_url, num)" title="点击查看大图" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
                             <!-- 表情 -->
                             <div *ngIf="i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon'" class="float-right">
                                 <div class="float-left">
-                                    <img style="cursor: default" (error)="imageError($event)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img style="cursor: default" (error)="imageError($event, i)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
                             <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right" #meImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
@@ -275,6 +275,9 @@
                                     <!-- <source [src]="i.content.msg_body.media_url"> -->
                                 </audio>
                             </div>
+                            <div class="chat-panel-more chat-panel-more-me float-right" #meVoice [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showMeMoreVoice($event, i, meVoice)"></div>
+                            </div> 
                         </div>
                     </div>
                 </div>
