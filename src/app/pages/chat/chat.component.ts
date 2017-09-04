@@ -122,7 +122,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             type: chatAction.getVoiceState,
             payload: 'voiceState' + global.user
         });
-        const that = this;
         global.JIM.onMsgReceive((data) => {
             console.log(data);
             let mediaId = data.messages[0].content.msg_body.media_id;
@@ -136,17 +135,17 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
             // 群聊消息
             if (data.messages[0].msg_type === 4) {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.receiveGroupMessage,
                     payload: {
                         data,
-                        conversation: that.conversationList,
-                        messageList: that.messageList
+                        conversation: this.conversationList,
+                        messageList: this.messageList
                     }
                 });
             // 单聊消息
             } else {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.receiveSingleMessage,
                     payload: data
                 });
@@ -156,7 +155,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         global.JIM.onDisconnect(() => {
             // 定时器是为了解决火狐下刷新时先弹出断线提示
             setTimeout(() => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.logoutKickShow,
                     payload: {
                         show: true,
@@ -172,13 +171,13 @@ export class ChatComponent implements OnInit, OnDestroy {
         global.JIM.onEventNotification((data) => {
             console.log('event', data);
             data.isOffline = false;
-            that.asyncEvent(data);
+            this.asyncEvent(data);
         });
         // 监听离线事件消息
         global.JIM.onSyncEvent((data) => {
             console.log('asyncEvent', data);
             if (!this.isLoaded) {
-                that.eventArr = data;
+                this.eventArr = data;
             } else {
                 for (let item of data) {
                     item.isOffline = true;
@@ -198,16 +197,16 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 离线消息同步监听
         global.JIM.onSyncConversation((data) => {
-            that.hasOffline = true;
-            that.store$.dispatch({
+            this.hasOffline = true;
+            this.store$.dispatch({
                 type: chatAction.getAllMessage,
                 payload: data
             });
         });
         // 如果3秒内没有加载离线消息则手动触发
         setTimeout(() => {
-            if (!that.hasOffline) {
-                that.store$.dispatch({
+            if (!this.hasOffline) {
+                this.store$.dispatch({
                     type: chatAction.getAllMessage,
                     payload: []
                 });
@@ -459,6 +458,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                 // 转发消息成功(如果全部成功则为成功，有一个用户失败则不成功，会提示相关信息)
             case chatAction.transmitMessageComplete:
                 this.modalTipTransmitSuccess(chatState);
+                if (chatState.msgId.length > 0) {
+                    this.storageMsgId(chatState.msgId);
+                }
                 break;
             case contactAction.agreeAddFriendSuccess:
                 this.conversationList = chatState.conversation;
@@ -687,6 +689,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     payload: this.active
                 });
             }
+            console.log(33333333333);
             this.store$.dispatch({
                 type: chatAction.getSourceUrl,
                 payload: {
@@ -846,25 +849,24 @@ export class ChatComponent implements OnInit, OnDestroy {
     // 发送图片消息
     private sendPicEmit(data) {
         let msgs;
-        const that = this;
         const file = this.elementRef.nativeElement.querySelector('#sendPic');
         // repeatSend = true重发消息
         if (data.repeatSend && this.active.type === 3) {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: chatAction.sendSinglePic,
                 payload: {
                     singlePicFormData: data.singlePicFormData,
-                    key: that.active.key,
+                    key: this.active.key,
                     msgs: data
                 }
             });
             return ;
         }else if (data.repeatSend && this.active.type === 4) {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: chatAction.sendGroupPic,
                 payload: {
                     groupPicFormData: data.groupPicFormData,
-                    key: that.active.key,
+                    key: this.active.key,
                     msgs: data
                 }
             });
@@ -872,11 +874,11 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
         // 粘贴图片发送
         if (data.type === 'paste') {
-            this.sendPicContent(msgs, data.info, data.img, that);
+            this.sendPicContent(msgs, data.info, data.img);
         // 正常发送图片
         } else {
             this.util.imgReader(file, () => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.showModalTip,
                     payload: {
                         show: true,
@@ -889,11 +891,11 @@ export class ChatComponent implements OnInit, OnDestroy {
                     }
                 });
             }, (value) => {
-                this.sendPicContent(msgs, value, data.img, that);
+                this.sendPicContent(msgs, value, data.img);
             });
         }
     }
-    private sendPicContent(msgs, value, data, that) {
+    private sendPicContent(msgs, value, data) {
         msgs = {
             content: {
                 from_id: global.user,
@@ -907,40 +909,40 @@ export class ChatComponent implements OnInit, OnDestroy {
             },
             ctime_ms: new Date().getTime(),
             success: 1,
-            msgKey: that.msgKey ++
+            msgKey: this.msgKey ++
         };
         // 发送单聊图片
-        if (that.active.type === 3) {
+        if (this.active.type === 3) {
             let singlePicFormData = {
-                target_username: that.active.name,
-                // target_nickname: that.active.nickName,
+                target_username: this.active.name,
+                // target_nickname: this.active.nickName,
                 appkey: authPayload.appKey,
                 image: data
             };
             msgs.singlePicFormData = singlePicFormData;
             msgs.msg_type = 3;
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: chatAction.sendSinglePic,
                 payload: {
                     singlePicFormData,
-                    key: that.active.key,
+                    key: this.active.key,
                     msgs
                 }
             });
         // 发送群聊图片
-        }else if (that.active.type === 4) {
+        }else if (this.active.type === 4) {
             let groupPicFormData = {
-                target_gid: that.active.key,
-                // target_gname: that.active.name,
+                target_gid: this.active.key,
+                // target_gname: this.active.name,
                 image: data
             };
             msgs.groupPicFormData = groupPicFormData;
             msgs.msg_type = 4;
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: chatAction.sendGroupPic,
                 payload: {
                     groupPicFormData,
-                    key: that.active.key,
+                    key: this.active.key,
                     msgs
                 }
             });
@@ -1144,8 +1146,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                     show: true,
                     info: {
                         active: otherInfo,
-                        title: '添加消息免打扰',
-                        tip: `确定将 ${otherInfo.nickname || otherInfo.username} 加入消息免打扰吗？`,
+                        title: '消息免打扰',
+                        tip: `确定将 ${otherInfo.nickname || otherInfo.username} 加入免打扰吗？`,
+                        subTip: '设置之后正常接收消息，但无通知提示',
                         actionType: '[chat] add single no disturb modal'
                     }
                 }

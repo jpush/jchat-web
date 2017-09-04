@@ -5,7 +5,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
-import { Http } from '@angular/Http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appAction } from '../../../actions';
 import { global, authPayload, StorageService, pageNumber } from '../../../services/common';
@@ -48,7 +47,6 @@ export class ChatEffect {
         .ofType(chatAction.receiveGroupMessage)
         .map(toPayload)
         .switchMap((obj) => {
-            const that = this;
             let count = 0;
             let increase = 0;
             let messages = obj.data.messages[0];
@@ -74,7 +72,7 @@ export class ChatEffect {
                             name.substr(0, name.length - 1);
                     }
                     if (count === increase) {
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: chatAction.receiveMessageSuccess,
                             payload: obj.data
                         });
@@ -83,12 +81,12 @@ export class ChatEffect {
                     count ++;
                     messages.content.target_name = '群名获取失败？？';
                     if (count === increase) {
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: chatAction.receiveMessageSuccess,
                             payload: obj.data
                         });
                     }
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
@@ -115,7 +113,7 @@ export class ChatEffect {
                             && hasLoadAvatar) {
                             messages.content.avatarUrl = list.msgs[i].content.avatarUrl;
                             if (increase === 0) {
-                                that.store$.dispatch({
+                                this.store$.dispatch({
                                     type: chatAction.receiveMessageSuccess,
                                     payload: obj.data
                                 });
@@ -137,7 +135,7 @@ export class ChatEffect {
                         count ++;
                         messages.content.avatarUrl = '';
                         if (count === increase) {
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: chatAction.receiveMessageSuccess,
                                 payload: obj.data
                             });
@@ -149,7 +147,7 @@ export class ChatEffect {
                         messages.content.avatarUrl = urlInfo.url;
                         count ++;
                         if (count === increase) {
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: chatAction.receiveMessageSuccess,
                                 payload: obj.data
                             });
@@ -158,7 +156,7 @@ export class ChatEffect {
                         messages.content.avatarUrl = '';
                         count ++;
                         if (count === increase) {
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: chatAction.receiveMessageSuccess,
                                 payload: obj.data
                             });
@@ -167,7 +165,7 @@ export class ChatEffect {
                 }).onFail((error) => {
                     count ++;
                     if (count === increase) {
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: chatAction.receiveMessageSuccess,
                             payload: obj.data
                         });
@@ -203,7 +201,6 @@ export class ChatEffect {
         .ofType(chatAction.getSourceUrl)
         .map(toPayload)
         .switchMap((info) => {
-            const that = this;
             let resourceArray = [];
             let msgs = info.messageList[info.active.activeIndex].msgs;
             let end = msgs.length - (info.loadingCount - 1) * pageNumber;
@@ -219,13 +216,13 @@ export class ChatEffect {
                         global.JIM.getResource({media_id: msgBody.media_id})
                         .onSuccess((urlInfo) => {
                             msgs[i].content.msg_body.media_url = urlInfo.url;
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: chatAction.getAllMessageSuccess,
                                 payload: info.messageList
                             });
                         }).onFail((error) => {
                             msgs[i].content.msg_body.media_url = '';
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: chatAction.getAllMessageSuccess,
                                 payload: info.messageList
                             });
@@ -244,7 +241,6 @@ export class ChatEffect {
         .ofType(chatAction.getMemberAvatarUrl)
         .map(toPayload)
         .switchMap((info) => {
-            const that = this;
             let msgs = info.messageList[info.active.activeIndex].msgs;
             let end = msgs.length - (info.loadingCount - 1) * pageNumber;
             for (let i = end - 1; i >= end - pageNumber && i >= 0 && end >= 1; i--) {
@@ -255,7 +251,7 @@ export class ChatEffect {
                         if (msgs[i].content.from_id === msgs[j].content.from_id) {
                             msgs[i].content.avatarUrl = msgs[j].content.avatarUrl;
                             flag = true;
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: chatAction.getAllMessageSuccess,
                                 payload: info.messageList
                             });
@@ -272,7 +268,7 @@ export class ChatEffect {
                 }).onSuccess((data) => {
                     if (data.user_info.avatar === '') {
                         msgs[i].content.avatarUrl = '';
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: chatAction.getAllMessageSuccess,
                             payload: info.messageList
                         });
@@ -280,19 +276,19 @@ export class ChatEffect {
                         global.JIM.getResource({media_id: data.user_info.avatar})
                         .onSuccess((urlInfo) => {
                             msgs[i].content.avatarUrl = urlInfo.url;
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: chatAction.getAllMessageSuccess,
                                 payload: info.messageList
                             });
                         }).onFail((error) => {
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: chatAction.getAllMessageSuccess,
                                 payload: info.messageList
                             });
                         });
                     }
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.getAllMessageSuccess,
                         payload: info.messageList
                     });
@@ -309,7 +305,6 @@ export class ChatEffect {
         .ofType(chatAction.getAllMessage)
         .map(toPayload)
         .switchMap((data) => {
-            const that = this;
             for (let dataItem of data) {
                 for (let j = 0; j < dataItem.msgs.length; j++) {
                     if (j + 1 < dataItem.msgs.length || dataItem.msgs.length === 1) {
@@ -328,7 +323,7 @@ export class ChatEffect {
                     }
                 }
             }
-            let conversationObj = global.JIM.getConversation()
+            const conversationObj = global.JIM.getConversation()
             .onSuccess((info) => {
                 console.log('会话列表：', info);
                 info.conversations = info.conversations.reverse();
@@ -342,10 +337,10 @@ export class ChatEffect {
                         .onSuccess((urlInfo) => {
                             conversation.avatarUrl = urlInfo.url;
                             count --;
-                            that.dispatchConversation (count, that, info, data);
+                            this.dispatchConversation (count, info, data);
                         }).onFail((error) => {
                             count --;
-                            that.dispatchConversation (count, that, info, data);
+                            this.dispatchConversation (count, info, data);
                         });
                     }
                     if (conversation.type === 4 && conversation.name === '') {
@@ -363,50 +358,50 @@ export class ChatEffect {
                             } else {
                                 conversation.name = name.substr(0, name.length - 1);
                             }
-                            that.dispatchConversation (count, that, info, data);
+                            this.dispatchConversation (count, info, data);
                         }).onFail((error) => {
                             count --;
                             conversation.name = '群名获取失败？？';
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: appAction.errorApiTip,
                                 payload: error
                             });
-                            that.dispatchConversation (count, that, info, data);
+                            this.dispatchConversation (count, info, data);
                         });
                     }
                 }
-                that.dispatchConversation (count, that, info, data);
+                this.dispatchConversation (count, info, data);
                 // 获取屏蔽列表
                 global.JIM.groupShieldList()
                 .onSuccess((groupList) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.getConversationSuccess,
                         payload: {
                             shield: groupList.groups
                         }
                     });
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 });
                 global.JIM.getNoDisturb()
                 .onSuccess((noDisturbList) => {
-                   that.store$.dispatch({
+                   this.store$.dispatch({
                         type: chatAction.getConversationSuccess,
                         payload: {
                             noDisturb: noDisturbList.no_disturb
                         }
                     });
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
                         });
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -428,12 +423,11 @@ export class ChatEffect {
             return data;
         })
         .switchMap((text) => {
-            const that = this;
-            let msgObj = global.JIM.sendSingleMsg(text.singleMsg)
+            const msgObj = global.JIM.sendSingleMsg(text.singleMsg)
             .onSuccess((data, msgs) => {
                 console.log(555, data, msgs, text);
                 msgs.key = data.key;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -443,7 +437,7 @@ export class ChatEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -451,12 +445,12 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -465,7 +459,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -484,15 +478,14 @@ export class ChatEffect {
             const msgBody = {
                 text: text.msgs.content.msg_body.text
             };
-            const that = this;
-            let msgObj = global.JIM.sendSingleMsg({
+            const msgObj = global.JIM.sendSingleMsg({
                 target_username: text.select.name,
                 target_nickname: text.select.nickName,
                 msg_body: msgBody
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -502,7 +495,7 @@ export class ChatEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -511,12 +504,12 @@ export class ChatEffect {
                     }
                 });
                 error.text = text.select.name;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -528,7 +521,7 @@ export class ChatEffect {
                     code: 910000,
                     text: text.select.name
                 };
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -550,12 +543,10 @@ export class ChatEffect {
             return data;
         })
         .switchMap((text) => {
-            console.log(3333, text.groupMsg);
-            const that = this;
-            let groupMessageObj = global.JIM.sendGroupMsg(text.groupMsg)
+            const groupMessageObj = global.JIM.sendGroupMsg(text.groupMsg)
             .onSuccess((data, msgs) => {
                 console.log(555, msgs);
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -565,7 +556,7 @@ export class ChatEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -573,12 +564,12 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -587,7 +578,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -606,14 +597,13 @@ export class ChatEffect {
             const msgBody = {
                 text: text.msgs.content.msg_body.text
             };
-            const that = this;
-            let groupMessageObj = global.JIM.sendGroupMsg({
+            const groupMessageObj = global.JIM.sendGroupMsg({
                 target_gid: text.select.key,
                 target_gname: text.select.name,
                 msg_body: msgBody
             })
             .onSuccess((data, msgs) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -623,7 +613,7 @@ export class ChatEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -632,12 +622,12 @@ export class ChatEffect {
                     }
                 });
                 error.text = text.select.name;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
@@ -649,7 +639,7 @@ export class ChatEffect {
                     code: 910000,
                     text: text.select.name
                 };
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -665,11 +655,10 @@ export class ChatEffect {
         .ofType(chatAction.sendSinglePic)
         .map(toPayload)
         .switchMap((img) => {
-            const that = this;
-            let singlePicObj = global.JIM.sendSinglePic(img.singlePicFormData)
+            const singlePicObj = global.JIM.sendSinglePic(img.singlePicFormData)
             .onSuccess((info, msgs) => {
                 msgs.key = info.key;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: img.msgs.msgKey,
@@ -679,7 +668,7 @@ export class ChatEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: img.msgs.msgKey,
@@ -687,12 +676,12 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: img.msgs.msgKey,
@@ -701,7 +690,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -727,7 +716,7 @@ export class ChatEffect {
                 fsize: body.fsize,
                 extras : body.extras
             };
-            let singlePicObj = global.JIM.sendSinglePic({
+            const singlePicObj = global.JIM.sendSinglePic({
                 target_username: img.select.name,
                 msg_body: msgBody
             })
@@ -785,10 +774,9 @@ export class ChatEffect {
         .ofType(chatAction.sendGroupPic)
         .map(toPayload)
         .switchMap((img) => {
-            const that = this;
-            let sendGroupPicObj = global.JIM.sendGroupPic(img.groupPicFormData)
+            const sendGroupPicObj = global.JIM.sendGroupPic(img.groupPicFormData)
             .onSuccess((info, msgs) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: img.msgs.msgKey,
@@ -798,7 +786,7 @@ export class ChatEffect {
                     }
                 });
             }).onFail((error, msgs) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: img.msgs.msgKey,
@@ -806,12 +794,12 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: img.msgs.msgKey,
@@ -820,7 +808,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -846,7 +834,7 @@ export class ChatEffect {
                 fsize: body.fsize,
                 extras : body.extras
             };
-            let sendGroupPicObj = global.JIM.sendGroupPic({
+            const sendGroupPicObj = global.JIM.sendGroupPic({
                 target_gid: img.select.key,
                 msg_body: msgBody
             }).onSuccess((info, msgs) => {
@@ -902,11 +890,10 @@ export class ChatEffect {
         .ofType(chatAction.sendSingleFile)
         .map(toPayload)
         .switchMap((file) => {
-            const that = this;
             let sendSingleFileObj = global.JIM.sendSingleFile(file.singleFile)
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: file.msgs.msgKey,
@@ -916,7 +903,7 @@ export class ChatEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: file.msgs.msgKey,
@@ -924,12 +911,12 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: file.msgs.msgKey,
@@ -938,7 +925,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -1021,11 +1008,10 @@ export class ChatEffect {
         .ofType(chatAction.sendGroupFile)
         .map(toPayload)
         .switchMap((file) => {
-            const that = this;
-            let sendgroupFileObj = global.JIM.sendGroupFile(file.groupFile)
+            const sendgroupFileObj = global.JIM.sendGroupFile(file.groupFile)
             .onSuccess((data, msgs) => {
                 console.log(3333, msgs);
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: file.msgs.msgKey,
@@ -1035,7 +1021,7 @@ export class ChatEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: file.msgs.msgKey,
@@ -1043,12 +1029,12 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
                         msgKey: file.msgs.msgKey,
@@ -1057,7 +1043,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -1082,7 +1068,7 @@ export class ChatEffect {
                 fsize: body.fsize,
                 extras : body.extras
             };
-            let sendgroupFileObj = global.JIM.sendGroupFile({
+            const sendgroupFileObj = global.JIM.sendGroupFile({
                 target_gid: file.select.key,
                 msg_body: msgBody
             })
@@ -1139,8 +1125,7 @@ export class ChatEffect {
         .ofType(chatAction.watchOtherInfo)
         .map(toPayload)
         .switchMap((other) => {
-            const that = this;
-            let OtherInfoObj = global.JIM.getUserInfo({
+            const OtherInfoObj = global.JIM.getUserInfo({
                 username: other.username
             }).onSuccess((data) => {
                 data.user_info.infoType = 'watchInfo';
@@ -1173,7 +1158,7 @@ export class ChatEffect {
                 // });
                 if (other.hasOwnProperty('avatarUrl') || data.user_info.avatar === '') {
                     data.user_info.avatarUrl = other.avatarUrl ? other.avatarUrl : '';
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.watchOtherInfoSuccess,
                         payload: {
                             info: data.user_info,
@@ -1184,7 +1169,7 @@ export class ChatEffect {
                     global.JIM.getResource({media_id: data.user_info.avatar})
                     .onSuccess((urlInfo) => {
                         data.user_info.avatarUrl = urlInfo.url;
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: chatAction.watchOtherInfoSuccess,
                             payload: {
                                 info: data.user_info,
@@ -1192,7 +1177,7 @@ export class ChatEffect {
                             }
                         });
                     }).onFail((error) => {
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: chatAction.watchOtherInfoSuccess,
                             payload: {
                                 info: data.user_info,
@@ -1202,13 +1187,13 @@ export class ChatEffect {
                     });
                 }
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -1230,23 +1215,22 @@ export class ChatEffect {
             return data;
         })
         .switchMap((info) => {
-            const that = this;
-            let groupInfoObj = global.JIM.getGroupInfo({gid: info.active.key})
+            const groupInfoObj = global.JIM.getGroupInfo({gid: info.active.key})
             .onSuccess((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.groupInfo,
                     payload: {
                         groupInfo: data.group_info
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -1298,7 +1282,7 @@ export class ChatEffect {
         .ofType(chatAction.getGroupMembers)
         .map(toPayload)
         .switchMap((info) => {
-            let groupMemberObj = global.JIM.getGroupMembers({gid: info.key})
+            const groupMemberObj = global.JIM.getGroupMembers({gid: info.key})
             .onSuccess((data) => {
                 this.util.getMembersFirstLetter(data.member_list);
                 this.store$.dispatch({
@@ -1346,19 +1330,18 @@ export class ChatEffect {
         .ofType(chatAction.updateGroupInfo)
         .map(toPayload)
         .switchMap((info) => {
-            const that = this;
-            let groupInfoObj = global.JIM.updateGroupInfo( {
+            const groupInfoObj = global.JIM.updateGroupInfo( {
                 group_name: info.name,
                 group_description: info.desc,
                 gid: info.gid
             }).onSuccess((data) => {
                 if (info.actionType && info.actionType === 'modifyName') {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.groupName,
                         payload: info
                     });
                 } else {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.groupDescription,
                         payload: {
                             data,
@@ -1367,13 +1350,13 @@ export class ChatEffect {
                     });
                 }
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -1389,23 +1372,22 @@ export class ChatEffect {
         .ofType(chatAction.changeGroupShield)
         .map(toPayload)
         .switchMap((active) => {
-            const that = this;
             if (active.shield) {
                 global.JIM.delGroupShield({gid: active.key})
                 .onSuccess((data) => {
                     active.shield = false;
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.changeGroupShieldSuccess,
                         payload: active
                     });
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }).onTimeout((data) => {
                     const error = {code: 910000};
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
@@ -1414,18 +1396,18 @@ export class ChatEffect {
                 global.JIM.addGroupShield({gid: active.key})
                 .onSuccess((data) => {
                     active.shield = true;
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.changeGroupShieldSuccess,
                         payload: active
                     });
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }).onTimeout((data) => {
                     const error = {code: 910000};
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
@@ -1442,23 +1424,22 @@ export class ChatEffect {
         .ofType(chatAction.changeGroupNoDisturb)
         .map(toPayload)
         .switchMap((active) => {
-            const that = this;
             if (active.noDisturb) {
                 global.JIM.delGroupNoDisturb({gid: active.key})
                 .onSuccess((data) => {
                     active.noDisturb = false;
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.changeGroupNoDisturbSuccess,
                         payload: active
                     });
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }).onTimeout((data) => {
                     const error = {code: 910000};
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
@@ -1467,18 +1448,18 @@ export class ChatEffect {
                 global.JIM.addGroupNoDisturb({gid: active.key})
                 .onSuccess((data) => {
                     active.noDisturb = true;
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.changeGroupNoDisturbSuccess,
                         payload: active
                     });
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }).onTimeout((data) => {
                     const error = {code: 910000};
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
@@ -1505,12 +1486,11 @@ export class ChatEffect {
                         return {type: '[chat] add group members event useless'};
                     });
             }
-            const that = this;
             let groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
             .onSuccess((obj) => {
                 if (obj.group_info.name && obj.group_info.name !== '') {
                     eventData.name = obj.group_info.name;
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: chatAction.addGroupMembersEventSuccess,
                         payload: eventData
                     });
@@ -1523,7 +1503,7 @@ export class ChatEffect {
                             if (user.user_info.avatar === '') {
                                 count ++;
                                 if (count === eventData.to_usernames.length) {
-                                    that.store$.dispatch({
+                                    this.store$.dispatch({
                                         type: chatAction.updateGroupMembersEvent,
                                         payload: {
                                             eventData
@@ -1536,7 +1516,7 @@ export class ChatEffect {
                                     userList.avatarUrl = urlInfo.url;
                                     count ++;
                                     if (count === eventData.to_usernames.length) {
-                                        that.store$.dispatch({
+                                        this.store$.dispatch({
                                             type: chatAction.updateGroupMembersEvent,
                                             payload: {
                                                 eventData
@@ -1546,7 +1526,7 @@ export class ChatEffect {
                                 }).onFail((error) => {
                                     count ++;
                                     if (count === eventData.to_usernames.length) {
-                                        that.store$.dispatch({
+                                        this.store$.dispatch({
                                             type: chatAction.updateGroupMembersEvent,
                                             payload: {
                                                 eventData
@@ -1558,7 +1538,7 @@ export class ChatEffect {
                         }).onFail((error) => {
                             count ++;
                             if (count === eventData.to_usernames.length) {
-                                that.store$.dispatch({
+                                this.store$.dispatch({
                                     type: chatAction.updateGroupMembersEvent,
                                     payload: {
                                         eventData
@@ -1582,7 +1562,7 @@ export class ChatEffect {
                                         userList.avatarUrl = urlInfo.url;
                                         count ++;
                                         if (count === eventData.to_usernames.length) {
-                                            that.store$.dispatch({
+                                            this.store$.dispatch({
                                                 type: chatAction.updateGroupMembersEvent,
                                                 payload: {
                                                     eventData
@@ -1592,7 +1572,7 @@ export class ChatEffect {
                                     }).onFail((error) => {
                                         count ++;
                                         if (count === eventData.to_usernames.length) {
-                                            that.store$.dispatch({
+                                            this.store$.dispatch({
                                                 type: chatAction.updateGroupMembersEvent,
                                                 payload: {
                                                     eventData
@@ -1608,24 +1588,24 @@ export class ChatEffect {
                         } else {
                             eventData.name = name.substr(0, name.length - 1);
                         }
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: chatAction.addGroupMembersEventSuccess,
                             payload: eventData
                         });
                     }).onFail((error) => {
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
                         });
                         eventData.name = '群名获取失败？？';
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: chatAction.addGroupMembersEventSuccess,
                             payload: eventData
                         });
                     });
                 }
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -1641,24 +1621,23 @@ export class ChatEffect {
         .ofType(chatAction.createGroupEvent)
         .map(toPayload)
         .switchMap((eventData) => {
-            const that = this;
-            let groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
+            const groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
             .onSuccess((obj) => {
                 eventData.name = obj.group_info.name;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.createGroupSuccessEvent,
                     payload: eventData
                 });
             })
             .onFail((error) => {
                 eventData.name = '群名获取失败？？';
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: chatAction.createGroupSuccessEvent,
                     payload: eventData
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -1795,8 +1774,8 @@ export class ChatEffect {
                         payload: {
                             show: true,
                             info: {
-                                title: '取消消息免打扰',
-                                tip: '取消消息免打扰成功',
+                                title: '取消免打扰',
+                                tip: '取消免打扰成功',
                                 actionType: '[chat] delete single no disturb success useless',
                                 success: 1
                             }
@@ -1891,10 +1870,10 @@ export class ChatEffect {
         private router: Router,
         private storageService: StorageService
     ) {}
-    private dispatchConversation (count, that, info, data) {
+    private dispatchConversation (count, info, data) {
         if (count <= 0) {
-            let msgId = JSON.parse(that.storageService.get('msgId' + global.user));
-            that.store$.dispatch({
+            let msgId = JSON.parse(this.storageService.get('msgId' + global.user));
+            this.store$.dispatch({
                 type: chatAction.getConversationSuccess,
                 payload: {
                     conversation: info.conversations,

@@ -41,7 +41,8 @@
                         cursor: pointer;
                     }
                     .main-conversation-icon{
-                        background: url(../../../assets/images/chat-normal.svg) center center no-repeat;                 
+                        background: url(../../../assets/images/chat-normal.svg) center center no-repeat;
+                        position: relative;               
                         &:hover{
                             background-image: url(../../../assets/images/chat-active.svg);
                         }
@@ -50,7 +51,8 @@
                         }
                     }
                     .main-contact-icon{
-                        background: url(../../../assets/images/contact-normal.svg) center center no-repeat;              
+                        background: url(../../../assets/images/contact-normal.svg) center center no-repeat;
+                        position: relative;          
                         &:hover{
                             background-image: url(../../../assets/images/contact-active.svg);
                         }
@@ -58,13 +60,14 @@
                             background-image: url(../../../assets/images/contact-active.svg);
                         }
                     }
-                    .main-unreadNum{
-                        top: -7px;
-                        right: 10px;
-                        -webkit-transform: translate(-50%, 0);
-                                transform: translate(-50%, 0);
-                    }
                 }
+            }
+            .main-badge{
+                position: absolute;
+                top: 0;
+                right: 0;
+                -webkit-transform: translate(50%, -50%);
+                        transform: translate(50%, -50%);
             }
             .main-add-container{
                 position: absolute;

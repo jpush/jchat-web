@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
-import { Http } from '@angular/Http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appAction } from '../../../actions';
 
@@ -19,8 +18,7 @@ export class ContactEffect {
         .ofType(contactAction.getGroupList)
         .map(toPayload)
         .switchMap(() => {
-            let that = this;
-            let groupListObj = global.JIM.getGroups()
+            const groupListObj = global.JIM.getGroups()
             .onSuccess((data) => {
                 let groupList = data.group_list;
                 let flag = false;
@@ -40,17 +38,17 @@ export class ContactEffect {
                                 }
                             }
                             group.name = name.substr(0, 20);
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: contactAction.getGroupListSuccess,
                                 payload: groupList
                             });
                         }).onFail((error) => {
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: appAction.errorApiTip,
                                 payload: error
                             });
                             group.name = '#群名获取失败？？';
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: contactAction.getGroupListSuccess,
                                 payload: groupList
                             });
@@ -58,13 +56,13 @@ export class ContactEffect {
                     }
                 }
                 if (!flag) {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: contactAction.getGroupListSuccess,
                         payload: groupList
                     });
                 }
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -80,11 +78,10 @@ export class ContactEffect {
         .ofType(contactAction.getFriendList)
         .map(toPayload)
         .switchMap(() => {
-            const that = this;
             const friendListObj = global.JIM.getFriendList()
                 .onSuccess((data) => {
                     console.log(3333333, data.friend_list);
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: contactAction.getFriendListSuccess,
                         payload: data.friend_list
                     });
@@ -95,7 +92,7 @@ export class ContactEffect {
                         global.JIM.getResource({media_id: friend.avatar})
                         .onSuccess((urlInfo) => {
                             friend.avatarUrl = urlInfo.url;
-                            that.store$.dispatch({
+                            this.store$.dispatch({
                                 type: contactAction.getFriendListSuccess,
                                 payload: data.friend_list
                             });
@@ -104,7 +101,7 @@ export class ContactEffect {
                         });
                     }
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });

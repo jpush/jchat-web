@@ -5,7 +5,6 @@ import { Store, Action } from '@ngrx/store';
 import { AppStore } from '../../../app.store';
 import { registerAction } from '../actions';
 import { appAction } from '../../../actions';
-import { Http } from '@angular/Http';
 import { global } from '../../../services/common/global';
 import { md5 } from '../../../services/tools';
 
@@ -47,13 +46,12 @@ export class RegisterEffect {
             return val;
         })
         .switchMap((val) => {
-            const that = this;
             let registerObj = global.JIM.register({
                 username: val.username,
                 password: md5(val.password),
                 is_md5: true
             }).onSuccess((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: registerAction.registerSuccess,
                     payload: {
                         show: true,
@@ -72,13 +70,13 @@ export class RegisterEffect {
                 } else {
                     usernameTip = '注册失败';
                 }
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: registerAction.registerFailed,
                     payload: usernameTip
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });

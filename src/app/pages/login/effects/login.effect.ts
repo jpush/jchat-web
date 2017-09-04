@@ -16,7 +16,6 @@ export class LoginEffect {
         .ofType(loginAction.login)
         .map(toPayload)
         .switchMap((val) => {
-            const that = this;
             const loginObj = global.JIM.login({
                 username: val.username,
                 password: val.password,
@@ -24,18 +23,18 @@ export class LoginEffect {
             })
             .onSuccess((data) => {
                 global.user = data.username;
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: loginAction.loginSuccess,
                     payload: val
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: loginAction.loginFailed,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });

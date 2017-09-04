@@ -156,15 +156,6 @@
                     </div>
                     <!-- 自己发送的消息  -->
                     <div class="chat-panel-me-msg chat-panel-msg" *ngIf="global.user === i.content.from_id && i.msg_type !== 5">
-                        <!-- 时间 -->
-                        <!-- <p class="chat-panel-time" [ngClass]="{'first': num === 0}" *ngIf="i.time_show" [ngSwitch]="i.time_show">
-                            <time *ngSwitchCase="'year'">{{i.ctime_ms | time:"yy-MM-dd HH:mm"}}</time>
-                            <time *ngSwitchCase="'month'">{{i.ctime_ms | time:"MM-dd HH:mm"}}</time>
-                            <time *ngSwitchCase="'day'">{{i.ctime_ms | day}} {{i.ctime_ms | time:"HH:mm"}}</time>
-                            <time *ngSwitchCase="'the day before'">前天 {{i.ctime_ms | time:"HH:mm"}}</time>
-                            <time *ngSwitchCase="'yesterday'">昨天 {{i.ctime_ms | time:"HH:mm"}}</time>
-                            <time *ngSwitchCase="'today'">{{i.ctime_ms | time:"HH:mm"}}</time>
-                        </p> -->
                         <!-- 文本消息 -->
                         <div *ngIf="i.content.msg_type === 'text'" class="clearfix" (mouseleave)="msgMouseleave()">
                             <div class="float-right chat-panel-fromId-me chat-panel-avatar" (click)="watchSelfInfo()">

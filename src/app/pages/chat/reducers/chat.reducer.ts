@@ -118,6 +118,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 state.transmitSuccess = false;
             }
             sendMsgComplete(state, payload);
+            if (payload.success === 2) {
+                state.msgId = updateFilterMsgId(state, [{key: payload.key}]);
+            }
             break;
             // 切换当前会话用户
         case chatAction.changeActivePerson:
@@ -700,7 +703,7 @@ function msgRetract(state, payload) {
                     };
                     let item = list.msgs.splice(i, 1);
                     eventMsg.ctime_ms = item[0].ctime_ms;
-                    eventMsg.time_show = item[0].time_show;
+                    // eventMsg.time_show = item[0].time_show;
                     list.msgs.splice(i, 0, eventMsg);
                     if (i === list.msgs.length - 1) {
                         state.conversation[0].recentMsg = recentMsg;
@@ -1426,36 +1429,44 @@ function deleteConversationItem(state: ChatStore, payload) {
 }
 // 转发消息
 function transmitMessage (state, payload) {
-    // 将当前会话放在第一位
-    if (!payload.select.key) {
-        payload.select.key = --global.conversationKey;
-        state.conversation.unshift(payload.select);
-    } else {
-        for (let a = 0; a < state.conversation.length; a++) {
-            let groupExist = Number(state.conversation[a].key) === Number(payload.select.key) &&
-                            payload.select.type === 4;
-            let singleExist = payload.select.type === 3 &&
-                            state.conversation[a].name === payload.select.name;
-            if (groupExist || singleExist) {
-                payload.select.conversation_time_show = 'today';
-                state.conversation[a].recentMsg = payload.msgs;
-                let item = state.conversation.splice(a, 1);
-                state.conversation.unshift(item[0]);
-                break;
-            }
+    let flag = true;
+    for (let a = 0; a < state.conversation.length; a++) {
+        let groupExist = Number(state.conversation[a].key) === Number(payload.select.key) &&
+                        payload.select.type === 4;
+        let singleExist = payload.select.type === 3 &&
+                        state.conversation[a].name === payload.select.name;
+        if (groupExist || singleExist) {
+            flag = false;
+            payload.select.conversation_time_show = 'today';
+            state.conversation[a].recentMsg = payload.msgs;
+            let item = state.conversation.splice(a, 1);
+            state.conversation.unshift(item[0]);
+            break;
         }
     }
-    for (let messageList of state.messageList) {
-        if (messageList.key && Number(messageList.key) === Number(payload.select.key)) {
-            let msgs = messageList.msgs;
-            console.log(666, msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms);
-            if (msgs.length === 0 ||
-                util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
-                payload.msgs.time_show = 'today';
+    if (flag) {
+        payload.select.conversation_time_show = 'today';
+        payload.select.key = --global.conversationKey;
+        payload.msgs.time_show = 'today';
+        payload.select.recentMsg = payload.msgs;
+        state.conversation.unshift(payload.select);
+        state.messageList.push({
+            key: global.conversationKey,
+            msgs: [payload.msgs]
+        });
+        state.newMessage = payload.msgs;
+    } else {
+        for (let messageList of state.messageList) {
+            if (messageList.key && Number(messageList.key) === Number(payload.select.key)) {
+                let msgs = messageList.msgs;
+                if (msgs.length === 0 ||
+                    util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
+                    payload.msgs.time_show = 'today';
+                }
+                msgs.push(payload.msgs);
+                state.newMessage = payload.msgs;
+                break ;
             }
-            msgs.push(payload.msgs);
-            state.newMessage = payload.msgs;
-            break ;
         }
     }
 }

@@ -90,7 +90,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loginStream$.unsubscribe();
     }
     private JIMInit() {
-        const that = this;
         const timestamp = new Date().getTime();
         const signature = this.util.createSignature(timestamp);
         global.JIM.init({
@@ -100,32 +99,32 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
             timestamp,
             flag: authPayload.flag
         }).onSuccess((data) => {
-            const username = that.storageService.get(md5('jchat-remember-username'), true);
-            const password = that.storageService.get(md5('jchat-remember-password'), true);
+            const username = this.storageService.get(md5('jchat-remember-username'), true);
+            const password = this.storageService.get(md5('jchat-remember-password'), true);
             if (username && password) {
-                that.username = username;
-                that.rememberPassword = password;
-                that.password = password.substring(0, 6);
-                that.loginRemember = true;
-                that.emptyPassword = true;
-                that.usernamePlaceholderText = '';
-                that.passwordPlaceholderText = '';
+                this.username = username;
+                this.rememberPassword = password;
+                this.password = password.substring(0, 6);
+                this.loginRemember = true;
+                this.emptyPassword = true;
+                this.usernamePlaceholderText = '';
+                this.passwordPlaceholderText = '';
             }
-            if (that.storageService.get('register-username')) {
-                that.username = that.storageService.get('register-username');
-                that.usernamePlaceholderText = '';
-                that.storageService.remove('register-username');
-                that.password = '';
-                that.passwordPlaceholderText = '请输入密码';
+            if (this.storageService.get('register-username')) {
+                this.username = this.storageService.get('register-username');
+                this.usernamePlaceholderText = '';
+                this.storageService.remove('register-username');
+                this.password = '';
+                this.passwordPlaceholderText = '请输入密码';
             }
         }).onFail((error) => {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: appAction.errorApiTip,
                 payload: error
             });
         }).onTimeout((data) => {
             const error = {code: 910000};
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: appAction.errorApiTip,
                 payload: error
             });

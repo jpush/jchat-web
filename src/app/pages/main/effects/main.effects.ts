@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
-import { Http } from '@angular/Http';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { AppStore } from '../../../app.store';
@@ -22,13 +21,12 @@ export class MainEffect {
         .ofType(mainAction.getSelfInfo)
         .map(toPayload)
         .switchMap((info) => {
-            const that = this;
-            let usrInfoObj = global.JIM.getUserInfo({
+            const usrInfoObj = global.JIM.getUserInfo({
                 username: global.user
             }).onSuccess((data) => {
                 if (!data.user_info.avatar || data.user_info.avatar === '') {
                     data.user_info.avatarUrl = '';
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.showSelfInfo,
                         payload: {
                             info: data.user_info,
@@ -40,7 +38,7 @@ export class MainEffect {
                 global.JIM.getResource({media_id: data.user_info.avatar})
                 .onSuccess((urlInfo) => {
                     data.user_info.avatarUrl = urlInfo.url;
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.showSelfInfo,
                         payload: {
                             info: data.user_info,
@@ -49,7 +47,7 @@ export class MainEffect {
                     });
                 }).onFail((error) => {
                     data.user_info.avatarUrl = '';
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.showSelfInfo,
                         payload: {
                             info: data.user_info,
@@ -58,13 +56,13 @@ export class MainEffect {
                     });
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -80,7 +78,7 @@ export class MainEffect {
         .ofType(mainAction.logoutAction)
         .map(toPayload)
         .switchMap(() => {
-            let loginOutObj = global.JIM.loginOut();
+            const loginOutObj = global.JIM.loginOut();
             return Observable.of(loginOutObj)
                     .map(() => {
                         this.router.navigate(['/login']);
@@ -93,10 +91,9 @@ export class MainEffect {
         .ofType(mainAction.updateSelfInfo)
         .map(toPayload)
         .switchMap((info) => {
-            const that = this;
-            let updateSelfInfo = global.JIM.updateSelfInfo(info)
+            const updateSelfInfo = global.JIM.updateSelfInfo(info)
                 .onSuccess((data) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.showSelfInfo,
                         payload: {
                             info,
@@ -104,13 +101,13 @@ export class MainEffect {
                         }
                     });
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }).onTimeout((data) => {
                     const error = {code: 910000};
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
@@ -126,10 +123,9 @@ export class MainEffect {
         .ofType(mainAction.updateSelfAvatar)
         .map(toPayload)
         .switchMap((avatar) => {
-            const that = this;
-            let updateSelfAvatar = global.JIM.updateSelfAvatar({avatar: avatar.formData})
+            const updateSelfAvatar = global.JIM.updateSelfAvatar({avatar: avatar.formData})
                 .onSuccess((data) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.showSelfInfo,
                         payload: {
                             avatar,
@@ -137,13 +133,13 @@ export class MainEffect {
                         }
                     });
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }).onTimeout((data) => {
                     const error = {code: 910000};
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
@@ -159,8 +155,7 @@ export class MainEffect {
         .ofType(mainAction.createGroup)
         .map(toPayload)
         .switchMap((groupInfo) => {
-            const that = this;
-            let createGroupObj = global.JIM.createGroup({
+            const createGroupObj = global.JIM.createGroup({
                 group_name:  groupInfo.groupName,
                 group_description: groupInfo.groupDescription
             }).onSuccess((data) => {
@@ -178,30 +173,30 @@ export class MainEffect {
                         gid: data.gid,
                         member_usernames: groupInfo.memberUsernames
                     }).onSuccess((members) => {
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: mainAction.createGroupSuccess,
                             payload: groupObj
                         });
                     }).onFail((error) => {
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
                         });
                     });
                 } else {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.createGroupSuccess,
                         payload: groupObj
                     });
                 }
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -217,23 +212,22 @@ export class MainEffect {
         .ofType(mainAction.addGroupMember)
         .map(toPayload)
         .switchMap((info) => {
-            const that = this;
-            let addGroupMemberObj = global.JIM.addGroupMembers({
+            const addGroupMemberObj = global.JIM.addGroupMembers({
                 gid: info.activeGroup.key,
                 member_usernames: info.memberUsernames
             }).onSuccess((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.addGroupMemberSuccess,
                     payload: info.detailMember
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -249,22 +243,21 @@ export class MainEffect {
         .ofType(mainAction.modifyPassword)
         .map(toPayload)
         .switchMap((passwordInfo) => {
-            const that = this;
-            let passwordInfoObj = global.JIM.updateSelfPwd({
+            const passwordInfoObj = global.JIM.updateSelfPwd({
                 old_pwd: md5(passwordInfo.old_pwd),
                 new_pwd: md5(passwordInfo.new_pwd),
                 is_md5: true
             })
             .onSuccess((data) => {
                 global.JIM.loginOut();
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.modifyPasswordShow,
                     payload: {
                         repeatLogin: md5(passwordInfo.new_pwd),
                         show: false
                     }
                 });
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.showModalTip,
                     payload: {
                         show: true,
@@ -277,13 +270,13 @@ export class MainEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -299,8 +292,7 @@ export class MainEffect {
         .ofType(mainAction.createSingleChatAction)
         .map(toPayload)
         .switchMap((info) => {
-            const that = this;
-            let createSingleChatObj = global.JIM.getUserInfo({username: info.singleName})
+            const createSingleChatObj = global.JIM.getUserInfo({username: info.singleName})
             .onSuccess((data) => {
                 let user = data.user_info;
                 let item = {
@@ -322,7 +314,7 @@ export class MainEffect {
                     global.JIM.getResource({media_id: data.user_info.avatar})
                     .onSuccess((urlInfo) => {
                         item.avatarUrl = urlInfo.url;
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: mainAction.createSingleChatSuccess,
                             payload: item
                         });
@@ -330,13 +322,13 @@ export class MainEffect {
                         // pass
                     });
                 }
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.createSingleChatSuccess,
                     payload: item
                 });
             }).onFail((error) => {
                 if (error.code === 882002) {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.createSingleChatShow,
                         payload: {
                             show: true,
@@ -344,14 +336,14 @@ export class MainEffect {
                         }
                     });
                 } else {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -367,8 +359,7 @@ export class MainEffect {
         .ofType(mainAction.createGroupSearchAction)
         .map(toPayload)
         .switchMap((info) => {
-            const that = this;
-            let createGroupSearchObj = global.JIM.getUserInfo({
+            const createGroupSearchObj = global.JIM.getUserInfo({
                 username: info.keywords
             }).onSuccess((data) => {
                 let user = data.user_info;
@@ -386,25 +377,25 @@ export class MainEffect {
                     global.JIM.getResource({media_id: user.avatar})
                     .onSuccess((urlInfo) => {
                         item.avatarUrl = urlInfo.url;
-                        that.searUserType(info, that, item);
+                        this.searUserType(info, item);
                     }).onFail((error) => {
-                        that.searUserType(info, that, item);
+                        this.searUserType(info, item);
                     });
                 } else {
-                    that.searUserType(info, that, item);
+                    this.searUserType(info, item);
                 }
             }).onFail((error) => {
                 if (error.code === 882002) {
-                    that.searUserType(info, that, null);
+                    this.searUserType(info, null);
                 } else {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -420,11 +411,10 @@ export class MainEffect {
         .ofType(mainAction.blackMenu)
         .map(toPayload)
         .switchMap((isShow) => {
-            const that = this;
-            let blackMenuObj = global.JIM.getBlacks()
+            const blackMenuObj = global.JIM.getBlacks()
             .onSuccess((data) => {
                 if (data.black_list.length === 0) {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: mainAction.blackMenuSuccess,
                         payload: {
                             show: isShow.show,
@@ -437,7 +427,7 @@ export class MainEffect {
                     global.JIM.getResource({media_id: black.avatar})
                     .onSuccess((urlInfo) => {
                         black.avatarUrl = urlInfo.url;
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: mainAction.blackMenuSuccess,
                             payload: {
                                 show: isShow.show,
@@ -445,7 +435,7 @@ export class MainEffect {
                             }
                         });
                     }).onFail((error) => {
-                        that.store$.dispatch({
+                        this.store$.dispatch({
                             type: mainAction.blackMenuSuccess,
                             payload: {
                                 show: isShow.show,
@@ -455,13 +445,13 @@ export class MainEffect {
                     });
                 }
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -477,25 +467,24 @@ export class MainEffect {
         .ofType(mainAction.delSingleBlack)
         .map(toPayload)
         .switchMap((user) => {
-            const that = this;
-            let delSingleBlackObj = global.JIM.delSingleBlacks({
+            const delSingleBlackObj = global.JIM.delSingleBlacks({
                 member_usernames: [{
                     username: user.username,
                     appkey: authPayload.appKey
                 }]
             }).onSuccess((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.delSingleBlackSuccess,
                     payload: user
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -511,14 +500,13 @@ export class MainEffect {
         .ofType(mainAction.addBlackListAction)
         .map(toPayload)
         .switchMap((active) => {
-            const that = this;
-            let addBlackListObj = global.JIM.addSingleBlacks({
+            const addBlackListObj = global.JIM.addSingleBlacks({
                 member_usernames: [{
                     username: active.name || active.username,
                     appkey: authPayload.appKey
                 }]
             }).onSuccess((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.addBlackListSuccess,
                     payload: {
                         show: false,
@@ -532,13 +520,13 @@ export class MainEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -561,10 +549,9 @@ export class MainEffect {
             }
         })
         .switchMap((gid) => {
-            const that = this;
-            let exitGroupObj = global.JIM.exitGroup({gid})
+            const exitGroupObj = global.JIM.exitGroup({gid})
             .onSuccess((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.exitGroupSuccess,
                     payload: {
                         tipModal: {
@@ -580,13 +567,13 @@ export class MainEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -602,14 +589,13 @@ export class MainEffect {
         .ofType(mainAction.deleteMemberAction)
         .map(toPayload)
         .switchMap((info) => {
-            const that = this;
-            let deleteMember = global.JIM.delGroupMembers({
+            const deleteMember = global.JIM.delGroupMembers({
                 gid: info.group.key,
                 member_usernames: [
                     {username: info.deleteItem.username}
                 ]
             }).onSuccess((data) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: mainAction.deleteMemberSuccess,
                     payload: {
                         tipModal: {
@@ -624,13 +610,13 @@ export class MainEffect {
                     }
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -646,10 +632,9 @@ export class MainEffect {
         .ofType(mainAction.login)
         .map(toPayload)
         .switchMap((val) => {
-            const that = this;
             const timestamp = new Date().getTime();
             const signature = util.createSignature(timestamp);
-            let loginObj = global.JIM.init({
+            const loginObj = global.JIM.init({
                 appkey: authPayload.appKey,
                 random_str: authPayload.randomStr,
                 signature,
@@ -666,19 +651,19 @@ export class MainEffect {
                         window.location.reload();
                     }
                 }).onFail((error) => {
-                    that.store$.dispatch({
+                    this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 });
             }).onFail((error) => {
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                that.store$.dispatch({
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
@@ -694,7 +679,7 @@ export class MainEffect {
         .ofType(mainAction.addSingleNoDisturbAction)
         .map(toPayload)
         .switchMap((user) => {
-            let loginObj = global.JIM.addSingleNoDisturb({
+            const loginObj = global.JIM.addSingleNoDisturb({
                     target_name: user.name
                 }).onSuccess((data) => {
                     this.store$.dispatch({
@@ -750,7 +735,6 @@ export class MainEffect {
         .ofType(mainAction.deleteFriend)
         .map(toPayload)
         .switchMap((user) => {
-            console.log(99999999, user);
             const deleteFriend = global.JIM.delFriend({
                     target_name: user.name
                 }).onSuccess((data) => {
@@ -792,14 +776,14 @@ export class MainEffect {
         private store$: Store<AppStore>,
         private router: Router
     ) {}
-    private searUserType (info, that, item) {
+    private searUserType (info, item) {
         if (info.type === 'transmit') {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: mainAction.messageTransmitSearchComplete,
                 payload: item
             });
         } else {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: mainAction.createGroupSearchComplete,
                 payload: item
             });

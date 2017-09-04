@@ -1,3 +1,3 @@
 export * from './md5.tool';
 export * from './pinyin';
-export * from './Emoji';
+export * from './emoji';

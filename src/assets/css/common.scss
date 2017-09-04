@@ -345,18 +345,6 @@ ul,li,ol{
     top: -1px;
     vertical-align: middle;
 }
-// 徽标
-.badge{
-    position: absolute;
-    display: inline-block;
-    padding: 2px 4px;
-    color: #fff;
-    background: #EB424C;
-    line-height: 12px;
-    font-size: 12px;
-    border-radius: 8px;
-    min-width: 8px;
-}
 // menu
 .chat-panel-operation-board .menu-wrap{
     position: static !important;
@@ -371,6 +359,18 @@ ul,li,ol{
     box-sizing: border-box;
     letter-spacing: 0;
     word-spacing: 0;
+}
+// badge徽标
+#main .jui-badge .display-no-wrapper{
+    background-color: #EB424C !important;
+    padding: 2px 4px;
+    color: #fff;
+    background: #EB424C;
+    line-height: 12px;
+    font-size: 12px;
+    border-radius: 8px;
+    min-width: 8px;
+    height: 13px;
 }
 
 

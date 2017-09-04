@@ -67,7 +67,6 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         this.registerStream.unsubscribe();
     }
     private JIMInit() {
-        const that = this;
         const timestamp = new Date().getTime();
         const signature = this.util.createSignature(timestamp);
         global.JIM.init({
@@ -79,13 +78,13 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         }).onSuccess((data) => {
             // pass
         }).onFail((error) => {
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: appAction.errorApiTip,
                 payload: error
             });
         }).onTimeout((data) => {
             const error = {code: 910000};
-            that.store$.dispatch({
+            this.store$.dispatch({
                 type: appAction.errorApiTip,
                 payload: error
             });

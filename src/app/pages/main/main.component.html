@@ -1,4 +1,4 @@
-<div class="main-wrap display-flex align-items-center">
+<div class="main-wrap display-flex align-items-center" id="main">
     <div class="main-container display-flex">
         <div class="main-menu">
             <div class="main-self-avatar">
@@ -7,13 +7,13 @@
             <div class="main-tab">
                 <div (click)="changeListTab(0)" class="main-chat">
                     <div class="main-conversation-icon" [ngClass]="{active: listTab === 0}" [hoverEvent]="conversationHover">
-                        <span *ngIf="badge.conversation > 0" class="badge main-unreadNum">{{badge.conversation | badge: 999}}</span>
+                        <jui-badge *ngIf="badge.conversation > 0" class="main-badge" displayType="no-wrapper" [badgeNum]="badge.conversation" showZero="false" maxNum="999"></jui-badge>                        
                     </div>
                     <hover-tip-component [hidden]="!conversationHover.show" [hoverInfo]="conversationHover"></hover-tip-component>
                 </div>
                 <div (click)="changeListTab(1)" class="main-chat">
                     <div class="main-contact-icon" [ngClass]="{active: listTab === 1}" [hoverEvent]="contactHover">
-                        <span *ngIf="badge.contact > 0" class="badge main-unreadNum">{{badge.contact | badge: 999}}</span>
+                        <jui-badge *ngIf="badge.contact > 0" class="main-badge" displayType="no-wrapper" [badgeNum]="badge.contact" showZero="false" maxNum="999"></jui-badge>
                     </div>
                     <hover-tip-component [hidden]="!contactHover.show" [hoverInfo]="contactHover"></hover-tip-component>
                 </div>

@@ -1068,7 +1068,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         // 为了兼容火狐下a链接下载，引入downloadjs
         download(url);
     }
-    // 3s内图片没有加载成功，则显示默认图
+    // 10s内图片没有加载成功，则显示默认图
     private imageError(event, i) {
         setTimeout(() => {
             if (event.target.src.indexOf('undefined') !== -1) {
@@ -1076,6 +1076,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 i.content.msg_body.width = 128;
                 i.content.msg_body.height = 91;
             }
-        }, 3000);
+        }, 10000);
     }
 }

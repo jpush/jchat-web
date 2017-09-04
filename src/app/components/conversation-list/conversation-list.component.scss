@@ -118,6 +118,13 @@
             .conversation-at{
                 color: #EB424C;
             }
+            .conversation-badge{
+                position: absolute;
+                top: -7px;
+                right: -7px;
+                font-size: 12px;
+                line-height: 13px;
+            }
         }
     }
 }
