@@ -1,7 +1,7 @@
 <div class="modal-shadow" (click)="stopPropagation($event)">
     <div class="other-info-container modal-content">
-        <span *ngIf="otherInfo.info.infoType === 'watchOtherInfo' || (otherInfo.info.infoType === 'createSingleChat' && otherInfo.info.isFriend)" class="other-info-more" (click)="showMenu($event)"></span>
-        <info-menu-component *ngIf="infoMenu.show && (otherInfo.info.infoType === 'watchOtherInfo' || (otherInfo.info.infoType === 'createSingleChat' && otherInfo.info.isFriend))" [menu]="infoMenu" (selectMenuItem)="selectMenuItemEmit($event)"></info-menu-component>
+        <span *ngIf="otherInfo.info.infoType === 'watchOtherInfo' || (otherInfo.info.infoType === 'createSingleChat' && otherInfo.info.isFriend) || (otherInfo.info.infoType === 'addFriend' && otherInfo.info.isFriend)" class="other-info-more" (click)="showMenu($event)"></span>
+        <info-menu-component *ngIf="infoMenu.show && (otherInfo.info.infoType === 'watchOtherInfo' || (otherInfo.info.infoType === 'createSingleChat' && otherInfo.info.isFriend) || (otherInfo.info.infoType === 'addFriend' && otherInfo.info.isFriend))" [menu]="infoMenu" (selectMenuItem)="selectMenuItemEmit($event)"></info-menu-component>
         <span class="modal-close" (click)="otherClose($event)"></span>
         <div class="other-info-avatar">
             <div class="other-info-show-avatar">

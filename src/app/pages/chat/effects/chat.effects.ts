@@ -491,7 +491,8 @@ export class ChatEffect {
                         msgKey: text.msgs.msgKey,
                         key: text.select.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        name: text.select.name
                     }
                 });
             }).onFail((error) => {
@@ -528,7 +529,7 @@ export class ChatEffect {
             });
             return Observable.of(msgObj)
                     .map(() => {
-                        return {type: '[chat] send single message useless'};
+                        return {type: '[chat] transmit single message useless'};
                     });
         });
     // 发送群组消息
@@ -543,8 +544,10 @@ export class ChatEffect {
             return data;
         })
         .switchMap((text) => {
+            console.log(999, text);
             const groupMessageObj = global.JIM.sendGroupMsg(text.groupMsg)
             .onSuccess((data, msgs) => {
+                msgs.key = data.key;
                 console.log(555, msgs);
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
@@ -603,13 +606,15 @@ export class ChatEffect {
                 msg_body: msgBody
             })
             .onSuccess((data, msgs) => {
+                msgs.key = data.key;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.select.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        name: text.select.name
                     }
                 });
             }).onFail((error) => {
@@ -646,7 +651,7 @@ export class ChatEffect {
             });
             return Observable.of(groupMessageObj)
                     .map(() => {
-                        return {type: '[chat] send group message useless'};
+                        return {type: '[chat] transmit group message useless'};
                     });
         });
     // 发送单聊图片
@@ -728,7 +733,8 @@ export class ChatEffect {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        name: img.select.name
                     }
                 });
             }).onFail((error) => {
@@ -765,7 +771,7 @@ export class ChatEffect {
             });
             return Observable.of(singlePicObj)
                     .map(() => {
-                        return {type: '[chat] send single picture useless'};
+                        return {type: '[chat] transmit single picture useless'};
                     });
         });
     // 发送群组图片
@@ -776,6 +782,7 @@ export class ChatEffect {
         .switchMap((img) => {
             const sendGroupPicObj = global.JIM.sendGroupPic(img.groupPicFormData)
             .onSuccess((info, msgs) => {
+                msgs.key = info.key;
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -838,13 +845,15 @@ export class ChatEffect {
                 target_gid: img.select.key,
                 msg_body: msgBody
             }).onSuccess((info, msgs) => {
+                msgs.key = info.key;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        name: img.select.name
                     }
                 });
             }).onFail((error, msgs) => {
@@ -881,7 +890,7 @@ export class ChatEffect {
             });
             return Observable.of(sendGroupPicObj)
                     .map(() => {
-                        return {type: '[chat] send group pic useless'};
+                        return {type: '[chat] transmit group pic useless'};
                     });
         });
     // 发送单聊文件
@@ -955,6 +964,7 @@ export class ChatEffect {
                 msg_body: msgBody
             })
             .onSuccess((data, msgs) => {
+                console.log(888, msgs);
                 msgs.key = data.key;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
@@ -962,7 +972,8 @@ export class ChatEffect {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        name: file.select.name
                     }
                 });
             }).onFail((error) => {
@@ -999,7 +1010,7 @@ export class ChatEffect {
             });
             return Observable.of(sendSingleFileObj)
                     .map(() => {
-                        return {type: '[chat] send single file useless'};
+                        return {type: '[chat] transmit single file useless'};
                     });
         });
     // 发送群组文件
@@ -1011,6 +1022,7 @@ export class ChatEffect {
             const sendgroupFileObj = global.JIM.sendGroupFile(file.groupFile)
             .onSuccess((data, msgs) => {
                 console.log(3333, msgs);
+                msgs.key = data.key;
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -1073,13 +1085,15 @@ export class ChatEffect {
                 msg_body: msgBody
             })
             .onSuccess((data, msgs) => {
+                msgs.key = data.key;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        name: file.select.name
                     }
                 });
             }).onFail((error) => {
@@ -1116,7 +1130,137 @@ export class ChatEffect {
             });
             return Observable.of(sendgroupFileObj)
                     .map(() => {
-                        return {type: '[chat] send group file useless'};
+                        return {type: '[chat] transmit group file useless'};
+                    });
+        });
+    // 转发单聊位置
+    @Effect()
+    private transmitSingleLocation$: Observable<Action> = this.actions$
+        .ofType(chatAction.transmitSingleLocation)
+        .map(toPayload)
+        .switchMap((location) => {
+            const body = location.msgs.content.msg_body;
+            const msgBody = {
+                latitude: body.latitude,
+                longitude: body.longitude,
+                scale: body.scale,
+                label: body.label,
+                fsize: body.fsize,
+                extras : body.extras
+            };
+            const sendSingleLocation = global.JIM.sendSingleLocation({
+                target_username: location.select.name,
+                msg_body: msgBody
+            })
+            .onSuccess((data, msgs) => {
+                msgs.key = data.key;
+                console.log(3333, msgs);
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: location.msgs.msgKey,
+                        key: location.key,
+                        success: 2,
+                        msgs,
+                        name: location.select.name
+                    }
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: location.msgs.msgKey,
+                        key: location.key,
+                        success: 3
+                    }
+                });
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: location.msgs.msgKey,
+                        key: location.key,
+                        success: 3
+                    }
+                });
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(sendSingleLocation)
+                    .map(() => {
+                        return {type: '[chat] transmit single location useless'};
+                    });
+        });
+    // 转发群组位置
+    @Effect()
+    private transmitGroupLocation$: Observable<Action> = this.actions$
+        .ofType(chatAction.transmitGroupLocation)
+        .map(toPayload)
+        .switchMap((location) => {
+            const body = location.msgs.content.msg_body;
+            const msgBody = {
+                latitude: body.latitude,
+                longitude: body.longitude,
+                scale: body.scale,
+                label: body.label,
+                fsize: body.fsize,
+                extras : body.extras
+            };
+            const transmitGroupLocation = global.JIM.sendGroupLocation({
+                target_gid: location.select.key,
+                msg_body: msgBody
+            })
+            .onSuccess((data, msgs) => {
+                msgs.key = data.key;
+                console.log(3333, msgs);
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: location.msgs.msgKey,
+                        key: location.key,
+                        success: 2,
+                        msgs,
+                        name: location.select.name
+                    }
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: location.msgs.msgKey,
+                        key: location.key,
+                        success: 3
+                    }
+                });
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                this.store$.dispatch({
+                    type: chatAction.transmitMessageComplete,
+                    payload: {
+                        msgKey: location.msgs.msgKey,
+                        key: location.key,
+                        success: 3
+                    }
+                });
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(transmitGroupLocation)
+                    .map(() => {
+                        return {type: '[chat] transmit group location useless'};
                     });
         });
     // 查看别人的资料

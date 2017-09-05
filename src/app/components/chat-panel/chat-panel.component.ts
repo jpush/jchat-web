@@ -41,6 +41,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     @Output()
         private sendFile: EventEmitter<any> = new EventEmitter();
     @Output()
+        private sendLocation: EventEmitter<any> = new EventEmitter();
+    @Output()
         private saveDraft: EventEmitter<any> = new EventEmitter();
     @Output()
         private otherInfo: EventEmitter<any> = new EventEmitter();
@@ -180,10 +182,10 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         }
         // 消息面板滚动条向下滚动
         if (changes.otherOptionScrollBottom) {
-            this.scrollBottom();
+            this.scrollBottom(150);
         }
         if (changes.changeActiveScrollBottom) {
-            this.scrollBottom(changes.changeActiveScrollBottom);
+            this.scrollBottom(150, changes.changeActiveScrollBottom);
         }
     }
     public ngAfterViewInit() {
@@ -193,7 +195,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     public ngOnDestroy() {
         this.chatStream$.unsubscribe();
     }
-    private scrollBottom (changeActive ? ) {
+    private scrollBottom (timeout, changeActive ? ) {
         if (changeActive) {
             this.loadFlag = false;
         }
@@ -205,7 +207,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             if (changeActive) {
                 this.loadFlag = true;
             }
-        }, 150);
+        }, timeout);
     }
     @HostListener('document:drop', ['$event']) private onDrop(event) {
         event.preventDefault();
@@ -292,6 +294,41 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 this.updateMsg(chatState);
                 this.imageViewer.result = chatState.imageViewer;
                 break;
+            case chatAction.transmitSingleMessage:
+
+                // 转发单聊图片消息
+            case chatAction.transmitSinglePic:
+
+                // 转发单聊文件消息
+            case chatAction.transmitSingleFile:
+
+                // 转发群聊文本消息
+            case chatAction.transmitGroupMessage:
+
+                // 转发单聊图片消息
+            case chatAction.transmitGroupPic:
+
+                // 转发单聊文件消息
+            case chatAction.transmitGroupFile:
+
+                // 转发单聊位置
+            case chatAction.transmitSingleLocation:
+
+                // 转发群聊位置
+            case chatAction.transmitGroupLocation:
+
+            case chatAction.transmitMessageComplete:
+                if (this.active.type === 3 &&
+                    chatState.newMessage.content.target_id === this.active.name) {
+                    this.updateMsg(chatState);
+                    this.pointerToMap(chatState);
+                    this.scrollBottom(0);
+                } else if (this.active.type === 4 && chatState.newMessage.key === this.active.key) {
+                    this.updateMsg(chatState);
+                    this.pointerToMap(chatState);
+                    this.scrollBottom(0);
+                }
+                break;
             case chatAction.getAllMessageSuccess:
                 if (chatState.imageViewer !== []) {
                     this.imageViewer.result = chatState.imageViewer;
@@ -300,8 +337,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.sendMsgComplete:
 
             case chatAction.addGroupMembersEventSuccess:
-
-            case chatAction.transmitMessageComplete:
 
             case chatAction.msgRetractEvent:
 
@@ -910,6 +945,11 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         item.success = 1;
         item.repeatSend = true;
         this.sendFile.emit(item);
+    }
+    private repeatSendLocationAction(item) {
+        item.success = 1;
+        item.repeatSend = true;
+        this.sendLocation.emit(item);
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;

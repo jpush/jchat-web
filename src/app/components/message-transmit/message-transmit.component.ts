@@ -5,7 +5,8 @@ import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
 import { mainAction } from '../../pages/main/actions';
 import { chatAction } from '../../pages/chat/actions';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
+const singleErrorIcon = '../../../assets/images/single-avatar.svg';
+const groupErrorIcon = '../../../assets/images/group-avatar.svg';
 import { global } from '../../services/common';
 
 @Component({
@@ -151,8 +152,8 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
             this.selectList.push(item);
         }
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
+    private avatarErrorIcon(event, item) {
+        event.target.src = item.type === 4 ? groupErrorIcon : singleErrorIcon;
     }
     private confirmMessageTransmit() {
         this.confirmTransmit.emit(this.selectList);

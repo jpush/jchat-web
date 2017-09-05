@@ -149,9 +149,6 @@
                             bottom: 0;
                             left: 0;
                         }
-                        &:hover{
-                            background-image: url(../../../assets/images/more-active.svg) !important;
-                        }
                     }
                     &.show-more-icon .chat-panel-operation{
                         background-image: url(../../../assets/images/more-normal.svg);
@@ -268,7 +265,6 @@
                     width: 230px;
                     height: 150px;
                     border-radius: 5px;
-                    overflow: hidden;
                     .chat-panel-allmap{
                         width: 100%;
                         height: 100%;

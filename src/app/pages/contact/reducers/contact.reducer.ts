@@ -97,7 +97,6 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
 };
 // 等待好友验证
 function waitReply(state, payload) {
-    console.log(777, payload);
     let verifyMessage = {
         name: payload.name,
         nickName: payload.nickName,
@@ -198,7 +197,6 @@ function friendVerify(state, payload) {
     } else {
         changeFirstOne(state, 'isContactFirstOne');
     }
-    console.log(state.contactUnreadNum, state.verifyUnreadNum);
     for (let i = 0; i < state.verifyMessageList.length; i++) {
         let message = state.verifyMessageList[i];
         let stateType = message.stateType;
@@ -222,7 +220,6 @@ function friendVerify(state, payload) {
             break;
         }
     }
-    console.log(state.contactUnreadNum, state.verifyUnreadNum);
     state.verifyMessageList.unshift(verifyMessage);
 }
 // 补全好友的key
@@ -275,7 +272,6 @@ function addInfoToContact(state, payload) {
     }
     for (let friend of state.friendList) {
         for (let i = 0; i < friend.data.length; i++) {
-            console.log(222, payload.item.name, friend.data[i].name);
             if (payload.item.name === friend.data[i].name) {
                 friend.data[i] = Object.assign({}, friend.data[i], payload.item);
                 return ;

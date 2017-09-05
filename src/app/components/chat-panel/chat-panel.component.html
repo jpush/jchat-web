@@ -225,6 +225,8 @@
                                 <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div class="float-right chat-panel-video">
+                                <div *ngIf="i.success === 1" class="chat-panel-send-loading"></div>
+                                <div *ngIf="i.success === 3" class="chat-panel-send-error" (click)="repeatSendFileAction(i)"></div>
                                 <video (click)="playVideo(i.content.msg_body.media_url)" [src]="i.content.msg_body.media_url | sanitize: 'url'" (loadstart)="videoLoadStart(num)" (loadeddata)="videoLoad(num)" [id]="'video' + num">
                                     <!--<source [src]="i.content.msg_body.media_url">-->
                                 </video>
@@ -243,6 +245,8 @@
                                 <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div class="chat-panel-map-wrap float-right">
+                                <div *ngIf="i.success === 1" class="chat-panel-send-loading"></div>
+                                <div *ngIf="i.success === 3" class="chat-panel-send-error" (click)="repeatSendLocationAction(i)"></div>
                                 <a [routerLink]="['/map', i.content.msg_body.longitude + '&' + i.content.msg_body.latitude]" target="_blank">                                
                                     <div [id]="'allmap' + num" class="float-left chat-panel-allmap" title="点击查看详细地图"></div>
                                 </a>                                    

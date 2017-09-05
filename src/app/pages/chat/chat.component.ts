@@ -91,14 +91,19 @@ export class ChatComponent implements OnInit, OnDestroy {
     };
     private transmitItem = {
         content: {
-            msg_type: ''
+            msg_type: '',
+            from_id: '',
+            target_id: ''
         },
         msgKey: -1,
         totalTransmitNum: 0,
         ctime_ms: 0,
         conversation_time_show: '',
         hasLoad: false,
-        showMoreIcon: false
+        showMoreIcon: false,
+        type: 0,
+        key: 0,
+        isTransmitMsg: true
     };
     private transmitCount = 0;
     private verifyModal = {
@@ -282,7 +287,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 }
                 this.messageList = chatState.messageList;
-                console.log(666, chatState.newMessageIsDisturb);
                 if (!chatState.newMessageIsDisturb) {
                     this.notification(chatState.newMessage);
                 }
@@ -453,6 +457,12 @@ export class ChatComponent implements OnInit, OnDestroy {
 
                 // 转发单聊文件消息
             case chatAction.transmitGroupFile:
+
+                // 转发单聊位置
+            case chatAction.transmitSingleLocation:
+
+                // 转发群聊位置
+            case chatAction.transmitGroupLocation:
                 this.conversationList = chatState.conversation;
                 break;
                 // 转发消息成功(如果全部成功则为成功，有一个用户失败则不成功，会提示相关信息)
@@ -680,7 +690,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.changeActiveScrollBottom = !this.changeActiveScrollBottom;
         this.groupSetting.show = false;
         // 判断是否已经缓存
-        console.log(333, this.isCacheArr, this.active.key);
         if (this.isCacheArr.indexOf(this.active.key) === -1) {
             this.isCacheArr.push(this.active.key);
             if (this.active.type === 4) {
@@ -689,7 +698,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                     payload: this.active
                 });
             }
-            console.log(33333333333);
             this.store$.dispatch({
                 type: chatAction.getSourceUrl,
                 payload: {
@@ -786,8 +794,40 @@ export class ChatComponent implements OnInit, OnDestroy {
             success: 1,
             msgKey: this.msgKey ++
         };
+        // 转发消息失败重发单聊消息
+        if (this.active.type === 3 && data.repeatSend && data.isTransmitMsg) {
+            data.singleMsg = {
+                target_username: this.active.name,
+                content: data.content.msg_body.text
+            };
+            this.store$.dispatch({
+                type: chatAction.transmitSingleMessage,
+                payload: {
+                    msgs: data,
+                    select: {
+                        key: this.active.key
+                    },
+                    key: this.active.key
+                }
+            });
+        // 转发消息失败重发群聊消息
+        }else if (this.active.type === 4 && data.repeatSend && data.isTransmitMsg) {
+            data.groupMsg = {
+                target_gid: this.active.key,
+                content: data.content.msg_body.text
+            };
+            this.store$.dispatch({
+                type: chatAction.transmitGroupMessage,
+                payload: {
+                    msgs: data,
+                    select: {
+                        key: this.active.key
+                    },
+                    key: this.active.key
+                }
+            });
         // 发送单聊消息
-        if (this.active.type === 3 && !data.repeatSend) {
+        }else if (this.active.type === 3 && !data.repeatSend) {
             let singleMsg = {
                 target_username: this.active.name,
                 // target_nickname: this.active.nickName,
@@ -803,7 +843,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     msgs
                 }
             });
-            // 发送群组消息
+        // 发送群组消息
         }else if (this.active.type === 4 && !data.repeatSend) {
             let groupMsg: any = {
                 target_gid: this.active.key,
@@ -815,7 +855,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             } else if (data.atList.length > 0) {
                 groupMsg.at_list = data.atList;
             }
-            console.log(222, groupMsg.at_list);
             msgs.groupMsg = groupMsg;
             msgs.msg_type = 4;
             this.store$.dispatch({
@@ -826,6 +865,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     msgs
                 }
             });
+        // 重发单聊消息
         }else if (this.active.type === 3 && data.repeatSend) {
             this.store$.dispatch({
                 type: chatAction.sendSingleMessage,
@@ -835,6 +875,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     msgs: data
                 }
             });
+        // 重发群聊消息
         }else if (this.active.type === 4 && data.repeatSend) {
             this.store$.dispatch({
                 type: chatAction.sendGroupMessage,
@@ -851,7 +892,31 @@ export class ChatComponent implements OnInit, OnDestroy {
         let msgs;
         const file = this.elementRef.nativeElement.querySelector('#sendPic');
         // repeatSend = true重发消息
-        if (data.repeatSend && this.active.type === 3) {
+        if (data.repeatSend && this.active.type === 3 && data.isTransmitMsg) {
+            this.store$.dispatch({
+                type: chatAction.transmitSinglePic,
+                payload: {
+                    msgs: data,
+                    select: {
+                        key: this.active.key
+                    },
+                    key: this.active.key
+                }
+            });
+            return ;
+        }else if (data.repeatSend && this.active.type === 4 && data.isTransmitMsg) {
+            this.store$.dispatch({
+                type: chatAction.transmitGroupPic,
+                payload: {
+                    msgs: data,
+                    select: {
+                        key: this.active.key
+                    },
+                    key: this.active.key
+                }
+            });
+            return ;
+        } else if (data.repeatSend && this.active.type === 3) {
             this.store$.dispatch({
                 type: chatAction.sendSinglePic,
                 payload: {
@@ -949,6 +1014,32 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
     }
     private sendFileEmit(data) {
+        // 转发消息失败重发消息
+        if (data.repeatSend && this.active.type === 3 && data.isTransmitMsg) {
+            this.store$.dispatch({
+                type: chatAction.transmitSingleFile,
+                payload: {
+                    msgs: data,
+                    select: {
+                        key: this.active.key
+                    },
+                    key: this.active.key
+                }
+            });
+            return ;
+        }else if (data.repeatSend && this.active.type === 4 && data.isTransmitMsg) {
+            this.store$.dispatch({
+                type: chatAction.transmitGroupFile,
+                payload: {
+                    msgs: data,
+                    select: {
+                        key: this.active.key
+                    },
+                    key: this.active.key
+                }
+            });
+            return ;
+        }
         // repeatSend = true重发消息
         let msgs;
         if (!data.repeatSend) {
@@ -1034,6 +1125,25 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
             });
         }
+    }
+    // 转发位置消息失败重发
+    private sendLocationEmit(data) {
+        let type = '';
+        if (this.active.type === 3) {
+            type = chatAction.transmitSingleLocation;
+        } else {
+            type = chatAction.transmitGroupLocation;
+        }
+        this.store$.dispatch({
+            type,
+            payload: {
+                msgs: data,
+                select: {
+                    key: this.active.key
+                },
+                key: this.active.key
+            }
+        });
     }
     // 保存草稿
     private saveDraftEmit(tempArr) {
@@ -1275,18 +1385,22 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 转发消息
     private confirmTransmitEmit(select) {
-        console.log(7777, select);
         this.transmitItem.msgKey = this.msgKey ++;
         this.transmitItem.totalTransmitNum = select.length;
         this.transmitItem.ctime_ms = new Date().getTime();
         this.transmitItem.conversation_time_show = 'today';
         this.transmitItem.showMoreIcon = false;
         this.transmitItem.hasLoad = false;
+        this.transmitItem.content.from_id = global.user;
         this.transmitCount = 0;
+        this.transmitItem.isTransmitMsg = true;
         for (let item of select) {
+            this.transmitItem.content.target_id = item.name;
+            this.transmitItem.type = item.type;
             let data = {
                 select: item,
-                msgs: this.transmitItem
+                msgs: Object.assign({}, this.transmitItem, {}),
+                key: item.key
             };
             let type = '';
             switch (this.transmitItem.content.msg_type) {

@@ -29,7 +29,6 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 initGroupShield(state, payload.shield);
             }
             if (payload.noDisturb) {
-                console.log(777, payload.noDisturb);
                 state.noDisturb = payload.noDisturb;
                 initNoDisturb(state, payload.noDisturb);
             }
@@ -109,8 +108,17 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
 
             // 转发单聊文件消息
         case chatAction.transmitGroupFile:
-            state.transmitSuccess = true;
-            transmitMessage(state, payload);
+
+            // 转发单聊位置
+        case chatAction.transmitSingleLocation:
+
+            // 转发群聊位置
+        case chatAction.transmitGroupLocation:
+            if (!payload.msgs.repeatSend) {
+                state.newMessage = payload.msgs;
+                state.transmitSuccess = true;
+                transmitMessage(state, payload);
+            }
             break;
             // 转发消息发送成功（包括所有类型的转发消息）
         case chatAction.transmitMessageComplete:
@@ -118,7 +126,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 state.transmitSuccess = false;
             }
             sendMsgComplete(state, payload);
-            if (payload.success === 2) {
+            if (payload.success === 2 || payload.success === 3) {
                 state.msgId = updateFilterMsgId(state, [{key: payload.key}]);
             }
             break;
@@ -171,13 +179,11 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // if (payload.black) {
             //     state.otherInfo.black = payload.black;
             // }
-            console.log(444, state.friendList, payload.info);
             payload.info.isFriend = filterFriend(state, payload.info);
             filterSingleBlack(state, payload.info);
             filterSingleNoDisturb(state, payload.info);
             state.otherInfo.info = payload.info;
             state.otherInfo.show = payload.show;
-            console.log(55555, state.otherInfo);
             break;
             // 隐藏别人的信息框
         case chatAction.hideOtherInfo:
@@ -185,7 +191,6 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 获取群组信息
         case chatAction.groupInfo:
-            console.log(7777, payload);
             let name = '';
             if (payload.groupInfo) {
                 state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo =
@@ -199,7 +204,6 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 sortGroupMember(payload.memberList);
                 state.messageList[state.activePerson.activeIndex].groupSetting = {memberList: []};
                 let groupSetting = state.messageList[state.activePerson.activeIndex].groupSetting;
-                console.log(666, groupSetting);
                 groupSetting.memberList = payload.memberList;
                 for (let member of payload.memberList) {
                     for (let friend of state.friendList) {
@@ -236,7 +240,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             showGroupSetting(state, payload.show);
             break;
-            // 创建单聊成功
+            // 创建单聊/添加好友
         case mainAction.createSingleChatSuccess:
             /**
              * info.showType
@@ -250,6 +254,8 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
              * 8    查看资料-非好友-非会话人
              */
             payload.isFriend = filterFriend(state, payload);
+            filterSingleBlack(state, payload);
+            filterSingleNoDisturb(state, payload);
             state.otherInfo.info = payload;
             state.otherInfo.show = true;
             break;
@@ -559,7 +565,6 @@ function filterSingleBlack(state, payload) {
 }
 // 判断用户是否是免打扰
 function filterSingleNoDisturb(state, payload) {
-    console.log(333, state.noDisturb.users, payload)
     for (let user of state.noDisturb.users) {
         if (user.username === payload.name) {
             payload.noDisturb = true;
@@ -572,7 +577,6 @@ function filterFriend(state, payload) {
     const result = state.friendList.filter((friend) => {
         return friend.name === payload.name;
     });
-    console.log(666, result, payload);
     if (result.length > 0) {
         payload.memo_name = result[0].memo_name;
     }
@@ -1054,7 +1058,6 @@ function changeSingleNoDisturb(state, payload) {
 }
 // 初始化群免打扰
 function initNoDisturb(state, noDisturb) {
-    console.log(55555, noDisturb);
     for (let user of noDisturb.users) {
         for (let conversation of state.conversation) {
             if (user.username === conversation.name) {
@@ -1263,7 +1266,6 @@ function updateFilterMsgId(state: ChatStore, payload ? ) {
                     }
                 }
                 let flag = true;
-                console.log(444, msgId);
                 if (msgId) {
                     for (let a = 0; a < state.msgId.length; a++) {
                         if (Number(state.msgId[a].key) === Number(pay.key)) {
@@ -1369,9 +1371,19 @@ function hasNoMsgId(state, stateMessageList) {
 }
 // 完成消息的发送接口的调用后，返回成功或者失败状态
 function sendMsgComplete(state: ChatStore, payload) {
-    if (Number(payload.key) < 0) {
+    // 转发消息时没有key
+    if (!payload.key) {
         for (let conversation of state.conversation) {
-            if (Number(payload.key) === conversation.key) {
+            if (payload.name === conversation.name) {
+                payload.key = conversation.key;
+                conversation.key = payload.msgs.key;
+                break;
+            }
+        }
+    // 转发或者发送消息时key < 0
+    } else if (Number(payload.key) < 0) {
+        for (let conversation of state.conversation) {
+            if (Number(payload.key) === Number(conversation.key)) {
                 conversation.key = payload.msgs.key;
                 break;
             }
@@ -1393,6 +1405,7 @@ function sendMsgComplete(state: ChatStore, payload) {
                         if (url) {
                             payload.msgs.content.msg_body.media_url = url;
                         }
+                        delete msgs[j].msg_id;
                         msgs[j] = Object.assign({}, msgs[j], payload.msgs);
                     }
                     msgs[j].success = payload.success;
