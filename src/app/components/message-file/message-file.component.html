@@ -1,0 +1,46 @@
+<div class="message-file" (click)="stopPropagation($event)" [ngClass]="{'in': msgFile.show, 'void': !msgFile.show}">
+    <span class="message-file-close" (click)="closeMsgFile()"></span>
+    <div class="message-file-header">
+        <div class="message-file-title">聊天文件</div>
+    </div>
+    <div class="message-file-sort display-flex">
+        <div class="flex-1" [ngClass]="{'active': msgType === 'image'}" (click)="changeMsgFileAction('image')">图片</div>
+        <div class="flex-1" [ngClass]="{'active': msgType === 'document'}" (click)="changeMsgFileAction('document')">文档</div>
+        <div class="flex-1" [ngClass]="{'active': msgType === 'audio'}" (click)="changeMsgFileAction('audio')">视频</div>
+        <div class="flex-1" [ngClass]="{'active': msgType === 'video'}" (click)="changeMsgFileAction('video')">音乐</div>
+        <div class="flex-1" [ngClass]="{'active': msgType === 'other'}" (click)="changeMsgFileAction('other')">其他</div>
+    </div>
+    <perfect-scrollbar class="message-file-file" *ngIf="msgType !== 'image'" (ps-scroll-y)="scrollY()">
+        <p *ngIf="msgFile[msgType].length === 0" class="message-file-no-data">暂无文件</p>
+        <div *ngIf="msgFile[msgType].length > 0">
+            <div class="message-file-wrap" *ngFor="let item of msgFile[msgType]">
+                <div class="message-file-time">
+                    <p [ngClass]="{absolute: item.position === 'absolute'}">{{item.time}}</p>
+                </div>
+                <div class="message-file-item display-flex" *ngFor="let message of item.msgs">
+                    <div class="message-file-icon" [ngClass]="{'image': (message.content.msg_body?.extras?.fileType | fileType) === 'image', 'video': (message.content.msg_body?.extras?.fileType | fileType) === 'video', 'audio': (message.content.msg_body?.extras?.fileType | fileType) === 'audio', 'document': (message.content.msg_body?.extras?.fileType | fileType) === 'document'}"></div>
+                    <div class="message-file-main flex-1">
+                        <p class="message-file-filename" [title]="message.content.msg_body.fname">{{message.content.msg_body.fname | fileName: 16}}</p>
+                        <p class="message-file-size">{{message.content.msg_body.fsize | fileSize}}</p>
+                        <div class="message-file-name display-flex"><p class="flex-1"><span class="message-file-username" [title]="message.content.from_id">{{message.content.from_id}}</span>&nbsp;{{message.ctime_ms | datePipe}}</p><a href="javascript: ;" (click)="fileDownload(message.content.msg_body.media_url, $event)">下载</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </perfect-scrollbar>
+    <perfect-scrollbar class="message-file-image" *ngIf="msgType === 'image'" (ps-scroll-y)="scrollY()">
+        <p *ngIf="msgFile.image.length === 0" class="message-file-no-data">暂无文件</p>
+        <div *ngIf="msgFile.image.length > 0">
+            <div class="message-file-wrap" *ngFor="let item of msgFile.image">
+                <div class="message-file-time">
+                    <p [ngClass]="{absolute: item.position === 'absolute'}">{{item.time}}</p>                        
+                </div>
+                <div class="message-file-image-container clearfix">
+                    <div class="message-file-image-item" *ngFor="let message of item.msgs">
+                        <img (click)="imgViewer(message)" (load)="avatarLoad($event, message)" [src]="message.content.msg_body.media_url" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </perfect-scrollbar>
+</div>

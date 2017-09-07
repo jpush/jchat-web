@@ -1,13 +1,13 @@
 <perfect-scrollbar class="verify-container">
-    <h2>验证信息</h2>
+    <h2>验证消息</h2>
     <div class="verify-no-data" *ngIf="verifyMessageList.length === 0">暂无验证消息</div>
     <div class="display-flex verify-list" *ngFor="let message of verifyMessageList">
         <div class="verify-avatar">
-            <img (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" [src]="message.avatarUrl" alt="">
+            <img (load)="avatarLoad($event)" (click)="verifyUser(message)" (error)="avatarErrorIcon($event)" [src]="message.avatarUrl" alt="">
         </div>
         <div class="flex-1 verify-text" *ngIf="message.stateType !== 5 && message.stateType !== 6 && message.stateType !== 7">
-            <h5>{{message.nickName && message.nickName !== '' ? message.nickName : message.name}}请求添加为好友</h5>
-            <p>附加消息：{{message.description && message.description !== '' ? message.description : '无'}}</p>
+            <div>{{message.nickName && message.nickName !== '' ? message.nickName : message.name}}请求添加为好友</div>
+            <p [title]="message.description || '无'">附加消息：{{message.description && message.description !== '' ? message.description : '无'}}</p>
         </div>
         <div class="flex-1 verify-username" *ngIf="message.stateType === 5 || message.stateType === 6 || message.stateType === 7">{{message.nickName && message.nickName !== '' ? message.nickName : message.name}}</div>
         <div class="verify-operation">

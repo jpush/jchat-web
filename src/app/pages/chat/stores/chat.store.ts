@@ -63,4 +63,13 @@ export interface ChatStore {
         groups: Array<any>
     };
     viewerImageUrl: object;
+    msgFile: {
+        show: boolean,
+        audio: Array<any>,
+        document: Array<any>,
+        video: Array<any>,
+        image: Array<any>,
+        other: Array<any>
+    };
+    msgFileImageViewer: Array<any>
 }

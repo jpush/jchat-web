@@ -9,5 +9,8 @@ export const contactAction = {
     agreeAddFriendSuccess: '[contact] agree add friend success',
     refuseAddFriendSuccess: '[contact] refuse add friend success',
     changeTab: '[contact] change tab',
-    dispatchContactUnreadNum: '[contact] dispatch contact unread num'
+    dispatchContactUnreadNum: '[contact] dispatch contact unread num',
+    watchVerifyUser: '[contact] watch verify user',
+    watchVerifyUserSuccess: '[contact] watch verify user success',
+    addFriendError: '[contact] add friend error'
 };

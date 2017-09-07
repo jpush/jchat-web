@@ -22,7 +22,7 @@ export class TipModalComponent implements OnInit, DoCheck {
         if (this.info && this.info.success) {
             setTimeout(() => {
                 this.modalTipEmit.emit();
-            }, 1500);
+            }, 2000);
         }
     }
     private stopPropagation(event) {

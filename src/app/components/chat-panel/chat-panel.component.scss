@@ -36,13 +36,19 @@
                     color: #2dd0cf;
                 }
             }
-            .chat-panel-setting-btn, .chat-panel-group-setting{
+            .chat-panel-setting-btn, .chat-panel-group-setting, .chat-panel-record-btn{
                 height: 20px;
                 float: right;
                 margin-right: 20px;
                 cursor: pointer;
                 margin-top: 10px;
                 position: relative;
+            }
+            .chat-panel-record-btn{
+                margin-right: 17px;
+                width: 20px;                
+                background: #fff url(../../../assets/images/msg-record.svg) center center no-repeat;
+                background-size: 20px;
             }
             .chat-panel-setting-btn{
                 width: 20px;                

@@ -86,6 +86,9 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
                 show: false,
                 info: ''
             };
+            // state.listTab = 0;
+            break;
+        case chatAction.createOtherChat:
             state.listTab = 0;
             break;
             // 清除单聊模态框的提示信息

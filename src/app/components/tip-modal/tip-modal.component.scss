@@ -5,6 +5,8 @@
     .tip-modal-success, .tip-modal-error{
         vertical-align: middle;
         margin-right: 6px;
+        position: relative;
+        top: -2px;
     }
     .modal-warn-tip{
         line-height: 28px;

@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, OnDestroy, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs/Subject';
 import { global, authPayload, StorageService } from '../../services/common';
@@ -15,6 +15,8 @@ import * as Push from 'push.js';
     templateUrl: './chat.component.html'
 })
 export class ChatComponent implements OnInit, OnDestroy {
+    @Input()
+        private hideAll;
     private isLoadedSubject = new Subject();
     private isLoaded$ = this.isLoadedSubject.asObservable();
     private isLoaded = false;
@@ -289,6 +291,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.messageList = chatState.messageList;
                 if (!chatState.newMessageIsDisturb) {
                     this.notification(chatState.newMessage);
+                    this.store$.dispatch({
+                        type: chatAction.dispatchMessageUnread,
+                        payload: null
+                    });
                 }
                 break;
             case chatAction.sendSingleMessage:
@@ -342,12 +348,12 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.groupSetting.show = false;
                 break;
             case chatAction.watchOtherInfoSuccess:
-                this.otherInfo = chatState.otherInfo;
-                break;
+
             case chatAction.hideOtherInfo:
-                this.otherInfo = chatState.otherInfo;
-                break;
+
             case  mainAction.createSingleChatSuccess:
+
+            case contactAction.watchVerifyUserSuccess:
                 this.otherInfo = chatState.otherInfo;
                 break;
             case chatAction.groupSetting:
@@ -381,7 +387,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case mainAction.addBlackListSuccess:
                 this.conversationList = chatState.conversation;
-                this.defaultPanelIsShow = chatState.defaultPanelIsShow;
+                this.otherInfo = chatState.otherInfo;
+                this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 break;
             case chatAction.groupDescription:
                 this.groupDescription.show = chatState.groupDeacriptionShow;
@@ -497,6 +504,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 });
                 this.otherInfo = chatState.otherInfo;
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
+                this.conversationList = chatState.conversation;
+                this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 break;
             default:
         }
@@ -1451,13 +1460,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 验证消息模态框的按钮
     private verifyModalBtnEmit(verifyModalText) {
-        if (verifyModalText) {
-            let userInfo = Object.assign({}, this.verifyModal.info, {verifyModalText});
-            this.store$.dispatch({
-                type: chatAction.addFriendConfirm,
-                payload: userInfo
-            });
-        }
+        let userInfo = Object.assign({}, this.verifyModal.info, {verifyModalText});
+        this.store$.dispatch({
+            type: chatAction.addFriendConfirm,
+            payload: userInfo
+        });
         this.store$.dispatch({
             type: chatAction.showVerifyModal,
             payload: {
@@ -1486,6 +1493,19 @@ export class ChatComponent implements OnInit, OnDestroy {
                     actionType: '[chat] delete friend modal'
                 }
             }
+        });
+    }
+    private verifyUserBtnEmit(verifyUser) {
+        this.store$.dispatch({
+            type: chatAction.hideOtherInfo,
+            payload: {
+                show: false,
+                info: {}
+            }
+        });
+        this.store$.dispatch({
+            type: contactAction.isAgreeAddFriend,
+            payload: verifyUser
         });
     }
 }

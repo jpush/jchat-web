@@ -58,5 +58,14 @@ export const chatInit = {
         users: [],
         groups: []
     },
-    viewerImageUrl: {}
+    viewerImageUrl: {},
+    msgFile: {
+        show: false,
+        audio: [],
+        document: [],
+        video: [],
+        image: [],
+        other: []
+    },
+    msgFileImageViewer: []
 };

@@ -507,6 +507,18 @@ export class MainEffect {
                 }]
             }).onSuccess((data) => {
                 this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '加入黑名单',
+                            tip: '加入黑名单成功',
+                            actionType: '[main] add single black useless',
+                            success: 1
+                        }
+                    }
+                });
+                this.store$.dispatch({
                     type: mainAction.addBlackListSuccess,
                     payload: {
                         show: false,

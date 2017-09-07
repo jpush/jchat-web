@@ -50,7 +50,7 @@ export class ImageViewerComponent implements OnInit {
                 show: false
             };
         }
-        this.initImviewer();
+        this.initImgviewer();
         this.imageStream$ = this.store$.select((state) => {
             const chatState = state['chatReducer'];
             this.stateChanged(chatState);
@@ -78,7 +78,7 @@ export class ImageViewerComponent implements OnInit {
             }
         }
     }
-    private initImviewer() {
+    private initImgviewer() {
         const viewerWrap = this.elementRef.nativeElement.querySelector('#viewerWrap');
         let activeWidth = this.imageViewer.active.width;
         let activeHeight = this.imageViewer.active.height;
@@ -102,7 +102,7 @@ export class ImageViewerComponent implements OnInit {
         this.position.top = (offsetHeight - this.position.height) / 2;
     }
     @HostListener('window:resize', ['$event']) private onResize(event) {
-        this.initImviewer();
+        this.initImgviewer();
     }
     @HostListener('window:mousemove', ['$event']) private onMousemove(event) {
         if (this.moveFlag) {
@@ -201,16 +201,20 @@ export class ImageViewerComponent implements OnInit {
             this.showTip('已经是最后一张了');
         }
     }
-    private closeViewerAction() {
+    private closeViewerAction(event) {
         this.imageViewer.show = false;
+        event.stopPropagation();
     }
     private imgLoad() {
         this.imgHidden = false;
-        this.initImviewer();
         this.ratio = 1;
+        this.initImgviewer();
     }
     private download(url) {
         // 为了兼容火狐下a链接下载，引入downloadjs
         download(url);
+    }
+    private stopPropagation(event) {
+        event.stopPropagation();
     }
 }

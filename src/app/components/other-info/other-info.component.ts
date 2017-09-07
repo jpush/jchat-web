@@ -26,6 +26,8 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
         private saveMemoName: EventEmitter<any> = new EventEmitter();
     @Output()
         private deleteFriend: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private verifyUserBtn: EventEmitter<any> = new EventEmitter();
     private editRmark = {
         tip: '修改备注名',
         position: {
@@ -165,5 +167,9 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
             event.target.style.height = '100%';
             event.target.style.width = 'auto';
         }
+    }
+    private verifyBtn(num) {
+        this.otherInfo.info.stateType = num;
+        this.verifyUserBtn.emit(this.otherInfo.info);
     }
 }

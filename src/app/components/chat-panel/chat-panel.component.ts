@@ -60,6 +60,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         private retract: EventEmitter<any> = new EventEmitter();
     @Output()
         private msgTransmit: EventEmitter<any> = new EventEmitter();
+    // @Output()
+    //     private msgFile: EventEmitter<any> = new EventEmitter();
     private global = global;
     private change;
     private flag = false;
@@ -95,6 +97,14 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         },
         show: false
     };
+    private MsgFileHover = {
+        tip: '聊天文件',
+        position: {
+            left: -28,
+            top: 27
+        },
+        show: false
+    };
     private loadingFlag = 3;
     private loadingCount = 1;
     private imageViewer = {
@@ -104,34 +114,38 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         },
         show: false,
     };
+    private msgFileImageViewer = {
+        result: [],
+        active: {
+            index: -1
+        },
+        show: false,
+    };
+    private viewer = {};
     private voiceState = [];
     private loadFlag = false;
     private moreMenu = {
         show: false,
         top: 0,
         left: 0,
-        arrorPosition: 'bottom',
         info: [
             {
                 key: 0,
                 name: '撤回',
                 show: true,
-                isFirst: true,
-                isLast: false
+                isFirst: true
             },
             {
                 key: 1,
                 name: '转发',
                 show: true,
-                isFirst: false,
-                isLast: false
+                isFirst: false
             },
             {
                 key: 2,
                 name: '复制',
                 show: true,
-                isFirst: false,
-                isLast: true
+                isFirst: false
             }
         ],
         item: null
@@ -158,6 +172,14 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         hasMyself: true
     };
     private atDeleteNum = 1;
+    private msgFile = {
+        show: false,
+        audio: [],
+        document: [],
+        video: [],
+        image: [],
+        other: []
+    };
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -343,6 +365,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.saveMemoNameSuccess:
                 this.updateMsg(chatState);
                 break;
+            case chatAction.msgFile:
+                this.msgFile = chatState.msgFile;
+                break;
+            case chatAction.msgFileSuccess:
+                this.msgFileImageViewer.result = chatState.msgFileImageViewer;
+                break;
             default:
         }
     }
@@ -391,48 +419,40 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private showYouMoreText(event, item, more) {
         const showArr = [false, true, true];
         const isFirstArr = [false, true, false];
-        const isLastArr = [false, false, true];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr, isLastArr);
+        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
         this.moreOperation(event, item, more);
     }
     private showYouMoreOther(event, item, more) {
         const showArr = [false, true, false];
         const isFirstArr = [false, true, false];
-        const isLastArr = [false, true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr, isLastArr);
+        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
         this.moreOperation(event, item, more);
     }
     private showMeMoreText(event, item, more) {
         const showArr = [true, true, true];
         const isFirstArr = [true, false, false];
-        const isLastArr = [false, false, true];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr, isLastArr);
+        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
         this.moreOperation(event, item, more);
     }
     private showMeMoreOther(event, item, more) {
         const showArr = [true, true, false];
         const isFirstArr = [true, false, false];
-        const isLastArr = [false, true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr, isLastArr);
+        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
         this.moreOperation(event, item, more);
     }
     private showMeMoreVoice(event, item, more) {
         const showArr = [true, false, false];
         const isFirstArr = [true, false, false];
-        const isLastArr = [true, false, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr, isLastArr);
+        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
         this.moreOperation(event, item, more);
     }
     // 更多列表的配置
-    private menuOption (info, showArr, isFirstArr, isLastArr) {
+    private menuOption (info, showArr, isFirstArr) {
         for (let i = 0; i < showArr.length; i++) {
             info[i].show = showArr[i];
         }
         for (let i = 0; i < isFirstArr.length; i++) {
             info[i].isFirst = isFirstArr[i];
-        }
-        for (let i = 0; i < isLastArr.length; i++) {
-            info[i].isLast = isLastArr[i];
         }
     }
     // 更多列表的位置
@@ -440,34 +460,26 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         let result = this.moreMenu.info.filter((info) => {
             return info.show === true;
         });
-        const scrollTop = this.componentScroll.directiveRef.geometry().y;
-        const offsetTop = more.offsetTop;
-        const offsetHeight = this.elementRef.nativeElement.querySelector('#imgViewer').offsetHeight;
-        const menuHeight = result.length * 36;
         this.moreMenu.show = !this.moreMenu.show;
         if (this.moreMenu.show) {
-            if (offsetTop - scrollTop + menuHeight + 50 > offsetHeight) {
-                this.moreMenu.arrorPosition = 'bottom';
-                this.moreMenu.top = event.clientY - event.offsetY - menuHeight - 10;
-            } else {
-                this.moreMenu.arrorPosition = 'top';
-                this.moreMenu.top = event.clientY - event.offsetY + 20;
-            }
+            this.moreMenu.top = event.clientY - event.offsetY + 20;
             this.moreMenu.left = event.clientX - event.offsetX;
             this.moreMenu.item = item;
         }
     }
     // 图片预览
-    private imageViewerShow(src, index) {
+    private imageViewerShow(src, item) {
         for (let i = 0; i < this.imageViewer.result.length; i++) {
-            let messageListLength = this.messageList[this.active.activeIndex].msgs.length;
-            if (this.imageViewer.result[i].index === index + messageListLength - this.msg.length) {
+            let msgIdFlag = this.imageViewer.result[i].msg_id === item.msg_id && item.msg_id;
+            let msgKeyFlag = this.imageViewer.result[i].msgKey === item.msgKey && item.msgKey;
+            if (msgIdFlag || msgKeyFlag) {
                 this.imageViewer.active = Object.assign({}, this.imageViewer.result[i], {});
                 this.imageViewer.active.index = i;
                 break;
             }
         }
         this.imageViewer.show = true;
+        this.viewer = this.imageViewer;
     }
     // 切换会话人渲染地图
     private allPointerToMap(index ?: number) {
@@ -874,7 +886,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 break;
             }
         }
-        const position = range.getBoundingClientRect();
+        const position = this.util.getOffset(this.contentDiv);
         this.atList = {
             show: true,
             left: position.left,
@@ -1014,6 +1026,19 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private addGroupAction() {
         this.addGroup.emit();
     }
+    private msgFileAction(event) {
+        event.stopPropagation();
+        // this.msgFile.emit();
+        this.msgFile.show = true;
+        this.store$.dispatch({
+            type: chatAction.msgFile,
+            payload: {
+                active: this.active,
+                messageList: this.messageList,
+                type: 'image'
+            }
+        });
+    }
     private contentFocus(event) {
         event.stopPropagation();
         this.contentDiv.focus();
@@ -1117,5 +1142,36 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 i.content.msg_body.height = 91;
             }
         }, 10000);
+    }
+    private changeMsgFileEmit(type) {
+        this.store$.dispatch({
+            type: chatAction.msgFile,
+            payload: {
+                active: this.active,
+                messageList: this.messageList,
+                type
+            }
+        });
+    }
+    private showMsgFileImageViewerEmit(item) {
+        for (let i = 0; i < this.msgFileImageViewer.result.length; i++) {
+            let msgIdFlag = this.msgFileImageViewer.result[i].msg_id === item.msg_id && item.msg_id;
+            let msgKeyFlag = this.msgFileImageViewer.result[i].msgKey === item.msgKey &&
+                            item.msgKey;
+            if (msgIdFlag || msgKeyFlag) {
+                this.msgFileImageViewer.active =
+                    Object.assign({}, this.msgFileImageViewer.result[i], {});
+                this.msgFileImageViewer.active.index = i;
+                break;
+            }
+        }
+        this.msgFileImageViewer.show = true;
+        this.viewer = this.msgFileImageViewer;
+    }
+    private fileImageLoadEmit(message) {
+        this.store$.dispatch({
+            type: chatAction.fileImageLoad,
+            payload: message
+        });
     }
 }

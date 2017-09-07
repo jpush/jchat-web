@@ -32,26 +32,31 @@
             width: 40px;
             height: 40px;
             margin-right: 9px;
+            cursor: pointer;
             img{
                 max-height: 100%;
                 max-width: 100%;
             }
         }
         .verify-text{
-            h5{
+            div{
                 line-height: 20px;
                 font-size: 14px;
                 color: #2C2C2C;
-                font-weight: 100;
             }
             p{
                 font-size: 12px;
                 color: #999999;
                 line-height: 17px;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
             }
         }
         .verify-username{
             line-height: 40px;
+            font-size: 14px;
+            color: #2C2C2C;
         }
         .verify-operation{
             width: 185px;

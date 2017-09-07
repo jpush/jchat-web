@@ -27,6 +27,47 @@ export class Util {
         return index === -1 ? '' : name.substring(index + 1);
     }
     /**
+     * 将文件后缀名分类
+     * @param ext string
+     * @return string 后缀名
+     */
+    public sortByExt(ext: string) {
+        if (ext === '') {
+            return 'other';
+        }
+        const audio = ['wav', 'mp3', 'wma', 'midi'];
+        const document = ['ppt', 'pptx', 'doc', 'docx', 'pdf', 'xls', 'xlsx', 'txt', 'wps'];
+        const video = ['mp4', 'mov', 'rm', 'rmvb', 'wmv', 'avi', '3gp', 'mkv'];
+        const image = ['jpg', 'jpeg', 'png', 'bmp', 'gif'];
+        let newType = '';
+        if (audio.indexOf(ext) !== -1) {
+            // 音频
+            newType = 'audio';
+        } else if (document.indexOf(ext) !== -1) {
+            // 文档
+            newType = 'document';
+        } else if (video.indexOf(ext) !== -1) {
+            // 视频
+            newType = 'video';
+        } else if (image.indexOf(ext) !== -1) {
+            // 图片
+            newType = 'image';
+        } else {
+            // 其他
+            newType = 'other';
+        }
+        return newType;
+    }
+    /**
+     * fileReader预览图片返回img url
+     * @param file: Object, input file 对象
+     * @param callback: function 回调函数
+     * @param callback2: function 回调函数
+     */
+    public doubleNumber(num) {
+        return num < 10 ? '0' + num : num;
+    }
+    /**
      * fileReader预览图片返回img url
      * @param file: Object, input file 对象
      * @param callback: function 回调函数
@@ -350,5 +391,55 @@ export class Util {
      */
     public createSignature(timestamp: number) {
         return md5(`appkey=${authPayload.appKey}&timestamp=${timestamp}&random_str=${authPayload.randomStr}&key=${authPayload.masterkey}`);
+    }
+    /**
+     * 获取当前光标的在页面中的位置
+     * @param input: dom obj 输入框的dom元素
+     * @return object 光标的位置
+     */
+    public getOffset(input) {
+        let userAgent = navigator.userAgent;
+        let sel = window.getSelection();
+        let range = sel.getRangeAt(0);
+        let offset;
+        let isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
+        if (!isSafari) {
+            offset = range.getBoundingClientRect();
+        } else {
+            let  clonedRange;
+            let  rect;
+            let shadowCaret;
+            if (range.endOffset - 1 > 0 && range.endContainer !== input) {
+                clonedRange = range.cloneRange();
+                clonedRange.setStart(range.endContainer, range.endOffset - 1);
+                clonedRange.setEnd(range.endContainer, range.endOffset);
+                rect = clonedRange.getBoundingClientRect();
+                offset = {
+                    height: rect.height,
+                    left: rect.left + rect.width,
+                    top: rect.top
+                };
+                clonedRange.detach();
+            }
+            if (!offset || (offset != null ? offset.height : void 0) === 0) {
+                clonedRange = range.cloneRange();
+                shadowCaret = document.createTextNode('|');
+                clonedRange.insertNode(shadowCaret);
+                clonedRange.selectNode(shadowCaret);
+                rect = clonedRange.getBoundingClientRect();
+                offset = {
+                    height: rect.height,
+                    left: rect.left,
+                    top: rect.top
+                };
+                input.removeChild(shadowCaret);
+                clonedRange.detach();
+            }
+            if (offset) {
+                offset.top += window.scrollY;
+                offset.left += window.scrollX;
+            }
+        }
+        return offset;
     }
 }

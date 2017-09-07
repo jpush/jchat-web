@@ -74,5 +74,9 @@ export const chatAction = {
     dispatchFriendList: '[chat] dispatch friend list',
     loadViewerImage: '[chat] load viewer image',
     loadViewerImageSuccess: '[chat] load viewer image success',
-    getGroupMembers: '[chat] get group members'
+    getGroupMembers: '[chat] get group members',
+    msgFile: '[chat] msg file',
+    msgFileSuccess: '[chat] msg file success',
+    dispatchMessageUnread: '[chat] dispatch message unread',
+    fileImageLoad: '[chat] file image load'
 };

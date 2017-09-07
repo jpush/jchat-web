@@ -7,6 +7,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 
 export class VerifyModalComponent implements OnInit {
+    @Input()
+        private verifyModal;
     @Output()
         private verifyModalBtn: EventEmitter<any> = new EventEmitter();
     private modelText = '';
@@ -16,7 +18,10 @@ export class VerifyModalComponent implements OnInit {
     public ngOnInit() {
         // pass
     }
-    private verifyModalAction(modelText ?) {
+    private verifyModalAction(modelText) {
         this.verifyModalBtn.emit(modelText);
+    }
+    private closeModal() {
+        this.verifyModal.show = false;
     }
 }

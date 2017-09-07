@@ -7,3 +7,5 @@ export * from './floor.module';
 export * from './file-type.module';
 export * from './file-size.module';
 export * from './sanitize.module';
+export * from './date.module';
+export * from './file-name.module';

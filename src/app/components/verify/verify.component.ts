@@ -13,6 +13,8 @@ export class VerifyComponent implements OnInit {
         private verifyMessageList;
     @Output()
         private isAgreeAddFriend: EventEmitter<any>  = new EventEmitter();
+    @Output()
+        private watchVerifyUser: EventEmitter<any>  = new EventEmitter();
     constructor() {
         // pass
     }
@@ -48,7 +50,9 @@ export class VerifyComponent implements OnInit {
         } else if (stateType === 'agree') {
             message.stateType = 2;
         }
-        console.log(55, message);
         this.isAgreeAddFriend.emit(message);
+    }
+    private verifyUser(message) {
+        this.watchVerifyUser.emit(message);
     }
 }

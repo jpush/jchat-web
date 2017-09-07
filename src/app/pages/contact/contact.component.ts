@@ -50,9 +50,19 @@ export class ContactComponent implements OnInit, OnDestroy {
             // pass
         });
     }
+    private init() {
+        this.groupList = [];
+        this.tab = 1;
+        this.friendList = [];
+        this.verifyMessageList = [];
+        this.verifyUnreadNum = 0;
+    }
     private stateChanged(contactState) {
         console.log('contact', contactState);
         switch (contactState.actionType) {
+            case contactAction.init:
+                this.init();
+                break;
             case contactAction.getGroupListSuccess:
                 this.groupList = contactState.groupList;
                 break;
@@ -105,6 +115,9 @@ export class ContactComponent implements OnInit, OnDestroy {
             case chatAction.addFriendConfirm:
                 this.verifyMessageList = contactState.verifyMessageList;
                 break;
+            case contactAction.addFriendError:
+                this.verifyMessageList = contactState.verifyMessageList;
+                break;
             default:
         }
     }
@@ -125,6 +138,13 @@ export class ContactComponent implements OnInit, OnDestroy {
     private isAgreeAddFriendEmit(message) {
         this.store$.dispatch({
             type: contactAction.isAgreeAddFriend,
+            payload: message
+        });
+    }
+    private watchVerifyUserEmit(message) {
+        console.log(message);
+        this.store$.dispatch({
+            type: contactAction.watchVerifyUser,
             payload: message
         });
     }

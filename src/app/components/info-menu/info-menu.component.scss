@@ -37,30 +37,7 @@
                 position: absolute;
                 top: 17px;
                 left: 10px;
-                &:after{
-                    content: '';
-                    display: block;
-                    width: 5px;
-                    height: 1px;
-                    background-color: #808080;
-                    position: absolute;
-                    top: 4px;
-                    left: -3px;
-                    -webkit-transform: rotateZ(49deg);
-                            transform: rotateZ(49deg);
-                }
-                &:before{
-                    content: '';
-                    display: block;
-                    width: 10px;
-                    height: 1px;
-                    background-color: #808080;
-                    position: absolute;
-                    top: 4px;
-                    left: 0;
-                    -webkit-transform: rotateZ(-27deg);
-                            transform: rotateZ(-27deg);
-                }
+                background: url(../../assets/images/info-right.svg) center center no-repeat;
             }
         }
     }

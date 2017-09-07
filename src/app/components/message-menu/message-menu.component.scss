@@ -23,20 +23,6 @@
                 height: 100%;
             }
         }
-        .last{
-            position: relative;
-            .menu-arror{
-                width: 14px;
-                height: 8px;
-                position: absolute;
-                bottom: -8px;
-                left: 8px;
-                background: url(../../../assets/images/menu-bottom-normal.svg) -8px -110px no-repeat;
-            }
-            &:hover .menu-arror{
-                background: url(../../../assets/images/menu-bottom-active.svg) -6px -35px no-repeat !important;
-            }
-        }
         .first{
             position: relative;
             .menu-arror{

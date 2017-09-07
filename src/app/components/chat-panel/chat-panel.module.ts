@@ -16,7 +16,8 @@ import {
   FileTypePipeModule,
   FileSizePipeModule,
   VideoTimePipeModule,
-  SanitizePipeModule
+  SanitizePipeModule,
+  FileNamePipeModule
 } from '../../pipes';
 
 import { MyModelDirective } from '../../directives';
@@ -29,6 +30,7 @@ import { MessageMenuModule } from '../message-menu';
 import { PasteImageModule } from '../paste-image';
 import { DropFileModule } from '../drop-file';
 import { AtListModule } from '../../components/at-list';
+import { MessageFileModule } from '../../components/message-file';
 
 @NgModule({
   declarations: [
@@ -57,7 +59,9 @@ import { AtListModule } from '../../components/at-list';
     MessageMenuModule,
     PasteImageModule,
     DropFileModule,
-    AtListModule
+    AtListModule,
+    FileNamePipeModule,
+    MessageFileModule
   ],
   exports: [
       ChatPanelComponent

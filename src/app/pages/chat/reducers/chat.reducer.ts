@@ -191,14 +191,12 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 获取群组信息
         case chatAction.groupInfo:
-            let name = '';
             if (payload.groupInfo) {
-                state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo =
-                    payload.groupInfo;
-                if (name !== '' && payload.groupInfo.name === '') {
-                    state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo.name
-                        = name;
+                if (payload.groupInfo.name === '') {
+                    payload.groupInfo.name = state.activePerson.name;
                 }
+                state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo =
+                payload.groupInfo;
             }
             if (payload.memberList) {
                 sortGroupMember(payload.memberList);
@@ -213,21 +211,6 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                             break;
                         }
                     }
-                }
-                // 如果群没有名字，用其群成员名字代替
-                name = '';
-                for (let item of groupSetting.memberList) {
-                    name += item.memo_name ? item.memo_name :
-                        (item.nickName !== '' ? item.nickName : item.username) + '、';
-                }
-                if (name.length > 20) {
-                    name = name.slice(0, 20);
-                } else {
-                    name = name.slice(0, name.length - 1);
-                }
-                let groupInfo = groupSetting.groupInfo;
-                if (name !== '' && groupInfo && groupInfo.name === '') {
-                    groupInfo.name = name;
                 }
             }
             break;
@@ -253,6 +236,13 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
              * 7    查看资料-非好友-会话人
              * 8    查看资料-非好友-非会话人
              */
+            payload.isFriend = filterFriend(state, payload);
+            filterSingleBlack(state, payload);
+            filterSingleNoDisturb(state, payload);
+            state.otherInfo.info = payload;
+            state.otherInfo.show = true;
+            break;
+        case contactAction.watchVerifyUserSuccess:
             payload.isFriend = filterFriend(state, payload);
             filterSingleBlack(state, payload);
             filterSingleNoDisturb(state, payload);
@@ -301,11 +291,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 加入黑名单成功
         case mainAction.addBlackListSuccess:
-            if (state.activePerson.type === 3) {
-                state.defaultPanelIsShow = true;
-            }
-            state.otherInfo.show = false;
-            deleteConversationItem(state, payload.deleteItem);
+            state.otherInfo.info.black = true;
             updateBlackMenu(state, payload.deleteItem.item);
             break;
             // 删除群成员成功
@@ -405,6 +391,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 同意添加好友
         case contactAction.agreeAddFriendSuccess:
             addNewFriendToConversation(state, payload);
+            state.friendList.push(payload);
             break;
             // 显示验证消息模态框
         case chatAction.showVerifyModal:
@@ -453,10 +440,95 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.loadViewerImageSuccess:
             state.viewerImageUrl = payload;
             break;
+        case chatAction.msgFile:
+            state.msgFile.show = true;
+            break;
+        case chatAction.msgFileSuccess:
+            if (payload.isFirst) {
+                state.messageList = payload.messageList;
+                filterMsgFile(state, payload.type);
+            }
+            filterMsgFileImageViewer(state, payload.type);
+            break;
+        case chatAction.fileImageLoad:
+            fileImageLoad(state, payload);
+            break;
         default:
     }
     return state;
 };
+function fileImageLoad(state, payload) {
+    for (let message of state.msgFileImageViewer) {
+        let msgIdFlag = payload.msg_id && message.msg_id === payload.msg_id;
+        let msgKeyFlag = payload.msgKey && message.msgKey === payload.msgKey;
+        if (msgIdFlag || msgKeyFlag) {
+            message.width = payload.content.msg_body.width;
+            message.height = payload.content.msg_body.height;
+            break;
+        }
+    }
+}
+function filterMsgFileImageViewer(state, type: string) {
+    state.msgFileImageViewer = [];
+    for (let message of state.messageList[state.activePerson.activeIndex].msgs) {
+        let fileType = '';
+        if (message.content.msg_type === 'file') {
+            fileType = util.sortByExt(message.content.msg_body.extras.fileType);
+        }
+        if ((message.content.msg_type === 'image') || fileType === 'image') {
+            console.log(222222, message.content.msg_body)
+            state.msgFileImageViewer.push({
+                src: message.content.msg_body.media_url,
+                width: message.content.msg_body.width,
+                height: message.content.msg_body.height,
+                msgKey: message.msgKey,
+                msg_id: message.msg_id
+            });
+        }
+    }
+    state.msgFileImageViewer.reverse();
+}
+function filterMsgFile(state, type: string) {
+    let fileArr = [];
+    let msgFile = [];
+    for (let message of state.messageList[state.activePerson.activeIndex].msgs) {
+        let fileType = '';
+        if (message.content.msg_type === 'file') {
+            fileType = util.sortByExt(message.content.msg_body.extras.fileType);
+        }
+        if ((message.content.msg_type === type && type === 'image') || fileType === type) {
+            fileArr.push(message);
+            state.msgFileImageViewer.push({
+                src: message.content.msg_body.media_url,
+                width: message.content.msg_body.width,
+                height: message.content.msg_body.height,
+                msgKey: message.msgKey,
+                msg_id: message.msg_id
+            });
+        }
+    }
+    for (let i = fileArr.length - 1; i >= 0; i--) {
+        const time = new Date (fileArr[i].ctime_ms);
+        const year = time.getFullYear();
+        const month = util.doubleNumber(time.getMonth() + 1);
+        let flag = true;
+        const showTime = year + '年' + month + '月';
+        for (let item of msgFile) {
+            if (item.time === showTime) {
+                item.msgs.push(fileArr[i]);
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            msgFile.push({
+                time: showTime,
+                msgs: [fileArr[i]]
+            });
+        }
+    }
+    state.msgFile[type] = msgFile;
+}
 // 给会话列表添加备注名
 function filteConversationMemoName(state) {
     for (let conversation of state.conversation) {
@@ -481,12 +553,22 @@ function updateOtherInfo(state, payload) {
 function otherInfoDeleteFriend(state, payload) {
     if (state.otherInfo.info.name === payload.name) {
         state.otherInfo.info.isFriend = false;
+        state.otherInfo.show = false;
     }
     for (let i = 0; i < state.friendList.length; i++) {
         if (state.friendList[i].name === payload.name) {
             state.friendList.splice(i, 1);
             break;
         }
+    }
+    for (let i = 0; i < state.conversation.length; i++) {
+        if (state.conversation[i].name === payload.name && state.conversation[i].type === 3) {
+            state.conversation.splice(i, 1);
+            break;
+        }
+    }
+    if (state.activePerson.name === payload.name && state.activePerson.type === 3) {
+        state.defaultPanelIsShow = true;
     }
 }
 // 修改会话列表的备注名
@@ -1138,7 +1220,8 @@ function filterImageViewer(state: ChatStore) {
                 src: content.msg_body.media_url,
                 width: content.msg_body.width,
                 height: content.msg_body.height,
-                index: j
+                // index: j
+                msg_id: msgs[j].msg_id
             });
         }
     }
@@ -1323,7 +1406,9 @@ function unreadNum(state: ChatStore, payload) {
                             if (stateMessageList.msgs[c].content.from_id !== global.user) {
                                 unreadNum ++;
                                 let atList = stateMessageList.msgs[c].content.at_list;
-                                atUser = messageHasAtList(atList);
+                                if (messageHasAtList(atList) !== '') {
+                                    atUser = messageHasAtList(atList);
+                                }
                             }
                         }
                         for (let conversation of state.conversation) {
@@ -1358,7 +1443,10 @@ function hasNoMsgId(state, stateMessageList) {
     for (let msg of stateMessageList.msgs) {
         if (msg.content.from_id !== global.user) {
             unreadNum ++;
-            atUser = messageHasAtList(msg.content.at_list);
+            const text = messageHasAtList(msg.content.at_list);
+            if (text !== '') {
+                atUser = text;
+            }
         }
     }
     for (let conversation of state.conversation) {
@@ -1492,7 +1580,8 @@ function addMyselfMesssge(state: ChatStore, payload) {
             src: payload.msgs.content.msg_body.media_url,
             width: payload.msgs.content.msg_body.width,
             height: payload.msgs.content.msg_body.height,
-            index: state.messageList[state.activePerson.activeIndex].msgs.length
+            // index: state.messageList[state.activePerson.activeIndex].msgs.length
+            msgKey: payload.msgs.msgKey
         });
     }
     for (let messageList of state.messageList) {
@@ -1553,8 +1642,10 @@ function addMessage(state: ChatStore, payload) {
                     } else {
                         state.conversation[a].unreadNum ++;
                     }
-                    state.conversation[a].atUser =
-                        messageHasAtList(payload.messages[0].content.at_list);
+                    const atList = messageHasAtList(payload.messages[0].content.at_list);
+                    if (atList !== '') {
+                        state.conversation[0].atUser = atList;
+                    }
                 }
                 flag = true;
                 let item = state.conversation.splice(a, 1);
@@ -1614,7 +1705,8 @@ function filterNewMessage(state, payload, message) {
             src: message.content.msg_body.media_url,
             width: message.content.msg_body.width,
             height: message.content.msg_body.height,
-            index: state.messageList[state.activePerson.activeIndex].msgs.length
+            // index: state.messageList[state.activePerson.activeIndex].msgs.length
+            msg_id: message.msg_id
         });
     }
     // 接收到语音初始化播放动画
@@ -1654,8 +1746,16 @@ function addMessageUserNoConversation(state, payload, message) {
             name: message.content.from_id,
             nickName: message.content.from_name,
             type: 3,
-            unreadNum: 1
+            unreadNum: 1,
+            noDisturb: false
         };
+        for (let user of state.noDisturb.users) {
+            if (user.username === message.content.from_id) {
+                conversationItem.noDisturb = true;
+                state.newMessageIsDisturb = true;
+                break;
+            }
+        }
     } else {
         msg = {
             key: message.key,
@@ -1672,17 +1772,30 @@ function addMessageUserNoConversation(state, payload, message) {
             mtime: message.ctime_ms,
             name: message.content.target_name,
             type: 4,
-            unreadNum: 1
+            unreadNum: 1,
+            noDisturb: false
         };
+        for (let group of state.noDisturb.groups) {
+            if (Number(group.key) === Number(message.key)) {
+                conversationItem.noDisturb = true;
+                state.newMessageIsDisturb = true;
+                break;
+            }
+        }
     }
-    state.newMessageIsDisturb = false;
+    if (!conversationItem.noDisturb) {
+        state.newMessageIsDisturb = false;
+    }
     payload.messages[0].conversation_time_show = 'today';
     payload.messages[0].time_show = 'today';
     state.newMessage = msg;
     state.messageList.push(msg);
     state.conversation.unshift(conversationItem);
     state.conversation[0].recentMsg = payload.messages[0];
-    state.conversation[0].atUser = messageHasAtList(payload.messages[0].content.at_list);
+    const atList = messageHasAtList(payload.messages[0].content.at_list);
+    if (atList !== '') {
+        state.conversation[0].atUser = atList;
+    }
 }
 // 添加会话列表中的@文本
 function messageHasAtList(atList) {

@@ -234,8 +234,6 @@ export class MainComponent implements OnInit, OnDestroy {
 
             case mainAction.showModalTip:
 
-            case mainAction.addBlackListSuccess:
-
             case mainAction.deleteMemberSuccess:
 
             case mainAction.exitGroupSuccess:
@@ -266,7 +264,7 @@ export class MainComponent implements OnInit, OnDestroy {
             case mainAction.logoutKickShow:
                 this.logoutKick = mainState.logoutKick;
                 break;
-            case chatAction.receiveMessageSuccess:
+            case chatAction.dispatchMessageUnread:
                 if (this.listTab === 1) {
                     this.badge.conversation ++;
                 }
@@ -274,8 +272,10 @@ export class MainComponent implements OnInit, OnDestroy {
             case contactAction.dispatchContactUnreadNum:
                 this.badge.contact = mainState.contactUnreadNum;
                 break;
+            case chatAction.createOtherChat:
+                this.listTab = mainState.listTab;
+                break;
             default:
-
         }
     }
     // 修改密码后重新登录

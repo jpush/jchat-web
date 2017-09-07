@@ -326,6 +326,9 @@ ul,li,ol{
 .at-list-contianer .ps-content, .at-list-contianer .ps{
     max-height: 216px;
 }
+.ps__scrollbar-y-rail{
+    z-index: 2;
+}
 /* emoji*/
 .emoji-normal .emoji{
     position: relative;
@@ -353,6 +356,7 @@ ul,li,ol{
 .chat-panel-at-input{
     background-color: #fff;
     line-height: 18px;
+    height: 18px;
     font-size: 14px;
     padding: 0;
     cursor: text;

@@ -205,7 +205,7 @@ export class ChatEffect {
             let msgs = info.messageList[info.active.activeIndex].msgs;
             let end = msgs.length - (info.loadingCount - 1) * pageNumber;
             // 滚动加载资源路径
-            if (end >= 1 && !msgs[end - 1].hasLoad) {
+            if (end >= 1) {
                 for (let i = end - 1; i >= end - pageNumber && i >= 0; i--) {
                     if (msgs[i].hasLoad) {
                         break;
@@ -1828,6 +1828,7 @@ export class ChatEffect {
         .ofType(chatAction.addFriendConfirm)
         .map(toPayload)
         .switchMap((user) => {
+            console.log(555, user.verifyModalText);
             const addFriendConfirm = global.JIM.addFriend({
                     target_name: user.name,
                     from_type: 1,
@@ -1978,7 +1979,7 @@ export class ChatEffect {
                         return {type: '[chat] save memo name useless'};
                     });
     });
-    // 修改备注名
+    // 加载预览图片的图片url
     @Effect()
     private loadViewerImage$: Observable<Action> = this.actions$
         .ofType(chatAction.loadViewerImage)
@@ -2006,6 +2007,86 @@ export class ChatEffect {
             return Observable.of(loadViewerImage)
                     .map(() => {
                         return {type: '[chat] save memo name useless'};
+                    });
+    });
+    // 加载聊天文件的url
+    @Effect()
+    private msgFile$: Observable<Action> = this.actions$
+        .ofType(chatAction.msgFile)
+        .map(toPayload)
+        .switchMap((info) => {
+            let msgs = info.messageList[info.active.activeIndex].msgs;
+            let count = 0;
+            for (let i = msgs.length - 1; i >= 0; i--) {
+                let type = '';
+                if (msgs[i].content.msg_type === 'file') {
+                    type = this.util.sortByExt(msgs[i].content.msg_body.extras.fileType);
+                }
+                if ((type === info.type ||
+                    (msgs[i].content.msg_type === info.type && info.type === 'image')) &&
+                    !msgs[i].content.msg_body.media_url) {
+                    count ++;
+                    global.JIM.getResource({media_id: msgs[i].content.msg_body.media_id})
+                    .onSuccess((urlInfo) => {
+                        msgs[i].content.msg_body.media_url = urlInfo.url;
+                        count --;
+                        if (count <= 0 && info.type === 'image') {
+                            this.store$.dispatch({
+                                type: chatAction.msgFileSuccess,
+                                payload: {
+                                    messageList: info.messageList,
+                                    type: info.type,
+                                    isFirst: false
+                                }
+                            });
+                        }
+                    }).onFail((error) => {
+                        count --;
+                        if (count <= 0 && info.type === 'image') {
+                            this.store$.dispatch({
+                                type: chatAction.msgFileSuccess,
+                                payload: {
+                                    messageList: info.messageList,
+                                    type: info.type,
+                                    isFirst: false
+                                }
+                            });
+                        }
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
+                    }).onTimeout((data) => {
+                        const error = {code: 910000};
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
+                        count --;
+                        if (count <= 0 && info.type === 'image') {
+                            this.store$.dispatch({
+                                type: chatAction.msgFileSuccess,
+                                payload: {
+                                    messageList: info.messageList,
+                                    type: info.type,
+                                    isFirst: false
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+            this.store$.dispatch({
+                type: chatAction.msgFileSuccess,
+                payload: {
+                    messageList: info.messageList,
+                    type: info.type,
+                    isFirst: true
+                }
+            });
+            return Observable.of('msgFile')
+                    .map(() => {
+                        return {type: '[chat] msg file useless'};
                     });
     });
     constructor(

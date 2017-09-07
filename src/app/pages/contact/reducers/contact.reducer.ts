@@ -79,6 +79,9 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             isAgreeAddFriend(state, payload, 4);
             state.friendList = util.insertSortByLetter(state.friendList, payload);
             break;
+        case contactAction.addFriendError:
+            addFriendError(state, payload);
+            break;
         case chatAction.dispatchFriendList:
             state.hasNoSortFriendList = payload;
             state.friendList = util.sortByLetter(state.hasNoSortFriendList);
@@ -95,6 +98,15 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
     }
     return state;
 };
+// 同意或拒绝好友请求失败
+function addFriendError(state, payload) {
+    for (let verifyMessage of state.verifyMessageList) {
+        if (verifyMessage.eventId === payload.eventId) {
+            verifyMessage.stateType = 0;
+            break;
+        }
+    }
+}
 // 等待好友验证
 function waitReply(state, payload) {
     let verifyMessage = {
@@ -146,8 +158,12 @@ function friendReply(state, payload) {
             break;
         }
     }
-    state.contactUnreadNum ++;
-    state.verifyUnreadNum ++;
+    if (state.tab !== 0 || state.listTab !== 1) {
+        state.verifyUnreadNum ++;
+    }
+    if (state.listTab !== 1) {
+        state.contactUnreadNum ++;
+    }
     state.verifyMessageList.unshift(verifyMessage);
 }
 function changeFirstOne(state, type) {
