@@ -156,7 +156,10 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
         event.target.src = item.type === 4 ? groupErrorIcon : singleErrorIcon;
     }
     private confirmMessageTransmit() {
-        this.confirmTransmit.emit(this.selectList);
+        this.confirmTransmit.emit({
+            type: this.messageTransmit.type,
+            selectList: this.selectList
+        });
         this.messageTransmit.show = false;
     }
     private cancelMessageTransmit() {

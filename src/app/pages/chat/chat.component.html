@@ -9,7 +9,7 @@
     </div>
 </div>
 <video-component *ngIf="playVideoShow.show && hideAll" [url]="playVideoShow.url" (closeVideo)="closeVideoEmit()"></video-component>
-<other-info-component *ngIf="otherInfo.show" [changeOtherInfoFlag]="changeOtherInfoFlag" [otherInfo]="otherInfo" (verifyUserBtn)="verifyUserBtnEmit($event)" (addFriend)="addFriendEmit($event)" (isShow)="OtherInfoEmit($event)" (changeSingleBlack)="changeSingleBlackEmit($event)" (changeSingleNoDisturb)="changeSingleNoDisturbEmit($event)" (saveMemoName)="saveMemoNameEmit($event)" (deleteFriend)="deleteFriendEmit($event)"></other-info-component>
+<other-info-component *ngIf="otherInfo.show" [changeOtherInfoFlag]="changeOtherInfoFlag" [otherInfo]="otherInfo" (verifyUserBtn)="verifyUserBtnEmit($event)" (addFriend)="addFriendEmit($event)" (isShow)="OtherInfoEmit($event)" (changeSingleBlack)="changeSingleBlackEmit($event)" (changeSingleNoDisturb)="changeSingleNoDisturbEmit($event)" (saveMemoName)="saveMemoNameEmit($event)" (deleteFriend)="deleteFriendEmit($event)" (sendCard)="sendCardEmit($event)"></other-info-component>
 <group-description-component *ngIf="groupDescription.show && hideAll" [description]="groupDescription.description" (updateGroupInfo)="updateGroupInfoEmit($event)"></group-description-component>
 <message-transmit-component [messageTransmit]="messageTransmit" *ngIf="messageTransmit.show && hideAll" (confirmTransmit)="confirmTransmitEmit($event)" (searchMessageTransmit)="searchMessageTransmitEmit($event)"></message-transmit-component>
 <verify-modal-component *ngIf="verifyModal.show" (verifyModalBtn)="verifyModalBtnEmit($event)" [verifyModal]="verifyModal"></verify-modal-component>

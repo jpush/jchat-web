@@ -43,41 +43,77 @@
             color: #2C2C2C;
             margin-bottom: 10px;
         }
+        .group-avatar-info{
+            height: 60px;
+            .group-avatar{
+                width: 60px;
+                height: 60px;
+                margin-right: 6px;
+                position: relative;
+                display: block;
+                cursor: pointer;            
+                &:hover:after{
+                    content: '';
+                    display: block;
+                    background: rgba(0, 0, 0, 0.6) url(../../../assets/images/camera.svg) center center no-repeat;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                }
+                img{
+                    width: 100%;
+                }
+            }
+            .group-avatar-file{
+                display: none;
+            }
+            .group-setting-name{
+                line-height: 25px;
+                font-size: 14px;
+                .group-setting-name-text{
+                    white-space: nowrap;
+                    max-width: 150px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    cursor: pointer;
+                    margin-left: 5px;
+                    &:hover{
+                        color: #2dd0cf;
+                    }
+                }
+                .group-setting-name-input{
+                    width: 150px;
+                    height: 25px;
+                    border: 1px solid #E3E6EB;
+                    border-radius: 3px;
+                    padding-left: 5px;
+                    box-sizing: border-box;
+                    font-size: 14px;
+                }
+            }
+            .group-setting-desc{
+                line-height: 17px;
+                font-size: 12px;
+                color: #999;
+                margin-left: 5px;
+                .group-setting-desc-text{
+                    cursor: pointer;
+                    max-width: 170px;
+                    &:hover{
+                        color: #2dd0cf;
+                    }
+                }
+            }
+        }
         .group-setting-text{
             line-height: 34px;
             font-size: 12px;
             color: #2C2C2C;
             padding-right: 20px;
-            .group-setting-name-text{
-                white-space: nowrap;
-                max-width: 170px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                cursor: pointer;
-                &:hover{
-                    color: #2dd0cf;
-                }
-            }
-            .group-setting-name-input{
-                width: 170px;
-                height: 24px;
-                border: 1px solid #E3E6EB;
-                border-radius: 3px;
-                padding-left: 10px;
-                box-sizing: border-box;
-                margin-top: 5px;
-            }
             .group-setting-switch{
                 margin-top: 10px;
-            }
-            .group-setting-dec{
-                cursor: pointer;
-                line-height: 20px;
-                margin: 7px 0;
-                max-width: 170px;
-                &:hover{
-                    color: #2dd0cf;
-                }
             }
         }
         .group-setting-search{
@@ -125,6 +161,11 @@
                     img{
                         cursor: pointer;
                     }
+                }
+                .flex-1{
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 }
                 .group-setting-host{
                     width: 16px;

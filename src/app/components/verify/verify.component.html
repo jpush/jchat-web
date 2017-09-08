@@ -1,7 +1,7 @@
 <perfect-scrollbar class="verify-container">
     <h2>验证消息</h2>
     <div class="verify-no-data" *ngIf="verifyMessageList.length === 0">暂无验证消息</div>
-    <div class="display-flex verify-list" *ngFor="let message of verifyMessageList">
+    <div class="display-flex verify-list align-items-center" *ngFor="let message of verifyMessageList">
         <div class="verify-avatar">
             <img (load)="avatarLoad($event)" (click)="verifyUser(message)" (error)="avatarErrorIcon($event)" [src]="message.avatarUrl" alt="">
         </div>

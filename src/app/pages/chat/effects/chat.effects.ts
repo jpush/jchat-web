@@ -23,18 +23,41 @@ export class ChatEffect {
         .ofType(chatAction.receiveSingleMessage)
         .map(toPayload)
         .switchMap((data) => {
+            let count = 0;
+            const content = data.messages[0].content;
+            console.log(111, count);
             if (data.messages[0].isMediaId) {
+                count ++;
                 this.requestMediaUrl(data, () => {
-                    this.store$.dispatch({
-                        type: chatAction.receiveMessageSuccess,
-                        payload: data
-                    });
+                    if (-- count <= 0) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: data
+                        });
+                        console.log(222, count);
+                    }
                 });
-            } else {
+            }
+            // 如果发送的是名片
+            if (content.msg_type === 'text' && content.msg_body.extras &&
+                content.msg_body.extras.businessCard) {
+                count ++;
+                this.requestCardInfo(content, () => {
+                    if (-- count <= 0) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: data
+                        });
+                        console.log(333, count);
+                    }
+                });
+            }
+            if (count <= 0) {
                 this.store$.dispatch({
                     type: chatAction.receiveMessageSuccess,
                     payload: data
                 });
+                console.log(444, count);
             }
             return Observable.of('receiveSingleMessage')
                     .map(() => {
@@ -48,19 +71,18 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((obj) => {
             let count = 0;
-            let increase = 0;
             let messages = obj.data.messages[0];
             let messageList = obj.messageList;
             let flag = false;
+            let content = obj.data.messages[0].content;
             // 如果消息所在的群聊不在消息列表中，且群名为空，需要获取群的成员，将群成员的昵称或用户名拼接
             let result = obj.conversation.filter((item) => {
                 return Number(messages.key) === Number(item.key);
             });
             if (result.length === 0 && !messages.content.target_name) {
-                increase ++;
+                count ++;
                 global.JIM.getGroupMembers({gid: messages.content.target_id})
                 .onSuccess((data) => {
-                    count ++;
                     let name = '';
                     for (let list of data.member_list) {
                         name += ((list.nickName !== '' ? list.nickName : list.username) + '、');
@@ -71,16 +93,15 @@ export class ChatEffect {
                         messages.content.target_name =
                             name.substr(0, name.length - 1);
                     }
-                    if (count === increase) {
+                    if (-- count <= 0) {
                         this.store$.dispatch({
                             type: chatAction.receiveMessageSuccess,
                             payload: obj.data
                         });
                     }
                 }).onFail((error) => {
-                    count ++;
                     messages.content.target_name = '群名获取失败？？';
-                    if (count === increase) {
+                    if (-- count <= 0) {
                         this.store$.dispatch({
                             type: chatAction.receiveMessageSuccess,
                             payload: obj.data
@@ -93,10 +114,22 @@ export class ChatEffect {
                 });
             }
             if (messages.isMediaId) {
-                increase ++;
+                count ++;
                 this.requestMediaUrl(obj.data, () => {
-                    count ++;
-                    if (count === increase) {
+                    if (-- count <= 0) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: obj.data
+                        });
+                    }
+                });
+            }
+            // 如果发送的是名片
+            if (content.msg_type === 'text' && content.msg_body.extras &&
+                content.msg_body.extras.businessCard) {
+                count ++;
+                this.requestCardInfo(content, () => {
+                    if (-- count <= 0) {
                         this.store$.dispatch({
                             type: chatAction.receiveMessageSuccess,
                             payload: obj.data
@@ -112,7 +145,7 @@ export class ChatEffect {
                         if (list.msgs[i].content.from_id === messages.content.from_id
                             && hasLoadAvatar) {
                             messages.content.avatarUrl = list.msgs[i].content.avatarUrl;
-                            if (increase === 0) {
+                            if (count <= 0) {
                                 this.store$.dispatch({
                                     type: chatAction.receiveMessageSuccess,
                                     payload: obj.data
@@ -126,15 +159,14 @@ export class ChatEffect {
                 }
             }
             if (!flag) {
-                increase ++;
+                count ++;
                 // 消息列表中没有加载过头像
                 global.JIM.getUserInfo({
                     username: messages.content.from_id
                 }).onSuccess((user) => {
                     if (!user.user_info.avatar || user.user_info.avatar === '') {
-                        count ++;
                         messages.content.avatarUrl = '';
-                        if (count === increase) {
+                        if (-- count <= 0) {
                             this.store$.dispatch({
                                 type: chatAction.receiveMessageSuccess,
                                 payload: obj.data
@@ -145,8 +177,7 @@ export class ChatEffect {
                     global.JIM.getResource({media_id: user.user_info.avatar})
                     .onSuccess((urlInfo) => {
                         messages.content.avatarUrl = urlInfo.url;
-                        count ++;
-                        if (count === increase) {
+                        if (-- count <= 0) {
                             this.store$.dispatch({
                                 type: chatAction.receiveMessageSuccess,
                                 payload: obj.data
@@ -154,8 +185,7 @@ export class ChatEffect {
                         }
                     }).onFail((error) => {
                         messages.content.avatarUrl = '';
-                        count ++;
-                        if (count === increase) {
+                        if (-- count <= 0) {
                             this.store$.dispatch({
                                 type: chatAction.receiveMessageSuccess,
                                 payload: obj.data
@@ -163,8 +193,7 @@ export class ChatEffect {
                         }
                     });
                 }).onFail((error) => {
-                    count ++;
-                    if (count === increase) {
+                    if (-- count <= 0) {
                         this.store$.dispatch({
                             type: chatAction.receiveMessageSuccess,
                             payload: obj.data
@@ -476,7 +505,8 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((text) => {
             const msgBody = {
-                text: text.msgs.content.msg_body.text
+                text: text.msgs.content.msg_body.text,
+                extras: text.msgs.content.msg_body.extras
             };
             const msgObj = global.JIM.sendSingleMsg({
                 target_username: text.select.name,
@@ -598,7 +628,8 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((text) => {
             const msgBody = {
-                text: text.msgs.content.msg_body.text
+                text: text.msgs.content.msg_body.text,
+                extras: text.msgs.content.msg_body.extras
             };
             const groupMessageObj = global.JIM.sendGroupMsg({
                 target_gid: text.select.key,
@@ -2127,6 +2158,29 @@ export class ChatEffect {
                 type: appAction.errorApiTip,
                 payload: error
             });
+        });
+    }
+    private requestCardInfo(content, callback) {
+        global.JIM.getUserInfo({
+            username: content.msg_body.extras.userName,
+            appkey: authPayload.appKey
+        }).onSuccess((otherInfo) => {
+            content.msg_body.extras.nickName = otherInfo.user_info.nickname;
+            if (otherInfo.user_info.avatar !== '') {
+                global.JIM.getResource({media_id: otherInfo.user_info.avatar})
+                .onSuccess((urlInfo) => {
+                    content.msg_body.extras.media_url = urlInfo.url;
+                    callback();
+                }).onFail((error) => {
+                    callback();
+                }).onTimeout((errorInfo) => {
+                    callback();
+                });
+            }
+        }).onFail((error) => {
+            callback();
+        }).onTimeout(() => {
+            callback();
         });
     }
 }

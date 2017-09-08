@@ -603,7 +603,7 @@ function modifyOtherInfoMemoName(state, payload) {
 }
 // 当前会话有修改了备注的用户时，修改消息列表的备注和群成员的备注
 function modifyActiveMessageList(state, payload) {
-    if (state.activePerson.type === 4 && state.activePerson.activeIndex > 0) {
+    if (state.activePerson.activeIndex > 0) {
         let messageList = state.messageList[state.activePerson.activeIndex];
         let msgs = messageList.msgs;
         for (let message of msgs) {
@@ -1253,7 +1253,7 @@ function changeActivePerson(state: ChatStore) {
         }
         // 给群聊消息中的好友添加备注名
         for (let friend of state.friendList) {
-            if (friend.name === msg.content.from_id && msg.msg_type === 4) {
+            if (friend.name === msg.content.from_id) {
                 msg.content.memo_name = friend.memo_name;
                 break;
             }
@@ -1490,8 +1490,13 @@ function sendMsgComplete(state: ChatStore, payload) {
                 if (msgs[j].msgKey && Number(payload.msgKey) === Number(msgs[j].msgKey)) {
                     if (payload.msgs) {
                         let url = msgs[j].content.msg_body.media_url;
+                        let localExtras = msgs[j].content.msg_body.extras;
                         if (url) {
                             payload.msgs.content.msg_body.media_url = url;
+                        }
+                        if (localExtras && localExtras.businessCard) {
+                            payload.msgs.content.msg_body.extras.media_url = localExtras.media_url;
+                            payload.msgs.content.msg_body.extras.nickName = localExtras.nickName;
                         }
                         delete msgs[j].msg_id;
                         msgs[j] = Object.assign({}, msgs[j], payload.msgs);

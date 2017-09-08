@@ -1,7 +1,7 @@
 <div class="conversation-no-data" *ngIf="!conversationList || conversationList.length === 0">暂无联系人</div>
 <perfect-scrollbar class="conversation-container">
     <ul class="conversation-list">
-        <li *ngFor="let item of conversationList;let i = index;" (click)="selectTarget(item)" [ngClass]="{'active': item.key == active.key || item.gid == active.key}" class="display-flex menu-hover">
+        <li *ngFor="let item of conversationList;let i = index;" (contextmenu)="contextmenu(item)" (click)="selectTarget(item)" [ngClass]="{'active': item.key == active.key || item.gid == active.key}" class="display-flex menu-hover">
             <div class="conversation-avatar">
                 <div>
                     <img *ngIf="item.type == 3" (load)="avatarLoad($event)" [src]="item.avatarUrl ? (item.avatarUrl | sanitize: 'url') : ''" (error)="avatarErrorIcon($event)" alt="">

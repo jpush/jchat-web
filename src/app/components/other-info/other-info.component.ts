@@ -19,6 +19,8 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
     @Output()
         private changeSingleBlack: EventEmitter<any> = new EventEmitter();
     @Output()
+        private sendCard: EventEmitter<any> = new EventEmitter();
+    @Output()
         private changeSingleNoDisturb: EventEmitter<any> = new EventEmitter();
     @Output()
         private addFriend: EventEmitter<any> = new EventEmitter();
@@ -39,20 +41,26 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
     private infoMenu = {
         info: [
             {
-                name: '用户免打扰',
+                name: '发送名片',
                 key: 0,
                 isRight: false,
                 show: true
             },
             {
-                name: '加入黑名单',
+                name: '消息免打扰',
                 key: 1,
                 isRight: false,
                 show: true
             },
             {
-                name: '删除好友',
+                name: '加入黑名单',
                 key: 2,
+                isRight: false,
+                show: true
+            },
+            {
+                name: '删除好友',
+                key: 3,
                 isRight: false,
                 show: true
             }
@@ -67,8 +75,8 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
         // pass
     }
     public ngOnChanges() {
-        this.infoMenu.info[0].isRight = this.otherInfo.info.noDisturb ? true : false;
-        this.infoMenu.info[1].isRight = this.otherInfo.info.black ? true : false;
+        this.infoMenu.info[1].isRight = this.otherInfo.info.noDisturb ? true : false;
+        this.infoMenu.info[2].isRight = this.otherInfo.info.black ? true : false;
         switch (this.otherInfo.info.gender) {
             case 0:
                 this.otherInfo.info.gender = '保密';
@@ -82,9 +90,9 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
             default:
         }
         if (this.otherInfo.info.infoType === 'watchOtherInfo' && !this.otherInfo.info.isFriend) {
-            this.infoMenu.info[2].show = false;
+            this.infoMenu.info[3].show = false;
         } else {
-            this.infoMenu.info[2].show = true;
+            this.infoMenu.info[3].show = true;
         }
     }
     public ngDoCheck() {
@@ -117,7 +125,7 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
         let user = {
             avatar: this.otherInfo.info.avatar,
             avatarUrl: this.otherInfo.info.avatarUrl,
-            key: this.otherInfo.info.key || this.otherInfo.info.uid,
+            // key: this.otherInfo.info.key || this.otherInfo.info.uid,
             mtime: this.otherInfo.info.mtime,
             name: this.otherInfo.info.username,
             nickName: this.otherInfo.info.nickname,
@@ -142,12 +150,15 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
     private selectMenuItemEmit(item) {
         switch (item.key) {
             case 0:
-                this.changeSingleNoDisturb.emit(this.otherInfo.info);
+                this.sendCard.emit(this.otherInfo.info);
                 break;
             case 1:
-                this.changeSingleBlack.emit(this.otherInfo.info);
+                this.changeSingleNoDisturb.emit(this.otherInfo.info);
                 break;
             case 2:
+                this.changeSingleBlack.emit(this.otherInfo.info);
+                break;
+            case 3:
                 this.deleteFriend.emit(this.otherInfo.info);
                 break;
             default:

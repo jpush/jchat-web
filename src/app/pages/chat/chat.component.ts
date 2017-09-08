@@ -47,7 +47,12 @@ export class ChatComponent implements OnInit, OnDestroy {
     private defaultPanelIsShow = true;
     private otherInfo = {
         show: false,
-        info: {}
+        info: {
+            name: '',
+            appkey: '',
+            avatarUrl: '',
+            nickName: ''
+        }
     };
     private blackMenu = {
         show: false,
@@ -89,7 +94,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     };
     private messageTransmit = {
         list: [],
-        show: false
+        show: false,
+        type: ''
     };
     private transmitItem = {
         content: {
@@ -781,7 +787,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
     }
     // 发送文本消息
-    private sendMsgEmit(data) {
+    private sendMsgEmit(data, active ?) {
+        let activePerson = active || this.active;
+        console.log(555, data);
         // repeatSend = true重发消息
         /**
          * success
@@ -796,7 +804,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 msg_type: 'text',
                 from_id: global.user,
                 msg_body: {
-                    text: data.content
+                    text: data.content,
+                    extras: data.localExtras
                 }
             },
             ctime_ms: new Date().getTime(),
@@ -804,64 +813,62 @@ export class ChatComponent implements OnInit, OnDestroy {
             msgKey: this.msgKey ++
         };
         // 转发消息失败重发单聊消息
-        if (this.active.type === 3 && data.repeatSend && data.isTransmitMsg) {
-            data.singleMsg = {
-                target_username: this.active.name,
-                content: data.content.msg_body.text
-            };
+        if (activePerson.type === 3 && data.repeatSend && data.isTransmitMsg) {
             this.store$.dispatch({
                 type: chatAction.transmitSingleMessage,
                 payload: {
                     msgs: data,
                     select: {
-                        key: this.active.key
+                        key: activePerson.key
                     },
-                    key: this.active.key
+                    key: activePerson.key
                 }
             });
         // 转发消息失败重发群聊消息
-        }else if (this.active.type === 4 && data.repeatSend && data.isTransmitMsg) {
-            data.groupMsg = {
-                target_gid: this.active.key,
-                content: data.content.msg_body.text
-            };
+        }else if (activePerson.type === 4 && data.repeatSend && data.isTransmitMsg) {
             this.store$.dispatch({
                 type: chatAction.transmitGroupMessage,
                 payload: {
                     msgs: data,
                     select: {
-                        key: this.active.key
+                        key: activePerson.key
                     },
-                    key: this.active.key
+                    key: activePerson.key
                 }
             });
         // 发送单聊消息
-        }else if (this.active.type === 3 && !data.repeatSend) {
-            let singleMsg = {
-                target_username: this.active.name,
+        }else if (activePerson.type === 3 && !data.repeatSend) {
+            let singleMsg: any = {
+                target_username: activePerson.name,
                 // target_nickname: this.active.nickName,
                 content: data.content
             };
+            if (data.extras) {
+                singleMsg.extras = data.extras;
+            }
             msgs.singleMsg = singleMsg;
             msgs.msg_type = 3;
             this.store$.dispatch({
                 type: chatAction.sendSingleMessage,
                 payload: {
                     singleMsg,
-                    key: this.active.key,
+                    key: activePerson.key,
                     msgs
                 }
             });
         // 发送群组消息
-        }else if (this.active.type === 4 && !data.repeatSend) {
+        }else if (activePerson.type === 4 && !data.repeatSend) {
             let groupMsg: any = {
-                target_gid: this.active.key,
+                target_gid: activePerson.key,
                 // target_gname: this.active.name,
                 content: data.content
             };
+            if (data.extras) {
+                groupMsg.extras = data.extras;
+            }
             if (data.isAtAll) {
                 groupMsg.at_list = [];
-            } else if (data.atList.length > 0) {
+            } else if (data.atList && data.atList.length > 0) {
                 groupMsg.at_list = data.atList;
             }
             msgs.groupMsg = groupMsg;
@@ -870,27 +877,27 @@ export class ChatComponent implements OnInit, OnDestroy {
                 type: chatAction.sendGroupMessage,
                 payload: {
                     groupMsg,
-                    key: this.active.key,
+                    key: activePerson.key,
                     msgs
                 }
             });
         // 重发单聊消息
-        }else if (this.active.type === 3 && data.repeatSend) {
+        }else if (activePerson.type === 3 && data.repeatSend) {
             this.store$.dispatch({
                 type: chatAction.sendSingleMessage,
                 payload: {
                     singleMsg: data.singleMsg,
-                    key: this.active.key,
+                    key: activePerson.key,
                     msgs: data
                 }
             });
         // 重发群聊消息
-        }else if (this.active.type === 4 && data.repeatSend) {
+        }else if (activePerson.type === 4 && data.repeatSend) {
             this.store$.dispatch({
                 type: chatAction.sendGroupMessage,
                 payload: {
                     groupMsg: data.groupMsg,
-                    key: this.active.key,
+                    key: activePerson.key,
                     msgs: data
                 }
             });
@@ -1379,23 +1386,54 @@ export class ChatComponent implements OnInit, OnDestroy {
             payload: item
         });
     }
-    // 转发消息弹窗显示
+    // 转发消息或发送名片弹窗显示
     private msgTransmitEmit(item) {
         this.messageTransmit.list = this.conversationList;
         this.messageTransmit.show = true;
+        this.messageTransmit.type = 'msgTransmit';
         this.transmitItem = Object.assign({}, item, {});
     }
-    // 转发弹窗搜索
+    // 转发消息或发送名片弹窗搜索
     private searchMessageTransmitEmit(keywords) {
         this.store$.dispatch({
             type: chatAction.searchMessageTransmit,
             payload: keywords
         });
     }
-    // 转发消息
-    private confirmTransmitEmit(select) {
+    // 转发消息或发送名片
+    private confirmTransmitEmit(info) {
+        if (info.type === 'sendCard') {
+            this.sendCardConfirm(info);
+            return;
+        }
+        if (info.type === 'msgTransmit') {
+            this.msgTransmitConfirm(info);
+            return;
+        }
+    }
+    private sendCardConfirm(info) {
+        for (let select of info.selectList) {
+            let msg = {
+                content: `${this.otherInfo.info.name}的名片`,
+                extras: {
+                    userName: this.otherInfo.info.name,
+                    appKey: this.otherInfo.info.appkey,
+                    businessCard: 'businessCard'
+                },
+                localExtras: {
+                    userName: this.otherInfo.info.name,
+                    appKey: this.otherInfo.info.appkey,
+                    businessCard: 'businessCard',
+                    media_url: this.otherInfo.info.avatarUrl,
+                    nickName: this.otherInfo.info.nickName
+                }
+            };
+            this.sendMsgEmit(msg, select);
+        }
+    }
+    private msgTransmitConfirm(info) {
         this.transmitItem.msgKey = this.msgKey ++;
-        this.transmitItem.totalTransmitNum = select.length;
+        this.transmitItem.totalTransmitNum = info.selectList.length;
         this.transmitItem.ctime_ms = new Date().getTime();
         this.transmitItem.conversation_time_show = 'today';
         this.transmitItem.showMoreIcon = false;
@@ -1403,7 +1441,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.transmitItem.content.from_id = global.user;
         this.transmitCount = 0;
         this.transmitItem.isTransmitMsg = true;
-        for (let item of select) {
+        for (let item of info.selectList) {
             this.transmitItem.content.target_id = item.name;
             this.transmitItem.type = item.type;
             let data = {
@@ -1494,6 +1532,11 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
             }
         });
+    }
+    private sendCardEmit(info) {
+        this.messageTransmit.list = this.conversationList;
+        this.messageTransmit.show = true;
+        this.messageTransmit.type = 'sendCard';
     }
     private verifyUserBtnEmit(verifyUser) {
         this.store$.dispatch({

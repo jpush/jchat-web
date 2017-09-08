@@ -38,7 +38,7 @@
                     <!-- 接收到他人的消息 -->
                     <div class="chat-panel-you-msg chat-panel-msg" *ngIf="global.user != i.content.from_id && i.msg_type !== 5">
                         <!-- 文本消息 -->
-                        <div *ngIf="i.content.msg_type === 'text'" class="clearfix" (mouseleave)="msgMouseleave()">
+                        <div *ngIf="i.content.msg_type === 'text' && (!i.content.msg_body.extras || !i.content.msg_body.extras.businessCard)" class="clearfix" (mouseleave)="msgMouseleave()">
                             <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
@@ -50,6 +50,30 @@
                             </div>
                             <div class="chat-panel-more float-left" [ngStyle]="{'margin-top': i.msg_type === 4 ? '21px' : 0}" #youText [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showYouMoreText($event, i, youText)"></div>
+                            </div>
+                        </div>
+                        <!-- 名片消息 -->
+                        <div *ngIf="i.content.msg_type === 'text' && i.content.msg_body?.extras?.businessCard" (mouseleave)="msgMouseleave()" [ngStyle]="{height: 105 + (active.type === 4 ? 20 : 0) + 'px'}" class="clearfix">
+                            <div class="chat-panel-fromId-you float-left chat-panel-avatar" (click)="watchOtherInfo(i.content)">
+                                <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                            </div>
+                            <div class="float-left clearfix">
+                                <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
+                                <div class="float-left chat-panel-card chat-panel-card-you">
+                                    <div class="display-flex chat-panel-card-icon chat-panel-card-icon-you">
+                                        <div class="chat-panel-card-icon-avatar">
+                                            <img (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" [src]="i.content.msg_body.extras.media_url | sanitize: 'url'" alt="">
+                                        </div>
+                                        <div class="flex-1 display-flex justify-content-center flex-direction-vertical">
+                                            <p class="chat-panel-card-name">{{i.content.msg_body.extras.nickName || i.content.msg_body.extras.userName}}</p>
+                                            <p class="chat-panel-card-username" *ngIf="i.content.msg_body.extras.nickName">用户名： {{i.content.msg_body.extras.userName | fileName: 12}}</p>                                                    
+                                        </div>
+                                    </div>
+                                    <div class="chat-panel-card-range">个人名片</div>
+                                </div>
+                            </div>
+                            <div class="chat-panel-more float-left" #youBusinessCard [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youBusinessCard)"></div>
                             </div>
                         </div>
                         <!-- 图片消息 -->
@@ -160,7 +184,7 @@
                     <!-- 自己发送的消息  -->
                     <div class="chat-panel-me-msg chat-panel-msg" *ngIf="global.user === i.content.from_id && i.msg_type !== 5">
                         <!-- 文本消息 -->
-                        <div *ngIf="i.content.msg_type === 'text'" class="clearfix" (mouseleave)="msgMouseleave()">
+                        <div *ngIf="i.content.msg_type === 'text' && (!i.content.msg_body.extras || !i.content.msg_body.extras.businessCard)" class="clearfix" (mouseleave)="msgMouseleave()">
                             <div class="float-right chat-panel-fromId-me chat-panel-avatar" (click)="watchSelfInfo()">
                                 <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
@@ -171,6 +195,29 @@
                             </div>
                             <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right" #meText [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreText($event, i, meText)"></div>
+                            </div>
+                        </div>
+                        <!-- 名片消息 -->
+                        <div *ngIf="i.content.msg_type === 'text' && i.content.msg_body?.extras?.businessCard" (mouseleave)="msgMouseleave()" class="clearfix" style="height: 105px;">
+                            <div class="chat-panel-fromId-me float-right chat-panel-avatar" (click)="watchSelfInfo()">
+                                <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                            </div>
+                            <div class="float-right clearfix">
+                                <div class="float-left chat-panel-card chat-panel-card-me">
+                                    <div class="display-flex chat-panel-card-icon chat-panel-card-icon-me">
+                                        <div class="chat-panel-card-icon-avatar">
+                                            <img (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" [src]="i.content.msg_body.extras.media_url | sanitize: 'url'" alt="">
+                                        </div>
+                                        <div class="flex-1 display-flex justify-content-center flex-direction-vertical">
+                                            <p class="chat-panel-card-name" [title]="i.content.msg_body.extras.nickName || i.content.msg_body.extras.userName">{{i.content.msg_body.extras.nickName || i.content.msg_body.extras.userName}}</p>
+                                            <p class="chat-panel-card-username" *ngIf="i.content.msg_body.extras.nickName" [title]="i.content.msg_body.extras.userName">用户名： {{i.content.msg_body.extras.userName | fileName: 12}}</p>                                                    
+                                        </div>
+                                    </div>
+                                    <div class="chat-panel-card-range">个人名片</div>
+                                </div>
+                            </div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meFile)"></div>
                             </div>
                         </div>
                         <!-- 图片消息 -->

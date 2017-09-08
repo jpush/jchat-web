@@ -3,14 +3,21 @@
         <span class="group-setting-close" (click)="closeGroupSettingAction()"></span>
         <div class="group-setting-header" id="groupSettingHeader">
             <div class="group-setting-title">群设置</div>
-            <p class="clearfix group-setting-text">
-                <span class="float-left">群名称&nbsp;:&nbsp;</span>
-                <span class="float-left group-setting-name-text" [hidden]="modifyGroupNameShow" (click)="modifyGroupNameAction()" [title]="groupSetting.groupInfo.name">{{groupSetting.groupInfo.name}}</span>
-                <input spellcheck="false" maxlength="20" class="float-left group-setting-name-input input-focus" id="groupSettingNameInput" [hidden]="!modifyGroupNameShow" type="text" [ngModel]="groupSetting.groupInfo.name" (blur)="modifyGroupNameBlur($event)">
-            </p>
-            <div class="clearfix group-setting-text">
-                <span class="float-left">群描述&nbsp;:&nbsp;</span>
-                <span class="float-left group-setting-dec" id="groupSettingDec" [title]="groupSetting.groupInfo.desc ? groupSetting.groupInfo.desc : ''" (click)="modifyGroupDescriptionAction()">{{groupSetting.groupInfo.desc ? (groupSetting.groupInfo.desc | ellipsis: 26) : '未填写'}}</span>
+            <div class="display-flex group-avatar-info">
+                <label class="group-avatar" for="groupAvatar">
+                    <img src="../../../assets/images/group-avatar.svg" alt="">
+                </label>
+                <input type="file" id="groupAvatar" class="group-avatar-file">
+                <div class="flex-1">
+                    <p class="clearfix group-setting-text group-setting-name">
+                        <span class="group-setting-name-text" [hidden]="modifyGroupNameShow" (click)="modifyGroupNameAction()" [title]="groupSetting.groupInfo.name">{{groupSetting.groupInfo.name}}</span>
+                        <input spellcheck="false" maxlength="20" class="group-setting-name-input input-focus" id="groupSettingNameInput" [hidden]="!modifyGroupNameShow" type="text" [ngModel]="groupSetting.groupInfo.name" (blur)="modifyGroupNameBlur($event)">
+                    </p>
+                    <div class="clearfix group-setting-text group-setting-desc">
+                        <span class="float-left">群描述&nbsp;:&nbsp;</span>
+                        <span class="float-left group-setting-desc-text" id="groupSettingDec" [title]="groupSetting.groupInfo.desc ? groupSetting.groupInfo.desc : ''" (click)="modifyGroupDescriptionAction()">{{groupSetting.groupInfo.desc ? (groupSetting.groupInfo.desc | ellipsis: 26) : '未填写'}}</span>
+                    </div>
+                </div>
             </div>
             <div class="clearfix group-setting-text">
                 <span class="float-left">消息免打扰&nbsp;:&nbsp;</span>
@@ -36,7 +43,7 @@
                         <div class="group-setting-avatar" (click)="watchInfoAction(item)">
                             <img [src]="item.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                         </div>
-                        <span class="flex-1">{{item.memo_name || item.nickName || item.username}}</span>
+                        <span class="flex-1" [title]="item.memo_name || item.nickName || item.username">{{item.memo_name || item.nickName || item.username}}</span>
                         <div class="group-setting-host" *ngIf="item.flag === 1" [hoverEvent]="hostHover">
                             <hover-tip-component [hidden]="!hostHover.show" [hoverInfo]="hostHover"></hover-tip-component>
                         </div>

@@ -418,6 +418,78 @@
                     word-break: break-all;
                 }
             }
+            .chat-panel-card{
+                width: 236px;
+                height: 103px;
+                background: #F2F6FB;
+                border: 1px solid #E2E9F0;
+                position: relative;
+                &.chat-panel-card-you{
+                    border-radius: 0 5px 5px 5px;                
+                    &:after{
+                        content: '';
+                        position: absolute;
+                        top: -1px;
+                        left: -6px;
+                        width: 6px;
+                        height: 10px;
+                        display: block;
+                        background: url(../../../assets/images/pao-you.svg) left top no-repeat;
+                    }
+                }
+                &.chat-panel-card-me{
+                    border-radius: 5px 0 5px 5px;                
+                    &:after{
+                        content: '';
+                        position: absolute;
+                        top: -1px;
+                        right: -6px;
+                        width: 6px;
+                        height: 10px;
+                        display: block;
+                        background: url(../../../assets/images/pao-me-file.svg) right top no-repeat;
+                    }
+                }
+            }
+            .chat-panel-card-icon{
+                height: 75px;
+                padding: 20px 20px 15px 20px;
+                box-sizing: border-box;
+                .chat-panel-card-icon-avatar{
+                    width: 40px;
+                    height: 40px;
+                    overflow: hidden;
+                    margin-right: 9px;
+                }
+                .chat-panel-card-name{
+                    font-size: 14px;
+                    color: #2C2C2C;
+                    line-height: 20px;
+                    text-align: left;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+                .chat-panel-card-username{
+                    line-height: 17px;
+                    font-size: 12px;
+                    color: #999999;
+                    text-align: left;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+            .chat-panel-card-range{
+                height: 29px;
+                line-height: 29px;
+                padding-left: 20px;
+                box-sizing: border-box;
+                font-size: 12px;
+                color: #999999;
+                border-top: 1px solid #DCDCDC;
+                text-align: left;
+            }
             .chat-panel-you-msg{
                 text-align: left;
                 line-height: 40px;               

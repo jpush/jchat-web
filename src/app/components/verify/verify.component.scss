@@ -22,7 +22,7 @@
         opacity: 0.4;
     }
     .verify-list{
-        height: 70px;        
+        min-height: 70px;        
         padding: 15px 30px 15px 20px;
         box-sizing: border-box;
         &:hover{
@@ -39,6 +39,7 @@
             }
         }
         .verify-text{
+            overflow: auto;
             div{
                 line-height: 20px;
                 font-size: 14px;
@@ -48,9 +49,6 @@
                 font-size: 12px;
                 color: #999999;
                 line-height: 17px;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
             }
         }
         .verify-username{

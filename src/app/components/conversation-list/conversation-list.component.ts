@@ -34,6 +34,10 @@ export class ConversationListComponent implements OnInit {
         event.stopPropagation();
         this.deleteConversationItem.emit(item);
     }
+    private contextmenu(item) {
+        console.log(item);
+        return false;
+    }
     private avatarLoad(event, item) {
         if (event.target.naturalHeight >= event.target.naturalWidth) {
             event.target.style.width = '100%';

@@ -1,7 +1,7 @@
 <div class="modal-shadow">
     <div class="modal-content create-group-container">
         <h2 class="modal-title">
-            <span>转发</span>
+            <span>{{messageTransmit.type === 'sendCard' ?  '发送名片': '转发'}}</span>
             <span class="modal-close" (click)="cancelMessageTransmit()"></span>
         </h2>
         <div class="create-group-main">

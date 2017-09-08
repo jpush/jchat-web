@@ -297,7 +297,7 @@ export class MainEffect {
                 let user = data.user_info;
                 let item = {
                     avatar: user.avatar,
-                    key: user.key || user.uid,
+                    // key: user.key || user.uid,
                     mtime: user.mtime,
                     name: user.username,
                     nickName: user.nickname,
