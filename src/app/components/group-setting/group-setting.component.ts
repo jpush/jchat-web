@@ -7,7 +7,7 @@ import { AppStore } from '../../app.store';
 import { chatAction } from '../../pages/chat/actions';
 import { global } from '../../services/common';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-
+const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 @Component({
     selector: 'group-setting-component',
     templateUrl: './group-setting.component.html',
@@ -35,6 +35,8 @@ export class GroupSettingComponent implements OnInit, DoCheck {
         private deleteMember: EventEmitter<any> = new EventEmitter();
     @Output()
         private modifyGroupName: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private updateGroupAvatar: EventEmitter<any> = new EventEmitter();
     private global = global;
     private searchResult = {
         result: [],
@@ -175,5 +177,11 @@ export class GroupSettingComponent implements OnInit, DoCheck {
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;
+    }
+    private groupAvatarErrorIcon(event) {
+        event.target.src = groupAvatarErrorIcon;
+    }
+    private groupAvatarChange(event) {
+        this.updateGroupAvatar.emit(event.target);
     }
 }

@@ -78,5 +78,6 @@ export const chatAction = {
     msgFile: '[chat] msg file',
     msgFileSuccess: '[chat] msg file success',
     dispatchMessageUnread: '[chat] dispatch message unread',
-    fileImageLoad: '[chat] file image load'
+    fileImageLoad: '[chat] file image load',
+    groupAvatar: '[chat] group avatar'
 };

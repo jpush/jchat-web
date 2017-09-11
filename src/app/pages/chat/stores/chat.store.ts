@@ -53,7 +53,7 @@ export interface ChatStore {
         searchResult: object,
         list: Array<any>
     };
-    transmitSuccess: boolean;
+    transmitSuccess: number;
     verifyModal: {
         info: object,
         show: boolean
@@ -71,5 +71,6 @@ export interface ChatStore {
         image: Array<any>,
         other: Array<any>
     };
-    msgFileImageViewer: Array<any>
+    msgFileImageViewer: Array<any>,
+    sendBusinessCardSuccess: number
 }

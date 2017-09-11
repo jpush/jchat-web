@@ -5,7 +5,7 @@
     <div class="chat-conversation flex-1">
         <default-panel-component [hidden]="!defaultPanelIsShow"></default-panel-component>        
         <chat-panel-component [changeActiveScrollBottom]="changeActiveScrollBottom" [otherOptionScrollBottom]="otherOptionScrollBottom" [hidden]="defaultPanelIsShow" [selfInfo]="selfInfo" [messageList]="messageList" [active]="active" (loadMore)="loadMoreEmit($event)" (videoPlay)="playVideoEmit($event)" (sendMsg)="sendMsgEmit($event)" (sendPic)="sendPicEmit($event)" (sendFile)="sendFileEmit($event)" (sendLocation)="sendLocationEmit($event)" (saveDraft) ="saveDraftEmit($event)" (otherInfo)="watchOtherInfoEmit($event)" (selfInfoEmit)="watchSelfInfoEmit()" (groupSetting)="groupSettingEmit()" (addGroup)="addGroupEmit()" (msgTransmit)="msgTransmitEmit($event)" (retract)="MsgRetractEmit($event)" (msgFile)="msgFileEmit()"></chat-panel-component>         
-        <group-setting-component [groupSetting]="groupSetting" (closeGroupSetting)="closeGroupSettingEmit()" (exitGroup)="exitGroupEmit($event)" (modifyGroupDescription)="modifyGroupDescriptionEmit()" (addMember)="addMemberEmit()" (watchOtherInfo)="watchOtherInfoEmit($event)" (watchSelfInfo)="watchSelfInfoEmit()" (deleteMember)="deleteMemberEmit($event)" (modifyGroupName)="modifyGroupNameEmit($event)"></group-setting-component>        
+        <group-setting-component [groupSetting]="groupSetting" (closeGroupSetting)="closeGroupSettingEmit()" (exitGroup)="exitGroupEmit($event)" (modifyGroupDescription)="modifyGroupDescriptionEmit()" (addMember)="addMemberEmit()" (watchOtherInfo)="watchOtherInfoEmit($event)" (watchSelfInfo)="watchSelfInfoEmit()" (deleteMember)="deleteMemberEmit($event)" (modifyGroupName)="modifyGroupNameEmit($event)" (updateGroupAvatar)="updateGroupAvatarEmit($event)"></group-setting-component>        
     </div>
 </div>
 <video-component *ngIf="playVideoShow.show && hideAll" [url]="playVideoShow.url" (closeVideo)="closeVideoEmit()"></video-component>
@@ -13,6 +13,7 @@
 <group-description-component *ngIf="groupDescription.show && hideAll" [description]="groupDescription.description" (updateGroupInfo)="updateGroupInfoEmit($event)"></group-description-component>
 <message-transmit-component [messageTransmit]="messageTransmit" *ngIf="messageTransmit.show && hideAll" (confirmTransmit)="confirmTransmitEmit($event)" (searchMessageTransmit)="searchMessageTransmitEmit($event)"></message-transmit-component>
 <verify-modal-component *ngIf="verifyModal.show" (verifyModalBtn)="verifyModalBtnEmit($event)" [verifyModal]="verifyModal"></verify-modal-component>
+<group-avatar-component *ngIf="groupAvatar.show" [groupAvatarInfo]="groupAvatar" (groupAvatar)="groupAvatarEmit($event)"></group-avatar-component>
 <div *ngIf="!isLoaded && hideAll" class="modal-shadow chat-loading">
     <img src="../../../assets/images/app-loading.gif" alt="">
 </div>

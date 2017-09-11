@@ -118,6 +118,9 @@ export class ContactComponent implements OnInit, OnDestroy {
             case contactAction.addFriendError:
                 this.verifyMessageList = contactState.verifyMessageList;
                 break;
+            case chatAction.groupAvatar:
+                this.groupList = contactState.groupList;
+                break;
             default:
         }
     }

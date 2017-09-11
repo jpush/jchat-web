@@ -83,12 +83,22 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             if (!payload.msgs.repeatSend) {
                 addMessage(state, payload);
             }
+            let extras = payload.msgs.content.msg_body.extras;
+            if (extras && extras.businessCard) {
+                state.sendBusinessCardSuccess = 0;
+            }
             break;
             // 发送消息成功（包括所有类型的消息）
         case chatAction.sendMsgComplete:
             sendMsgComplete(state, payload);
             if (payload.success === 2) {
                 state.msgId = updateFilterMsgId(state, [{key: payload.key}]);
+            }
+            let bussinessExtras = payload.msgs.content.msg_body.extras;
+            if (bussinessExtras && bussinessExtras.businessCard && payload.success !== 2) {
+                state.sendBusinessCardSuccess = 0;
+            } else {
+                state.sendBusinessCardSuccess ++;
             }
             break;
             // 转发单聊文本消息
@@ -116,17 +126,17 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.transmitGroupLocation:
             if (!payload.msgs.repeatSend) {
                 state.newMessage = payload.msgs;
-                state.transmitSuccess = true;
+                state.transmitSuccess = 0;
                 transmitMessage(state, payload);
             }
             break;
             // 转发消息发送成功（包括所有类型的转发消息）
         case chatAction.transmitMessageComplete:
-            if (payload.success !== 2) {
-                state.transmitSuccess = false;
-            }
             sendMsgComplete(state, payload);
-            if (payload.success === 2 || payload.success === 3) {
+            if (payload.success !== 2) {
+                state.transmitSuccess = 0;
+            } else {
+                state.transmitSuccess ++;
                 state.msgId = updateFilterMsgId(state, [{key: payload.key}]);
             }
             break;
@@ -453,10 +463,27 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.fileImageLoad:
             fileImageLoad(state, payload);
             break;
+        case chatAction.groupAvatar:
+            updateGroupAvatar(state, payload);
+            break;
         default:
     }
     return state;
 };
+function updateGroupAvatar(state, payload) {
+    for (let conversation of state.conversation) {
+        if (Number(payload.gid) === Number(conversation.key)) {
+            conversation.avatarUrl = payload.src;
+            break;
+        }
+    }
+    for (let messageList of state.messageList) {
+        if (Number(messageList.key) === Number(payload.gid)) {
+            messageList.groupSetting.groupInfo.avatarUrl = payload.src;
+            break;
+        }
+    }
+}
 function fileImageLoad(state, payload) {
     for (let message of state.msgFileImageViewer) {
         let msgIdFlag = payload.msg_id && message.msg_id === payload.msg_id;
@@ -821,8 +848,8 @@ function deleteGroupMembersEvent(state, payload) {
 }
 // 更新群名称
 function updateGroupName(state, payload) {
-    state.activePerson.name = payload.name =
-    state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo.name;
+    state.activePerson.name = payload.name;
+    state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo.name = payload.name;
     for (let group of state.groupList) {
         if (Number(payload.gid) === Number(group.gid)) {
             group.name = payload.name;

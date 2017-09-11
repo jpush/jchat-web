@@ -54,6 +54,18 @@ export class ContactEffect {
                             });
                         });
                     }
+                    if (group.avatar && group.avatar !== '') {
+                        global.JIM.getResource({media_id: group.avatar})
+                        .onSuccess((urlInfo) => {
+                            group.avatarUrl = urlInfo.url;
+                            this.store$.dispatch({
+                                type: contactAction.getGroupListSuccess,
+                                payload: groupList
+                            });
+                        }).onFail((error) => {
+                            //
+                        });
+                    }
                 }
                 if (!flag) {
                     this.store$.dispatch({

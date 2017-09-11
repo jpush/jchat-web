@@ -5,7 +5,7 @@
             <div class="conversation-avatar">
                 <div>
                     <img *ngIf="item.type == 3" (load)="avatarLoad($event)" [src]="item.avatarUrl ? (item.avatarUrl | sanitize: 'url') : ''" (error)="avatarErrorIcon($event)" alt="">
-                    <img class="group-avatar" *ngIf="item.type == 4" src="../../../assets/images/group-avatar.svg" alt="">
+                    <img class="group-avatar" *ngIf="item.type == 4" [src]="item.avatarUrl ? (item.avatarUrl | sanitize: 'url') : ''" (error)="groupAvatarErrorIcon($event)" (load)="avatarLoad($event)" alt="">
                 </div>
                 <jui-badge *ngIf="item.unreadNum && !item.noDisturb" class="conversation-badge" displayType="no-wrapper" [badgeNum]="item.unreadNum" showZero="false" maxNum="99"></jui-badge>
                 <span *ngIf="item.unreadNum && item.noDisturb" class="conversation-dot"></span>

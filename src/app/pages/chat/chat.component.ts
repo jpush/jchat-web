@@ -61,7 +61,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     private groupSetting = {
         groupInfo: {
             name: '',
-            desc: ''
+            desc: '',
+            gid: 0
         },
         memberList: [],
         active: {},
@@ -113,12 +114,23 @@ export class ChatComponent implements OnInit, OnDestroy {
         key: 0,
         isTransmitMsg: true
     };
-    private transmitCount = 0;
     private verifyModal = {
         info: {},
         show: false
     };
     private changeOtherInfoFlag = false;
+    private sendBusinessCardCount = 0;
+    private groupAvatar = {
+        info: {
+            src: '',
+            width: 0,
+            height: 0,
+            pasteFile: {}
+        },
+        show: false,
+        formData: {},
+        src: ''
+    };
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -323,6 +335,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 if (chatState.msgId.length > 0) {
                     this.storageMsgId(chatState.msgId);
                 }
+                this.modalTipSendCardSuccess(chatState);
                 break;
             case chatAction.changeActivePerson:
                 this.messageList = chatState.messageList;
@@ -403,6 +416,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.groupName:
                 this.groupSetting.groupInfo.name = messageListActive.groupSetting.groupInfo.name;
+                console.log(777, messageListActive);
                 this.store$.dispatch({
                     type: chatAction.updateContactInfo,
                     payload: {
@@ -513,15 +527,31 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.conversationList = chatState.conversation;
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 break;
+            case chatAction.groupAvatar:
+                this.conversationList = chatState.conversation;
+                this.groupSetting.groupInfo = messageListActive.groupSetting.groupInfo;
+                break;
             default:
         }
     }
-    private modalTipTransmitSuccess (chatState) {
-        if (!chatState.transmitSuccess) {
-            return;
+    private modalTipSendCardSuccess (chatState) {
+        if (chatState.sendBusinessCardSuccess === this.sendBusinessCardCount) {
+            this.store$.dispatch({
+                type: mainAction.showModalTip,
+                payload: {
+                    show: true,
+                    info: {
+                        title: '成功',          // 模态框标题
+                        tip: '发送名片成功',   // 模态框内容
+                        actionType: '[main] send business card success', // 哪种操作，点击确定时可以执行对应操作
+                        success: 1              // 成功的提示框/失败的提示框，1.5s后会自动消失
+                    }
+                }
+            });
         }
-        this.transmitCount ++;
-        if (this.transmitCount === this.transmitItem.totalTransmitNum) {
+    }
+    private modalTipTransmitSuccess (chatState) {
+        if (chatState.transmitSuccess === this.transmitItem.totalTransmitNum) {
             this.store$.dispatch({
                 type: mainAction.showModalTip,
                 payload: {
@@ -1308,6 +1338,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 更新群信息
     private updateGroupInfoEmit(newGroupInfo) {
+        console.log(777, newGroupInfo)
         if (newGroupInfo) {
             this.store$.dispatch({
                 type: chatAction.updateGroupInfo,
@@ -1428,6 +1459,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     nickName: this.otherInfo.info.nickName
                 }
             };
+            this.sendBusinessCardCount ++;
             this.sendMsgEmit(msg, select);
         }
     }
@@ -1439,7 +1471,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.transmitItem.showMoreIcon = false;
         this.transmitItem.hasLoad = false;
         this.transmitItem.content.from_id = global.user;
-        this.transmitCount = 0;
         this.transmitItem.isTransmitMsg = true;
         for (let item of info.selectList) {
             this.transmitItem.content.target_id = item.name;
@@ -1549,6 +1580,67 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.store$.dispatch({
             type: contactAction.isAgreeAddFriend,
             payload: verifyUser
+        });
+    }
+    private updateGroupAvatarEmit(groupAvatarInput) {
+        this.getImgObj(groupAvatarInput.files[0]);
+        groupAvatarInput.value = '';
+    }
+    private selectIsNotImage() {
+        this.store$.dispatch({
+            type: mainAction.showModalTip,
+            payload: {
+                show: true,
+                info: {
+                    title: '提示',
+                    tip: '选择的文件必须是图片',
+                    actionType: '[main] must be image',
+                    cancel: true
+                }
+            }
+        });
+    }
+    private getImgObj(file) {
+        if (!file || !file.type || file.type === '') {
+            return false;
+        }
+        if (!/image\/\w+/.test(file.type)) {
+            this.selectIsNotImage();
+            return false;
+        }
+        const that = this;
+        let img = new Image();
+        let pasteFile = file;
+        let reader = new FileReader();
+        reader.readAsDataURL(pasteFile);
+        let fd = new FormData();
+        fd.append(file.name, file);
+        reader.onload = function(e) {
+            img.src = this.result;
+            const _this = this;
+            img.onload = function() {
+                that.groupAvatar.info = {
+                    src: _this.result,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    pasteFile
+                };
+                that.groupAvatar.formData = fd;
+                that.groupAvatar.src =  _this.result;
+                that.groupAvatar.show = true;
+            };
+        };
+    }
+    private groupAvatarEmit(groupAvatarInfo) {
+        let groupSetting = {
+            gid: this.groupSetting.groupInfo.gid,
+            avatar: groupAvatarInfo.formData,
+            actionType: 'modifyGroupAvatar',
+            src: groupAvatarInfo.src
+        };
+        this.store$.dispatch({
+            type: chatAction.updateGroupInfo,
+            payload: groupSetting
         });
     }
 }

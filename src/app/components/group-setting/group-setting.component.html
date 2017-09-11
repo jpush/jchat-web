@@ -5,9 +5,9 @@
             <div class="group-setting-title">群设置</div>
             <div class="display-flex group-avatar-info">
                 <label class="group-avatar" for="groupAvatar">
-                    <img src="../../../assets/images/group-avatar.svg" alt="">
+                    <img [src]="groupSetting.groupInfo.avatarUrl" (load)="avatarLoad($event)" (error)="groupAvatarErrorIcon($event)" alt="">
                 </label>
-                <input type="file" id="groupAvatar" class="group-avatar-file">
+                <input type="file" id="groupAvatar" (change)="groupAvatarChange($event)" class="group-avatar-file">
                 <div class="flex-1">
                     <p class="clearfix group-setting-text group-setting-name">
                         <span class="group-setting-name-text" [hidden]="modifyGroupNameShow" (click)="modifyGroupNameAction()" [title]="groupSetting.groupInfo.name">{{groupSetting.groupInfo.name}}</span>

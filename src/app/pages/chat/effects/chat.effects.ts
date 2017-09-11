@@ -256,6 +256,38 @@ export class ChatEffect {
                                 payload: info.messageList
                             });
                         });
+                    } else if (msgBody.extras && msgBody.extras.businessCard) {
+                        global.JIM.getUserInfo({
+                            username:  msgBody.extras.userName
+                        }).onSuccess((data) => {
+                            msgBody.extras.nickName = data.user_info.nickname;
+                            if (data.user_info.avatar === '') {
+                                msgBody.extras.media_url = '';
+                                this.store$.dispatch({
+                                    type: chatAction.getAllMessageSuccess,
+                                    payload: info.messageList
+                                });
+                            } else {
+                                global.JIM.getResource({media_id: data.user_info.avatar})
+                                .onSuccess((urlInfo) => {
+                                    msgBody.extras.media_url = urlInfo.url;
+                                    this.store$.dispatch({
+                                        type: chatAction.getAllMessageSuccess,
+                                        payload: info.messageList
+                                    });
+                                }).onFail((error) => {
+                                    this.store$.dispatch({
+                                        type: chatAction.getAllMessageSuccess,
+                                        payload: info.messageList
+                                    });
+                                });
+                            }
+                        }).onFail((error) => {
+                            this.store$.dispatch({
+                                type: chatAction.getAllMessageSuccess,
+                                payload: info.messageList
+                            });
+                        });
                     }
                 }
             }
@@ -359,8 +391,7 @@ export class ChatEffect {
                 // 获取头像url
                 let count = 0;
                 for (let conversation of info.conversations) {
-                    if (conversation.avatar && conversation.avatar !== ''
-                        && conversation.type === 3) {
+                    if (conversation.avatar && conversation.avatar !== '') {
                         count ++;
                         global.JIM.getResource({media_id: conversation.avatar})
                         .onSuccess((urlInfo) => {
@@ -1392,12 +1423,40 @@ export class ChatEffect {
         .switchMap((info) => {
             const groupInfoObj = global.JIM.getGroupInfo({gid: info.active.key})
             .onSuccess((data) => {
-                this.store$.dispatch({
-                    type: chatAction.groupInfo,
-                    payload: {
-                        groupInfo: data.group_info
-                    }
-                });
+                console.log(1111111, data);
+                if (data.group_info.avatar && data.group_info.avatar !== '') {
+                    global.JIM.getResource({media_id: data.group_info.avatar})
+                    .onSuccess((urlInfo) => {
+                        data.group_info.avatarUrl = urlInfo.url;
+                        this.store$.dispatch({
+                            type: chatAction.groupInfo,
+                            payload: {
+                                groupInfo: data.group_info
+                            }
+                        });
+                    }).onFail((error) => {
+                        this.store$.dispatch({
+                            type: chatAction.groupInfo,
+                            payload: {
+                                groupInfo: data.group_info
+                            }
+                        });
+                    }).onTimeout((error) => {
+                        this.store$.dispatch({
+                            type: chatAction.groupInfo,
+                            payload: {
+                                groupInfo: data.group_info
+                            }
+                        });
+                    });
+                } else {
+                    this.store$.dispatch({
+                        type: chatAction.groupInfo,
+                        payload: {
+                            groupInfo: data.group_info
+                        }
+                    });
+                }
             }).onFail((error) => {
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
@@ -1505,22 +1564,47 @@ export class ChatEffect {
         .ofType(chatAction.updateGroupInfo)
         .map(toPayload)
         .switchMap((info) => {
-            const groupInfoObj = global.JIM.updateGroupInfo( {
-                group_name: info.name,
-                group_description: info.desc,
+            console.log(2222, info.name);
+            let requestObj: any = {
                 gid: info.gid
-            }).onSuccess((data) => {
+            };
+            if (info.actionType && info.actionType === 'modifyName') {
+                requestObj.group_name = info.name;
+            } else if (info.actionType && info.actionType === 'modifyDescription') {
+                requestObj.group_description = info.desc;
+            } else if (info.actionType && info.actionType === 'modifyGroupAvatar') {
+                requestObj.avatar = info.avatar;
+            }
+            const groupInfoObj = global.JIM.updateGroupInfo(requestObj)
+            .onSuccess((data) => {
                 if (info.actionType && info.actionType === 'modifyName') {
                     this.store$.dispatch({
                         type: chatAction.groupName,
                         payload: info
                     });
-                } else {
+                } else if (info.actionType && info.actionType === 'modifyDescription') {
                     this.store$.dispatch({
                         type: chatAction.groupDescription,
                         payload: {
                             data,
                             show: false
+                        }
+                    });
+                } else if (info.actionType && info.actionType === 'modifyGroupAvatar') {
+                    this.store$.dispatch({
+                        type: chatAction.groupAvatar,
+                        payload: info
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: true,
+                            info: {
+                                title: '修改群头像',
+                                tip: '修改群头像成功',
+                                actionType: '[chat] modify group avatar success useless',
+                                success: 1
+                            }
                         }
                     });
                 }

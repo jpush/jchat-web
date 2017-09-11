@@ -114,7 +114,7 @@ export class Util {
      */
     public fileReader(file, callback ?: Function) {
         let files = file.files[0];
-        if (!files.type && files.type !== '') {
+        if (!files.type || files.type === '') {
             return false;
         }
         if (!/image\/\w+/.test(files.type)) {

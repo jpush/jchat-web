@@ -49,7 +49,7 @@ export const chatInit = {
         searchResult: {},
         list: []
     },
-    transmitSuccess: true,
+    transmitSuccess: 0,
     verifyModal: {
         info: {},
         show: false
@@ -67,5 +67,6 @@ export const chatInit = {
         image: [],
         other: []
     },
-    msgFileImageViewer: []
+    msgFileImageViewer: [],
+    sendBusinessCardSuccess: 0
 };

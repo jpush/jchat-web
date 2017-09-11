@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { global } from '../../services/common';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-
+const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 @Component({
     selector: 'conversation-list-component',
     templateUrl: './conversation-list.component.html',
@@ -29,6 +29,9 @@ export class ConversationListComponent implements OnInit {
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;
+    }
+    private groupAvatarErrorIcon(event) {
+        event.target.src = groupAvatarErrorIcon;
     }
     private deleteThis(event, item) {
         event.stopPropagation();

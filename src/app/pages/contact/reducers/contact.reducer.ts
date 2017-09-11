@@ -94,10 +94,23 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
         case chatAction.addFriendConfirm:
             waitReply(state, payload);
             break;
+        case chatAction.groupAvatar:
+            updateGroupAvatar(state, payload);
+            break;
         default:
     }
     return state;
 };
+function updateGroupAvatar(state, payload) {
+    for (let group of state.groupList){
+        for (let data of group.data) {
+            if (Number(payload.gid) === Number(data.gid)) {
+                data.avatarUrl = payload.src;
+                break;
+            }
+        }
+    }
+}
 // 同意或拒绝好友请求失败
 function addFriendError(state, payload) {
     for (let verifyMessage of state.verifyMessageList) {
