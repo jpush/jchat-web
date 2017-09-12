@@ -59,7 +59,6 @@ export class MainComponent implements OnInit, OnDestroy {
     };
     private chatMenu = {
         show: false,
-        arrorPosition: 'bottom',
         info: [
             {
                 key: 0,
@@ -77,7 +76,6 @@ export class MainComponent implements OnInit, OnDestroy {
     };
     private settingMenu = {
         show: false,
-        arrorPosition: 'bottom',
         info: [
             {
                 key: 0,

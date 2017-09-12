@@ -18,6 +18,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.getConversationSuccess:
             if (payload.storage) {
                 state.conversation = payload.conversation;
+                console.log('会话列表state1：', JSON.stringify(state.conversation));
                 state.messageList = payload.messageList;
                 unreadNum(state, payload);
                 filterRecentMsg(state);
@@ -27,13 +28,16 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             if (payload.shield) {
                 initGroupShield(state, payload.shield);
+                console.log('会话列表state2：', JSON.stringify(state.conversation));
             }
             if (payload.noDisturb) {
                 state.noDisturb = payload.noDisturb;
                 initNoDisturb(state, payload.noDisturb);
+                console.log('会话列表state3：', JSON.stringify(state.conversation));
             }
             if (state.friendList.length > 0) {
                 filteConversationMemoName(state);
+                console.log('会话列表state4：', JSON.stringify(state.conversation));
             }
             break;
         case contactAction.getFriendListSuccess:
@@ -155,8 +159,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case mainAction.selectSearchUser:
             state.defaultPanelIsShow = false;
             clearVoiceTimer(state);
-            selectUserResult(state, payload);
-            state.activePerson = Object.assign({}, state.conversation[0], {});
+            selectUserResult(state, payload, 'search');
             changeActivePerson(state);
             emptyUnreadNum(state, payload);
             state.msgId = updateFilterMsgId(state, [{key: state.activePerson.key}]);
@@ -466,10 +469,33 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.groupAvatar:
             updateGroupAvatar(state, payload);
             break;
+        case chatAction.conversationToTopSuccess:
+            conversationToTop(state, payload);
+            break;
+        case chatAction.watchUnreadList:
+            state.unreadList.show = true;
+            break;
+        case chatAction.watchUnreadListSuccess:
+            console.log(222222, payload);
+            state.unreadList.info.read = payload.info.read_list;
+            state.unreadList.info.unread = payload.info.unread_list;
+            break;
         default:
     }
     return state;
 };
+// 消息置顶和取消置顶
+function conversationToTop(state, payload) {
+    for (let i = 0; i < state.conversation.length; i++) {
+        if (Number(state.conversation[i].key) === Number(payload.key)) {
+            let item = state.conversation.splice(i, 1)[0];
+            item.isTop = !item.isTop;
+            filterTopConversation(state, item);
+            break;
+        }
+    }
+}
+// 更新群组头像
 function updateGroupAvatar(state, payload) {
     for (let conversation of state.conversation) {
         if (Number(payload.gid) === Number(conversation.key)) {
@@ -503,7 +529,7 @@ function filterMsgFileImageViewer(state, type: string) {
             fileType = util.sortByExt(message.content.msg_body.extras.fileType);
         }
         if ((message.content.msg_type === 'image') || fileType === 'image') {
-            console.log(222222, message.content.msg_body)
+            console.log(222222, message.content.msg_body);
             state.msgFileImageViewer.push({
                 src: message.content.msg_body.media_url,
                 width: message.content.msg_body.width,
@@ -700,12 +726,6 @@ function addNewFriendToConversation(state, payload) {
         payload.name = payload.from_username;
     }
     let item = null;
-    for (let i = 0; i < state.conversation.length; i++) {
-        if (state.conversation[i].type === 3 && state.conversation[i].name === payload.name) {
-            item = state.conversation.splice(i, 1)[0];
-            break;
-        }
-    }
     let msg = {
         ctime_ms: payload.ctime_ms,
         msg_type: 5,
@@ -718,25 +738,44 @@ function addNewFriendToConversation(state, payload) {
         time_show: 'today',
         conversation_time_show: 'today'
     };
+    for (let i = 0; i < state.conversation.length; i++) {
+        if (state.conversation[i].type === 3 && state.conversation[i].name === payload.name) {
+            for (let list of state.messageList) {
+                if (Number(item.key) === Number(list.key)) {
+                    list.msgs.push(msg);
+                    break;
+                }
+            }
+            if (!state.conversation[i].isTop) {
+                item = state.conversation.splice(i, 1)[0];
+            } else {
+                state.conversation[i].recentMsg = msg;
+                return ;
+            }
+            break;
+        }
+    }
     if (item === null) {
-        item = payload;
         payload.key = --global.conversationKey;
+        item = payload;
         state.messageList.push({
             key: global.conversationKey,
             msgs: [
                 msg
             ]
         });
-    } else {
-        for (let list of state.messageList) {
-            if (Number(item.key) === Number(list.key)) {
-                list.msgs.push(msg);
-                break;
-            }
-        }
     }
+    // else {
+    //     for (let list of state.messageList) {
+    //         if (Number(item.key) === Number(list.key)) {
+    //             list.msgs.push(msg);
+    //             break;
+    //         }
+    //     }
+    // }
     item.recentMsg = msg;
-    state.conversation.unshift(item);
+    // state.conversation.unshift(item);
+    filterTopConversation(state, item);
 }
 // 退群
 function exitGroup (state, payload) {
@@ -764,6 +803,7 @@ function currentIsActive(state, payload) {
 function msgRetract(state, payload) {
     let name = '';
     let recentMsg = {};
+    let index;
     for (let i = 0; i < state.conversation.length; i++) {
         const isGroup = payload.type === 1 &&
             Number(payload.from_gid) === Number(state.conversation[i].key);
@@ -795,8 +835,12 @@ function msgRetract(state, payload) {
                 msg_type: msgType
             };
             payload.key = state.conversation[i].key;
-            const item = state.conversation.splice(i, 1);
-            state.conversation.unshift(item[0]);
+            index = i;
+            if (!state.conversation[i].isTop) {
+                const item = state.conversation.splice(i, 1);
+                // state.conversation.unshift(item[0]);
+                index = filterTopConversation(state, item[0]);
+            }
             break;
         }
     }
@@ -819,9 +863,9 @@ function msgRetract(state, payload) {
                     // eventMsg.time_show = item[0].time_show;
                     list.msgs.splice(i, 0, eventMsg);
                     if (i === list.msgs.length - 1) {
-                        state.conversation[0].recentMsg = recentMsg;
+                        state.conversation[index].recentMsg = recentMsg;
                         state.msgId =
-                            updateFilterMsgId(state, [{key: state.conversation[0].key}]);
+                            updateFilterMsgId(state, [{key: state.conversation[index].key}]);
                     }
                     break;
                 }
@@ -890,7 +934,24 @@ function updateGroupMembers(state: ChatStore, payload) {
 }
 // 接收到管理员建群时自动添加会话和消息
 function createGroupSuccessEvent(state, payload) {
-    state.conversation.unshift({
+    // state.conversation.unshift({
+    //     key: payload.gid,
+    //     name: payload.name,
+    //     type: 4,
+    //     unreadNum: 1,
+    //     recentMsg: {
+    //         ctime_ms: payload.ctime_ms,
+    //         content: {
+    //             msg_body: {
+    //                 text: '创建群聊'
+    //             },
+    //             msg_type: 'event'
+    //         },
+    //         conversation_time_show: util.reducerDate(payload.ctime_ms),
+    //         msg_type: 4
+    //     }
+    // });
+    let item = {
         key: payload.gid,
         name: payload.name,
         type: 4,
@@ -906,7 +967,8 @@ function createGroupSuccessEvent(state, payload) {
             conversation_time_show: util.reducerDate(payload.ctime_ms),
             msg_type: 4
         }
-    });
+    };
+    filterTopConversation(state, item);
     state.messageList.push({
         key: payload.gid,
         msgs: [],
@@ -923,14 +985,14 @@ function createGroupSuccessEvent(state, payload) {
     }
 }
 // 给群聊事件添加最近一条聊天消息
-function isRecentmsg(state, payload, addGroupOther, operation) {
+function isRecentmsg(state, payload, addGroupOther, operation, index) {
     let flag = false;
     for (let messageList of state.messageList) {
-        if (Number(state.conversation[0].key) === Number(messageList.key)) {
+        if (Number(state.conversation[index].key) === Number(messageList.key)) {
             flag = true;
             let msg = messageList['msgs'];
             if (msg.length === 0 || payload.ctime_ms > msg[msg.length - 1].ctime_ms) {
-                state.conversation[0].recentMsg = {
+                state.conversation[index].recentMsg = {
                     ctime_ms: payload.ctime_ms,
                     content: {
                         msg_body: {
@@ -946,7 +1008,7 @@ function isRecentmsg(state, payload, addGroupOther, operation) {
         }
     }
     if (!flag) {
-        state.conversation[0].recentMsg = {
+        state.conversation[index].recentMsg = {
             ctime_ms: payload.ctime_ms,
             content: {
                 msg_body: {
@@ -971,7 +1033,14 @@ function sortConversationByRecentMsg(state) {
     let len = state.conversation.length;
     let maxIndex;
     let temp;
-    for (let i = 0; i < len - 1; i++) {
+    let topIndex = 0;
+    for (let i = 0; i < len; i++) {
+        if (!state.conversation[i].isTop) {
+            topIndex = i;
+            break;
+        }
+    }
+    for (let i = topIndex; i < len - 1; i++) {
         maxIndex = i;
         for (let j = i + 1; j < len; j++) {
             if (state.conversation[j].lastMsgTime >
@@ -1011,12 +1080,16 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
                 return ;
             }
             flag1 = false;
-            let item = state.conversation.splice(i, 1);
-            state.conversation.unshift(item[0]);
-            if (Number(state.activePerson.key) !== Number(state.conversation[0].key)) {
-                state.conversation[0].unreadNum ++;
+            let index = i;
+            if (!state.conversation[i].isTop) {
+                let item = state.conversation.splice(i, 1);
+                // state.conversation.unshift(item[0]);
+                index = filterTopConversation(state, item[0]);
             }
-            isRecentmsg(state, payload, addGroupOther, operation);
+            if (Number(state.activePerson.key) !== Number(state.conversation[index].key)) {
+                state.conversation[index].unreadNum ++;
+            }
+            isRecentmsg(state, payload, addGroupOther, operation, index);
             break;
         }
     }
@@ -1029,9 +1102,10 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
                 group.type = 4;
                 group.key = group.gid;
                 group.unreadNum = 1;
-                state.conversation.unshift(group);
+                // state.conversation.unshift(group);
+                let index = filterTopConversation(state, group);
                 flag1 = false;
-                isRecentmsg(state, payload, addGroupOther, operation);
+                isRecentmsg(state, payload, addGroupOther, operation, index);
                 break;
             }
         }
@@ -1054,7 +1128,8 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
                 msg_type: 4
             }
         };
-        state.conversation.unshift(conversation);
+        // state.conversation.unshift(conversation);
+        filterTopConversation(state, conversation);
     }
     // 重新对conversation排序
     if (payload.isOffline) {
@@ -1237,8 +1312,8 @@ function filterImageViewer(state: ChatStore) {
     }
     let imgResult = [];
     let msgs = messageList.msgs;
-    for (let j = 0; j < msgs.length; j++) {
-        let content = msgs[j].content;
+    for (let message of msgs) {
+        let content = message.content;
         let jpushEmoji = (!content.msg_body.extras || !content.msg_body.extras.kLargeEmoticon
             || content.msg_body.extras.kLargeEmoticon !== 'kLargeEmoticon');
         if (content.msg_type === 'image' && jpushEmoji) {
@@ -1248,7 +1323,7 @@ function filterImageViewer(state: ChatStore) {
                 width: content.msg_body.width,
                 height: content.msg_body.height,
                 // index: j
-                msg_id: msgs[j].msg_id
+                msg_id: message.msg_id
             });
         }
     }
@@ -1572,8 +1647,11 @@ function transmitMessage (state, payload) {
             flag = false;
             payload.select.conversation_time_show = 'today';
             state.conversation[a].recentMsg = payload.msgs;
-            let item = state.conversation.splice(a, 1);
-            state.conversation.unshift(item[0]);
+            if (!state.conversation[a].isTop) {
+                let item = state.conversation.splice(a, 1);
+                // state.conversation.unshift(item[0]);
+                filterTopConversation(state, item[0]);
+            }
             break;
         }
     }
@@ -1582,7 +1660,8 @@ function transmitMessage (state, payload) {
         payload.select.key = --global.conversationKey;
         payload.msgs.time_show = 'today';
         payload.select.recentMsg = payload.msgs;
-        state.conversation.unshift(payload.select);
+        // state.conversation.unshift(payload.select);
+        filterTopConversation(state, payload.select);
         state.messageList.push({
             key: global.conversationKey,
             msgs: [payload.msgs]
@@ -1633,8 +1712,11 @@ function addMyselfMesssge(state: ChatStore, payload) {
         if (Number(state.conversation[a].key) === Number(payload.key)) {
             payload.msgs.conversation_time_show = 'today';
             state.conversation[a].recentMsg = payload.msgs;
-            let item = state.conversation.splice(a, 1);
-            state.conversation.unshift(item[0]);
+            if (!state.conversation[a].isTop) {
+                let item = state.conversation.splice(a, 1);
+                // state.conversation.unshift(item[0]);
+                filterTopConversation(state, item[0]);
+            }
             break;
         }
     }
@@ -1676,14 +1758,13 @@ function addMessage(state: ChatStore, payload) {
                     }
                     const atList = messageHasAtList(payload.messages[0].content.at_list);
                     if (atList !== '') {
-                        state.conversation[0].atUser = atList;
+                        state.conversation[a].atUser = atList;
                     }
                 }
                 flag = true;
-                let item = state.conversation.splice(a, 1);
-                if (item[0].key < 0) {
-                    let oldKey = Number(item[0].key);
-                    item[0].key = message.key;
+                if (state.conversation[a].key < 0) {
+                    let oldKey = Number(state.conversation[a].key);
+                    state.conversation[a].key = message.key;
                     for (let messageList of state.messageList) {
                         if (oldKey === Number(messageList.key)) {
                             messageList.key = message.key;
@@ -1691,10 +1772,15 @@ function addMessage(state: ChatStore, payload) {
                         }
                     }
                 }
-                state.conversation.unshift(item[0]);
-                state.conversation[0].recentMsg = payload.messages[0];
+                let index = a;
+                if (!state.conversation[a].isTop) {
+                    let item = state.conversation.splice(a, 1);
+                    // state.conversation.unshift(item[0]);
+                    index = filterTopConversation(state, item[0]);
+                }
+                state.conversation[index].recentMsg = payload.messages[0];
                 payload.messages[0].conversation_time_show = 'today';
-                state.newMessageIsDisturb = state.conversation[0].noDisturb ? true : false;
+                state.newMessageIsDisturb = state.conversation[index].noDisturb ? true : false;
             }
         }
         for (let messageList of state.messageList) {
@@ -1822,11 +1908,12 @@ function addMessageUserNoConversation(state, payload, message) {
     payload.messages[0].time_show = 'today';
     state.newMessage = msg;
     state.messageList.push(msg);
-    state.conversation.unshift(conversationItem);
-    state.conversation[0].recentMsg = payload.messages[0];
+    // state.conversation.unshift(conversationItem);
+    let index = filterTopConversation(state, conversationItem);
+    state.conversation[index].recentMsg = payload.messages[0];
     const atList = messageHasAtList(payload.messages[0].content.at_list);
     if (atList !== '') {
-        state.conversation[0].atUser = atList;
+        state.conversation[index].atUser = atList;
     }
 }
 // 添加会话列表中的@文本
@@ -1902,21 +1989,26 @@ function searchSingle(payload, singleArr, item) {
     }
 }
 // 选择搜索的用户、发起单聊
-function selectUserResult(state, payload) {
+function selectUserResult(state, payload, type?: string) {
     if (payload.gid) {
         payload.key = payload.gid;
     }
     let conversation = state.conversation;
     let flag = false;
+    let index;
     for (let i = 0; i < conversation.length; i ++) {
         if (payload.key && Number(conversation[i].key) === Number(payload.key) ||
             (conversation[i].name === payload.name && conversation[i].type === 3)) {
-            let item = conversation.splice(i, 1);
-            conversation.unshift(item[0]);
-            payload.key = item[0].key;
-            if (!conversation[0].name) {
-                conversation[0].name = payload.name;
-                conversation[0].unreadNum = 0;
+            index = i;
+            payload.key = conversation[i].key;
+            if (!conversation[i].isTop) {
+                let item = conversation.splice(i, 1);
+                // conversation.unshift(item[0]);
+                index = filterTopConversation(state, item[0]);
+            }
+            if (!conversation[index].name) {
+                conversation[index].name = payload.name;
+                conversation[index].unreadNum = 0;
             }
             flag = true;
             break;
@@ -1926,7 +2018,8 @@ function selectUserResult(state, payload) {
         payload.key = -- global.conversationKey;
     }
     if (!flag) {
-        conversation.unshift(payload);
+        // conversation.unshift(payload);
+        filterTopConversation(state, payload);
     }
     let result = state.messageList.filter((item) => {
         return item.key && Number(item.key) === Number(payload.key);
@@ -1936,6 +2029,9 @@ function selectUserResult(state, payload) {
             key: payload.key,
             msgs: []
         });
+    }
+    if (type === 'search') {
+        state.activePerson = Object.assign({}, state.conversation[index], {});
     }
 }
 // 切换当前会话时,清空未读消息数目
@@ -1949,4 +2045,22 @@ function emptyUnreadNum(state: ChatStore, payload) {
             }
         }
     }
+}
+// 将会话插入到置顶会话之后
+function filterTopConversation(state, item) {
+    let flag = true;
+    let index;
+    for (let i = 0; i < state.conversation.length; i++) {
+        if (!state.conversation[i].isTop) {
+            state.conversation.splice(i, 0, item);
+            index = i;
+            flag = false;
+            break;
+        }
+    }
+    if (flag) {
+        state.conversation.push(item);
+        index = state.conversation.length - 1;
+    }
+    return index;
 }

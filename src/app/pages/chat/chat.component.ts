@@ -131,6 +131,13 @@ export class ChatComponent implements OnInit, OnDestroy {
         formData: {},
         src: ''
     };
+    private unreadList = {
+        show: false,
+        info: {
+            read: [],
+            unread: []
+        }
+    };
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -237,6 +244,16 @@ export class ChatComponent implements OnInit, OnDestroy {
                 });
             }
         }, 3000);
+        global.JIM.onMsgReceiptChange((data) => {
+            console.log('onMsgReceiptChange', data)
+            // data.type
+            // data.gid
+            // data.appkey
+            // data.username
+            // data.receipt_msgs[].msg_id
+            // data.receipt_msgs[].unread_count
+            // data.receipt_msgs[].mtime
+        });
     }
     public ngOnDestroy() {
         this.chatStream$.unsubscribe();
@@ -530,6 +547,16 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.groupAvatar:
                 this.conversationList = chatState.conversation;
                 this.groupSetting.groupInfo = messageListActive.groupSetting.groupInfo;
+                break;
+            case chatAction.conversationToTopSuccess:
+                this.conversationList = chatState.conversation;
+                break;
+            case chatAction.watchUnreadList:
+                this.unreadList.show = chatState.unreadList.show;
+                break;
+            case chatAction.watchUnreadListSuccess:
+                this.unreadList.info = chatState.unreadList.info;
+                console.log(666, this.unreadList.info);
                 break;
             default:
         }
@@ -871,7 +898,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             let singleMsg: any = {
                 target_username: activePerson.name,
                 // target_nickname: this.active.nickName,
-                content: data.content
+                content: data.content,
+                nead_receipt: true
             };
             if (data.extras) {
                 singleMsg.extras = data.extras;
@@ -891,7 +919,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             let groupMsg: any = {
                 target_gid: activePerson.key,
                 // target_gname: this.active.name,
-                content: data.content
+                content: data.content,
+                nead_receipt: true
             };
             if (data.extras) {
                 groupMsg.extras = data.extras;
@@ -1028,7 +1057,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 target_username: this.active.name,
                 // target_nickname: this.active.nickName,
                 appkey: authPayload.appKey,
-                image: data
+                image: data,
+                nead_receipt: true
             };
             msgs.singlePicFormData = singlePicFormData;
             msgs.msg_type = 3;
@@ -1045,7 +1075,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             let groupPicFormData = {
                 target_gid: this.active.key,
                 // target_gname: this.active.name,
-                image: data
+                image: data,
+                nead_receipt: true
             };
             msgs.groupPicFormData = groupPicFormData;
             msgs.msg_type = 4;
@@ -1119,7 +1150,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 extras: {
                     fileSize: data.fileData.size,
                     fileType: ext
-                }
+                },
+                nead_receipt: true
             };
             msgs.singleFile = singleFile;
             msgs.msg_type = 3;
@@ -1140,7 +1172,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 extras: {
                     fileSize: data.fileData.size,
                     fileType: ext
-                }
+                },
+                nead_receipt: true
             };
             msgs.groupFile = groupFile;
             msgs.msg_type = 4;
@@ -1642,5 +1675,19 @@ export class ChatComponent implements OnInit, OnDestroy {
             type: chatAction.updateGroupInfo,
             payload: groupSetting
         });
+    }
+    private conversationToTopEmit(item) {
+        console.log(item);
+        if (item.key > 0) {
+            this.store$.dispatch({
+                type: chatAction.conversationToTop,
+                payload: item
+            });
+        } else {
+            this.store$.dispatch({
+                type: chatAction.conversationToTopSuccess,
+                payload: item
+            });
+        }
     }
 }

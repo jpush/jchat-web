@@ -172,6 +172,13 @@ ul,li,ol{
     align-items: center;
 }
 
+.align-items-end {
+    -webkit-box-align: flex-end;
+    -moz-align-items: flex-end;
+    -ms-flex-align: flex-end;
+    align-items: flex-end;
+}
+
 .justify-content-center {
     -webkit-box-pack: center;
     -moz-justify-content: center;
@@ -180,10 +187,10 @@ ul,li,ol{
 }
 
 .justify-content-end {
-    -webkit-box-pack: end;
+    -webkit-box-pack: flex-end;
     -moz-justify-content: flex-end;
-    -ms-flex-pack: end;
-    justify-content: end;
+    -ms-flex-pack: flex-end;
+    justify-content: flex-end;
 }
 
 .justify-content-top {

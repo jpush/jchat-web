@@ -22,7 +22,8 @@
             height: 40px;
             line-height: 40px;
             padding-left: 20px;
-            box-sizing: border-box;      
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;      
             .chat-panel-name{
                 max-width: 80%;
                 float: left;
@@ -72,7 +73,8 @@
         .chat-panel-message-borad{
             height: 100%;
             overflow: hidden;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             position: relative;
             .chat-panel-scroll{
                 position: absolute;
@@ -137,31 +139,56 @@
                 .chat-panel-message-img{
                     max-width: 219px;
                     max-height: 300px;
+                    cursor: -webkit-zoom-in;
                     cursor: zoom-in;
                     border-radius: 5px;
                 }
                 .chat-panel-more{
                     height: 100%;                
-                    width: 24px;
                     margin: 0 8px;
                     position: relative;
+                    min-width: 24px;                    
+                    &.chat-panel-more-text{
+                        position: absolute;
+                        left: -8px;
+                        bottom: 0;
+                        margin: 0;
+                        -webkit-transform: translateX(-100%);
+                                transform: translateX(-100%);
+                    }
                     .chat-panel-operation{
                         cursor: pointer;
                         height: 20px;
                         background: center center no-repeat;
-                        width: 100%;
-                        &.chat-panel-operation-bottom{
-                            position: absolute;
-                            bottom: 0;
-                            left: 0;
-                        }
+                        width: 24px;
+                        margin-bottom: 6px;
                     }
                     &.show-more-icon .chat-panel-operation{
                         background-image: url(../../../assets/images/more-normal.svg);
                     }
+                    &.show-more-icon span{
+                        display: block;
+                    }
+                    span{
+                        line-height: 17px;
+                        color: #999;
+                        font-size: 12px;
+                        margin-bottom: -4px;
+                        display: none;
+                        &.unread-group{
+                            cursor: pointer;
+                            color: #2DD0CF;
+                        }
+                        &.unread-single{
+                            color: #2DD0CF;
+                        }
+                    }
                 }
                 &:hover .chat-panel-more .chat-panel-operation{
                     background-image: url(../../../assets/images/more-normal.svg);
+                }
+                &:hover .chat-panel-more span{
+                    display: block;
                 }
             }
             .chat-panel-time{
@@ -186,10 +213,10 @@
                 width: 40px;
                 height: 40px;
                 cursor: pointer;
-                overflow: hidden;                
-                img{
-                    float: right;               
-                }
+                overflow: hidden;
+            }
+            .chat-panel-business-card{
+                cursor: pointer;
             }
             .chat-panel-video{
                 height: 140px;
@@ -285,7 +312,8 @@
                         left: 0;
                         width: 100%;
                         padding: 0 8px;
-                        box-sizing: border-box;
+                        -webkit-box-sizing: border-box;
+                                box-sizing: border-box;
                         text-overflow: ellipsis;
                         overflow: hidden;
                         white-space: nowrap;
@@ -385,7 +413,8 @@
             }
             .chat-panel-file-icon{
                 padding: 18px 18px 14px 18px;
-                box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                        box-sizing: border-box;
                 div{
                     width: 50px;
                     height: 50px;
@@ -454,7 +483,8 @@
             .chat-panel-card-icon{
                 height: 75px;
                 padding: 20px 20px 15px 20px;
-                box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                        box-sizing: border-box;
                 .chat-panel-card-icon-avatar{
                     width: 40px;
                     height: 40px;
@@ -484,7 +514,8 @@
                 height: 29px;
                 line-height: 29px;
                 padding-left: 20px;
-                box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                        box-sizing: border-box;
                 font-size: 12px;
                 color: #999999;
                 border-top: 1px solid #DCDCDC;
@@ -722,7 +753,8 @@
                     font-size: 12px;
                     color: #989898;
                     padding: 0 7px;
-                    box-sizing: border-box;
+                    -webkit-box-sizing: border-box;
+                            box-sizing: border-box;
                 }
             }
         }
@@ -797,7 +829,8 @@
                     margin: 0;
                     outline: none;
                     padding: 0 16px;
-                    box-sizing: border-box;
+                    -webkit-box-sizing: border-box;
+                            box-sizing: border-box;
                     word-break: break-all;
                     white-space: normal;
                     font-size: 14px;
@@ -823,30 +856,12 @@
         width: 95%;
     }
 }
-@-moz-keyframes range{
-    0%{
-        width: 0;
-    }
-    100%{
-        width: 95%;
-    }
-}
 @keyframes range{
     0%{
         width: 0;
     }
     100%{
         width: 95%;
-    }
-}
-@-moz-keyframes loadVideo{
-    0%{
-        -webkit-transform: rotate(0);
-                transform: rotate(0);
-    }
-    100%{
-        -webkit-transform: rotate(360deg);
-                transform: rotate(360deg);
     }
 }
 @-webkit-keyframes loadVideo{

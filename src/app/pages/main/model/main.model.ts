@@ -3,7 +3,7 @@ export const mainInit = {
     selfInfo: {
         info: {
             avatar: '',
-            avatarUrl: ''
+            avatarUrl: '',
         },
         show: false
     },

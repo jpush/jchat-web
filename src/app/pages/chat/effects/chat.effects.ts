@@ -383,11 +383,19 @@ export class ChatEffect {
                         }
                     }
                 }
+                for (let receiptMsg of dataItem.receipt_msgs) {
+                    for (let message of dataItem.msgs) {
+                        if (receiptMsg.msg_id === message.msg_id) {
+                            message.unread_count = receiptMsg.unread_count;
+                            break;
+                        }
+                    }
+                }
             }
             const conversationObj = global.JIM.getConversation()
             .onSuccess((info) => {
-                console.log('会话列表：', info);
-                info.conversations = info.conversations.reverse();
+                console.log('会话列表：', JSON.stringify(info));
+                // info.conversations = info.conversations.reverse();
                 // 获取头像url
                 let count = 0;
                 for (let conversation of info.conversations) {
@@ -542,7 +550,8 @@ export class ChatEffect {
             const msgObj = global.JIM.sendSingleMsg({
                 target_username: text.select.name,
                 target_nickname: text.select.nickName,
-                msg_body: msgBody
+                msg_body: msgBody,
+                nead_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
@@ -665,7 +674,8 @@ export class ChatEffect {
             const groupMessageObj = global.JIM.sendGroupMsg({
                 target_gid: text.select.key,
                 target_gname: text.select.name,
-                msg_body: msgBody
+                msg_body: msgBody,
+                nead_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
@@ -785,7 +795,8 @@ export class ChatEffect {
             };
             const singlePicObj = global.JIM.sendSinglePic({
                 target_username: img.select.name,
-                msg_body: msgBody
+                msg_body: msgBody,
+                nead_receipt: true
             })
             .onSuccess((info, msgs) => {
                 msgs.key = info.key;
@@ -905,7 +916,8 @@ export class ChatEffect {
             };
             const sendGroupPicObj = global.JIM.sendGroupPic({
                 target_gid: img.select.key,
-                msg_body: msgBody
+                msg_body: msgBody,
+                nead_receipt: true
             }).onSuccess((info, msgs) => {
                 msgs.key = info.key;
                 this.store$.dispatch({
@@ -1023,7 +1035,8 @@ export class ChatEffect {
             };
             let sendSingleFileObj = global.JIM.sendSingleFile({
                 target_username: file.select.name,
-                msg_body: msgBody
+                msg_body: msgBody,
+                nead_receipt: true
             })
             .onSuccess((data, msgs) => {
                 console.log(888, msgs);
@@ -1144,7 +1157,8 @@ export class ChatEffect {
             };
             const sendgroupFileObj = global.JIM.sendGroupFile({
                 target_gid: file.select.key,
-                msg_body: msgBody
+                msg_body: msgBody,
+                nead_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
@@ -1212,7 +1226,8 @@ export class ChatEffect {
             };
             const sendSingleLocation = global.JIM.sendSingleLocation({
                 target_username: location.select.name,
-                msg_body: msgBody
+                msg_body: msgBody,
+                nead_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
@@ -1277,7 +1292,8 @@ export class ChatEffect {
             };
             const transmitGroupLocation = global.JIM.sendGroupLocation({
                 target_gid: location.select.key,
-                msg_body: msgBody
+                msg_body: msgBody,
+                nead_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
@@ -2204,6 +2220,48 @@ export class ChatEffect {
                         return {type: '[chat] msg file useless'};
                     });
     });
+    // 会话置顶
+    @Effect()
+    private conversationToTop$: Observable<Action> = this.actions$
+        .ofType(chatAction.conversationToTop)
+        .map(toPayload)
+        .switchMap((info) => {
+            if (!info.isTop) {
+                global.JIM.addTopConversation({key: info.key});
+            } else {
+                global.JIM.delTopConversation({key: info.key});
+            }
+            console.log(2, info.isTop);
+            this.store$.dispatch({
+                type: chatAction.conversationToTopSuccess,
+                payload: info
+            });
+            return Observable.of('conversationToTop')
+                    .map(() => {
+                        return {type: '[chat] conversation to top useless'};
+                    });
+    });
+    // 已读未读列表
+    @Effect()
+    private watchUnreadList$: Observable<Action> = this.actions$
+        .ofType(chatAction.watchUnreadList)
+        .map(toPayload)
+        .switchMap((message) => {
+            global.JIM.msgUnreadList({msg_id: message.msg_id})
+            .onSuccess((list) => {
+                console.log(3333333, list);
+                for (let unread of list.msg_unread_list.unread_list) {
+                    this.getUnreadListInfo(list, unread);
+                }
+                for (let unread of list.msg_unread_list.read_list) {
+                    this.getUnreadListInfo(list, unread);
+                }
+            });
+            return Observable.of('conversationToTop')
+                    .map(() => {
+                        return {type: '[chat] conversation to top useless'};
+                    });
+    });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,
@@ -2265,6 +2323,54 @@ export class ChatEffect {
             callback();
         }).onTimeout(() => {
             callback();
+        });
+    }
+    private getUnreadListInfo(list, unread) {
+        global.JIM.getUserInfo({
+            username: unread.username
+        }).onSuccess((data) => {
+            if (!data.user_info.avatar || data.user_info.avatar === '') {
+                unread.avatarUrl = '';
+                this.store$.dispatch({
+                    type: chatAction.watchUnreadListSuccess,
+                    payload: {
+                        info: list.msg_unread_list,
+                        show: true
+                    }
+                });
+                return;
+            }
+            global.JIM.getResource({media_id: data.user_info.avatar})
+            .onSuccess((urlInfo) => {
+                unread.avatarUrl = urlInfo.url;
+                this.store$.dispatch({
+                    type: chatAction.watchUnreadListSuccess,
+                    payload: {
+                        info: list.msg_unread_list,
+                        show: true
+                    }
+                });
+            }).onFail((error) => {
+                unread.avatarUrl = '';
+                this.store$.dispatch({
+                    type: chatAction.watchUnreadListSuccess,
+                    payload: {
+                        info: list.msg_unread_list,
+                        show: true
+                    }
+                });
+            });
+        }).onFail((error) => {
+            this.store$.dispatch({
+                type: appAction.errorApiTip,
+                payload: error
+            });
+        }).onTimeout((data) => {
+            const error = {code: 910000};
+            this.store$.dispatch({
+                type: appAction.errorApiTip,
+                payload: error
+            });
         });
     }
 }

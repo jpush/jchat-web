@@ -68,5 +68,12 @@ export const chatInit = {
         other: []
     },
     msgFileImageViewer: [],
-    sendBusinessCardSuccess: 0
+    sendBusinessCardSuccess: 0,
+    unreadList: {
+        show: false,
+        info: {
+            read: [],
+            unread: []
+        }
+    }
 };

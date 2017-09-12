@@ -22,10 +22,16 @@
             padding: 15px 0 0 20px;
             box-sizing: border-box;
             &.active{
-                background: #F3F7FB;
+                background: #E7EDF1 !important;
+            }
+            &.isTop{
+                background-color: #F5F6F8;
             }
             &:hover .conversation-delete{
                 display: block;
+            }
+            &:hover{
+                background-color: #E7EDF1;
             }
             .conversation-avatar{
                 width: 40px;
@@ -125,6 +131,25 @@
                 font-size: 12px;
                 line-height: 13px;
             }
+        }
+    }
+}
+.conversation-top-menu{
+    position: fixed;
+    width: 115px;
+    background-color: #fff;
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
+    border-radius: 2px;
+    ul{
+        cursor: pointer;
+        line-height: 36px;
+        font-size: 14px;
+        color: #808080;
+        position: relative;
+        border-radius: 2px;
+        li{
+            padding-left: 22px;
+            box-sizing: border-box;
         }
     }
 }

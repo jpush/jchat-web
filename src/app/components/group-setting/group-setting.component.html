@@ -15,7 +15,7 @@
                     </p>
                     <div class="clearfix group-setting-text group-setting-desc">
                         <span class="float-left">群描述&nbsp;:&nbsp;</span>
-                        <span class="float-left group-setting-desc-text" id="groupSettingDec" [title]="groupSetting.groupInfo.desc ? groupSetting.groupInfo.desc : ''" (click)="modifyGroupDescriptionAction()">{{groupSetting.groupInfo.desc ? (groupSetting.groupInfo.desc | ellipsis: 26) : '未填写'}}</span>
+                        <span class="group-setting-desc-text" id="groupSettingDec" [title]="groupSetting.groupInfo.desc ? groupSetting.groupInfo.desc : ''" (click)="modifyGroupDescriptionAction()">{{groupSetting.groupInfo.desc ? (groupSetting.groupInfo.desc | ellipsis: 16) : '未填写'}}</span>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                 <search-member-component [searchResult]="searchResult" (searchKeyup)="seachKeyupEmit($event)" (searchItem)="searchItemEmit($event)" (clearInput)="clearInputEmit()"></search-member-component>
             </div>
         </div>
-        <div class="group-setting-list" [ngStyle]="{'top': listTop + 'px'}">
+        <div class="group-setting-list">
             <p class="clearfix group-setting-add">
                 <span class="float-left">群成员&nbsp;:&nbsp;</span>
                 <span class="float-left">{{groupSetting.memberList.length}}人</span>

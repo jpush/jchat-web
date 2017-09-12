@@ -1,7 +1,7 @@
 <div class="conversation-no-data" *ngIf="!conversationList || conversationList.length === 0">暂无联系人</div>
 <perfect-scrollbar class="conversation-container">
     <ul class="conversation-list">
-        <li *ngFor="let item of conversationList;let i = index;" (contextmenu)="contextmenu(item)" (click)="selectTarget(item)" [ngClass]="{'active': item.key == active.key || item.gid == active.key}" class="display-flex menu-hover">
+        <li *ngFor="let item of conversationList;let i = index;" (contextmenu)="contextmenu($event, item)" (click)="selectTarget(item)" [ngClass]="{'active': item.key == active.key || item.gid == active.key, 'isTop': item.isTop}" class="display-flex">
             <div class="conversation-avatar">
                 <div>
                     <img *ngIf="item.type == 3" (load)="avatarLoad($event)" [src]="item.avatarUrl ? (item.avatarUrl | sanitize: 'url') : ''" (error)="avatarErrorIcon($event)" alt="">
@@ -41,3 +41,8 @@
         </li>
     </ul>
 </perfect-scrollbar>
+<div class="conversation-top-menu" [hidden]="!topPosition.show" [ngStyle]="{'top': topPosition.top + 'px', 'left': topPosition.left + 'px'}">
+    <ul>
+        <li class="menu-hover" (click)="conversationToTopAction()">{{topPosition.item.isTop ? '取消置顶' : '会话置顶'}}</li>
+    </ul>
+</div>

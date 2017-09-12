@@ -715,6 +715,19 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         }
         this.otherInfo.emit(info);
     }
+    private watchBusinessCardInfo(extras) {
+        let info: any = {
+            username: extras.userName
+        };
+        if (extras.avatarUrl) {
+            info.avatarUrl = extras.avatarUrl;
+        }
+        if (extras.userName === global.user) {
+            this.selfInfoEmit.emit();
+        } else {
+            this.otherInfo.emit(info);
+        }
+    }
     private watchSelfInfo() {
         this.selfInfoEmit.emit();
     }
@@ -1173,5 +1186,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             type: chatAction.fileImageLoad,
             payload: message
         });
+    }
+    private unreadList(message) {
+        if (message.unread_count > 0 && this.active.type === 4) {
+            this.store$.dispatch({
+                type: chatAction.watchUnreadList,
+                payload: message
+            });
+        }
     }
 }

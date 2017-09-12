@@ -1,6 +1,6 @@
 <div [hidden]="!hideAll" class="display-flex chat-container flex-1">
     <div class="chat-list">
-        <conversation-list-component [conversationList]="conversationList" [active]="active" (changeActive)="selectTargetEmit($event)" (deleteConversationItem)="deleteConversationItemEmit($event)"></conversation-list-component>   
+        <conversation-list-component [conversationList]="conversationList" [active]="active" (conversationToTop)="conversationToTopEmit($event)" (changeActive)="selectTargetEmit($event)" (deleteConversationItem)="deleteConversationItemEmit($event)"></conversation-list-component>   
     </div>
     <div class="chat-conversation flex-1">
         <default-panel-component [hidden]="!defaultPanelIsShow"></default-panel-component>        
@@ -14,6 +14,7 @@
 <message-transmit-component [messageTransmit]="messageTransmit" *ngIf="messageTransmit.show && hideAll" (confirmTransmit)="confirmTransmitEmit($event)" (searchMessageTransmit)="searchMessageTransmitEmit($event)"></message-transmit-component>
 <verify-modal-component *ngIf="verifyModal.show" (verifyModalBtn)="verifyModalBtnEmit($event)" [verifyModal]="verifyModal"></verify-modal-component>
 <group-avatar-component *ngIf="groupAvatar.show" [groupAvatarInfo]="groupAvatar" (groupAvatar)="groupAvatarEmit($event)"></group-avatar-component>
+<unread-list-component *ngIf="unreadList.show" [unreadList]="unreadList"></unread-list-component>
 <div *ngIf="!isLoaded && hideAll" class="modal-shadow chat-loading">
     <img src="../../../assets/images/app-loading.gif" alt="">
 </div>

@@ -71,6 +71,13 @@ export interface ChatStore {
         image: Array<any>,
         other: Array<any>
     };
-    msgFileImageViewer: Array<any>,
-    sendBusinessCardSuccess: number
+    msgFileImageViewer: Array<any>;
+    sendBusinessCardSuccess: number;
+    unreadList: {
+        show: boolean,
+        info: {
+            read: Array<any>,
+            unread: Array<any>
+        }
+    };
 }
