@@ -473,17 +473,82 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             conversationToTop(state, payload);
             break;
         case chatAction.watchUnreadList:
-            state.unreadList.show = true;
+            state.unreadList = {
+                show: true,
+                info: {
+                    read: [],
+                    unread: []
+                }
+            };
             break;
         case chatAction.watchUnreadListSuccess:
-            console.log(222222, payload);
             state.unreadList.info.read = payload.info.read_list;
             state.unreadList.info.unread = payload.info.unread_list;
+            break;
+        case chatAction.msgReceiptChangeEvent:
+            msgReceiptChangeEvent(state, payload);
+            break;
+        case chatAction.addReceiptReportAction:
+            state.readObj = payload;
             break;
         default:
     }
     return state;
 };
+// 已读事件监听
+function msgReceiptChangeEvent(state, payload) {
+    for (let messageList of state.messageList) {
+        if (payload.type === 3) {
+            if (messageList.msgs.length > 0) {
+                for (let message of messageList.msgs) {
+                    if (message.msg_type === 3) {
+                        if ((message.content.from_id === payload.username &&
+                            message.content.from_appkey === payload.appkey) ||
+                            (message.content.target_id === payload.username &&
+                            message.content.target_appkey === payload.appkey)) {
+                            updateUnreadCount(state, messageList, payload);
+                        }
+                        break;
+                    } else if (message.msg_type === 4) {
+                        break;
+                    }
+                }
+            }
+        } else {
+            if (Number(payload.gid) === Number(messageList.key)) {
+                updateUnreadCount(state, messageList, payload);
+            }
+        }
+    }
+}
+function updateUnreadCount(state, messageList, payload) {
+    for (let receipt of payload.receipt_msgs) {
+        for (let i = messageList.msgs.length - 1; i >= 0; i --) {
+            if (messageList.msgs[i].msg_id === receipt.msg_id) {
+                messageList.msgs[i].unread_count = receipt.unread_count;
+                break;
+            }
+        }
+    }
+    for (let conversation of state.conversation) {
+        if (payload.type === 3) {
+            if (payload.username === conversation.name &&
+                payload.appkey === conversation.appkey) {
+                emptyUnreadText(conversation, payload);
+            }
+        }
+    }
+}
+function emptyUnreadText(conversation, payload) {
+    for (let receipt of payload.receipt_msgs) {
+        console.log(777777777, conversation.recentMsg.msg_id, receipt.msg_id);
+        if (conversation.recentMsg &&
+            conversation.recentMsg.msg_id === receipt.msg_id) {
+            conversation.recentMsg.unread_count = false;
+            break;
+        }
+    }
+}
 // 消息置顶和取消置顶
 function conversationToTop(state, payload) {
     for (let i = 0; i < state.conversation.length; i++) {
@@ -741,7 +806,7 @@ function addNewFriendToConversation(state, payload) {
     for (let i = 0; i < state.conversation.length; i++) {
         if (state.conversation[i].type === 3 && state.conversation[i].name === payload.name) {
             for (let list of state.messageList) {
-                if (Number(item.key) === Number(list.key)) {
+                if (Number(state.conversation[i].key) === Number(list.key)) {
                     list.msgs.push(msg);
                     break;
                 }
@@ -1561,21 +1626,26 @@ function hasNoMsgId(state, stateMessageList) {
 }
 // 完成消息的发送接口的调用后，返回成功或者失败状态
 function sendMsgComplete(state: ChatStore, payload) {
-    // 转发消息时没有key
-    if (!payload.key) {
-        for (let conversation of state.conversation) {
+    for (let conversation of state.conversation) {
+        // 转发消息时没有key
+        if (!payload.key) {
             if (payload.name === conversation.name) {
                 payload.key = conversation.key;
                 conversation.key = payload.msgs.key;
-                break;
             }
-        }
-    // 转发或者发送消息时key < 0
-    } else if (Number(payload.key) < 0) {
-        for (let conversation of state.conversation) {
+        // 转发或者发送消息时key < 0
+        } else if (Number(payload.key) < 0) {
             if (Number(payload.key) === Number(conversation.key)) {
                 conversation.key = payload.msgs.key;
-                break;
+            }
+        }
+        // 给recentMsg添加msg_id
+        if (payload.msgs.msg_type === 3) {
+            if (Number(payload.key) === Number(conversation.key)) {
+                payload.msgs.unread_count = true;
+                payload.msgs.conversation_time_show = conversation.recentMsg.conversation_time_show;
+                payload.msgs.ctime_ms = conversation.recentMsg.ctime_ms;
+                conversation.recentMsg = payload.msgs;
             }
         }
     }
@@ -1711,6 +1781,9 @@ function addMyselfMesssge(state: ChatStore, payload) {
     for (let a = 0; a < state.conversation.length; a++) {
         if (Number(state.conversation[a].key) === Number(payload.key)) {
             payload.msgs.conversation_time_show = 'today';
+            if (payload.msgs.msg_type === 3) {
+                payload.msgs.unread_count = true;
+            }
             state.conversation[a].recentMsg = payload.msgs;
             if (!state.conversation[a].isTop) {
                 let item = state.conversation.splice(a, 1);
@@ -1728,9 +1801,10 @@ function addMessage(state: ChatStore, payload) {
         addMyselfMesssge(state, payload);
         // 清空会话草稿标志
         for (let conversation of state.conversation) {
-            if ((Number(payload.key) === Number(conversation.key) &&
-                payload.msgs.content.msg_type === 'text')) {
-                conversation.draft = '';
+            if ((Number(payload.key) === Number(conversation.key))) {
+                if (payload.msgs.content.msg_type === 'text') {
+                    conversation.draft = '';
+                }
                 break;
             }
         }
@@ -2036,13 +2110,14 @@ function selectUserResult(state, payload, type?: string) {
 }
 // 切换当前会话时,清空未读消息数目
 function emptyUnreadNum(state: ChatStore, payload) {
+    state.readObj = [];
     for (let item of state.conversation) {
         if (Number(item.key) === Number(payload.key)) {
             item.atUser = '';
             if (item.unreadNum) {
                 item.unreadNum = 0;
-                break;
             }
+            break;
         }
     }
 }

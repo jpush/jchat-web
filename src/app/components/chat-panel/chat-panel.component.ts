@@ -363,6 +363,10 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.msgRetractEvent:
 
             case chatAction.saveMemoNameSuccess:
+
+            case contactAction.agreeAddFriendSuccess:
+
+            case chatAction.friendReplyEvent:
                 this.updateMsg(chatState);
                 break;
             case chatAction.msgFile:
@@ -1035,6 +1039,40 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 }
             }, 500);
         }
+    }
+    private scrollY() {
+        let domArr = document.getElementsByClassName('msg-dom');
+        let offsetHeight = this.elementRef.nativeElement.querySelector('#imgViewer').offsetHeight;
+        let scrollTop = this.componentScroll.directiveRef.geometry().y;
+        let scrollHeight = this.componentScroll.directiveRef.geometry().h;
+        let readObj;
+        if (this.active.type === 3) {
+            readObj = {
+                username: this.active.name,
+                // appkey: this.active.appkey,
+                msg_id: [],
+                type: 3
+            };
+        } else {
+            readObj = {
+                gid: this.active.key,
+                // appkey: this.active.appkey,
+                msg_id: [],
+                type: 4
+            };
+        }
+        for (let i = 0; i < domArr.length; i ++) {
+            let offsetTop = (domArr[i] as HTMLDivElement).offsetTop;
+            if (scrollTop <= offsetTop && offsetTop <= scrollTop + offsetHeight) {
+                if (this.msg[i].content.from_id !== global.user) {
+                    readObj.msg_id.push(this.msg[i].msg_id);
+                }
+            }
+        }
+        this.store$.dispatch({
+            type: chatAction.addReceiptReportAction,
+            payload: readObj
+        });
     }
     private addGroupAction() {
         this.addGroup.emit();

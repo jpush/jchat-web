@@ -63,6 +63,12 @@
                 left: 0;
                 position: absolute;
             }
+            .img{
+                margin-left: 10px;
+            }
+            .other{
+                margin-right: 10px;
+            }
         }
     }
     .message-file-time{
@@ -102,7 +108,7 @@
         .message-file-wrap{
             .message-file-item{
                 height: 74px;
-                padding: 12px;
+                padding: 12px 20px;
                 -webkit-box-sizing: border-box;
                         box-sizing: border-box;
             }

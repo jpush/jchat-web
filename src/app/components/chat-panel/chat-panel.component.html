@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="chat-panel-message-borad flex-1" id="imgViewer">
-            <perfect-scrollbar class="chat-panel-scroll" (ps-y-reach-start)="scrollTopEvent()">
+            <perfect-scrollbar class="chat-panel-scroll" (ps-y-reach-start)="scrollTopEvent()" (ps-y-reach-end)="scrollY()" (ps-scroll-y)="scrollY()">
                 <div class="chat-panel-see-more" *ngIf="loadingFlag === 1 && this.msg.length >= 20">查看更多</div>
                 <div class="chat-panel-see-more-loading" *ngIf="loadingFlag === 2">
                     <div></div>
@@ -32,11 +32,11 @@
                         <time *ngSwitchCase="'today'">{{i.ctime_ms | time:"HH:mm"}}</time>
                     </p>
                     <!-- 群聊事件消息 -->                    
-                    <p *ngIf="i.msg_type === 5" class="chat-panel-add-members">
+                    <p *ngIf="i.msg_type === 5" class="chat-panel-add-members msg-dom">
                         <span>{{i.content.msg_body.text}}</span>
                     </p>
                     <!-- 接收到他人的消息 -->
-                    <div class="chat-panel-you-msg chat-panel-msg" *ngIf="global.user != i.content.from_id && i.msg_type !== 5">
+                    <div class="chat-panel-you-msg chat-panel-msg msg-dom" *ngIf="global.user != i.content.from_id && i.msg_type !== 5">
                         <!-- 文本消息 -->
                         <div *ngIf="i.content.msg_type === 'text' && (!i.content.msg_body.extras || !i.content.msg_body.extras.businessCard)" class="clearfix" (mouseleave)="msgMouseleave()">
                             <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)">
@@ -46,10 +46,11 @@
                                 <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="chat-panel-msgText-you" [ngClass]="{'jpush-emoji-container': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}">
                                     <p class="chat-panel-text-msg" [innerHTML]="i.content.msg_body.text | emoji: {nbsp: true, href: true} | sanitize: 'html'" [ngClass]="{'chat-panel-jpush-emoji': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}"></p>
+                                    <div class="chat-panel-more chat-panel-more-you display-flex flex-direction-vertical justify-content-end align-items-end" #youText [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                        <div class="chat-panel-operation" (click)="showYouMoreText($event, i, youText)"></div>
+                                        <span></span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="chat-panel-more float-left" [ngStyle]="{'margin-top': i.msg_type === 4 ? '21px' : 0}" #youText [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation" (click)="showYouMoreText($event, i, youText)"></div>
                             </div>
                         </div>
                         <!-- 名片消息 -->
@@ -72,8 +73,9 @@
                                     <div class="chat-panel-card-range">个人名片</div>
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" #youBusinessCard [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youBusinessCard)"></div>
+                            <div class="chat-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youBusinessCard [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youBusinessCard)"></div>
+                                <span></span>
                             </div>
                         </div>
                         <!-- 图片消息 -->
@@ -94,8 +96,9 @@
                                     <img (error)="imageError($event, i)" style="cursor: default" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" #youImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youImage)"></div>
+                            <div class="chat-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youImage)"></div>
+                                <span></span>
                             </div>
                         </div>
                         <!-- 文件消息 -->
@@ -118,8 +121,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" #youFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youFile)"></div>
+                            <div class="chat-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youFile)"></div>
+                                <span></span>
                             </div>            
                         </div>
                         <!-- 视频消息 -->
@@ -139,8 +143,9 @@
                                     <div class="chat-panel-video-shadow" *ngIf="i.content.load === 0">{{i.content.range}}%</div>
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" #youVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youVideo)"></div>
+                            <div class="chat-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youVideo)"></div>
+                                <span></span>
                             </div>
                         </div>
                         <!-- 地理定位 -->
@@ -157,8 +162,9 @@
                                     <p class="chat-panel-address" [title]="i.content.msg_body.label" *ngIf="i.content.msg_body.label">{{i.content.msg_body.label}}</p>
                                 </div>
                             </div>
-                            <div class="chat-panel-more float-left" #youLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showYouMoreOther($event, i, youLocation)"></div>
+                            <div class="chat-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showYouMoreOther($event, i, youLocation)"></div>
+                                <span></span>
                             </div>
                         </div>
                         <!-- 语音 -->
@@ -182,7 +188,7 @@
                         </div>
                     </div>
                     <!-- 自己发送的消息  -->
-                    <div class="chat-panel-me-msg chat-panel-msg" *ngIf="global.user === i.content.from_id && i.msg_type !== 5">
+                    <div class="chat-panel-me-msg chat-panel-msg msg-dom" *ngIf="global.user === i.content.from_id && i.msg_type !== 5">
                         <!-- 文本消息 -->
                         <div *ngIf="i.content.msg_type === 'text' && (!i.content.msg_body.extras || !i.content.msg_body.extras.businessCard)" class="clearfix" (mouseleave)="msgMouseleave()">
                             <div class="float-right chat-panel-fromId-me chat-panel-avatar" (click)="watchSelfInfo()">
@@ -218,8 +224,8 @@
                                     <div class="chat-panel-card-range">个人名片</div>
                                 </div>
                             </div>
-                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meFile)"></div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meFile)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
                                 <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
                             </div>
@@ -241,8 +247,8 @@
                                     <img style="cursor: default" (error)="imageError($event, i)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
-                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end" #meImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meImage)"></div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meImage)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
                                 <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
                             </div>
@@ -271,8 +277,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meFile)"></div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meFile)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
                                 <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
                             </div>
@@ -293,8 +299,8 @@
                                 </div>
                                 <div class="chat-panel-video-shadow" *ngIf="i.content.load === 0">{{i.content.range}}%</div>
                             </div>
-                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end" #meVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meVideo)"></div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meVideo)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
                                 <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
                             </div>
@@ -312,8 +318,8 @@
                                 </a>                                    
                                 <p class="chat-panel-address" [title]="i.content.msg_body.label" *ngIf="i.content.msg_body.label">{{i.content.msg_body.label}}</p>
                             </div>
-                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end" #meLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                <div class="chat-panel-operation chat-panel-operation-bottom" (click)="showMeMoreOther($event, i, meLocation)"></div>
+                            <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meLocation)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
                                 <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
                             </div>
@@ -332,7 +338,7 @@
                                     <!-- <source [src]="i.content.msg_body.media_url"> -->
                                 </audio>
                             </div>
-                            <div class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end" #meVoice [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                            <div class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meVoice [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreVoice($event, i, meVoice)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
                                 <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>

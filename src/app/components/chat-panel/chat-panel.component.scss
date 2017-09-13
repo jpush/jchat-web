@@ -147,7 +147,15 @@
                     height: 100%;                
                     margin: 0 8px;
                     position: relative;
-                    min-width: 24px;                    
+                    min-width: 24px;  
+                    &.chat-panel-more-you{
+                        position: absolute;
+                        right: -8px;
+                        bottom: 0;
+                        margin: 0;
+                        -webkit-transform: translateX(100%);
+                                transform: translateX(100%);
+                    }                  
                     &.chat-panel-more-text{
                         position: absolute;
                         left: -8px;
@@ -166,18 +174,19 @@
                     &.show-more-icon .chat-panel-operation{
                         background-image: url(../../../assets/images/more-normal.svg);
                     }
-                    &.show-more-icon span{
-                        display: block;
-                    }
                     span{
                         line-height: 17px;
                         color: #999;
                         font-size: 12px;
                         margin-bottom: -4px;
-                        display: none;
+                        display: block;
+                        height: 17px;
                         &.unread-group{
                             cursor: pointer;
                             color: #2DD0CF;
+                            &:hover{
+                                color: #02BDBC;
+                            }
                         }
                         &.unread-single{
                             color: #2DD0CF;
@@ -186,9 +195,6 @@
                 }
                 &:hover .chat-panel-more .chat-panel-operation{
                     background-image: url(../../../assets/images/more-normal.svg);
-                }
-                &:hover .chat-panel-more span{
-                    display: block;
                 }
             }
             .chat-panel-time{

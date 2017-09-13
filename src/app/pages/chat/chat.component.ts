@@ -245,7 +245,11 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
         }, 3000);
         global.JIM.onMsgReceiptChange((data) => {
-            console.log('onMsgReceiptChange', data)
+            console.log('onMsgReceiptChange', data);
+            this.store$.dispatch({
+                type: chatAction.msgReceiptChangeEvent,
+                payload: data
+            });
             // data.type
             // data.gid
             // data.appkey
@@ -345,6 +349,10 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.sendGroupFile:
 
             case chatAction.updateGroupMembersEvent:
+
+            case contactAction.agreeAddFriendSuccess:
+
+            case chatAction.friendReplyEvent:
                 // 触发滚动条向下滚动
                 this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 break;
@@ -355,12 +363,18 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.modalTipSendCardSuccess(chatState);
                 break;
             case chatAction.changeActivePerson:
-                this.messageList = chatState.messageList;
-                this.changeActivePerson(chatState);
-                this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                this.storageMsgId(chatState.msgId);
-                this.conversationList = chatState.conversation;
-                break;
+                // this.messageList = chatState.messageList;
+                // this.changeActivePerson(chatState);
+                // this.defaultPanelIsShow = chatState.defaultPanelIsShow;
+                // this.storageMsgId(chatState.msgId);
+                // this.conversationList = chatState.conversation;
+                // if (chatState.readObj.length > 0) {
+                //     this.store$.dispatch({
+                //         type: chatAction.addReceiptReport,
+                //         payload: chatState.readObj
+                //     });
+                // }
+                // break;
             case contactAction.selectContactItem:
 
             case mainAction.selectSearchUser:
@@ -368,6 +382,15 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.storageMsgId(chatState.msgId);
+                console.log(1111111, chatState.readObj, chatState.readObj);
+                break;
+            case chatAction.addReceiptReportAction:
+                if (chatState.readObj && chatState.readObj.msg_id.length > 0) {
+                    this.store$.dispatch({
+                        type: chatAction.addReceiptReport,
+                        payload: chatState.readObj
+                    });
+                }
                 break;
             case chatAction.saveDraft:
                 this.messageList = chatState.messageList;
@@ -414,6 +437,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 if (chatState.msgId.length > 0) {
                     this.storageMsgId(chatState.msgId);
                 }
+                this.unreadList.show = false;
                 this.groupSetting.show = false;
                 break;
             case mainAction.exitGroupSuccess:
@@ -433,7 +457,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.groupName:
                 this.groupSetting.groupInfo.name = messageListActive.groupSetting.groupInfo.name;
-                console.log(777, messageListActive);
                 this.store$.dispatch({
                     type: chatAction.updateContactInfo,
                     payload: {
@@ -543,6 +566,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 this.conversationList = chatState.conversation;
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
+                this.unreadList.show = false;
                 break;
             case chatAction.groupAvatar:
                 this.conversationList = chatState.conversation;
@@ -552,11 +576,13 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.conversationList = chatState.conversation;
                 break;
             case chatAction.watchUnreadList:
-                this.unreadList.show = chatState.unreadList.show;
+                this.unreadList = chatState.unreadList;
                 break;
             case chatAction.watchUnreadListSuccess:
                 this.unreadList.info = chatState.unreadList.info;
-                console.log(666, this.unreadList.info);
+                break;
+            case chatAction.msgReceiptChangeEvent:
+                this.conversationList = chatState.conversation;
                 break;
             default:
         }
@@ -576,6 +602,13 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
             });
         }
+        this.store$.dispatch({
+            type: chatAction.hideOtherInfo,
+            payload: {
+                show: false,
+                info: {}
+            }
+        });
     }
     private modalTipTransmitSuccess (chatState) {
         if (chatState.transmitSuccess === this.transmitItem.totalTransmitNum) {
@@ -1231,7 +1264,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             payload: tempArr
         });
     }
-    // 查看用户个人信息
+    // 查看用户信息
     private watchOtherInfoEmit(info) {
         this.store$.dispatch({
             type: chatAction.watchOtherInfo,
@@ -1478,7 +1511,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private sendCardConfirm(info) {
         for (let select of info.selectList) {
             let msg = {
-                content: `${this.otherInfo.info.name}的名片`,
+                content: `[${this.otherInfo.info.name}的名片]`,
                 extras: {
                     userName: this.otherInfo.info.name,
                     appKey: this.otherInfo.info.appkey,
@@ -1689,5 +1722,12 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: item
             });
         }
+    }
+    private readListOtherInfoEmit(info) {
+        console.log(info);
+        this.store$.dispatch({
+            type: chatAction.watchOtherInfo,
+            payload: info
+        });
     }
 }

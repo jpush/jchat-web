@@ -4,11 +4,21 @@
         <div class="message-file-title">聊天文件</div>
     </div>
     <div class="message-file-sort display-flex">
-        <div class="flex-1" [ngClass]="{'active': msgType === 'image'}" (click)="changeMsgFileAction('image')">图片</div>
-        <div class="flex-1" [ngClass]="{'active': msgType === 'document'}" (click)="changeMsgFileAction('document')">文档</div>
-        <div class="flex-1" [ngClass]="{'active': msgType === 'audio'}" (click)="changeMsgFileAction('audio')">视频</div>
-        <div class="flex-1" [ngClass]="{'active': msgType === 'video'}" (click)="changeMsgFileAction('video')">音乐</div>
-        <div class="flex-1" [ngClass]="{'active': msgType === 'other'}" (click)="changeMsgFileAction('other')">其他</div>
+        <div class="flex-1" [ngClass]="{'active': msgType === 'image'}" (click)="changeMsgFileAction('image')">
+            <span class="img">图片</span>
+        </div>
+        <div class="flex-1" [ngClass]="{'active': msgType === 'document'}" (click)="changeMsgFileAction('document')">
+            <span>文档</span>
+        </div>
+        <div class="flex-1" [ngClass]="{'active': msgType === 'audio'}" (click)="changeMsgFileAction('audio')">
+            <span>视频</span>
+        </div>
+        <div class="flex-1" [ngClass]="{'active': msgType === 'video'}" (click)="changeMsgFileAction('video')">
+            <span>音乐</span>
+        </div>
+        <div class="flex-1" [ngClass]="{'active': msgType === 'other'}" (click)="changeMsgFileAction('other')">
+            <span class="other">其他</span>
+        </div>
     </div>
     <perfect-scrollbar class="message-file-file" *ngIf="msgType !== 'image'" (ps-scroll-y)="scrollY()">
         <p *ngIf="msgFile[msgType].length === 0" class="message-file-no-data">暂无文件</p>

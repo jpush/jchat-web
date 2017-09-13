@@ -34,6 +34,10 @@
         .unread-list-item{
             height: 50px;
             line-height: 50px;
+            cursor: pointer;
+            &:hover{
+                background-color: #F2F6FB;
+            }
             .unread-list-avatar{
                 width: 30px;
                 height: 30px;

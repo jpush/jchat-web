@@ -80,4 +80,5 @@ export interface ChatStore {
             unread: Array<any>
         }
     };
+    readObj: Object
 }

@@ -83,5 +83,8 @@ export const chatAction = {
     conversationToTop: '[chat] conversation to top',
     conversationToTopSuccess: '[chat] conversation to top success',
     watchUnreadList: '[chat] watch unread list',
-    watchUnreadListSuccess: '[chat] watch unread list success'
+    watchUnreadListSuccess: '[chat] watch unread list success',
+    addReceiptReportAction: '[chat] add receipt report action',
+    addReceiptReport: '[chat] add receipt report',
+    msgReceiptChangeEvent: '[chat] msg receipt change event'
 };

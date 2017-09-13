@@ -495,6 +495,8 @@ export class ChatEffect {
             .onSuccess((data, msgs) => {
                 console.log(555, data, msgs, text);
                 msgs.key = data.key;
+                msgs.unread_count = 1;
+                msgs.msg_type = 3;
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -555,6 +557,8 @@ export class ChatEffect {
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
+                msgs.unread_count = 1;
+                msgs.msg_type = 3;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -614,11 +618,12 @@ export class ChatEffect {
             return data;
         })
         .switchMap((text) => {
-            console.log(999, text);
             const groupMessageObj = global.JIM.sendGroupMsg(text.groupMsg)
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
-                console.log(555, msgs);
+                msgs.unread_count = data.unread_count;
+                msgs.msg_type = 4;
+                console.log(555, data, msgs);
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -679,6 +684,8 @@ export class ChatEffect {
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
+                msgs.unread_count = data.unread_count;
+                msgs.msg_type = 4;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -733,8 +740,10 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((img) => {
             const singlePicObj = global.JIM.sendSinglePic(img.singlePicFormData)
-            .onSuccess((info, msgs) => {
-                msgs.key = info.key;
+            .onSuccess((data, msgs) => {
+                msgs.key = data.key;
+                msgs.unread_count = 1;
+                msgs.msg_type = 3;
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -798,8 +807,10 @@ export class ChatEffect {
                 msg_body: msgBody,
                 nead_receipt: true
             })
-            .onSuccess((info, msgs) => {
-                msgs.key = info.key;
+            .onSuccess((data, msgs) => {
+                msgs.key = data.key;
+                msgs.unread_count = 1;
+                msgs.msg_type = 3;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -854,8 +865,10 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((img) => {
             const sendGroupPicObj = global.JIM.sendGroupPic(img.groupPicFormData)
-            .onSuccess((info, msgs) => {
-                msgs.key = info.key;
+            .onSuccess((data, msgs) => {
+                msgs.key = data.key;
+                msgs.unread_count = data.unread_count;
+                msgs.msg_type = 4;
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -918,8 +931,10 @@ export class ChatEffect {
                 target_gid: img.select.key,
                 msg_body: msgBody,
                 nead_receipt: true
-            }).onSuccess((info, msgs) => {
-                msgs.key = info.key;
+            }).onSuccess((data, msgs) => {
+                msgs.key = data.key;
+                msgs.unread_count = data.unread_count;
+                msgs.msg_type = 4;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -976,6 +991,8 @@ export class ChatEffect {
             let sendSingleFileObj = global.JIM.sendSingleFile(file.singleFile)
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
+                msgs.unread_count = 1;
+                msgs.msg_type = 3;
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -1041,6 +1058,8 @@ export class ChatEffect {
             .onSuccess((data, msgs) => {
                 console.log(888, msgs);
                 msgs.key = data.key;
+                msgs.unread_count = 1;
+                msgs.msg_type = 3;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -1098,6 +1117,8 @@ export class ChatEffect {
             .onSuccess((data, msgs) => {
                 console.log(3333, msgs);
                 msgs.key = data.key;
+                msgs.unread_count = data.unread_count;
+                msgs.msg_type = 4;
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -1162,6 +1183,8 @@ export class ChatEffect {
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
+                msgs.unread_count = data.unread_count;
+                msgs.msg_type = 4;
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -1231,6 +1254,8 @@ export class ChatEffect {
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
+                msgs.unread_count = 1;
+                msgs.msg_type = 3;
                 console.log(3333, msgs);
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
@@ -1297,6 +1322,8 @@ export class ChatEffect {
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
+                msgs.unread_count = data.unread_count;
+                msgs.msg_type = 4;
                 console.log(3333, msgs);
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
@@ -2249,7 +2276,6 @@ export class ChatEffect {
         .switchMap((message) => {
             global.JIM.msgUnreadList({msg_id: message.msg_id})
             .onSuccess((list) => {
-                console.log(3333333, list);
                 for (let unread of list.msg_unread_list.unread_list) {
                     this.getUnreadListInfo(list, unread);
                 }
@@ -2257,9 +2283,32 @@ export class ChatEffect {
                     this.getUnreadListInfo(list, unread);
                 }
             });
-            return Observable.of('conversationToTop')
+            return Observable.of('watchUnreadList')
                     .map(() => {
-                        return {type: '[chat] conversation to top useless'};
+                        return {type: '[chat] watch unread list useless'};
+                    });
+    });
+    // 已读回执
+    @Effect()
+    private addReceiptReport$: Observable<Action> = this.actions$
+        .ofType(chatAction.addReceiptReport)
+        .map(toPayload)
+        .switchMap((readObj) => {
+            console.log(11111111, readObj);
+            if (readObj.type === 3) {
+                global.JIM.addSingleReceiptReport({
+                    username: readObj.username,
+                    msg_ids: readObj.msg_id
+                });
+            } else {
+                global.JIM.addGroupReceiptReport({
+                    gid: readObj.gid,
+                    msg_ids: readObj.msg_id
+                });
+            }
+            return Observable.of('addReceiptReport')
+                    .map(() => {
+                        return {type: '[chat] add receipt report useless'};
                     });
     });
     constructor(

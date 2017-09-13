@@ -10,6 +10,8 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 export class UnreadListComponent implements OnInit {
     @Input()
         private unreadList;
+    @Output()
+        private readListOtherInfo: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
      }
@@ -30,5 +32,8 @@ export class UnreadListComponent implements OnInit {
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;
+    }
+    private watchOtherInfo(item) {
+        this.readListOtherInfo.emit(item);
     }
 }

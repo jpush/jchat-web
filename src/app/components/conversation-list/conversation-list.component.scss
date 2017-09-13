@@ -15,7 +15,7 @@
     .conversation-list{
         li{
             cursor: pointer;
-            line-height: 25px;
+            line-height: 22px;
             height: 70px;
             background-color: #fff;
             position: relative;
@@ -62,7 +62,7 @@
                 }
             }
             .conversation-nickname{
-                line-height: 20px;
+                line-height: 22px;
                 margin-bottom: 2px;
                 font-size: 14px;
                 color:#2c2c2c;
@@ -120,6 +120,9 @@
                 overflow: hidden;
                 width: 170px;
                 height: 18px;
+                .conversation-unread-text{
+                    color: #2DD0CF;
+                }
             }
             .conversation-at{
                 color: #EB424C;

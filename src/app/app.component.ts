@@ -206,7 +206,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 tip = `${name}添加好友失败：邀请事件无效`;
                 break;
             case 881401:
-                tip = `${name}发送时间过长，不能撤回`;
+                tip = `${name}时间过长，不能撤回`;
                 break;
             case 881402:
                 tip = `${name}请求撤回方不是消息发送方`;

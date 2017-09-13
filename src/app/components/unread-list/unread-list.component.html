@@ -8,7 +8,7 @@
             <div class="unread-list-left flex-1">
                 <div class="unread-list-title">未读成员（{{unreadList.info.unread.length}}）</div>                
                 <perfect-scrollbar class="scroll">
-                    <div class="unread-list-item display-flex" *ngFor="let unread of unreadList.info.unread">
+                    <div class="unread-list-item display-flex" (click)="watchOtherInfo(unread)" *ngFor="let unread of unreadList.info.unread">
                         <div class="unread-list-avatar">
                             <img [src]="unread.avatarUrl" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                         </div>
@@ -21,7 +21,7 @@
             <div class="unread-list-right flex-1">
                 <div class="unread-list-title">已读成员（{{unreadList.info.read.length}}）</div>
                 <perfect-scrollbar class="scroll">
-                    <div class="unread-list-item display-flex" *ngFor="let read of unreadList.info.read">
+                    <div class="unread-list-item display-flex" (click)="watchOtherInfo(read)" *ngFor="let read of unreadList.info.read">
                         <div class="unread-list-avatar">
                             <img [src]="read.avatarUrl" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                         </div>
