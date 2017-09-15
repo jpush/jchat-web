@@ -9,7 +9,7 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
     styleUrls: ['./other-info.component.scss']
 })
 
-export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
+export class OtherInfoComponent implements OnInit, OnChanges {
     @Input()
         private otherInfo;
     @Input()
@@ -94,16 +94,6 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
         } else {
             this.infoMenu.info[3].show = true;
         }
-    }
-    public ngDoCheck() {
-        // if (this.otherInfo.black && this.otherInfo.info) {
-        //     for (let item of this.otherInfo.black){
-        //         if (item.username === this.otherInfo.info.username) {
-        //             this.otherInfo.info.black = 1;
-        //             break;
-        //         }
-        //     }
-        // }
     }
     private saveMemoNameAction(event) {
         let value = event.target.value;

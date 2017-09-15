@@ -33,10 +33,6 @@ export class ContactComponent implements OnInit, OnDestroy {
             type: contactAction.getGroupList,
             payload: null
         });
-        this.store$.dispatch({
-            type: contactAction.getFriendList,
-            payload: null
-        });
     }
     public ngOnDestroy() {
         this.contactStream$.unsubscribe();
@@ -70,11 +66,6 @@ export class ContactComponent implements OnInit, OnDestroy {
 
             case mainAction.createGroupSuccess:
                 this.groupList = contactState.groupList;
-                break;
-            case chatAction.dispatchConversationList:
-
-            case contactAction.getFriendListSuccess:
-                this.friendList = contactState.friendList;
                 break;
             case chatAction.updateContactInfo:
                 this.groupList = contactState.groupList;
@@ -126,7 +117,6 @@ export class ContactComponent implements OnInit, OnDestroy {
     }
     // 点击联系人
     private selectContactItemEmit(item) {
-        item.type = item.gid ? 4 : 3;
         this.store$.dispatch({
             type: contactAction.selectContactItem,
             payload: item
@@ -145,7 +135,6 @@ export class ContactComponent implements OnInit, OnDestroy {
         });
     }
     private watchVerifyUserEmit(message) {
-        console.log(message);
         this.store$.dispatch({
             type: contactAction.watchVerifyUser,
             payload: message

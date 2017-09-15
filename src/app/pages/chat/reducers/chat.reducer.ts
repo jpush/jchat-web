@@ -18,7 +18,6 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.getConversationSuccess:
             if (payload.storage) {
                 state.conversation = payload.conversation;
-                console.log('会话列表state1：', JSON.stringify(state.conversation));
                 state.messageList = payload.messageList;
                 unreadNum(state, payload);
                 filterRecentMsg(state);
@@ -28,19 +27,16 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             if (payload.shield) {
                 initGroupShield(state, payload.shield);
-                console.log('会话列表state2：', JSON.stringify(state.conversation));
             }
             if (payload.noDisturb) {
                 state.noDisturb = payload.noDisturb;
                 initNoDisturb(state, payload.noDisturb);
-                console.log('会话列表state3：', JSON.stringify(state.conversation));
             }
             if (state.friendList.length > 0) {
                 filteConversationMemoName(state);
-                console.log('会话列表state4：', JSON.stringify(state.conversation));
             }
             break;
-        case contactAction.getFriendListSuccess:
+        case chatAction.getFriendListSuccess:
             state.friendList = payload;
             if (state.conversation.length > 0) {
                 filteConversationMemoName(state);
@@ -403,11 +399,6 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 isSearch: true
             };
             break;
-            // 同意添加好友
-        case contactAction.agreeAddFriendSuccess:
-            addNewFriendToConversation(state, payload);
-            state.friendList.push(payload);
-            break;
             // 显示验证消息模态框
         case chatAction.showVerifyModal:
             state.verifyModal = payload;
@@ -446,10 +437,15 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case mainAction.deleteFriendSuccess:
             otherInfoDeleteFriend(state, payload);
             break;
+            // 同意添加好友
+        case contactAction.agreeAddFriendSuccess:
+            addNewFriendToConversation(state, payload, 'agree');
+            // state.friendList.push(payload);
+            break;
         case chatAction.friendReplyEventSuccess:
             // 如果在好友应答时正好打开了该好友的资料
             updateOtherInfo(state, payload);
-            addNewFriendToConversation(state, payload);
+            addNewFriendToConversation(state, payload, 'reply');
             break;
             // 加载图片预览没有加载的图片url
         case chatAction.loadViewerImageSuccess:
@@ -732,7 +728,7 @@ function modifyOtherInfoMemoName(state, payload) {
 }
 // 当前会话有修改了备注的用户时，修改消息列表的备注和群成员的备注
 function modifyActiveMessageList(state, payload) {
-    if (state.activePerson.activeIndex > 0) {
+    if (state.activePerson.activeIndex > 0 && state.activePerson.type === 4) {
         let messageList = state.messageList[state.activePerson.activeIndex];
         let msgs = messageList.msgs;
         for (let message of msgs) {
@@ -794,13 +790,17 @@ function filterFriend(state, payload) {
     return result.length > 0 ? true : false;
 }
 // 同意添加好友后添加好友到会话列表
-function addNewFriendToConversation(state, payload) {
-    if (payload.description !== '') {
+function addNewFriendToConversation(state, payload, type) {
+    if (payload.description !== 'yes' && type !== 'agree') {
         return ;
     }
     if (payload.from_username) {
         payload.name = payload.from_username;
     }
+    if (state.activePerson.type === 3 && payload.from_username === state.activePerson.name) {
+        state.newMessageIsActive = true;
+    }
+    state.friendList.push(payload);
     let item = null;
     let msg = {
         ctime_ms: payload.ctime_ms,
@@ -1775,6 +1775,21 @@ function transmitMessage (state, payload) {
             }
         }
     }
+    // 更新imageViewer的数组
+    if (payload.msgs.content.msg_type === 'image') {
+        let isSingleMessage = state.activePerson.type === 3 &&
+                payload.select.name === state.activePerson.name;
+        let isGroupMessage = state.activePerson.type === 4 &&
+                Number(payload.select.key) === Number(state.activePerson.key);
+        if (isSingleMessage || isGroupMessage) {
+            state.imageViewer.push({
+                src: payload.msgs.content.msg_body.media_url,
+                width: payload.msgs.content.msg_body.width,
+                height: payload.msgs.content.msg_body.height,
+                msgKey: payload.msgs.msgKey
+            });
+        }
+    }
 }
 // 添加自己发的消息到消息面板
 function addMyselfMesssge(state: ChatStore, payload) {
@@ -1862,6 +1877,9 @@ function addMessage(state: ChatStore, payload) {
                 flag = true;
                 if (state.conversation[a].key < 0) {
                     let oldKey = Number(state.conversation[a].key);
+                    if (oldKey === Number(state.activePerson.key)) {
+                        state.activePerson.key = message.key;
+                    }
                     state.conversation[a].key = message.key;
                     for (let messageList of state.messageList) {
                         if (oldKey === Number(messageList.key)) {
@@ -2129,8 +2147,10 @@ function selectUserResult(state, payload, type?: string) {
             msgs: []
         });
     }
-    if (type === 'search') {
+    if (type === 'search' && payload.key > 0) {
         state.activePerson = Object.assign({}, state.conversation[index], {});
+    } else if (type === 'search' && payload.key < 0) {
+        state.activePerson = Object.assign({}, payload, {});
     }
 }
 // 切换当前会话时,清空未读消息数目

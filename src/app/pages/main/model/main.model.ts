@@ -5,7 +5,8 @@ export const mainInit = {
             avatar: '',
             avatarUrl: '',
         },
-        show: false
+        show: false,
+        loading: false
     },
     listTab: 0,
     createGroup: {

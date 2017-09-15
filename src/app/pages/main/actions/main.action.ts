@@ -2,7 +2,7 @@ export const mainAction = {
     getSelfInfo: '[main] get self info',
     showSelfInfo: '[main] show self info',
     updateSelfInfo: '[main] update self info',
-    updateSelfAvatar: '[main] update self avatar',
+    updateSelfInfoFlag: '[main] update self info flag',
     changeListTab: '[main] change list tab',
     logoutAction: '[main] logout action',
     createGroupShow: '[main] create group show',

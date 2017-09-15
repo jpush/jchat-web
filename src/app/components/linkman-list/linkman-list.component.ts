@@ -37,6 +37,7 @@ export class LinkmanListComponent implements OnInit, DoCheck {
         event.target.src = avatarErrorIcon;
     }
     private selectLinkmanItem(item) {
+        item.type = 3;
         this.selectLinkmanItemEmit.emit(item);
     }
     private avatarLoad(event) {

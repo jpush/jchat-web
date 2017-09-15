@@ -112,7 +112,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         showMoreIcon: false,
         type: 0,
         key: 0,
-        isTransmitMsg: true
+        isTransmitMsg: true,
+        msg_id: 0
     };
     private verifyModal = {
         info: {},
@@ -154,6 +155,10 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.store$.dispatch({
             type: chatAction.getVoiceState,
             payload: 'voiceState' + global.user
+        });
+        this.store$.dispatch({
+            type: chatAction.getFriendList,
+            payload: null
         });
         global.JIM.onMsgReceive((data) => {
             console.log(data);
@@ -300,8 +305,12 @@ export class ChatComponent implements OnInit, OnDestroy {
         let messageListActive = chatState.messageList[activeIndex];
         console.log(chatState);
         switch (chatState.actionType) {
-            case contactAction.getFriendListSuccess:
+            case chatAction.getFriendListSuccess:
                 this.conversationList = chatState.conversation;
+                this.store$.dispatch({
+                    type: chatAction.dispatchFriendList,
+                    payload: chatState.friendList
+                });
                 break;
             case chatAction.getConversationSuccess:
                 this.conversationList = chatState.conversation;
@@ -315,13 +324,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.isLoaded = chatState.isLoaded;
                     this.isLoadedSubject.next(this.isLoaded);
                 }
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationList,
-                    payload: {
-                        messageList: chatState.messageList,
-                        conversation: chatState.conversation
-                    }
-                });
                 break;
             case chatAction.receiveMessageSuccess:
                 if (chatState.newMessageIsActive) {
@@ -352,10 +354,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.sendGroupFile:
 
             case chatAction.updateGroupMembersEvent:
-
-            case contactAction.agreeAddFriendSuccess:
-
-            case chatAction.friendReplyEventSuccess:
                 // 触发滚动条向下滚动
                 this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 break;
@@ -366,18 +364,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.modalTipSendCardSuccess(chatState);
                 break;
             case chatAction.changeActivePerson:
-                // this.messageList = chatState.messageList;
-                // this.changeActivePerson(chatState);
-                // this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                // this.storageMsgId(chatState.msgId);
-                // this.conversationList = chatState.conversation;
-                // if (chatState.readObj.length > 0) {
-                //     this.store$.dispatch({
-                //         type: chatAction.addReceiptReport,
-                //         payload: chatState.readObj
-                //     });
-                // }
-                // break;
+
             case contactAction.selectContactItem:
 
             case mainAction.selectSearchUser:
@@ -385,7 +372,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.storageMsgId(chatState.msgId);
-                console.log(1111111, chatState.readObj, chatState.readObj);
                 break;
             case chatAction.addReceiptReportAction:
                 if (chatState.readObj && chatState.readObj.msg_id.length > 0) {
@@ -544,6 +530,20 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case contactAction.agreeAddFriendSuccess:
                 this.conversationList = chatState.conversation;
+                this.store$.dispatch({
+                    type: chatAction.dispatchFriendList,
+                    payload: chatState.friendList
+                });
+                this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
+                break;
+            case chatAction.friendReplyEventSuccess:
+                this.otherInfo = chatState.otherInfo;
+                this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
+                this.store$.dispatch({
+                    type: chatAction.dispatchFriendList,
+                    payload: chatState.friendList
+                });
+                this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 break;
             case chatAction.showVerifyModal:
                 this.verifyModal = chatState.verifyModal;
@@ -553,8 +553,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             case mainAction.addSingleNoDisturbSuccess:
 
             case chatAction.deleteSingleNoDisturbSuccess:
-
-            case chatAction.friendReplyEventSuccess:
                 this.otherInfo = chatState.otherInfo;
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 break;
@@ -596,7 +594,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
     }
     private modalTipSendCardSuccess (chatState) {
-        if (chatState.sendBusinessCardSuccess === this.sendBusinessCardCount) {
+        let count = this.sendBusinessCardCount;
+        if (count !== 0 && count === chatState.sendBusinessCardSuccess) {
             this.store$.dispatch({
                 type: mainAction.showModalTip,
                 payload: {
@@ -619,7 +618,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
     }
     private modalTipTransmitSuccess (chatState) {
-        if (chatState.transmitSuccess === this.transmitItem.totalTransmitNum) {
+        let count = this.transmitItem.totalTransmitNum;
+        if (count !== 0 && chatState.transmitSuccess === count) {
             this.store$.dispatch({
                 type: mainAction.showModalTip,
                 payload: {
@@ -720,7 +720,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     title = '好友邀请';
                     body = `${newMessage.from_username}申请添加您为好友`;
                 } else if (newMessage.extra === 2) {
-                    if (newMessage.description === '') {
+                    if (newMessage.description === 'yes') {
                         title = '同意好友申请';
                         body = `${newMessage.from_username}同意了您的好友申请`;
                     } else {
@@ -910,7 +910,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     msgs: data,
                     select: {
-                        key: activePerson.key
+                        name: activePerson.name
                     },
                     key: activePerson.key
                 }
@@ -1007,7 +1007,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     msgs: data,
                     select: {
-                        key: this.active.key
+                        name: this.active.name
                     },
                     key: this.active.key
                 }
@@ -1132,7 +1132,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     msgs: data,
                     select: {
-                        key: this.active.key
+                        name: this.active.name
                     },
                     key: this.active.key
                 }
@@ -1242,20 +1242,29 @@ export class ChatComponent implements OnInit, OnDestroy {
     // 转发位置消息失败重发
     private sendLocationEmit(data) {
         let type = '';
+        let payload;
         if (this.active.type === 3) {
             type = chatAction.transmitSingleLocation;
+            payload = {
+                msgs: data,
+                select: {
+                    name: this.active.name
+                },
+                key: this.active.key
+            };
         } else {
             type = chatAction.transmitGroupLocation;
-        }
-        this.store$.dispatch({
-            type,
-            payload: {
+            payload = {
                 msgs: data,
                 select: {
                     key: this.active.key
                 },
                 key: this.active.key
-            }
+            };
+        }
+        this.store$.dispatch({
+            type,
+            payload
         });
     }
     // 保存草稿
@@ -1299,13 +1308,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 查看群设置
     private groupSettingEmit() {
+        let groupSetting = this.messageList[this.active.activeIndex].groupSetting;
         this.store$.dispatch({
             type: chatAction.groupSetting,
             payload: {
                 active: this.active,
                 show: true,
                 // 是否已经请求过
-                isCache: this.messageList[this.active.activeIndex].groupSetting.groupInfo
+                isCache: groupSetting && groupSetting.groupInfo
             }
         });
     }
@@ -1405,7 +1415,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 更新群信息
     private updateGroupInfoEmit(newGroupInfo) {
-        console.log(777, newGroupInfo)
         if (newGroupInfo) {
             this.store$.dispatch({
                 type: chatAction.updateGroupInfo,
@@ -1531,6 +1540,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
     }
     private msgTransmitConfirm(info) {
+        delete this.transmitItem.msg_id;
         this.transmitItem.msgKey = this.msgKey ++;
         this.transmitItem.totalTransmitNum = info.selectList.length;
         this.transmitItem.ctime_ms = new Date().getTime();
@@ -1711,7 +1721,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
     }
     private conversationToTopEmit(item) {
-        console.log(item);
         if (item.key > 0) {
             this.store$.dispatch({
                 type: chatAction.conversationToTop,
@@ -1725,7 +1734,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
     }
     private readListOtherInfoEmit(info) {
-        console.log(info);
         this.store$.dispatch({
             type: chatAction.watchOtherInfo,
             payload: info

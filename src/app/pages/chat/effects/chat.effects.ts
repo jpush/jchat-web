@@ -224,6 +224,45 @@ export class ChatEffect {
                         return {type: '[chat] get voice state useless'};
                     });
         });
+    // 获取好友列表
+    @Effect()
+    private getFriendList$: Observable<Action> = this.actions$
+        .ofType(chatAction.getFriendList)
+        .map(toPayload)
+        .switchMap(() => {
+            const friendListObj = global.JIM.getFriendList()
+                .onSuccess((data) => {
+                    console.log(3333333, data.friend_list);
+                    this.store$.dispatch({
+                        type: chatAction.getFriendListSuccess,
+                        payload: data.friend_list
+                    });
+                    for (let friend of data.friend_list) {
+                        if (friend.avatar === '') {
+                            continue;
+                        }
+                        global.JIM.getResource({media_id: friend.avatar})
+                        .onSuccess((urlInfo) => {
+                            friend.avatarUrl = urlInfo.url;
+                            this.store$.dispatch({
+                                type: chatAction.getFriendListSuccess,
+                                payload: data.friend_list
+                            });
+                        }).onFail((error) => {
+                            // pass
+                        });
+                    }
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(friendListObj)
+                    .map(() => {
+                        return {type: '[chat] get friend list useless'};
+                    });
+        });
     // 获取messageList 图片消息url
     @Effect()
     private getSourceUrl$: Observable<Action> = this.actions$
@@ -598,7 +637,7 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                error.text = text.select.name;
+                error.text = text.select.memo_name || text.select.nickName || text.select.name;
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -725,7 +764,7 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                error.text = text.select.name;
+                error.text = text.select.memo_name || text.select.nickName || text.select.name;
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -850,7 +889,7 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                error.text = img.select.name;
+                error.text = img.select.memo_name || img.select.nickName || img.select.name;
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -974,7 +1013,7 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                error.text = img.select.name;
+                error.text = img.select.memo_name || img.select.nickName || img.select.name;
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1099,7 +1138,7 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                error.text = file.select.name;
+                error.text = file.select.memo_name || file.select.nickName || file.select.name;
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1224,7 +1263,7 @@ export class ChatEffect {
                         success: 3
                     }
                 });
-                error.text = file.select.name;
+                error.text = file.select.memo_name || file.select.nickName || file.select.name;
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1486,7 +1525,6 @@ export class ChatEffect {
         .switchMap((info) => {
             const groupInfoObj = global.JIM.getGroupInfo({gid: info.active.key})
             .onSuccess((data) => {
-                console.log(1111111, data);
                 if (data.group_info.avatar && data.group_info.avatar !== '') {
                     global.JIM.getResource({media_id: data.group_info.avatar})
                     .onSuccess((urlInfo) => {
@@ -2352,6 +2390,7 @@ export class ChatEffect {
         .ofType(chatAction.friendEvent)
         .map(toPayload)
         .switchMap((info) => {
+            info.type = 3;
             let type;
             if (info.extra === 1) {
                 type = chatAction.friendInvitationEventSuccess;
@@ -2360,20 +2399,20 @@ export class ChatEffect {
             }
             const friendEvent = global.JIM.getResource({media_id: info.media_id})
             .onSuccess((urlInfo) => {
-                info.media_url = urlInfo.url;
+                info.avatarUrl = urlInfo.url;
                 this.store$.dispatch({
                     type,
                     payload: info
                 });
             }).onFail((error) => {
-                info.media_url = '';
+                info.avatarUrl = '';
                 this.store$.dispatch({
                     type,
                     payload: info
                 });
             }).onTimeout((data) => {
                 const error = {code: 910000};
-                info.media_url = '';
+                info.avatarUrl = '';
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error

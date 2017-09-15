@@ -81,46 +81,7 @@ export class ContactEffect {
             });
             return Observable.of(groupListObj)
                     .map(() => {
-                        return {type: '[main] get group list useless'};
-                    });
-        });
-    // 获取好友列表
-    @Effect()
-    private getFriendList$: Observable<Action> = this.actions$
-        .ofType(contactAction.getFriendList)
-        .map(toPayload)
-        .switchMap(() => {
-            const friendListObj = global.JIM.getFriendList()
-                .onSuccess((data) => {
-                    console.log(3333333, data.friend_list);
-                    this.store$.dispatch({
-                        type: contactAction.getFriendListSuccess,
-                        payload: data.friend_list
-                    });
-                    for (let friend of data.friend_list) {
-                        if (friend.avatar === '') {
-                            continue;
-                        }
-                        global.JIM.getResource({media_id: friend.avatar})
-                        .onSuccess((urlInfo) => {
-                            friend.avatarUrl = urlInfo.url;
-                            this.store$.dispatch({
-                                type: contactAction.getFriendListSuccess,
-                                payload: data.friend_list
-                            });
-                        }).onFail((error) => {
-                            // pass
-                        });
-                    }
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
-            return Observable.of(friendListObj)
-                    .map(() => {
-                        return {type: '[main] get friend list useless'};
+                        return {type: '[contact] get group list useless'};
                     });
         });
     // 同意或拒绝好友请求
@@ -191,7 +152,7 @@ export class ContactEffect {
             }
             return Observable.of('friendObj')
                     .map(() => {
-                        return {type: '[main] is agree add friend useless'};
+                        return {type: '[contact] is agree add friend useless'};
                     });
         });
     // 验证消息查看资料
@@ -256,7 +217,7 @@ export class ContactEffect {
             });
             return Observable.of(watchVerifyUser)
                     .map(() => {
-                        return {type: '[main] watch verify user useless'};
+                        return {type: '[contact] watch verify user useless'};
                     });
     });
     constructor(

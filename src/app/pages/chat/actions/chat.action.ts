@@ -23,7 +23,6 @@ export const chatAction = {
     groupInfo: '[chat] group info',
     searchUserSuccess: '[chat] search user success',
     getSourceUrl: '[chat] get source url',
-    dispatchConversationList: '[chat] dispatch conversation list',
     groupDescription: '[chat] group description',
     groupName: '[chat] group name',
     updateGroupInfo: '[chat] update group info',
@@ -87,5 +86,7 @@ export const chatAction = {
     watchUnreadListSuccess: '[chat] watch unread list success',
     addReceiptReportAction: '[chat] add receipt report action',
     addReceiptReport: '[chat] add receipt report',
-    msgReceiptChangeEvent: '[chat] msg receipt change event'
+    msgReceiptChangeEvent: '[chat] msg receipt change event',
+    getFriendList: '[contact] get friend list',
+    getFriendListSuccess: '[contact] get friend list success'
 };

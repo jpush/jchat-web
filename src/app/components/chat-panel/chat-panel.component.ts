@@ -359,17 +359,25 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
 
                 // 转发群聊位置
             case chatAction.transmitGroupLocation:
-
-            case chatAction.transmitMessageComplete:
                 if (this.active.type === 3 &&
                     chatState.newMessage.content.target_id === this.active.name) {
                     this.updateMsg(chatState);
                     this.pointerToMap(chatState);
                     this.scrollBottom(0);
+                    this.imageViewer.result = chatState.imageViewer;
                 } else if (this.active.type === 4 && chatState.newMessage.key === this.active.key) {
                     this.updateMsg(chatState);
                     this.pointerToMap(chatState);
                     this.scrollBottom(0);
+                    this.imageViewer.result = chatState.imageViewer;
+                }
+                break;
+            case chatAction.transmitMessageComplete:
+                if (this.active.type === 3 &&
+                    chatState.newMessage.content.target_id === this.active.name) {
+                    this.updateMsg(chatState);
+                } else if (this.active.type === 4 && chatState.newMessage.key === this.active.key) {
+                    this.updateMsg(chatState);
                 }
                 break;
             case chatAction.getAllMessageSuccess:
@@ -784,7 +792,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 输入框keydown，ctrl + enter换行，enter发送消息，@用户
     private preKeydown(event) {
-        console.log(event.keyCode);
         if (event.keyCode === 13 && event.ctrlKey) {
             const contentId =
                 this.elementRef.nativeElement.querySelector('#' + this.emojiInfo.contentId);
@@ -1077,7 +1084,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         } else {
             readObj = {
                 gid: this.active.key,
-                // appkey: this.active.appkey,
                 msg_id: [],
                 type: 4
             };

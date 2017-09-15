@@ -13,16 +13,20 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             break;
             // 成功获取个人信息
         case mainAction.showSelfInfo:
-            if (payload.show !== 'undefined') {
-                state.selfInfo.show = payload.show;
-            }
-            // 获取个人信息成功
+            // 获取个人信息成功或失败
             if (payload.info) {
                 state.selfInfo.info = Object.assign({}, state.selfInfo.info , payload.info);
             }
             if (payload.avatar) {
                 state.selfInfo.info.avatarUrl = payload.avatar.url;
             }
+            if (!payload.info && !payload.avatar && payload.show !== undefined) {
+                state.selfInfo.show = payload.show;
+            }
+            state.selfInfo.loading = payload.loading;
+            break;
+        case mainAction.updateSelfInfo:
+            state.selfInfo.loading = true;
             break;
             // 切换好友或者最近列表
         case mainAction.changeListTab:

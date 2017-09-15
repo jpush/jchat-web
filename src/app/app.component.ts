@@ -55,7 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
     private errorApiTip(errorMsg) {
-        let name = errorMsg.text ? errorMsg.text + ': ' : '';
+        let name = errorMsg.text ? errorMsg.text + ' : ' : '';
         let tip = '';
         if (errorMsg.hasOwnProperty('error')) {
             errorMsg = errorMsg.error;

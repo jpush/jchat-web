@@ -23,12 +23,15 @@ export class MainComponent implements OnInit, OnDestroy {
     private mainStream$;
     private global = global;
     private listTab = 0;
-    private self: any = {
+    private selfInfo: any = {
         show: false,
         info: {
             avatarUrl: ''
-        }
+        },
+        loading: false
     };
+    // 用来标识更新信息成功
+    private updateSelfInfoFlag = false;
     private createGroup = {
         show: false,
         list: []
@@ -189,15 +192,18 @@ export class MainComponent implements OnInit, OnDestroy {
         });
     }
     private stateChanged(mainState, contactState) {
+        console.log('main', mainState);
         switch (mainState.actionType) {
             case contactAction.selectContactItem:
                 this.listTab = mainState.listTab;
                 break;
             case mainAction.showSelfInfo:
-                if (mainState.selfInfo.info) {
-                    this.self.info = mainState.selfInfo.info;
-                }
-                this.self.show = mainState.selfInfo.show;
+
+            case mainAction.updateSelfInfo:
+                this.selfInfo = mainState.selfInfo;
+                break;
+            case mainAction.updateSelfInfoFlag:
+                this.updateSelfInfoFlag = !this.updateSelfInfoFlag;
                 break;
             case mainAction.changeListTab:
                 this.listTab = mainState.listTab;
@@ -305,7 +311,8 @@ export class MainComponent implements OnInit, OnDestroy {
         this.store$.dispatch({
             type: mainAction.showSelfInfo,
             payload: {
-                show: true
+                show: true,
+                loading: false
             }
         });
     }
@@ -315,20 +322,15 @@ export class MainComponent implements OnInit, OnDestroy {
             this.store$.dispatch({
                 type: mainAction.showSelfInfo,
                 payload: {
-                    show: false
+                    show: false,
+                    loading: false
                 }
             });
         }
         if (newInfo && newInfo.info) {
             this.store$.dispatch({
                 type: mainAction.updateSelfInfo,
-                payload: newInfo.info
-            });
-        }
-        if (newInfo && newInfo.avatar.url) {
-            this.store$.dispatch({
-                type: mainAction.updateSelfAvatar,
-                payload: newInfo.avatar
+                payload: newInfo
             });
         }
     }
@@ -416,7 +418,8 @@ export class MainComponent implements OnInit, OnDestroy {
             this.store$.dispatch({
                 type: mainAction.showSelfInfo,
                 payload: {
-                    show: true
+                    show: true,
+                    loading: false
                 }
             });
             this.store$.dispatch({

@@ -12,6 +12,9 @@ export class SelfInfoComponent implements OnChanges {
     private util: Util = new Util();
     @Input()
         private selfInfo;
+    // 用来标识更新个人信息成功
+    @Input()
+        private updateSelfInfoFlag;
     @Output()
         private isShow: EventEmitter<any> = new EventEmitter();
     @Output()
@@ -46,38 +49,41 @@ export class SelfInfoComponent implements OnChanges {
         url: ''
     };
     private cameraShadow = true;
-    private saveLoading = false;
+    // private saveLoading = false;
     constructor(
         private elementRef: ElementRef
     ) {}
-    public ngOnChanges() {
-        this.newInfo.signature = this.selfInfo.signature;
-        this.newInfo.nickname = this.selfInfo.nickname;
-        this.newInfo.gender = this.selfInfo.gender;
-        this.newInfo.region = this.selfInfo.region;
-        switch (this.selfInfo.gender) {
+    public ngOnChanges(change) {
+        this.newInfo.signature = this.selfInfo.info.signature;
+        this.newInfo.nickname = this.selfInfo.info.nickname;
+        this.newInfo.gender = this.selfInfo.info.gender;
+        this.newInfo.region = this.selfInfo.info.region;
+        switch (this.selfInfo.info.gender) {
             case 0 :
-                this.selfInfo.gender = '保密';
+                this.selfInfo.info.gender = '保密';
                 this.sexList.active = {
                     key: 0,
                     name: '保密'
                 };
                 break;
             case 1 :
-                this.selfInfo.gender = '男';
+                this.selfInfo.info.gender = '男';
                 this.sexList.active = {
                     key: 1,
                     name: '男'
                 };
                 break;
             case 2:
-                this.selfInfo.gender = '女';
+                this.selfInfo.info.gender = '女';
                 this.sexList.active = {
                     key: 2,
                     name: '女'
                 };
                 break;
             default:
+        }
+        if (change.updateSelfInfoFlag) {
+            this.isEdit = false;
         }
     }
     private hideSelect(event) {
@@ -88,6 +94,8 @@ export class SelfInfoComponent implements OnChanges {
         event.target.src = avatarErrorIcon;
     }
     private selfCancel() {
+        const selfAvatarInput = this.elementRef.nativeElement.querySelector('#selfAvatarInput');
+        selfAvatarInput.value = '';
         this.isEdit = false;
     }
     private selfClose(event) {
@@ -108,12 +116,12 @@ export class SelfInfoComponent implements OnChanges {
             info: Object.assign({}, this.newInfo, {gender: this.sexList.active.key}),
             avatar: this.newAvatar
         };
-        this.saveLoading = true;
+        // this.saveLoading = true;
         this.isShow.emit(newInfo);
-        setTimeout(() => {
-            this.saveLoading = false;
-            this.isEdit = false;
-        }, 800);
+        // setTimeout(() => {
+        //     this.saveLoading = false;
+        //     this.isEdit = false;
+        // }, 800);
     }
     private selfAvatarChange() {
         const selfAvatarImg = this.elementRef.nativeElement.querySelector('#selfAvatarImg');

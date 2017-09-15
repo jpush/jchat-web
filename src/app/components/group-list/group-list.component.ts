@@ -30,6 +30,7 @@ export class GroupListComponent implements OnInit, DoCheck {
         }
     }
     private selectGroupItem(item) {
+        item.type = 4;
         this.selectGroupItemEmit.emit(item);
     }
     private avatarLoad(event, item) {

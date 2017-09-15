@@ -14,15 +14,6 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
         case contactAction.init:
             state = Object.assign({}, contactInit, {});
             break;
-        case chatAction.dispatchConversationList:
-            state.messageList = payload.messageList;
-            state.conversation = payload.conversation;
-            if (state.hasNoSortFriendList.length > 0 && !state.hasConversation) {
-                filterConversation(state);
-                state.friendList = util.sortByLetter(state.hasNoSortFriendList);
-            }
-            state.hasConversation = true;
-            break;
             // 成功获取群列表
         case contactAction.getGroupListSuccess:
             state.groupList = util.sortByLetter(payload);
@@ -32,13 +23,6 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             // 创建群组
         case mainAction.createGroupSuccess:
             state.groupList = util.insertSortByLetter(state.groupList, payload);
-            break;
-        case contactAction.getFriendListSuccess:
-            state.hasNoSortFriendList = payload;
-            if (state.hasConversation) {
-                filterConversation(state);
-                state.friendList = util.sortByLetter(payload);
-            }
             break;
             // 退群成功
         case mainAction.exitGroupSuccess:
@@ -70,7 +54,6 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             changeFirstOne(state, 'isVerifyFirstOne');
             break;
         case chatAction.friendInvitationEventSuccess:
-            console.log(444, payload);
             friendVerify(state, payload);
             break;
         case contactAction.refuseAddFriendSuccess:
@@ -78,20 +61,16 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             break;
         case contactAction.agreeAddFriendSuccess:
             isAgreeAddFriend(state, payload, 4);
-            state.friendList = util.insertSortByLetter(state.friendList, payload);
             break;
         case contactAction.addFriendError:
             addFriendError(state, payload);
             break;
         case chatAction.dispatchFriendList:
-            state.hasNoSortFriendList = payload;
-            state.friendList = util.sortByLetter(state.hasNoSortFriendList);
+            filterFriendList(state, payload);
+            state.friendList = util.sortByLetter(payload);
             break;
         case chatAction.friendReplyEventSuccess:
-            console.log(666666, payload);
             friendReply(state, payload);
-            state.friendList = util.insertSortByLetter(state.friendList, payload);
-            state.hasNoSortFriendList.push(payload);
             break;
         case chatAction.addFriendConfirm:
             waitReply(state, payload);
@@ -153,14 +132,14 @@ function friendReply(state, payload) {
         name: payload.from_username,
         nickName: '',
         description: payload.description,
-        avatarUrl: payload.media_url,
+        avatarUrl: payload.avatarUrl,
         extra: payload.extra,
         eventId: payload.event_id,
         stateType: 0,
         type: 3,
         ctime_ms: payload.ctime_ms
     };
-    if (payload.description === '') {
+    if (payload.description === 'yes') {
         verifyMessage.stateType = 5;
     } else {
         verifyMessage.stateType = 7;
@@ -201,7 +180,7 @@ function friendVerify(state, payload) {
         name: payload.from_username,
         nickName: '',
         description: payload.description,
-        avatarUrl: payload.media_url,
+        avatarUrl: payload.avatarUrl,
         extra: payload.extra,
         eventId: payload.event_id,
         stateType: 0,
@@ -253,29 +232,11 @@ function friendVerify(state, payload) {
     }
     state.verifyMessageList.unshift(verifyMessage);
 }
-// 补全好友的key
-function filterConversation(state) {
-    for (let friend of state.hasNoSortFriendList) {
-        // let flag = true;
+function filterFriendList(state, payload) {
+    for (let friend of payload) {
         friend.name = friend.username;
         friend.nickName = friend.nickname;
         friend.type = 3;
-        // delete friend.username;
-        // delete friend.nickname;
-        // for (let item of state.conversation) {
-        //     if (item.type === 3 && item.name === friend.name) {
-        //         flag = false;
-        //         friend.key = item.key;
-        //         break;
-        //     }
-        // }
-        // if (flag) {
-        //     friend.key = --global.conversationKey;
-        //     state.messageList.push({
-        //         key: global.conversationKey,
-        //         msgs: []
-        //     });
-        // }
     }
 }
 // 退出群聊时删除群组列表

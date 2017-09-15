@@ -30,7 +30,8 @@ export class MainEffect {
                         type: mainAction.showSelfInfo,
                         payload: {
                             info: data.user_info,
-                            show: false
+                            show: false,
+                            loading: false
                         }
                     });
                     return;
@@ -42,7 +43,8 @@ export class MainEffect {
                         type: mainAction.showSelfInfo,
                         payload: {
                             info: data.user_info,
-                            show: false
+                            show: false,
+                            loading: false
                         }
                     });
                 }).onFail((error) => {
@@ -51,7 +53,8 @@ export class MainEffect {
                         type: mainAction.showSelfInfo,
                         payload: {
                             info: data.user_info,
-                            show: false
+                            show: false,
+                            loading: false
                         }
                     });
                 });
@@ -90,22 +93,49 @@ export class MainEffect {
     private updateSelfInfo$: Observable<Action> = this.actions$
         .ofType(mainAction.updateSelfInfo)
         .map(toPayload)
-        .switchMap((info) => {
-            const updateSelfInfo = global.JIM.updateSelfInfo(info)
+        .switchMap((self) => {
+            const updateSelfInfo = global.JIM.updateSelfInfo(self.info)
                 .onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: mainAction.showSelfInfo,
-                        payload: {
-                            info,
-                            show: true
-                        }
-                    });
+                    if (self.avatar && self.avatar.url) {
+                        this.updateSelfAvatar(self);
+                    } else {
+                        this.store$.dispatch({
+                            type: mainAction.showSelfInfo,
+                            payload: {
+                                info: self.info,
+                                loading: false
+                            }
+                        });
+                        this.store$.dispatch({
+                            type: mainAction.updateSelfInfoFlag
+                        });
+                    }
                 }).onFail((error) => {
+                    if (self.avatar && self.avatar.url) {
+                        this.updateSelfAvatar(self);
+                    } else {
+                        this.store$.dispatch({
+                            type: mainAction.showSelfInfo,
+                            payload: {
+                                loading: false
+                            }
+                        });
+                    }
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }).onTimeout((data) => {
+                    if (self.avatar && self.avatar.url) {
+                        this.updateSelfAvatar(self);
+                    } else {
+                        this.store$.dispatch({
+                            type: mainAction.showSelfInfo,
+                            payload: {
+                                loading: false
+                            }
+                        });
+                    }
                     const error = {code: 910000};
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
@@ -113,38 +143,6 @@ export class MainEffect {
                     });
                 });
             return Observable.of(updateSelfInfo)
-                    .map(() => {
-                        return {type: '[main] update self info useless'};
-                    });
-        });
-    // 更新个人头像信息
-    @Effect()
-    private updateSelfAvatar$: Observable<Action> = this.actions$
-        .ofType(mainAction.updateSelfAvatar)
-        .map(toPayload)
-        .switchMap((avatar) => {
-            const updateSelfAvatar = global.JIM.updateSelfAvatar({avatar: avatar.formData})
-                .onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: mainAction.showSelfInfo,
-                        payload: {
-                            avatar,
-                            show: true
-                        }
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
-            return Observable.of(updateSelfAvatar)
                     .map(() => {
                         return {type: '[main] update self info useless'};
                     });
@@ -800,5 +798,45 @@ export class MainEffect {
                 payload: item
             });
         }
+    }
+    // 更新个人头像
+    private updateSelfAvatar(self) {
+        global.JIM.updateSelfAvatar({avatar: self.avatar.formData})
+        .onSuccess((data) => {
+            this.store$.dispatch({
+                type: mainAction.showSelfInfo,
+                payload: {
+                    avatar: self.avatar,
+                    info: self.info,
+                    loading: false
+                }
+            });
+            this.store$.dispatch({
+                type: mainAction.updateSelfInfoFlag
+            });
+        }).onFail((error) => {
+            this.store$.dispatch({
+                type: mainAction.showSelfInfo,
+                payload: {
+                    loading: false
+                }
+            });
+            this.store$.dispatch({
+                type: appAction.errorApiTip,
+                payload: error
+            });
+        }).onTimeout((data) => {
+            this.store$.dispatch({
+                type: mainAction.showSelfInfo,
+                payload: {
+                    loading: false
+                }
+            });
+            const error = {code: 910000};
+            this.store$.dispatch({
+                type: appAction.errorApiTip,
+                payload: error
+            });
+        });
     }
 }

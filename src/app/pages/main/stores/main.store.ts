@@ -6,6 +6,7 @@ export interface MainStore {
             avatarUrl: string;
         },
         show: boolean;
+        loading: boolean;
     };
     listTab: number;
     createGroup: {
