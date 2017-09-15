@@ -1,7 +1,7 @@
 <div class="conversation-no-data" *ngIf="!conversationList || conversationList.length === 0">暂无联系人</div>
 <perfect-scrollbar class="conversation-container">
     <ul class="conversation-list">
-        <li *ngFor="let item of conversationList;let i = index;" (contextmenu)="contextmenu($event, item)" (click)="selectTarget(item)" [ngClass]="{'active': item.key == active.key || item.gid == active.key, 'isTop': item.isTop}" class="display-flex">
+        <li *ngFor="let item of conversationList;let i = index;" (contextmenu)="contextmenu($event, item)" (click)="selectTarget(item)" [ngClass]="{'active': item.key == active.key || item.gid == active.key, 'isTop': item?.extras?.top_time_ms}" class="display-flex">
             <div class="conversation-avatar">
                 <div>
                     <img *ngIf="item.type == 3" (load)="avatarLoad($event)" [src]="item.avatarUrl ? (item.avatarUrl | sanitize: 'url') : ''" (error)="avatarErrorIcon($event)" alt="">
@@ -24,7 +24,7 @@
                 </div>
                 <p class="conversation-recentMsg" *ngIf="item?.recentMsg?.content?.msg_type && !item.draft" [ngSwitch]="item?.recentMsg?.content?.msg_type">
                     <span class="float-left conversation-at" *ngIf="item.atUser">[{{item.atUser}}]</span>
-                    <span class="float-left" [ngClass]="{'conversation-unread-text': item.recentMsg.unread_count}" *ngIf="item.recentMsg.msg_type === 3">{{item.recentMsg.unread_count ? '[未读]' : '[已读]'}}</span>
+                    <span class="float-left" [ngClass]="{'conversation-unread-text': item.recentMsg.unread_count}" *ngIf="item.recentMsg.msg_type === 3 && item.recentMsg.content.from_id === global.user">{{item.recentMsg.unread_count ? '[未读]' : '[已读]'}}</span>
                     <span class="float-left" *ngIf="item.recentMsg.msg_type === 4 && item.recentMsg.content.msg_type !== 'event'">{{item.recentMsg.content.from_id === global.user ? '我' : (item.recentMsg.content.memo_name || item.recentMsg.content.from_name || item.recentMsg.content.from_id)}}&nbsp;:&nbsp;</span>
                     <span *ngSwitchCase="'text'" [innerHTML]="item.recentMsg.content.msg_body.text | emoji: {nbsp: true, href: false} | sanitize: 'html'"></span>
                     <span *ngSwitchCase="'image'">[图片]</span>
@@ -44,6 +44,6 @@
 </perfect-scrollbar>
 <div class="conversation-top-menu" [hidden]="!topPosition.show" [ngStyle]="{'top': topPosition.top + 'px', 'left': topPosition.left + 'px'}">
     <ul>
-        <li class="menu-hover" (click)="conversationToTopAction()">{{topPosition.item.isTop ? '取消置顶' : '会话置顶'}}</li>
+        <li class="menu-hover" (click)="conversationToTopAction()">{{topPosition.item?.extras?.top_time_ms ? '取消置顶' : '会话置顶'}}</li>
     </ul>
 </div>

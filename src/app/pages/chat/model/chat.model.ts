@@ -74,7 +74,8 @@ export const chatInit = {
         info: {
             read: [],
             unread: []
-        }
+        },
+        loading: false
     },
     readObj: {}
 };

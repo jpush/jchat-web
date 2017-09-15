@@ -98,11 +98,13 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             if (payload.success === 2) {
                 state.msgId = updateFilterMsgId(state, [{key: payload.key}]);
             }
-            let bussinessExtras = payload.msgs.content.msg_body.extras;
-            if (bussinessExtras && bussinessExtras.businessCard && payload.success !== 2) {
-                state.sendBusinessCardSuccess = 0;
-            } else {
-                state.sendBusinessCardSuccess ++;
+            if (payload.msgs) {
+                let bussinessExtras = payload.msgs.content.msg_body.extras;
+                if (bussinessExtras && bussinessExtras.businessCard && payload.success !== 2) {
+                    state.sendBusinessCardSuccess = 0;
+                } else {
+                    state.sendBusinessCardSuccess ++;
+                }
             }
             break;
             // 转发单聊文本消息
@@ -444,7 +446,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case mainAction.deleteFriendSuccess:
             otherInfoDeleteFriend(state, payload);
             break;
-        case chatAction.friendReplyEvent:
+        case chatAction.friendReplyEventSuccess:
             // 如果在好友应答时正好打开了该好友的资料
             updateOtherInfo(state, payload);
             addNewFriendToConversation(state, payload);
@@ -478,12 +480,16 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 info: {
                     read: [],
                     unread: []
-                }
+                },
+                loading: true
             };
             break;
         case chatAction.watchUnreadListSuccess:
-            state.unreadList.info.read = payload.info.read_list;
-            state.unreadList.info.unread = payload.info.unread_list;
+            if (payload.info) {
+                state.unreadList.info.read = payload.info.read_list;
+                state.unreadList.info.unread = payload.info.unread_list;
+            }
+            state.unreadList.loading = payload.loading;
             break;
         case chatAction.msgReceiptChangeEvent:
             msgReceiptChangeEvent(state, payload);
@@ -554,7 +560,12 @@ function conversationToTop(state, payload) {
     for (let i = 0; i < state.conversation.length; i++) {
         if (Number(state.conversation[i].key) === Number(payload.key)) {
             let item = state.conversation.splice(i, 1)[0];
-            item.isTop = !item.isTop;
+            // item.isTop = !item.isTop;
+            if (item.extras && item.extras.top_time_ms) {
+                delete  item.extras.top_time_ms;
+            } else {
+                item.extras.top_time_ms = new Date().getTime();
+            }
             filterTopConversation(state, item);
             break;
         }
@@ -775,7 +786,7 @@ function filterSingleNoDisturb(state, payload) {
 // 判断是否是好友
 function filterFriend(state, payload) {
     const result = state.friendList.filter((friend) => {
-        return friend.name === payload.name;
+        return friend.name === payload.name || friend.name === payload.username;
     });
     if (result.length > 0) {
         payload.memo_name = result[0].memo_name;
@@ -811,7 +822,7 @@ function addNewFriendToConversation(state, payload) {
                     break;
                 }
             }
-            if (!state.conversation[i].isTop) {
+            if (!state.conversation[i].extras || !state.conversation[i].extras.top_time_ms) {
                 item = state.conversation.splice(i, 1)[0];
             } else {
                 state.conversation[i].recentMsg = msg;
@@ -866,6 +877,7 @@ function currentIsActive(state, payload) {
 }
 // 消息撤回
 function msgRetract(state, payload) {
+    console.log(444444, payload);
     let name = '';
     let recentMsg = {};
     let index;
@@ -884,7 +896,14 @@ function msgRetract(state, payload) {
             if (payload.from_username === global.user) {
                 name = '您';
             } else if (msgType === 4) {
-                name = payload.from_username;
+                payload.name = payload.from_username;
+                if (filterFriend(state, payload)) {
+                    name = payload.memo_name;
+                } else if (payload.from_nickname && payload.from_nickname !== '') {
+                    name = payload.from_nickname;
+                } else {
+                    name = payload.from_username;
+                }
             } else if (msgType === 3) {
                 name = '对方';
             }
@@ -901,7 +920,7 @@ function msgRetract(state, payload) {
             };
             payload.key = state.conversation[i].key;
             index = i;
-            if (!state.conversation[i].isTop) {
+            if (!state.conversation[i].extras || !state.conversation[i].extras.top_time_ms) {
                 const item = state.conversation.splice(i, 1);
                 // state.conversation.unshift(item[0]);
                 index = filterTopConversation(state, item[0]);
@@ -1100,7 +1119,7 @@ function sortConversationByRecentMsg(state) {
     let temp;
     let topIndex = 0;
     for (let i = 0; i < len; i++) {
-        if (!state.conversation[i].isTop) {
+        if (!state.conversation[i].extras || !state.conversation[i].extras.top_time_ms) {
             topIndex = i;
             break;
         }
@@ -1127,7 +1146,9 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
             addGroupOther = '您' + '、';
         } else {
             let name = '';
-            if (user.nickname && user.nickname !== '') {
+            if (filterFriend(state, user)) {
+                name = user.memo_name;
+            } else if (user.nickname && user.nickname !== '') {
                 name = user.nickname;
             } else {
                 name = user.username;
@@ -1146,7 +1167,7 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
             }
             flag1 = false;
             let index = i;
-            if (!state.conversation[i].isTop) {
+            if (!state.conversation[i].extras || !state.conversation[i].extras.top_time_ms) {
                 let item = state.conversation.splice(i, 1);
                 // state.conversation.unshift(item[0]);
                 index = filterTopConversation(state, item[0]);
@@ -1626,32 +1647,35 @@ function hasNoMsgId(state, stateMessageList) {
 }
 // 完成消息的发送接口的调用后，返回成功或者失败状态
 function sendMsgComplete(state: ChatStore, payload) {
-    for (let conversation of state.conversation) {
-        // 转发消息时没有key
-        if (!payload.key) {
-            if (payload.name === conversation.name) {
-                payload.key = conversation.key;
-                conversation.key = payload.msgs.key;
+    if (payload.success === 2) {
+        for (let conversation of state.conversation) {
+            // 转发消息时没有key
+            if (!payload.key) {
+                if (payload.name === conversation.name) {
+                    payload.key = conversation.key;
+                    conversation.key = payload.msgs.key;
+                }
+            // 转发或者发送消息时key < 0
+            } else if (Number(payload.key) < 0) {
+                if (Number(payload.key) === Number(conversation.key)) {
+                    conversation.key = payload.msgs.key;
+                }
             }
-        // 转发或者发送消息时key < 0
-        } else if (Number(payload.key) < 0) {
-            if (Number(payload.key) === Number(conversation.key)) {
-                conversation.key = payload.msgs.key;
-            }
-        }
-        // 给recentMsg添加msg_id
-        if (payload.msgs.msg_type === 3) {
-            if (Number(payload.key) === Number(conversation.key)) {
-                payload.msgs.unread_count = true;
-                payload.msgs.conversation_time_show = conversation.recentMsg.conversation_time_show;
-                payload.msgs.ctime_ms = conversation.recentMsg.ctime_ms;
-                conversation.recentMsg = payload.msgs;
+            // 给recentMsg添加msg_id
+            if (payload.msgs.msg_type === 3) {
+                if (Number(payload.key) === Number(conversation.key)) {
+                    payload.msgs.unread_count = true;
+                    payload.msgs.conversation_time_show =
+                        conversation.recentMsg.conversation_time_show;
+                    payload.msgs.ctime_ms = conversation.recentMsg.ctime_ms;
+                    conversation.recentMsg = payload.msgs;
+                }
             }
         }
     }
     for (let messageList of state.messageList) {
         if (Number(messageList.key) === Number(payload.key)) {
-            if (Number(payload.key) < 0) {
+            if (Number(payload.key) < 0 && payload.success === 2) {
                 messageList.key = payload.msgs.key;
                 if (Number(payload.key) === Number(state.activePerson.key)) {
                     state.activePerson.key = payload.msgs.key;
@@ -1660,7 +1684,7 @@ function sendMsgComplete(state: ChatStore, payload) {
             let msgs = messageList.msgs;
             for (let j = msgs.length - 1; j >= 0; j--) {
                 if (msgs[j].msgKey && Number(payload.msgKey) === Number(msgs[j].msgKey)) {
-                    if (payload.msgs) {
+                    if (payload.msgs && payload.success === 2) {
                         let url = msgs[j].content.msg_body.media_url;
                         let localExtras = msgs[j].content.msg_body.extras;
                         if (url) {
@@ -1717,7 +1741,7 @@ function transmitMessage (state, payload) {
             flag = false;
             payload.select.conversation_time_show = 'today';
             state.conversation[a].recentMsg = payload.msgs;
-            if (!state.conversation[a].isTop) {
+            if (!state.conversation[a].extras || !state.conversation[a].extras.top_time_ms) {
                 let item = state.conversation.splice(a, 1);
                 // state.conversation.unshift(item[0]);
                 filterTopConversation(state, item[0]);
@@ -1785,7 +1809,7 @@ function addMyselfMesssge(state: ChatStore, payload) {
                 payload.msgs.unread_count = true;
             }
             state.conversation[a].recentMsg = payload.msgs;
-            if (!state.conversation[a].isTop) {
+            if (!state.conversation[a].extras || !state.conversation[a].extras.top_time_ms) {
                 let item = state.conversation.splice(a, 1);
                 // state.conversation.unshift(item[0]);
                 filterTopConversation(state, item[0]);
@@ -1847,7 +1871,7 @@ function addMessage(state: ChatStore, payload) {
                     }
                 }
                 let index = a;
-                if (!state.conversation[a].isTop) {
+                if (!state.conversation[a].extras || !state.conversation[a].extras.top_time_ms) {
                     let item = state.conversation.splice(a, 1);
                     // state.conversation.unshift(item[0]);
                     index = filterTopConversation(state, item[0]);
@@ -2075,7 +2099,7 @@ function selectUserResult(state, payload, type?: string) {
             (conversation[i].name === payload.name && conversation[i].type === 3)) {
             index = i;
             payload.key = conversation[i].key;
-            if (!conversation[i].isTop) {
+            if (!conversation[i].extras || !conversation[i].extras.top_time_ms) {
                 let item = conversation.splice(i, 1);
                 // conversation.unshift(item[0]);
                 index = filterTopConversation(state, item[0]);
@@ -2093,6 +2117,7 @@ function selectUserResult(state, payload, type?: string) {
     }
     if (!flag) {
         // conversation.unshift(payload);
+        payload.extras = {};
         filterTopConversation(state, payload);
     }
     let result = state.messageList.filter((item) => {
@@ -2126,7 +2151,7 @@ function filterTopConversation(state, item) {
     let flag = true;
     let index;
     for (let i = 0; i < state.conversation.length; i++) {
-        if (!state.conversation[i].isTop) {
+        if (!state.conversation[i].extras || !state.conversation[i].extras.top_time_ms) {
             state.conversation.splice(i, 0, item);
             index = i;
             flag = false;

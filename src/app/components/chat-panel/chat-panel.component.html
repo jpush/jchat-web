@@ -208,7 +208,7 @@
                         <!-- 名片消息 -->
                         <div *ngIf="i.content.msg_type === 'text' && i.content.msg_body?.extras?.businessCard" (mouseleave)="msgMouseleave()" class="clearfix" style="height: 105px;">
                             <div class="chat-panel-fromId-me float-right chat-panel-avatar" (click)="watchSelfInfo()">
-                                <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div class="float-right clearfix chat-panel-business-card" (click)="watchBusinessCardInfo(i.content.msg_body.extras)">
                                 <div class="float-left chat-panel-card chat-panel-card-me">

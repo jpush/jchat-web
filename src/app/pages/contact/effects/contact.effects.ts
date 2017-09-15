@@ -129,26 +129,16 @@ export class ContactEffect {
         .ofType(contactAction.isAgreeAddFriend)
         .map(toPayload)
         .switchMap((message) => {
-            let why = '';
             if (message.stateType === 1) {
-                why = '拒绝';
-            }
-            const friendObj = global.JIM.addFriend({
+                global.JIM.declineFriend({
                     target_name: message.name,
-                    from_type: 2,
-                    why
+                    appkey: message.appkey,
+                    // why: '拒绝'
                 }).onSuccess((data) => {
-                    if (message.stateType === 1) {
-                        this.store$.dispatch({
-                            type: contactAction.refuseAddFriendSuccess,
-                            payload: message
-                        });
-                    } else if (message.stateType === 2) {
-                        this.store$.dispatch({
-                            type: contactAction.agreeAddFriendSuccess,
-                            payload: message
-                        });
-                    }
+                    this.store$.dispatch({
+                        type: contactAction.refuseAddFriendSuccess,
+                        payload: message
+                    });
                 }).onFail((error) => {
                     this.store$.dispatch({
                         type: contactAction.addFriendError,
@@ -169,7 +159,37 @@ export class ContactEffect {
                         payload: error
                     });
                 });
-            return Observable.of(friendObj)
+            } else if (message.stateType === 2) {
+                global.JIM.acceptFriend({
+                    target_name: message.name,
+                    appkey: message.appkey
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: contactAction.agreeAddFriendSuccess,
+                        payload: message
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: contactAction.addFriendError,
+                        payload: message
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout(() => {
+                    this.store$.dispatch({
+                        type: contactAction.addFriendError,
+                        payload: message
+                    });
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            }
+            return Observable.of('friendObj')
                     .map(() => {
                         return {type: '[main] is agree add friend useless'};
                     });

@@ -136,7 +136,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         info: {
             read: [],
             unread: []
-        }
+        },
+        loading: false
     };
     constructor(
         private store$: Store<AppStore>,
@@ -229,6 +230,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 离线消息同步监听
         global.JIM.onSyncConversation((data) => {
+            console.log('离线消息1', data, JSON.stringify(data));
             this.hasOffline = true;
             this.store$.dispatch({
                 type: chatAction.getAllMessage,
@@ -237,6 +239,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 如果3秒内没有加载离线消息则手动触发
         setTimeout(() => {
+            console.log('setTimeout', this.hasOffline);
             if (!this.hasOffline) {
                 this.store$.dispatch({
                     type: chatAction.getAllMessage,
@@ -352,7 +355,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
             case contactAction.agreeAddFriendSuccess:
 
-            case chatAction.friendReplyEvent:
+            case chatAction.friendReplyEventSuccess:
                 // 触发滚动条向下滚动
                 this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 break;
@@ -551,12 +554,17 @@ export class ChatComponent implements OnInit, OnDestroy {
 
             case chatAction.deleteSingleNoDisturbSuccess:
 
-            case chatAction.friendReplyEvent:
+            case chatAction.friendReplyEventSuccess:
                 this.otherInfo = chatState.otherInfo;
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 break;
             case chatAction.saveMemoNameSuccess:
                 this.conversationList = chatState.conversation;
+                this.store$.dispatch({
+                    type: chatAction.dispatchFriendList,
+                    payload: chatState.friendList
+                });
+                break;
             case mainAction.deleteFriendSuccess:
                 this.store$.dispatch({
                     type: chatAction.dispatchFriendList,
@@ -579,7 +587,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.unreadList = chatState.unreadList;
                 break;
             case chatAction.watchUnreadListSuccess:
-                this.unreadList.info = chatState.unreadList.info;
+                this.unreadList = chatState.unreadList;
                 break;
             case chatAction.msgReceiptChangeEvent:
                 this.conversationList = chatState.conversation;
@@ -654,17 +662,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 });
                 break;
             case 5:
-                if (data.extra === 1) {
-                    this.store$.dispatch({
-                        type: chatAction.friendInvitationEvent,
-                        payload: data
-                    });
-                } else if (data.extra === 2) {
-                    this.store$.dispatch({
-                        type: chatAction.friendReplyEvent,
-                        payload: data
-                    });
-                }
+                this.store$.dispatch({
+                    type: chatAction.friendEvent,
+                    payload: data
+                });
                 this.notification(data);
                 break;
             case 8:

@@ -165,6 +165,9 @@
                     a{
                         font-size: 10px;
                         color: #2ECFCF;
+                        &:hover{
+                            color: #02BDBC;
+                        }
                     }
                 }
             }
@@ -184,9 +187,8 @@
                 overflow: hidden;
                 float: left;
                 margin: 0 2px 2px 0;
-                img{
-                    cursor: pointer;
-                }
+                cursor: -webkit-zoom-in;
+                cursor: zoom-in;
             }
         }
     }

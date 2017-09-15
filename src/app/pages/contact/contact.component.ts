@@ -89,7 +89,7 @@ export class ContactComponent implements OnInit, OnDestroy {
                 this.tab = contactState.tab;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 break;
-            case chatAction.friendInvitationEvent:
+            case chatAction.friendInvitationEventSuccess:
                 this.verifyMessageList = contactState.verifyMessageList;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 this.store$.dispatch({
@@ -97,7 +97,7 @@ export class ContactComponent implements OnInit, OnDestroy {
                     payload: contactState.contactUnreadNum
                 });
                 break;
-            case chatAction.friendReplyEvent:
+            case chatAction.friendReplyEventSuccess:
                 this.verifyMessageList = contactState.verifyMessageList;
                 this.friendList = contactState.friendList;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;

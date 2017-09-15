@@ -4,7 +4,7 @@
             消息查看列表
             <span class="modal-close" (click)="closeModal()"></span>
         </h2>
-        <div class="unread-list-main display-flex">
+        <div class="unread-list-main display-flex" [ngClass]="{'loading': unreadList.loading}">
             <div class="unread-list-left flex-1">
                 <div class="unread-list-title">未读成员（{{unreadList.info.unread.length}}）</div>                
                 <perfect-scrollbar class="scroll">

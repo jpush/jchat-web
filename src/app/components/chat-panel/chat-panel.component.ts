@@ -248,6 +248,27 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         this.inputNoBlur = true;
         this.atList.show = false;
     }
+    @HostListener('window:keyup', ['$event']) private onKeyupWindow(event) {
+        // 回车发送复制的图片或者拖拽的文件
+        if (this.pasteImage.show && event.keyCode === 13) {
+            this.pasteImageEmit();
+            this.pasteImage = {
+                show: false,
+                info: {
+                    src: '',
+                    width: 0,
+                    height: 0,
+                    pasteFile: {}
+                }
+            };
+        } else if (this.dropFileInfo.show && event.keyCode === 13) {
+            this.dropFileEmit();
+            this.dropFileInfo = {
+                show: false,
+                info: {}
+            };
+        }
+    }
     private subscribeStore() {
         this.chatStream$ = this.store$.select((state) => {
             const chatState = state['chatReducer'];
@@ -366,7 +387,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
 
             case contactAction.agreeAddFriendSuccess:
 
-            case chatAction.friendReplyEvent:
+            case chatAction.friendReplyEventSuccess:
                 this.updateMsg(chatState);
                 break;
             case chatAction.msgFile:

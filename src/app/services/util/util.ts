@@ -219,7 +219,14 @@ export class Util {
         for (let item of payload) {
             let flag = false;
             for (let re of result) {
-                let name = (item.nickName && item.nickName !== '') ? item.nickName : item.name;
+                let name;
+                if (item.memo_name && item.memo_name !== '') {
+                    name = item.memo_name;
+                } else if (item.nickName && item.nickName !== '') {
+                    name = item.nickName;
+                } else {
+                    name = item.name;
+                }
                 if (!name || name.length === 0) {
                     break;
                 }

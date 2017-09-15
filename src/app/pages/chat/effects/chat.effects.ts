@@ -392,10 +392,30 @@ export class ChatEffect {
                     }
                 }
             }
+            console.log('离线消息2', data, JSON.stringify(data));
             const conversationObj = global.JIM.getConversation()
             .onSuccess((info) => {
                 console.log('会话列表：', JSON.stringify(info));
-                // info.conversations = info.conversations.reverse();
+                // 对置顶会话进行排序
+                let topArr = [];
+                let notopArr = [];
+                for (let conversation of info.conversations) {
+                    if (conversation.extras && conversation.extras.top_time_ms) {
+                        topArr.push(conversation);
+                    } else {
+                        notopArr.push(conversation);
+                    }
+                }
+                for (let i = 0; i < topArr.length; i++) {
+                    for (let j = i + 1; j < topArr.length; j++) {
+                        if (topArr[i].extras.top_time_ms > topArr[j].extras.top_time_ms) {
+                            let temp = topArr[i];
+                            topArr[i] = topArr[j];
+                            topArr[j] = temp;
+                        }
+                    }
+                }
+                info.conversations = topArr.concat(notopArr);
                 // 获取头像url
                 let count = 0;
                 for (let conversation of info.conversations) {
@@ -2253,12 +2273,27 @@ export class ChatEffect {
         .ofType(chatAction.conversationToTop)
         .map(toPayload)
         .switchMap((info) => {
-            if (!info.isTop) {
-                global.JIM.addTopConversation({key: info.key});
+            console.log(2, info);
+            let extras;
+            if (info.extras.top_time_ms) {
+                extras = {};
             } else {
-                global.JIM.delTopConversation({key: info.key});
+                extras = {
+                    top_time_ms: new Date().getTime()
+                };
             }
-            console.log(2, info.isTop);
+            if (info.type === 3) {
+                global.JIM.updateConversation({
+                    appkey: info.appkey,
+                    username: info.name,
+                    extras
+                });
+            } else if (info.type === 4) {
+                global.JIM.updateConversation({
+                    gid: info.key,
+                    extras
+                });
+            }
             this.store$.dispatch({
                 type: chatAction.conversationToTopSuccess,
                 payload: info
@@ -2309,6 +2344,48 @@ export class ChatEffect {
             return Observable.of('addReceiptReport')
                     .map(() => {
                         return {type: '[chat] add receipt report useless'};
+                    });
+    });
+    // 验证消息请求头像
+    @Effect()
+    private friendEvent$: Observable<Action> = this.actions$
+        .ofType(chatAction.friendEvent)
+        .map(toPayload)
+        .switchMap((info) => {
+            let type;
+            if (info.extra === 1) {
+                type = chatAction.friendInvitationEventSuccess;
+            } else if (info.extra === 2) {
+                type = chatAction.friendReplyEventSuccess;
+            }
+            const friendEvent = global.JIM.getResource({media_id: info.media_id})
+            .onSuccess((urlInfo) => {
+                info.media_url = urlInfo.url;
+                this.store$.dispatch({
+                    type,
+                    payload: info
+                });
+            }).onFail((error) => {
+                info.media_url = '';
+                this.store$.dispatch({
+                    type,
+                    payload: info
+                });
+            }).onTimeout((data) => {
+                const error = {code: 910000};
+                info.media_url = '';
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+                this.store$.dispatch({
+                    type,
+                    payload: info
+                });
+            });
+            return Observable.of(friendEvent)
+                    .map(() => {
+                        return {type: '[chat] friend invitation event useless'};
                     });
     });
     constructor(
@@ -2384,7 +2461,7 @@ export class ChatEffect {
                     type: chatAction.watchUnreadListSuccess,
                     payload: {
                         info: list.msg_unread_list,
-                        show: true
+                        loading: false
                     }
                 });
                 return;
@@ -2392,11 +2469,12 @@ export class ChatEffect {
             global.JIM.getResource({media_id: data.user_info.avatar})
             .onSuccess((urlInfo) => {
                 unread.avatarUrl = urlInfo.url;
+                console.log(333333333, JSON.stringify(unread));
                 this.store$.dispatch({
                     type: chatAction.watchUnreadListSuccess,
                     payload: {
                         info: list.msg_unread_list,
-                        show: true
+                        loading: false
                     }
                 });
             }).onFail((error) => {
@@ -2405,16 +2483,28 @@ export class ChatEffect {
                     type: chatAction.watchUnreadListSuccess,
                     payload: {
                         info: list.msg_unread_list,
-                        show: true
+                        loading: false
                     }
                 });
             });
         }).onFail((error) => {
             this.store$.dispatch({
+                type: chatAction.watchUnreadListSuccess,
+                payload: {
+                    loading: false
+                }
+            });
+            this.store$.dispatch({
                 type: appAction.errorApiTip,
                 payload: error
             });
         }).onTimeout((data) => {
+            this.store$.dispatch({
+                type: chatAction.watchUnreadListSuccess,
+                payload: {
+                    loading: false
+                }
+            });
             const error = {code: 910000};
             this.store$.dispatch({
                 type: appAction.errorApiTip,

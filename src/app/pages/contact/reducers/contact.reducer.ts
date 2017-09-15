@@ -69,7 +69,8 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             }
             changeFirstOne(state, 'isVerifyFirstOne');
             break;
-        case chatAction.friendInvitationEvent:
+        case chatAction.friendInvitationEventSuccess:
+            console.log(444, payload);
             friendVerify(state, payload);
             break;
         case contactAction.refuseAddFriendSuccess:
@@ -86,7 +87,8 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             state.hasNoSortFriendList = payload;
             state.friendList = util.sortByLetter(state.hasNoSortFriendList);
             break;
-        case chatAction.friendReplyEvent:
+        case chatAction.friendReplyEventSuccess:
+            console.log(666666, payload);
             friendReply(state, payload);
             state.friendList = util.insertSortByLetter(state.friendList, payload);
             state.hasNoSortFriendList.push(payload);
@@ -151,7 +153,7 @@ function friendReply(state, payload) {
         name: payload.from_username,
         nickName: '',
         description: payload.description,
-        avatarUrl: '',
+        avatarUrl: payload.media_url,
         extra: payload.extra,
         eventId: payload.event_id,
         stateType: 0,
@@ -199,7 +201,7 @@ function friendVerify(state, payload) {
         name: payload.from_username,
         nickName: '',
         description: payload.description,
-        avatarUrl: '',
+        avatarUrl: payload.media_url,
         extra: payload.extra,
         eventId: payload.event_id,
         stateType: 0,
