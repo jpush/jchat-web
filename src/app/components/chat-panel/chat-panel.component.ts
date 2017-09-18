@@ -396,6 +396,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case contactAction.agreeAddFriendSuccess:
 
             case chatAction.friendReplyEventSuccess:
+
+            case chatAction.updateGroupInfoEventSuccess:
                 this.updateMsg(chatState);
                 break;
             case chatAction.msgFile:
@@ -914,6 +916,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                         this.atList.show = false;
                     }
                 } else {
+                    console.log(1111);
                     this.atDeleteNum = 1;
                     this.showAtList(range, memberList, true);
                 }

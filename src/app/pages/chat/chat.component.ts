@@ -185,7 +185,10 @@ export class ChatComponent implements OnInit, OnDestroy {
             } else {
                 this.store$.dispatch({
                     type: chatAction.receiveSingleMessage,
-                    payload: data
+                    payload: {
+                        data,
+                        conversation: this.conversationList
+                    }
                 });
             }
         });
@@ -357,6 +360,20 @@ export class ChatComponent implements OnInit, OnDestroy {
                 // 触发滚动条向下滚动
                 this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 break;
+            case chatAction.updateGroupInfoEventSuccess:
+                this.groupSetting = messageListActive.groupSetting;
+                this.groupSetting.active = this.active;
+                this.store$.dispatch({
+                    type: chatAction.updateContactInfo,
+                    payload: {
+                        groupList: chatState.groupList
+                    }
+                });
+                // 触发滚动条向下滚动
+                if (chatState.newMessageIsActive) {
+                    this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
+                }
+                break;
             case chatAction.sendMsgComplete:
                 if (chatState.msgId.length > 0) {
                     this.storageMsgId(chatState.msgId);
@@ -444,16 +461,15 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.groupDescription.description = Object.assign({},
                     messageListActive.groupSetting.groupInfo, {});
                 break;
-            case chatAction.groupName:
-                this.groupSetting.groupInfo.name = messageListActive.groupSetting.groupInfo.name;
-                this.store$.dispatch({
-                    type: chatAction.updateContactInfo,
-                    payload: {
-                        groupList: chatState.groupList,
-                        conversation: chatState.conversation
-                    }
-                });
-                break;
+            // case chatAction.groupName:
+            //     this.groupSetting.groupInfo.name = messageListActive.groupSetting.groupInfo.name;
+            //     this.store$.dispatch({
+            //         type: chatAction.updateContactInfo,
+            //         payload: {
+            //             groupList: chatState.groupList
+            //         }
+            //     });
+                // break;
             case mainAction.showSelfInfo:
                 if (mainState.selfInfo.info) {
                     this.selfInfo = mainState.selfInfo.info;
@@ -574,10 +590,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.unreadList.show = false;
                 break;
-            case chatAction.groupAvatar:
-                this.conversationList = chatState.conversation;
-                this.groupSetting.groupInfo = messageListActive.groupSetting.groupInfo;
-                break;
+            // case chatAction.groupAvatar:
+            //     this.conversationList = chatState.conversation;
+            //     this.groupSetting.groupInfo = messageListActive.groupSetting.groupInfo;
+            //     break;
             case chatAction.conversationToTopSuccess:
                 this.conversationList = chatState.conversation;
                 break;
@@ -662,6 +678,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 });
                 break;
             case 5:
+                // 好友请求和应答事件
                 this.store$.dispatch({
                     type: chatAction.friendEvent,
                     payload: data
@@ -669,6 +686,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.notification(data);
                 break;
             case 8:
+                // 创建群的事件
                 if (data.from_username === '') {
                     this.store$.dispatch({
                         type: chatAction.createGroupEvent,
@@ -677,6 +695,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
                 break;
             case 9:
+                // 退群事件
                 if (data.to_usernames[0].username !== global.user) {
                     this.store$.dispatch({
                         type: chatAction.exitGroupEvent,
@@ -685,26 +704,36 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
                 break;
             case 10:
+                // 添加群成员事件
                 this.store$.dispatch({
                     type: chatAction.addGroupMembersEvent,
                     payload: data
                 });
                 break;
             case 11:
+                // 删除群成员事件
                 this.store$.dispatch({
                     type: chatAction.deleteGroupMembersEvent,
                     payload: data
                 });
                 break;
-            case 55:
-                // 不考虑离线的消息撤回事件
-                if (data.isOffline) {
-                    break;
+            case 12:
+                // 更新群信息事件
+                if (!data.isOffline) {
+                    this.store$.dispatch({
+                        type: chatAction.updateGroupInfoEvent,
+                        payload: data
+                    });
                 }
-                this.store$.dispatch({
-                    type: chatAction.msgRetractEvent,
-                    payload: data
-                });
+                break;
+            case 55:
+                // 消息撤回事件，不考虑离线的消息撤回事件
+                if (!data.isOffline) {
+                    this.store$.dispatch({
+                        type: chatAction.msgRetractEvent,
+                        payload: data
+                    });
+                }
                 break;
             default:
         }
@@ -720,7 +749,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     title = '好友邀请';
                     body = `${newMessage.from_username}申请添加您为好友`;
                 } else if (newMessage.extra === 2) {
-                    if (newMessage.description === 'yes') {
+                    if (newMessage.return_code === 0) {
                         title = '同意好友申请';
                         body = `${newMessage.from_username}同意了您的好友申请`;
                     } else {

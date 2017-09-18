@@ -22,42 +22,31 @@ export class ChatEffect {
     private receivesingleMessage$: Observable<Action> = this.actions$
         .ofType(chatAction.receiveSingleMessage)
         .map(toPayload)
-        .switchMap((data) => {
+        .switchMap((info) => {
             let count = 0;
-            const content = data.messages[0].content;
-            console.log(111, count);
-            if (data.messages[0].isMediaId) {
+            const content = info.data.messages[0].content;
+            if (info.data.messages[0].isMediaId) {
                 count ++;
-                this.requestMediaUrl(data, () => {
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: data
-                        });
-                        console.log(222, count);
-                    }
-                });
+                this.requestMediaUrl(info.data, count);
             }
-            // 如果发送的是名片
+            let result = info.conversation.filter((conversation) => {
+                return info.data.messages[0].content.from_id === conversation.name;
+            });
+            if (result.length === 0) {
+                count ++;
+                this.requestMsgAvatarUrl(info.data.messages[0], info, count);
+            }
+            // 如果接收的是名片
             if (content.msg_type === 'text' && content.msg_body.extras &&
                 content.msg_body.extras.businessCard) {
                 count ++;
-                this.requestCardInfo(content, () => {
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: data
-                        });
-                        console.log(333, count);
-                    }
-                });
+                this.requestCardInfo(info.data, count);
             }
             if (count <= 0) {
                 this.store$.dispatch({
                     type: chatAction.receiveMessageSuccess,
-                    payload: data
+                    payload: info.data
                 });
-                console.log(444, count);
             }
             return Observable.of('receiveSingleMessage')
                     .map(() => {
@@ -115,27 +104,13 @@ export class ChatEffect {
             }
             if (messages.isMediaId) {
                 count ++;
-                this.requestMediaUrl(obj.data, () => {
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: obj.data
-                        });
-                    }
-                });
+                this.requestMediaUrl(obj.data, count);
             }
             // 如果发送的是名片
             if (content.msg_type === 'text' && content.msg_body.extras &&
                 content.msg_body.extras.businessCard) {
                 count ++;
-                this.requestCardInfo(content, () => {
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: obj.data
-                        });
-                    }
-                });
+                this.requestCardInfo(obj.data, count);
             }
             // 判断是否消息列表中已经加载过头像
             for (let list of messageList) {
@@ -161,45 +136,7 @@ export class ChatEffect {
             if (!flag) {
                 count ++;
                 // 消息列表中没有加载过头像
-                global.JIM.getUserInfo({
-                    username: messages.content.from_id
-                }).onSuccess((user) => {
-                    if (!user.user_info.avatar || user.user_info.avatar === '') {
-                        messages.content.avatarUrl = '';
-                        if (-- count <= 0) {
-                            this.store$.dispatch({
-                                type: chatAction.receiveMessageSuccess,
-                                payload: obj.data
-                            });
-                        }
-                        return;
-                    }
-                    global.JIM.getResource({media_id: user.user_info.avatar})
-                    .onSuccess((urlInfo) => {
-                        messages.content.avatarUrl = urlInfo.url;
-                        if (-- count <= 0) {
-                            this.store$.dispatch({
-                                type: chatAction.receiveMessageSuccess,
-                                payload: obj.data
-                            });
-                        }
-                    }).onFail((error) => {
-                        messages.content.avatarUrl = '';
-                        if (-- count <= 0) {
-                            this.store$.dispatch({
-                                type: chatAction.receiveMessageSuccess,
-                                payload: obj.data
-                            });
-                        }
-                    });
-                }).onFail((error) => {
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: obj.data
-                        });
-                    }
-                });
+                this.requestMsgAvatarUrl(messages, obj, count);
             }
             return Observable.of('receiveMessage')
                     .map(() => {
@@ -1611,7 +1548,7 @@ export class ChatEffect {
                         return {type: '[chat] group info useless'};
                     });
     });
-    // 获取群组信息和群成员信息
+    // 获取群成员信息
     @Effect()
     private getGroupMembers$: Observable<Action> = this.actions$
         .ofType(chatAction.getGroupMembers)
@@ -1665,7 +1602,6 @@ export class ChatEffect {
         .ofType(chatAction.updateGroupInfo)
         .map(toPayload)
         .switchMap((info) => {
-            console.log(2222, info.name);
             let requestObj: any = {
                 gid: info.gid
             };
@@ -1679,10 +1615,10 @@ export class ChatEffect {
             const groupInfoObj = global.JIM.updateGroupInfo(requestObj)
             .onSuccess((data) => {
                 if (info.actionType && info.actionType === 'modifyName') {
-                    this.store$.dispatch({
-                        type: chatAction.groupName,
-                        payload: info
-                    });
+                    // this.store$.dispatch({
+                    //     type: chatAction.groupName,
+                    //     payload: info
+                    // });
                 } else if (info.actionType && info.actionType === 'modifyDescription') {
                     this.store$.dispatch({
                         type: chatAction.groupDescription,
@@ -1692,10 +1628,10 @@ export class ChatEffect {
                         }
                     });
                 } else if (info.actionType && info.actionType === 'modifyGroupAvatar') {
-                    this.store$.dispatch({
-                        type: chatAction.groupAvatar,
-                        payload: info
-                    });
+                    // this.store$.dispatch({
+                    //     type: chatAction.groupAvatar,
+                    //     payload: info
+                    // });
                     this.store$.dispatch({
                         type: mainAction.showModalTip,
                         payload: {
@@ -2427,12 +2363,115 @@ export class ChatEffect {
                         return {type: '[chat] friend invitation event useless'};
                     });
     });
+    // 更新群信息事件
+    @Effect()
+    private updateGroupInfoEvent$: Observable<Action> = this.actions$
+        .ofType(chatAction.updateGroupInfoEvent)
+        .map(toPayload)
+        .switchMap((info) => {
+            const updateGroupInfoEvent = global.JIM.getGroupInfo({gid: info.gid})
+            .onSuccess((data) => {
+                if (data.group_info.avatar && data.group_info.avatar !== '') {
+                    global.JIM.getResource({media_id: data.group_info.avatar})
+                    .onSuccess((urlInfo) => {
+                        data.group_info.avatarUrl = urlInfo.url;
+                        this.store$.dispatch({
+                            type: chatAction.updateGroupInfoEventSuccess,
+                            payload: {
+                                groupInfo: data.group_info,
+                                eventData: info
+                            }
+                        });
+                    }).onFail((error) => {
+                        this.store$.dispatch({
+                            type: chatAction.updateGroupInfoEventSuccess,
+                            payload: {
+                                groupInfo: data.group_info,
+                                eventData: info
+                            }
+                        });
+                    }).onTimeout((error) => {
+                        this.store$.dispatch({
+                            type: chatAction.updateGroupInfoEventSuccess,
+                            payload: {
+                                groupInfo: data.group_info,
+                                eventData: info
+                            }
+                        });
+                    });
+                } else {
+                    this.store$.dispatch({
+                        type: chatAction.updateGroupInfoEventSuccess,
+                        payload: {
+                            groupInfo: data.group_info,
+                            eventData: info
+                        }
+                    });
+                }
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(updateGroupInfoEvent)
+                    .map(() => {
+                        return {type: '[chat] update group info event useless'};
+                    });
+    });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,
         private router: Router,
         private storageService: StorageService
     ) {}
+    private requestMsgAvatarUrl(messages, obj, count) {
+        global.JIM.getUserInfo({
+            username: messages.content.from_id
+        }).onSuccess((user) => {
+            if (!user.user_info.avatar || user.user_info.avatar === '') {
+                messages.content.avatarUrl = '';
+                if (-- count <= 0) {
+                    this.store$.dispatch({
+                        type: chatAction.receiveMessageSuccess,
+                        payload: obj.data
+                    });
+                }
+                return;
+            }
+            global.JIM.getResource({media_id: user.user_info.avatar})
+            .onSuccess((urlInfo) => {
+                messages.content.avatarUrl = urlInfo.url;
+                if (-- count <= 0) {
+                    this.store$.dispatch({
+                        type: chatAction.receiveMessageSuccess,
+                        payload: obj.data
+                    });
+                }
+            }).onFail((error) => {
+                messages.content.avatarUrl = '';
+                if (-- count <= 0) {
+                    this.store$.dispatch({
+                        type: chatAction.receiveMessageSuccess,
+                        payload: obj.data
+                    });
+                }
+            });
+        }).onFail((error) => {
+            if (-- count <= 0) {
+                this.store$.dispatch({
+                    type: chatAction.receiveMessageSuccess,
+                    payload: obj.data
+                });
+            }
+        });
+    }
     private dispatchConversation (count, info, data) {
         if (count <= 0) {
             let msgId = JSON.parse(this.storageService.get('msgId' + global.user));
@@ -2447,19 +2486,34 @@ export class ChatEffect {
             });
         }
     }
-    private requestMediaUrl(data, callback) {
+    private requestMediaUrl(data, count) {
         global.JIM.getResource({media_id: data.messages[0].content.msg_body.media_id})
         .onSuccess((urlInfo) => {
             data.messages[0].content.msg_body.media_url = urlInfo.url;
-            callback();
+            if (-- count <= 0) {
+                this.store$.dispatch({
+                    type: chatAction.receiveMessageSuccess,
+                    payload: data
+                });
+            }
         }).onFail((error) => {
-            callback();
+            if (-- count <= 0) {
+                this.store$.dispatch({
+                    type: chatAction.receiveMessageSuccess,
+                    payload: data
+                });
+            }
             this.store$.dispatch({
                 type: appAction.errorApiTip,
                 payload: error
             });
         }).onTimeout((errorInfo) => {
-            callback();
+            if (-- count <= 0) {
+                this.store$.dispatch({
+                    type: chatAction.receiveMessageSuccess,
+                    payload: data
+                });
+            }
             const error = {code: 910000};
             this.store$.dispatch({
                 type: appAction.errorApiTip,
@@ -2467,27 +2521,52 @@ export class ChatEffect {
             });
         });
     }
-    private requestCardInfo(content, callback) {
+    private requestCardInfo(data, count) {
         global.JIM.getUserInfo({
-            username: content.msg_body.extras.userName,
+            username: data.messages[0].content.msg_body.extras.userName,
             appkey: authPayload.appKey
         }).onSuccess((otherInfo) => {
-            content.msg_body.extras.nickName = otherInfo.user_info.nickname;
+            data.messages[0].content.msg_body.extras.nickName = otherInfo.user_info.nickname;
             if (otherInfo.user_info.avatar !== '') {
                 global.JIM.getResource({media_id: otherInfo.user_info.avatar})
                 .onSuccess((urlInfo) => {
-                    content.msg_body.extras.media_url = urlInfo.url;
-                    callback();
+                    data.messages[0].content.msg_body.extras.media_url = urlInfo.url;
+                    if (-- count <= 0) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: data
+                        });
+                    }
                 }).onFail((error) => {
-                    callback();
+                    if (-- count <= 0) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: data
+                        });
+                    }
                 }).onTimeout((errorInfo) => {
-                    callback();
+                    if (-- count <= 0) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: data
+                        });
+                    }
                 });
             }
         }).onFail((error) => {
-            callback();
+            if (-- count <= 0) {
+                this.store$.dispatch({
+                    type: chatAction.receiveMessageSuccess,
+                    payload: data
+                });
+            }
         }).onTimeout(() => {
-            callback();
+            if (-- count <= 0) {
+                this.store$.dispatch({
+                    type: chatAction.receiveMessageSuccess,
+                    payload: data
+                });
+            }
         });
     }
     private getUnreadListInfo(list, unread) {

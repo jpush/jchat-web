@@ -312,15 +312,15 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 更新群描述
         case chatAction.groupDescription:
             state.groupDeacriptionShow = payload.show;
-            if (payload.data) {
-                state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo.desc =
-                payload.data.group_description;
-            }
+            // if (payload.data) {
+            //     state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo.desc =
+            //     payload.data.group_description;
+            // }
             break;
             // 更新群名
-        case chatAction.groupName:
-            updateGroupName(state, payload);
-            break;
+        // case chatAction.groupName:
+            // updateGroupName(state, payload);
+            // break;
             // 显示个人信息
         case mainAction.showSelfInfo:
             if (payload.info) {
@@ -372,6 +372,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             groupMembersEvent(state, payload, '退出群聊了');
             state.currentIsActive = currentIsActive(state, payload);
             deleteGroupMembersEvent(state, payload);
+            break;
+        case chatAction.updateGroupInfoEventSuccess:
+            updateGroupInfoEventSuccess(state, payload);
             break;
             // 从localstorage获取已经播放的voice的列表
         case chatAction.getVoiceStateSuccess:
@@ -464,9 +467,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.fileImageLoad:
             fileImageLoad(state, payload);
             break;
-        case chatAction.groupAvatar:
-            updateGroupAvatar(state, payload);
-            break;
+        // case chatAction.groupAvatar:
+            // updateGroupAvatar(state, payload);
+            // break;
         case chatAction.conversationToTopSuccess:
             conversationToTop(state, payload);
             break;
@@ -497,6 +500,82 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
     }
     return state;
 };
+function updateGroupInfoEventSuccess(state, payload) {
+    payload.eventData.key = payload.eventData.gid;
+    payload.eventData.name = payload.eventData.username = payload.eventData.from_username;
+    payload.eventData.nickName = payload.eventData.nickname = payload.eventData.from_nickname;
+    filterFriend(state, payload.eventData);
+    if (Number(payload.eventData.gid) === Number(state.activePerson.key)) {
+        state.newMessageIsActive = true;
+    } else {
+        state.newMessageIsActive = false;
+    }
+    let item = null;
+    let msg = {
+        ctime_ms: payload.eventData.ctime_ms,
+        msg_type: 5,
+        content: {
+            msg_body: {
+                text: `${payload.eventData.memo_name ||
+                    payload.eventData.nickName || payload.eventData.name}修改了群信息`
+            },
+            msg_type: 'event'
+        },
+        time_show: '',
+        conversation_time_show: 'today'
+    };
+    for (let list of state.messageList) {
+        if (Number(list.key) === Number(payload.eventData.key)) {
+            if (list.msgs.length > 0) {
+                if (util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
+                    payload.eventData.ctime_ms)) {
+                    msg.time_show = 'today';
+                }
+            } else {
+                msg.time_show = 'today';
+            }
+            list.msgs.push(msg);
+            if (list.groupSetting && list.groupSetting.groupInfo) {
+                list.groupSetting.groupInfo = payload.groupInfo;
+            }
+            break;
+        }
+    }
+    for (let i = 0; i < state.conversation.length; i++) {
+        if (Number(state.conversation[i].key) === Number(payload.eventData.key)) {
+            item = state.conversation.splice(i, 1)[0];
+            if (payload.groupInfo.avatarUrl !== '') {
+                item.avatarUrl = payload.groupInfo.avatarUrl;
+            }
+            if (payload.groupInfo.name !== '') {
+                item.name = payload.groupInfo.name;
+            }
+            break;
+        }
+    }
+    for (let group of state.groupList) {
+        if (Number(payload.eventData.key) === Number(group.gid)) {
+            if (payload.groupInfo.avatarUrl !== '') {
+                group.avatarUrl = payload.groupInfo.avatarUrl;
+            }
+            if (payload.groupInfo.name !== '') {
+                group.name = payload.groupInfo.name;
+            }
+        }
+    }
+    if (item === null) {
+        item = payload.groupInfo;
+        item.type = 4;
+        state.messageList.push({
+            key: payload.eventData.key,
+            msgs: [
+                msg
+            ]
+        });
+    }
+    item.recentMsg = msg;
+    filterTopConversation(state, item);
+}
 // 已读事件监听
 function msgReceiptChangeEvent(state, payload) {
     for (let messageList of state.messageList) {
@@ -543,7 +622,6 @@ function updateUnreadCount(state, messageList, payload) {
 }
 function emptyUnreadText(conversation, payload) {
     for (let receipt of payload.receipt_msgs) {
-        console.log(777777777, conversation.recentMsg.msg_id, receipt.msg_id);
         if (conversation.recentMsg &&
             conversation.recentMsg.msg_id === receipt.msg_id) {
             conversation.recentMsg.unread_count = false;
@@ -568,20 +646,20 @@ function conversationToTop(state, payload) {
     }
 }
 // 更新群组头像
-function updateGroupAvatar(state, payload) {
-    for (let conversation of state.conversation) {
-        if (Number(payload.gid) === Number(conversation.key)) {
-            conversation.avatarUrl = payload.src;
-            break;
-        }
-    }
-    for (let messageList of state.messageList) {
-        if (Number(messageList.key) === Number(payload.gid)) {
-            messageList.groupSetting.groupInfo.avatarUrl = payload.src;
-            break;
-        }
-    }
-}
+// function updateGroupAvatar(state, payload) {
+//     for (let conversation of state.conversation) {
+//         if (Number(payload.gid) === Number(conversation.key)) {
+//             conversation.avatarUrl = payload.src;
+//             break;
+//         }
+//     }
+//     for (let messageList of state.messageList) {
+//         if (Number(messageList.key) === Number(payload.gid)) {
+//             messageList.groupSetting.groupInfo.avatarUrl = payload.src;
+//             break;
+//         }
+//     }
+// }
 function fileImageLoad(state, payload) {
     for (let message of state.msgFileImageViewer) {
         let msgIdFlag = payload.msg_id && message.msg_id === payload.msg_id;
@@ -670,7 +748,7 @@ function filteConversationMemoName(state) {
 }
 // 更新其他用户资料
 function updateOtherInfo(state, payload) {
-    if (payload.description === '' && state.otherInfo.info.name === payload.from_username) {
+    if (payload.return_code === 0 && state.otherInfo.info.name === payload.from_username) {
         state.otherInfo.info.isFriend = true;
     }
 }
@@ -791,11 +869,12 @@ function filterFriend(state, payload) {
 }
 // 同意添加好友后添加好友到会话列表
 function addNewFriendToConversation(state, payload, type) {
-    if (payload.description !== 'yes' && type !== 'agree') {
+    if (payload.return_code !== 0 && type !== 'agree') {
         return ;
     }
     if (payload.from_username) {
-        payload.name = payload.from_username;
+        payload.name  = payload.username = payload.from_username;
+        payload.nickName  = payload.nickname = payload.from_nickname;
     }
     if (state.activePerson.type === 3 && payload.from_username === state.activePerson.name) {
         state.newMessageIsActive = true;
@@ -811,13 +890,21 @@ function addNewFriendToConversation(state, payload, type) {
             },
             msg_type: 'event'
         },
-        time_show: 'today',
+        time_show: '',
         conversation_time_show: 'today'
     };
     for (let i = 0; i < state.conversation.length; i++) {
         if (state.conversation[i].type === 3 && state.conversation[i].name === payload.name) {
             for (let list of state.messageList) {
                 if (Number(state.conversation[i].key) === Number(list.key)) {
+                    if (list.msgs.length > 0) {
+                        if (util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
+                            payload.ctime_ms)) {
+                            msg.time_show = 'today';
+                        }
+                    } else {
+                        msg.time_show = 'today';
+                    }
                     list.msgs.push(msg);
                     break;
                 }
@@ -841,14 +928,6 @@ function addNewFriendToConversation(state, payload, type) {
             ]
         });
     }
-    // else {
-    //     for (let list of state.messageList) {
-    //         if (Number(item.key) === Number(list.key)) {
-    //             list.msgs.push(msg);
-    //             break;
-    //         }
-    //     }
-    // }
     item.recentMsg = msg;
     // state.conversation.unshift(item);
     filterTopConversation(state, item);
@@ -975,22 +1054,22 @@ function deleteGroupMembersEvent(state, payload) {
     }
 }
 // 更新群名称
-function updateGroupName(state, payload) {
-    state.activePerson.name = payload.name;
-    state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo.name = payload.name;
-    for (let group of state.groupList) {
-        if (Number(payload.gid) === Number(group.gid)) {
-            group.name = payload.name;
-            break;
-        }
-    }
-    for (let conversation of state.conversation) {
-        if (Number(payload.gid) === Number(conversation.key)) {
-            conversation.name = payload.name;
-            break;
-        }
-    }
-}
+// function updateGroupName(state, payload) {
+//     state.activePerson.name = payload.name;
+//     state.messageList[state.activePerson.activeIndex].groupSetting.groupInfo.name = payload.name;
+//     for (let group of state.groupList) {
+//         if (Number(payload.gid) === Number(group.gid)) {
+//             group.name = payload.name;
+//             break;
+//         }
+//     }
+//     for (let conversation of state.conversation) {
+//         if (Number(payload.gid) === Number(conversation.key)) {
+//             conversation.name = payload.name;
+//             break;
+//         }
+//     }
+// }
 // 切换用户前清除语音的定时器
 function clearVoiceTimer(state: ChatStore) {
     let activeIndex = state.activePerson.activeIndex;
@@ -2001,7 +2080,7 @@ function addMessageUserNoConversation(state, payload, message) {
         };
         conversationItem = {
             avatar: '',
-            avatarUrl: '',
+            avatarUrl: message.content.avatarUrl,
             key: message.key,
             mtime: message.ctime_ms,
             name: message.content.target_name,

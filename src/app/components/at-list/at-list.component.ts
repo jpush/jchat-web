@@ -32,4 +32,13 @@ export class AtListComponent implements OnInit {
     private stopPropagation(event) {
         event.stopPropagation();
     }
+    private avatarLoad(event, item) {
+        if (event.target.naturalHeight >= event.target.naturalWidth) {
+            event.target.style.width = '100%';
+            event.target.style.height = 'auto';
+        } else {
+            event.target.style.height = '100%';
+            event.target.style.width = 'auto';
+        }
+    }
 }

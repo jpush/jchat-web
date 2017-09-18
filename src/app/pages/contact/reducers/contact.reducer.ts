@@ -75,23 +75,23 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
         case chatAction.addFriendConfirm:
             waitReply(state, payload);
             break;
-        case chatAction.groupAvatar:
-            updateGroupAvatar(state, payload);
-            break;
+        // case chatAction.groupAvatar:
+        //     updateGroupAvatar(state, payload);
+        //     break;
         default:
     }
     return state;
 };
-function updateGroupAvatar(state, payload) {
-    for (let group of state.groupList){
-        for (let data of group.data) {
-            if (Number(payload.gid) === Number(data.gid)) {
-                data.avatarUrl = payload.src;
-                break;
-            }
-        }
-    }
-}
+// function updateGroupAvatar(state, payload) {
+//     for (let group of state.groupList){
+//         for (let data of group.data) {
+//             if (Number(payload.gid) === Number(data.gid)) {
+//                 data.avatarUrl = payload.src;
+//                 break;
+//             }
+//         }
+//     }
+// }
 // 同意或拒绝好友请求失败
 function addFriendError(state, payload) {
     for (let verifyMessage of state.verifyMessageList) {
@@ -130,7 +130,7 @@ function friendReply(state, payload) {
     payload.name = payload.from_username;
     let verifyMessage = {
         name: payload.from_username,
-        nickName: '',
+        nickName: payload.from_nickname,
         description: payload.description,
         avatarUrl: payload.avatarUrl,
         extra: payload.extra,
@@ -139,7 +139,7 @@ function friendReply(state, payload) {
         type: 3,
         ctime_ms: payload.ctime_ms
     };
-    if (payload.description === 'yes') {
+    if (payload.return_code === 0) {
         verifyMessage.stateType = 5;
     } else {
         verifyMessage.stateType = 7;
@@ -178,7 +178,7 @@ function isAgreeAddFriend(state, payload, stateType) {
 function friendVerify(state, payload) {
     let verifyMessage = {
         name: payload.from_username,
-        nickName: '',
+        nickName: payload.from_nickname,
         description: payload.description,
         avatarUrl: payload.avatarUrl,
         extra: payload.extra,

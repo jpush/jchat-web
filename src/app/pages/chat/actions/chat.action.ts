@@ -87,6 +87,8 @@ export const chatAction = {
     addReceiptReportAction: '[chat] add receipt report action',
     addReceiptReport: '[chat] add receipt report',
     msgReceiptChangeEvent: '[chat] msg receipt change event',
-    getFriendList: '[contact] get friend list',
-    getFriendListSuccess: '[contact] get friend list success'
+    getFriendList: '[chat] get friend list',
+    getFriendListSuccess: '[chat] get friend list success',
+    updateGroupInfoEvent: '[chat] update group info event',
+    updateGroupInfoEventSuccess: '[chat] update group info event success'
 };

@@ -51,7 +51,8 @@
                 margin-right: 6px;
                 position: relative;
                 display: block;
-                cursor: pointer;            
+                cursor: pointer;
+                overflow: hidden;         
                 &:hover:after{
                     content: '';
                     display: block;
