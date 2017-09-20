@@ -262,23 +262,4 @@ function addInfoToContact(state, payload) {
             }
         }
     }
-    for (let friend of state.friendList) {
-        for (let i = 0; i < friend.data.length; i++) {
-            if (payload.item.name === friend.data[i].name) {
-                friend.data[i] = Object.assign({}, friend.data[i], payload.item);
-                return ;
-            }
-        }
-    }
-}
-// 判断是否已经存在这个单聊
-function isSingleExist(state, payload) {
-    for (let conversation of state.friendList) {
-        for (let item of conversation) {
-            if (Number(item.key) === Number(payload.key)) {
-                return true;
-            }
-        }
-    }
-    return false;
 }

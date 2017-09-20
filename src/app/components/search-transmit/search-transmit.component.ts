@@ -3,7 +3,7 @@ import { Component, OnInit, Input, Output, EventEmitter,
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-
+const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 @Component({
     selector: 'search-transmit-component',
     templateUrl: './search-transmit.component.html',
@@ -82,6 +82,9 @@ export class SearchTransmitComponent implements OnInit, OnChanges {
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;
+    }
+    private groupAvatarErrorIcon(event) {
+        event.target.src = groupAvatarErrorIcon;
     }
     private clearInput() {
         this.searchKeyword = '';

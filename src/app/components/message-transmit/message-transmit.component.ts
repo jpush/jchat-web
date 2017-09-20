@@ -124,16 +124,6 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
             item.key = item.gid;
             item.type = 4;
         }
-        for (let member of this.messageTransmit.list) {
-            if (member.type === 4 && Number(item.key) === Number(member.key)) {
-                member.checked = item.checked;
-                break ;
-            } else if (member.type === 3 && item.name === member.name) {
-                member.checked = item.checked;
-                item.key = member.key;
-                break ;
-            }
-        }
         for (let i = 0; i < this.selectList.length; i++) {
             if (item.type === 4 && Number(item.key) === Number(this.selectList[i].key)) {
                 flag = false;
@@ -150,6 +140,16 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
         if (flag) {
             item.checked = true;
             this.selectList.push(item);
+        }
+        for (let member of this.messageTransmit.list) {
+            if (member.type === 4 && Number(item.key) === Number(member.key)) {
+                member.checked = item.checked;
+                break ;
+            } else if (member.type === 3 && item.name === member.name) {
+                member.checked = item.checked;
+                item.key = member.key;
+                break ;
+            }
         }
     }
     private avatarErrorIcon(event, item) {

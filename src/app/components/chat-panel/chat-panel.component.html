@@ -45,7 +45,7 @@
                             <div class="float-left">
                                 <div *ngIf="active.type === 4" class="group-username">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="chat-panel-msgText-you" [ngClass]="{'jpush-emoji-container': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}">
-                                    <p class="chat-panel-text-msg" [innerHTML]="i.content.msg_body.text | emoji: {nbsp: true, href: true} | sanitize: 'html'" [ngClass]="{'chat-panel-jpush-emoji': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}"></p>
+                                    <p class="chat-panel-text-msg" [innerHTML]="i.content.msg_body.text | emoji: {nbsp: true, href: true, fontSize: 18} | sanitize: 'html'" [ngClass]="{'chat-panel-jpush-emoji': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}"></p>
                                     <div class="chat-panel-more chat-panel-more-you display-flex flex-direction-vertical justify-content-end align-items-end" #youText [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                         <div class="chat-panel-operation" (click)="showYouMoreText($event, i, youText)"></div>
                                         <span></span>
@@ -197,7 +197,7 @@
                             <div class="chat-panel-msgText-me float-right" [ngClass]="{'jpush-emoji-container': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}">
                                 <div *ngIf="i.success === 1" class="chat-panel-send-loading"></div>                                
                                 <div *ngIf="i.success === 3" class="chat-panel-send-error align-items-center display-flex" (click)="repeatSendMsgAction(i)"></div>                                
-                                <p class="chat-panel-text-msg" [innerHTML]="i.content.msg_body.text | emoji: {nbsp: true, href: true} | sanitize: 'html'" [ngClass]="{'chat-panel-jpush-emoji': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}"></p>
+                                <p class="chat-panel-text-msg" [innerHTML]="i.content.msg_body.text | emoji: {nbsp: true, href: true, fontSize: 18} | sanitize: 'html'" [ngClass]="{'chat-panel-jpush-emoji': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}"></p>
                                 <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-text chat-panel-more-me display-flex flex-direction-vertical justify-content-end align-items-end" #meText [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                     <div class="chat-panel-operation" (click)="showMeMoreText($event, i, meText)"></div>
                                     <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
@@ -210,8 +210,10 @@
                             <div class="chat-panel-fromId-me float-right chat-panel-avatar" (click)="watchSelfInfo()">
                                 <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
-                            <div class="float-right clearfix chat-panel-business-card" (click)="watchBusinessCardInfo(i.content.msg_body.extras)">
-                                <div class="float-left chat-panel-card chat-panel-card-me">
+                            <div class="float-right clearfix chat-panel-business-card">
+                                <div *ngIf="i.success === 1" class="chat-panel-send-loading"></div>                                
+                                <div *ngIf="i.success === 3" class="chat-panel-send-error align-items-center display-flex" (click)="repeatSendMsgAction(i)"></div>
+                                <div class="float-left chat-panel-card chat-panel-card-me" (click)="watchBusinessCardInfo(i.content.msg_body.extras)">
                                     <div class="display-flex chat-panel-card-icon chat-panel-card-icon-me">
                                         <div class="chat-panel-card-icon-avatar">
                                             <img (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" [src]="i.content.msg_body.extras.media_url | sanitize: 'url'" alt="">

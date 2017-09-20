@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
-    <title>错误提示icon@1x</title>
+    <title>发送文件 失败@1x</title>
     <desc>Created with Sketch.</desc>
-    <defs>
-        <circle id="path-1" cx="12" cy="12" r="12"></circle>
-    </defs>
+    <defs></defs>
     <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard-2" transform="translate(-850.000000, -41.000000)">
-            <g id="Group-3-Copy-2" transform="translate(850.000000, 41.000000)">
-                <g id="Oval-14-Copy-3">
-                    <use fill="#EB424C" fill-rule="evenodd" xlink:href="#path-1"></use>
-                    <circle stroke="#FFFFFF" stroke-width="1" cx="12" cy="12" r="11.5"></circle>
-                </g>
-                <rect id="Rectangle" fill="#FFFFFF" x="11" y="4" width="2" height="12" rx="1"></rect>
-            </g>
-            <circle id="Oval-12" fill="#FFFFFF" cx="862" cy="60" r="1"></circle>
+        <g id="Artboard-2" transform="translate(-243.000000, -222.000000)">
+            <circle id="Oval-14-Copy-3" fill="#EB424C" cx="255" cy="234" r="11"></circle>
+            <rect id="Rectangle-12" fill="#FFFFFF" x="254" y="226" width="2" height="12" rx="1"></rect>
+            <circle id="Oval-9" fill="#FFFFFF" cx="255" cy="241" r="1"></circle>
         </g>
     </g>
 </svg>

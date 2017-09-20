@@ -10,10 +10,10 @@
         <div class="flex-1" [ngClass]="{'active': msgType === 'document'}" (click)="changeMsgFileAction('document')">
             <span>文档</span>
         </div>
-        <div class="flex-1" [ngClass]="{'active': msgType === 'audio'}" (click)="changeMsgFileAction('audio')">
+        <div class="flex-1" [ngClass]="{'active': msgType === 'video'}" (click)="changeMsgFileAction('video')">
             <span>视频</span>
         </div>
-        <div class="flex-1" [ngClass]="{'active': msgType === 'video'}" (click)="changeMsgFileAction('video')">
+        <div class="flex-1" [ngClass]="{'active': msgType === 'audio'}" (click)="changeMsgFileAction('audio')">
             <span>音乐</span>
         </div>
         <div class="flex-1" [ngClass]="{'active': msgType === 'other'}" (click)="changeMsgFileAction('other')">
@@ -32,7 +32,7 @@
                     <div class="message-file-main flex-1">
                         <p class="message-file-filename" [title]="message.content.msg_body.fname">{{message.content.msg_body.fname | fileName: 16}}</p>
                         <p class="message-file-size">{{message.content.msg_body.fsize | fileSize}}</p>
-                        <div class="message-file-name display-flex"><p class="flex-1"><span class="message-file-username" [title]="message.content.from_id">{{message.content.memo_name || message.content.from_name || message.content.from_id}}</span>&nbsp;{{message.ctime_ms | datePipe}}</p><a href="javascript: ;" (click)="fileDownload(message.content.msg_body.media_url, $event)">下载</a></div>
+                        <div class="message-file-name display-flex"><p class="flex-1"><span class="message-file-username" [title]="message.content.memo_name || message.content.from_name || message.content.from_id">{{message.content.memo_name || message.content.from_name || message.content.from_id}}</span>&nbsp;{{message.ctime_ms | datePipe}}</p><a href="javascript: ;" (click)="fileDownload(message.content.msg_body.media_url, $event)">下载</a></div>
                     </div>
                 </div>
             </div>

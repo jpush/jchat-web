@@ -365,19 +365,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     this.pointerToMap(chatState);
                     this.scrollBottom(0);
                     this.imageViewer.result = chatState.imageViewer;
-                } else if (this.active.type === 4 && chatState.newMessage.key === this.active.key) {
+                } else if (this.active.type === 4 &&
+                    Number(chatState.newMessage.key) === Number(this.active.key)) {
                     this.updateMsg(chatState);
                     this.pointerToMap(chatState);
                     this.scrollBottom(0);
                     this.imageViewer.result = chatState.imageViewer;
-                }
-                break;
-            case chatAction.transmitMessageComplete:
-                if (this.active.type === 3 &&
-                    chatState.newMessage.content.target_id === this.active.name) {
-                    this.updateMsg(chatState);
-                } else if (this.active.type === 4 && chatState.newMessage.key === this.active.key) {
-                    this.updateMsg(chatState);
                 }
                 break;
             case chatAction.getAllMessageSuccess:
@@ -554,11 +547,25 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 粘贴文本，将文本多余的样式代码去掉/粘贴图片
     private pasteMessage(event) {
         let clipboardData = event.clipboardData || (<any> window).clipboardData;
-        for (let i = 0, len = clipboardData.items.length; i < len; i++) {
-            let item = clipboardData.items[i];
-            if (item.kind === 'file') {
+        let items = clipboardData.items;
+        let files = clipboardData.files;
+        let item;
+        // 粘贴图片不兼容safari
+        let userAgent = navigator.userAgent;
+        let isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
+        if (!isSafari) {
+            if (files && files.length) {
+                this.getImgObj(files[0]);
+            } else if (items) {
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].kind === 'file' && items[i].type.match(/^image\//i)) {
+                        item = items[i];
+                        break;
+                    }
+                }
+            }
+            if (item) {
                 this.getImgObj(item.getAsFile());
-                return false;
             }
         }
         let pastedData = clipboardData.getData('Text');
@@ -566,7 +573,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         pastedData = pastedData.replace(/>/g, '&gt;');
         pastedData = pastedData.replace(/\n/g, '<br>');
         pastedData = pastedData.replace(/ /g, '&nbsp;');
-        pastedData = Emoji.emoji(pastedData);
+        pastedData = Emoji.emoji(pastedData, 18);
         this.util.insertAtCursor(this.contentDiv, pastedData, false);
         return false;
     }
@@ -916,7 +923,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                         this.atList.show = false;
                     }
                 } else {
-                    console.log(1111);
                     this.atDeleteNum = 1;
                     this.showAtList(range, memberList, true);
                 }

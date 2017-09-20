@@ -181,6 +181,7 @@
                         margin-bottom: -4px;
                         display: block;
                         height: 17px;
+                        white-space: nowrap;
                         &.unread-group{
                             cursor: pointer;
                             color: #2DD0CF;
@@ -223,6 +224,7 @@
             }
             .chat-panel-business-card{
                 cursor: pointer;
+                position: relative;
             }
             .chat-panel-video{
                 height: 140px;
@@ -244,6 +246,7 @@
                     background: url(../../../assets/images/video-normal.svg) center center no-repeat;
                     background-size: 42px;
                     z-index: 2;
+                    overflow: hidden;
                     &:hover{
                         background-image: url(../../../assets/images/video-active.svg);
                     }
@@ -304,6 +307,7 @@
                     width: 230px;
                     height: 150px;
                     border-radius: 5px;
+                    overflow: hidden;
                     .chat-panel-allmap{
                         width: 100%;
                         height: 100%;
@@ -605,15 +609,15 @@
                 }
             }
             .chat-panel-send-error{
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
                 cursor: pointer;
                 background: url(../../../assets/images/send-message-error.svg) center center no-repeat;
                 background-size: 24px;
                 position: absolute;
                 left: -34px;
                 top: 50%;
-                margin-top: -12px;
+                margin-top: -11px;
             }
             .chat-panel-send-loading{
                 width: 18px;

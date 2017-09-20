@@ -117,7 +117,9 @@ export class GroupSettingComponent implements OnInit {
         }, 0);
     }
     private modifyGroupNameBlur(event) {
-        this.modifyGroupName.emit(event.target.value);
+        if (this.groupSetting.groupInfo.name !== event.target.value) {
+            this.modifyGroupName.emit(event.target.value);
+        }
         this.modifyGroupNameShow = false;
     }
     private changeGroupShieldEmit() {

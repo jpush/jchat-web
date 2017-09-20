@@ -25,7 +25,7 @@ export class ChatEffect {
         .switchMap((info) => {
             let count = 0;
             const content = info.data.messages[0].content;
-            if (info.data.messages[0].isMediaId) {
+            if (info.data.messages[0].content.msg_body.media_id) {
                 count ++;
                 this.requestMediaUrl(info.data, count);
             }
@@ -102,7 +102,7 @@ export class ChatEffect {
                     });
                 });
             }
-            if (messages.isMediaId) {
+            if (messages.content.msg_body.media_id) {
                 count ++;
                 this.requestMediaUrl(obj.data, count);
             }

@@ -23,7 +23,7 @@ export class EmojiPipe implements PipeTransform {
       newText = newText.replace(/<a.+href='(.+)'.+class='text-href'.+target='_blank'>(.+)<\/a>/g,
               "<a href='$1' class='text-href' target='_blank'>$1</a>");
     }
-    newText = Emoji.emoji(newText);
+    newText = Emoji.emoji(newText, option.fontSize);
     return newText;
   }
 }

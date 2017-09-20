@@ -439,14 +439,24 @@ export class Util {
                     left: rect.left,
                     top: rect.top
                 };
-                input.removeChild(shadowCaret);
+                let reg = /<font color="#2c2c2c" face="sans-serif">.+<\/font>/gi;
+                if (input.innerHTML.match(reg)) {
+                    input.innerHTML = '@';
+                    this.focusLast(input);
+                } else {
+                    input.removeChild(shadowCaret);
+                }
                 clonedRange.detach();
-            }
-            if (offset) {
-                offset.top += window.scrollY;
-                offset.left += window.scrollX;
             }
         }
         return offset;
+    }
+    /**
+     * 深度拷贝对象
+     * @param obj: object 需要拷贝的对象
+     * @return result 新的对象
+     */
+    public deepCopyObj(obj) {
+        return JSON.parse(JSON.stringify(obj));
     }
 }

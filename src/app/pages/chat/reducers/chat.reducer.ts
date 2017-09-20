@@ -127,9 +127,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 转发群聊位置
         case chatAction.transmitGroupLocation:
             if (!payload.msgs.repeatSend) {
-                state.newMessage = payload.msgs;
                 state.transmitSuccess = 0;
                 transmitMessage(state, payload);
+                state.newMessage = payload.msgs;
             }
             break;
             // 转发消息发送成功（包括所有类型的转发消息）
@@ -860,7 +860,8 @@ function filterSingleNoDisturb(state, payload) {
 // 判断是否是好友
 function filterFriend(state, payload) {
     const result = state.friendList.filter((friend) => {
-        return friend.name === payload.name || friend.name === payload.username;
+        return friend.name === payload.name || friend.name === payload.username
+                || friend.name === payload.from_username;
     });
     if (result.length > 0) {
         payload.memo_name = result[0].memo_name;
@@ -976,7 +977,7 @@ function msgRetract(state, payload) {
                 name = '您';
             } else if (msgType === 4) {
                 payload.name = payload.from_username;
-                if (filterFriend(state, payload)) {
+                if (filterFriend(state, payload) && payload.memo_name && payload.memo_name !== '') {
                     name = payload.memo_name;
                 } else if (payload.from_nickname && payload.from_nickname !== '') {
                     name = payload.from_nickname;
@@ -1225,7 +1226,7 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
             addGroupOther = '您' + '、';
         } else {
             let name = '';
-            if (filterFriend(state, user)) {
+            if (filterFriend(state, user) && user.memo_name && user.memo_name !== '') {
                 name = user.memo_name;
             } else if (user.nickname && user.nickname !== '') {
                 name = user.nickname;
@@ -1807,9 +1808,16 @@ function deleteConversationItem(state: ChatStore, payload) {
         state.activePerson.activeIndex = -1;
         state.activePerson.key = '0';
     }
+    for (let i = 0; i < state.friendList.length; i++) {
+        if (payload.item.type === 3 && payload.item.name === state.friendList[i].name) {
+            state.friendList[i] = Object.assign({}, state.friendList[i], payload.item);
+            break;
+        }
+    }
 }
 // 转发消息
 function transmitMessage (state, payload) {
+    payload.msgs.key = payload.select.key;
     let flag = true;
     for (let a = 0; a < state.conversation.length; a++) {
         let groupExist = Number(state.conversation[a].key) === Number(payload.select.key) &&
@@ -1844,6 +1852,7 @@ function transmitMessage (state, payload) {
         for (let messageList of state.messageList) {
             if (messageList.key && Number(messageList.key) === Number(payload.select.key)) {
                 let msgs = messageList.msgs;
+                console.log(22222222, msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms);
                 if (msgs.length === 0 ||
                     util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
                     payload.msgs.time_show = 'today';
@@ -1870,64 +1879,11 @@ function transmitMessage (state, payload) {
         }
     }
 }
-// 添加自己发的消息到消息面板
-function addMyselfMesssge(state: ChatStore, payload) {
-    // 更新imageViewer的数组
-    if (payload.msgs && payload.msgs.content.from_id === global.user
-        && payload.msgs.content.msg_type === 'image') {
-        state.imageViewer.push({
-            src: payload.msgs.content.msg_body.media_url,
-            width: payload.msgs.content.msg_body.width,
-            height: payload.msgs.content.msg_body.height,
-            // index: state.messageList[state.activePerson.activeIndex].msgs.length
-            msgKey: payload.msgs.msgKey
-        });
-    }
-    for (let messageList of state.messageList) {
-        if (messageList.key && Number(messageList.key) === Number(payload.key)) {
-            let msgs = messageList.msgs;
-            if (msgs.length === 0 ||
-                util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
-                payload.msgs.time_show = 'today';
-            }
-            msgs.push(payload.msgs);
-            state.newMessage = payload.msgs;
-            break ;
-        }
-    }
-    // 将当前会话放在第一位
-    for (let a = 0; a < state.conversation.length; a++) {
-        if (Number(state.conversation[a].key) === Number(payload.key)) {
-            payload.msgs.conversation_time_show = 'today';
-            if (payload.msgs.msg_type === 3) {
-                payload.msgs.unread_count = true;
-            }
-            state.conversation[a].recentMsg = payload.msgs;
-            if (!state.conversation[a].extras || !state.conversation[a].extras.top_time_ms) {
-                let item = state.conversation.splice(a, 1);
-                // state.conversation.unshift(item[0]);
-                filterTopConversation(state, item[0]);
-            }
-            break;
-        }
-    }
-}
 // 添加消息到消息面板
 function addMessage(state: ChatStore, payload) {
-    // 自己发消息将消息添加到消息列表
-    if (payload.key) {
-        addMyselfMesssge(state, payload);
-        // 清空会话草稿标志
-        for (let conversation of state.conversation) {
-            if ((Number(payload.key) === Number(conversation.key))) {
-                if (payload.msgs.content.msg_type === 'text') {
-                    conversation.draft = '';
-                }
-                break;
-            }
-        }
+    console.log(66666, payload);
     // 接收到别人的消息添加到消息列表
-    } else {
+    if (payload.messages && payload.messages[0]) {
         let message = payload.messages[0];
         filterNewMessage(state, payload, message);
         let flag = false;
@@ -1985,7 +1941,12 @@ function addMessage(state: ChatStore, payload) {
                 Number(messageList.key) === Number(message.key);
             // 给单聊会话人的消息添加头像
             if (singleMsg) {
-                payload.messages[0].content.avatarUrl = state.activePerson.avatarUrl;
+                for (let conversation of state.conversation) {
+                    if (conversation.name === payload.messages[0].content.from_id) {
+                        payload.messages[0].content.avatarUrl = conversation.avatarUrl;
+                        break;
+                    }
+                }
             }
             if (groupMsg || singleMsg) {
                 let msgs = messageList.msgs;
@@ -2001,6 +1962,67 @@ function addMessage(state: ChatStore, payload) {
         // 如果发送人不在会话列表里
         if (!flag) {
             addMessageUserNoConversation(state, payload, message);
+        }
+    } else {
+        // 自己发消息将消息添加到消息列表
+        addMyselfMesssge(state, payload);
+        // 清空会话草稿标志
+        for (let conversation of state.conversation) {
+            if ((Number(payload.key) === Number(conversation.key))) {
+                if (payload.msgs.content.msg_type === 'text') {
+                    conversation.draft = '';
+                }
+                break;
+            }
+        }
+    }
+}
+// 添加自己发的消息到消息面板
+function addMyselfMesssge(state: ChatStore, payload) {
+    if (!payload.key) {
+        payload.active.extras = {};
+
+    } else {
+        // 更新imageViewer的数组
+        if (payload.msgs && payload.msgs.content.from_id === global.user
+            && payload.msgs.content.msg_type === 'image') {
+            if (Number(payload.key) === Number(state.activePerson.key)) {
+                state.imageViewer.push({
+                    src: payload.msgs.content.msg_body.media_url,
+                    width: payload.msgs.content.msg_body.width,
+                    height: payload.msgs.content.msg_body.height,
+                    // index: state.messageList[state.activePerson.activeIndex].msgs.length
+                    msgKey: payload.msgs.msgKey
+                });
+            }
+        }
+        for (let messageList of state.messageList) {
+            if (messageList.key && Number(messageList.key) === Number(payload.key)) {
+                let msgs = messageList.msgs;
+                if (msgs.length === 0 ||
+                    util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
+                    payload.msgs.time_show = 'today';
+                }
+                msgs.push(payload.msgs);
+                state.newMessage = payload.msgs;
+                break ;
+            }
+        }
+        // 将当前会话放在第一位
+        for (let a = 0; a < state.conversation.length; a++) {
+            if (Number(state.conversation[a].key) === Number(payload.key)) {
+                payload.msgs.conversation_time_show = 'today';
+                if (payload.msgs.msg_type === 3) {
+                    payload.msgs.unread_count = true;
+                }
+                state.conversation[a].recentMsg = payload.msgs;
+                if (!state.conversation[a].extras || !state.conversation[a].extras.top_time_ms) {
+                    let item = state.conversation.splice(a, 1);
+                    // state.conversation.unshift(item[0]);
+                    filterTopConversation(state, item[0]);
+                }
+                break;
+            }
         }
     }
 }
@@ -2226,9 +2248,9 @@ function selectUserResult(state, payload, type?: string) {
             msgs: []
         });
     }
-    if (type === 'search' && payload.key > 0) {
+    if (type === 'search' && index) {
         state.activePerson = Object.assign({}, state.conversation[index], {});
-    } else if (type === 'search' && payload.key < 0) {
+    } else if (type === 'search') {
         state.activePerson = Object.assign({}, payload, {});
     }
 }

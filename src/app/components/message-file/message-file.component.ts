@@ -31,7 +31,9 @@ export class MessageFileComponent implements OnInit {
         this.msgType = 'image';
     }
     private closeMsgFile() {
-        this.msgType = 'image';
+        setTimeout(() => {
+            this.msgType = 'image';
+        }, 500);
         this.msgFile.show = false;
     }
     private changeMsgFileAction(type) {
