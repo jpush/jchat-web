@@ -28,7 +28,7 @@
                     <p [ngClass]="{absolute: item.position === 'absolute'}">{{item.time}}</p>
                 </div>
                 <div class="message-file-item display-flex" *ngFor="let message of item.msgs">
-                    <div class="message-file-icon" [ngClass]="{'image': (message.content.msg_body?.extras?.fileType | fileType) === 'image', 'video': (message.content.msg_body?.extras?.fileType | fileType) === 'video', 'audio': (message.content.msg_body?.extras?.fileType | fileType) === 'audio', 'document': (message.content.msg_body?.extras?.fileType | fileType) === 'document'}"></div>
+                    <div class="message-file-icon" [ngClass]="{'image': (message.content.msg_body?.extras?.fileType | fileType) === 'image', 'video': (message.content.msg_body?.extras?.fileType | fileType) === 'video' || message.content.msg_body?.extras?.video, 'audio': (message.content.msg_body?.extras?.fileType | fileType) === 'audio', 'document': (message.content.msg_body?.extras?.fileType | fileType) === 'document'}"></div>
                     <div class="message-file-main flex-1">
                         <p class="message-file-filename" [title]="message.content.msg_body.fname">{{message.content.msg_body.fname | fileName: 16}}</p>
                         <p class="message-file-size">{{message.content.msg_body.fsize | fileSize}}</p>

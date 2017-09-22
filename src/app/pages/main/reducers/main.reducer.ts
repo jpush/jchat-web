@@ -105,7 +105,10 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             break;
             // 成功获取黑名单列表
         case mainAction.blackMenuSuccess:
-            state.blackMenu = payload;
+            if (payload.show !== null) {
+                state.blackMenu.show = payload.show;
+            }
+            state.blackMenu.menu = payload.menu;
             break;
             // 隐藏黑名单列表
         case mainAction.hideBlackMenu:

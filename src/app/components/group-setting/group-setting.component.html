@@ -1,4 +1,4 @@
-<div class="group-setting-container" id="groupSettingContainer" [ngClass]="{'in': groupSetting.show, 'void': !groupSetting.show}" (click)="stopPropagation($event)">
+<div class="group-setting-container" id="groupSettingContainer" [ngClass]="{'in': groupSetting.show, 'void': !groupSetting.show, 'loading': groupSetting.loading}" (click)="stopPropagation($event)">
     <div class="group-setting-wrap">
         <span class="group-setting-close" (click)="closeGroupSettingAction()"></span>
         <div class="group-setting-header" id="groupSettingHeader">

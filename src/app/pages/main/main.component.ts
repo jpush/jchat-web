@@ -201,6 +201,9 @@ export class MainComponent implements OnInit, OnDestroy {
 
             case mainAction.updateSelfInfo:
                 this.selfInfo = mainState.selfInfo;
+                this.store$.dispatch({
+                    type: mainAction.updateSelfInfoFlag
+                });
                 break;
             case mainAction.updateSelfInfoFlag:
                 this.updateSelfInfoFlag = !this.updateSelfInfoFlag;
@@ -655,6 +658,12 @@ export class MainComponent implements OnInit, OnDestroy {
                     cancel: true
                 }
             }
+        });
+    }
+    private sendCardEmit(info) {
+        this.store$.dispatch({
+            type: mainAction.dispatchSendSelfCard,
+            payload: info
         });
     }
 }

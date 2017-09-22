@@ -201,7 +201,7 @@
                                 <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-text chat-panel-more-me display-flex flex-direction-vertical justify-content-end align-items-end" #meText [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                     <div class="chat-panel-operation" (click)="showMeMoreText($event, i, meText)"></div>
                                     <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
-                                    <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>                                    
+                                    <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '全部已读'}}</span>                                    
                                 </div>
                             </div>
                         </div>

@@ -17,6 +17,25 @@ import { Util } from '../../../services/util';
 
 export class ChatEffect {
     private util: Util = new Util();
+    // 同步自己发送的消息
+    @Effect()
+    private syncReceiveMessage$: Observable<Action> = this.actions$
+        .ofType(chatAction.syncReceiveMessage)
+        .map(toPayload)
+        .switchMap((info) => {
+            if (info.messages[0].content.msg_body.media_id) {
+                this.requestMediaUrl(info, 0);
+            } else {
+                this.store$.dispatch({
+                    type: chatAction.receiveMessageSuccess,
+                    payload: info
+                });
+            }
+            return Observable.of('syncReceiveMessage')
+                    .map(() => {
+                        return {type: '[chat] receive single message useless'};
+                    });
+        });
     // 接收到单聊新消息
     @Effect()
     private receivesingleMessage$: Observable<Action> = this.actions$
@@ -35,6 +54,9 @@ export class ChatEffect {
             if (result.length === 0) {
                 count ++;
                 this.requestMsgAvatarUrl(info.data.messages[0], info, count);
+                // 给已有的单聊用户添加头像
+            } else {
+                content.avatarUrl = result[0].avatarUrl;
             }
             // 如果接收的是名片
             if (content.msg_type === 'text' && content.msg_body.extras &&
@@ -106,7 +128,7 @@ export class ChatEffect {
                 count ++;
                 this.requestMediaUrl(obj.data, count);
             }
-            // 如果发送的是名片
+            // 如果接收的是名片
             if (content.msg_type === 'text' && content.msg_body.extras &&
                 content.msg_body.extras.businessCard) {
                 count ++;
@@ -114,7 +136,8 @@ export class ChatEffect {
             }
             // 判断是否消息列表中已经加载过头像
             for (let list of messageList) {
-                if (Number(list.key) === Number(messages.key) && list.msgs.length > 0) {
+                if (list.type === 4 && Number(list.key) === Number(messages.key)
+                    && list.msgs.length > 0) {
                     for (let i = list.msgs.length - 1; i >= 0; i--) {
                         let hasLoadAvatar = list.msgs[i].content.hasOwnProperty('avatarUrl');
                         if (list.msgs[i].content.from_id === messages.content.from_id
@@ -367,6 +390,20 @@ export class ChatEffect {
                         }
                     }
                 }
+                if (dataItem.msgs.length > 0) {
+                    if (dataItem.msgs[0].msg_type === 3) {
+                        dataItem.type = 3;
+                        if (dataItem.msgs[0].content.from_id === global.user) {
+                            dataItem.name = dataItem.msgs[0].content.target_id;
+                            dataItem.appkey = dataItem.msgs[0].content.target_appkey;
+                        } else if (dataItem.msgs[0].content.target_id === global.user) {
+                            dataItem.name = dataItem.msgs[0].content.from_id;
+                            dataItem.appkey = dataItem.msgs[0].content.from_appkey;
+                        }
+                    } else if (dataItem.msgs[0].msg_type === 4) {
+                        dataItem.type = 4;
+                    }
+                }
             }
             console.log('离线消息2', data, JSON.stringify(data));
             const conversationObj = global.JIM.getConversation()
@@ -487,6 +524,7 @@ export class ChatEffect {
             return data;
         })
         .switchMap((text) => {
+            console.log(44444, text);
             const msgObj = global.JIM.sendSingleMsg(text.singleMsg)
             .onSuccess((data, msgs) => {
                 console.log(555, data, msgs, text);
@@ -499,7 +537,9 @@ export class ChatEffect {
                         msgKey: text.msgs.msgKey,
                         key: text.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        name: text.active.name,
+                        type: 3
                     }
                 });
             }).onFail((error) => {
@@ -508,7 +548,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.key,
-                        success: 3
+                        success: 3,
+                        name: text.active.name,
+                        type: 3
                     }
                 });
                 this.store$.dispatch({
@@ -521,7 +563,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.key,
-                        success: 3
+                        success: 3,
+                        name: text.active.name,
+                        type: 3
                     }
                 });
                 const error = {code: 910000};
@@ -562,7 +606,8 @@ export class ChatEffect {
                         key: text.select.key,
                         success: 2,
                         msgs,
-                        name: text.select.name
+                        name: text.select.name,
+                        type: 3
                     }
                 });
             }).onFail((error) => {
@@ -571,7 +616,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.select.key,
-                        success: 3
+                        success: 3,
+                        name: text.select.name,
+                        type: 3
                     }
                 });
                 error.text = text.select.memo_name || text.select.nickName || text.select.name;
@@ -585,7 +632,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.select.key,
-                        success: 3
+                        success: 3,
+                        name: text.select.name,
+                        type: 3
                     }
                 });
                 const error = {
@@ -626,7 +675,8 @@ export class ChatEffect {
                         msgKey: text.msgs.msgKey,
                         key: text.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        type: 4
                     }
                 });
             }).onFail((error) => {
@@ -635,7 +685,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 this.store$.dispatch({
@@ -648,7 +699,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 const error = {code: 910000};
@@ -689,7 +741,7 @@ export class ChatEffect {
                         key: text.select.key,
                         success: 2,
                         msgs,
-                        name: text.select.name
+                        type: 4
                     }
                 });
             }).onFail((error) => {
@@ -698,7 +750,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.select.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 error.text = text.select.memo_name || text.select.nickName || text.select.name;
@@ -712,7 +765,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: text.msgs.msgKey,
                         key: text.select.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 const error = {
@@ -746,7 +800,9 @@ export class ChatEffect {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        name: img.active.name,
+                        type: 3
                     }
                 });
             }).onFail((error) => {
@@ -755,7 +811,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
-                        success: 3
+                        success: 3,
+                        name: img.active.name,
+                        type: 3
                     }
                 });
                 this.store$.dispatch({
@@ -768,7 +826,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
-                        success: 3
+                        success: 3,
+                        name: img.active.name,
+                        type: 3
                     }
                 });
                 const error = {code: 910000};
@@ -814,7 +874,8 @@ export class ChatEffect {
                         key: img.key,
                         success: 2,
                         msgs,
-                        name: img.select.name
+                        name: img.select.name,
+                        type: 3
                     }
                 });
             }).onFail((error) => {
@@ -823,7 +884,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
-                        success: 3
+                        success: 3,
+                        name: img.select.name,
+                        type: 3
                     }
                 });
                 error.text = img.select.memo_name || img.select.nickName || img.select.name;
@@ -837,7 +900,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
-                        success: 3
+                        success: 3,
+                        name: img.select.name,
+                        type: 3
                     }
                 });
                 const error = {
@@ -871,7 +936,8 @@ export class ChatEffect {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        type: 4
                     }
                 });
             }).onFail((error, msgs) => {
@@ -880,7 +946,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 this.store$.dispatch({
@@ -893,7 +960,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 const error = {code: 910000};
@@ -938,7 +1006,7 @@ export class ChatEffect {
                         key: img.key,
                         success: 2,
                         msgs,
-                        name: img.select.name
+                        type: 4
                     }
                 });
             }).onFail((error, msgs) => {
@@ -947,7 +1015,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 error.text = img.select.memo_name || img.select.nickName || img.select.name;
@@ -961,7 +1030,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: img.msgs.msgKey,
                         key: img.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 const error = {
@@ -995,7 +1065,9 @@ export class ChatEffect {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        type: 3,
+                        name: file.active.name
                     }
                 });
             }).onFail((error) => {
@@ -1004,7 +1076,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
-                        success: 3
+                        success: 3,
+                        type: 3,
+                        name: file.active.name
                     }
                 });
                 this.store$.dispatch({
@@ -1017,7 +1091,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
-                        success: 3
+                        success: 3,
+                        type: 3,
+                        name: file.active.name
                     }
                 });
                 const error = {code: 910000};
@@ -1063,7 +1139,8 @@ export class ChatEffect {
                         key: file.key,
                         success: 2,
                         msgs,
-                        name: file.select.name
+                        name: file.select.name,
+                        type: 3
                     }
                 });
             }).onFail((error) => {
@@ -1072,7 +1149,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
-                        success: 3
+                        success: 3,
+                        name: file.select.name,
+                        type: 3
                     }
                 });
                 error.text = file.select.memo_name || file.select.nickName || file.select.name;
@@ -1086,7 +1165,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
-                        success: 3
+                        success: 3,
+                        name: file.select.name,
+                        type: 3
                     }
                 });
                 const error = {
@@ -1121,7 +1202,8 @@ export class ChatEffect {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
                         success: 2,
-                        msgs
+                        msgs,
+                        type: 4
                     }
                 });
             }).onFail((error) => {
@@ -1130,7 +1212,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 this.store$.dispatch({
@@ -1143,7 +1226,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 const error = {code: 910000};
@@ -1188,7 +1272,7 @@ export class ChatEffect {
                         key: file.key,
                         success: 2,
                         msgs,
-                        name: file.select.name
+                        type: 4
                     }
                 });
             }).onFail((error) => {
@@ -1197,7 +1281,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 error.text = file.select.memo_name || file.select.nickName || file.select.name;
@@ -1211,7 +1296,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: file.msgs.msgKey,
                         key: file.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 const error = {
@@ -1260,7 +1346,8 @@ export class ChatEffect {
                         key: location.key,
                         success: 2,
                         msgs,
-                        name: location.select.name
+                        name: location.select.name,
+                        type: 3
                     }
                 });
             }).onFail((error) => {
@@ -1269,7 +1356,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: location.msgs.msgKey,
                         key: location.key,
-                        success: 3
+                        success: 3,
+                        name: location.select.name,
+                        type: 3
                     }
                 });
                 this.store$.dispatch({
@@ -1282,7 +1371,9 @@ export class ChatEffect {
                     payload: {
                         msgKey: location.msgs.msgKey,
                         key: location.key,
-                        success: 3
+                        success: 3,
+                        name: location.select.name,
+                        type: 3
                     }
                 });
                 const error = {code: 910000};
@@ -1328,7 +1419,7 @@ export class ChatEffect {
                         key: location.key,
                         success: 2,
                         msgs,
-                        name: location.select.name
+                        type: 4
                     }
                 });
             }).onFail((error) => {
@@ -1337,7 +1428,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: location.msgs.msgKey,
                         key: location.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 this.store$.dispatch({
@@ -1350,7 +1442,8 @@ export class ChatEffect {
                     payload: {
                         msgKey: location.msgs.msgKey,
                         key: location.key,
-                        success: 3
+                        success: 3,
+                        type: 4
                     }
                 });
                 const error = {code: 910000};
@@ -1497,10 +1590,22 @@ export class ChatEffect {
                 }
             }).onFail((error) => {
                 this.store$.dispatch({
+                    type: chatAction.groupInfo,
+                    payload: {
+                        groupInfo: {}
+                    }
+                });
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
+                this.store$.dispatch({
+                    type: chatAction.groupInfo,
+                    payload: {
+                        groupInfo: {}
+                    }
+                });
                 const error = {code: 910000};
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
@@ -1560,7 +1665,8 @@ export class ChatEffect {
                 this.store$.dispatch({
                     type: chatAction.groupInfo,
                     payload: {
-                        memberList: data.member_list
+                        memberList: data.member_list,
+                        key: info.key
                     }
                 });
                 for (let member of data.member_list) {
@@ -1571,7 +1677,8 @@ export class ChatEffect {
                             this.store$.dispatch({
                                 type: chatAction.groupInfo,
                                 payload: {
-                                    memberList: data.member_list
+                                    memberList: data.member_list,
+                                    key: info.key
                                 }
                             });
                         }).onFail((error) => {
@@ -1772,16 +1879,16 @@ export class ChatEffect {
         .ofType(chatAction.addGroupMembersEvent)
         .map(toPayload)
         .switchMap((eventData) => {
-            if (global.user === eventData.from_username) {
-                this.store$.dispatch({
-                    type: chatAction.addGroupMembersEventSuccess,
-                    payload: eventData
-                });
-                return Observable.of('addGroupMembersEventObj')
-                    .map(() => {
-                        return {type: '[chat] add group members event useless'};
-                    });
-            }
+            // if (global.user === eventData.from_username) {
+            //     this.store$.dispatch({
+            //         type: chatAction.addGroupMembersEventSuccess,
+            //         payload: eventData
+            //     });
+            //     return Observable.of('addGroupMembersEventObj')
+            //         .map(() => {
+            //             return {type: '[chat] add group members event useless'};
+            //         });
+            // }
             let groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
             .onSuccess((obj) => {
                 if (obj.group_info.name && obj.group_info.name !== '') {
@@ -2106,8 +2213,8 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((user) => {
             const saveMemoName = global.JIM.updateFriendMemo({
-                    target_name: user.targetName,
-                    memo_name: user.memoName,
+                    target_name: user.name,
+                    memo_name: user.memo_name,
                     memo_others: 'a'
                 }).onSuccess((data) => {
                     this.store$.dispatch({
@@ -2172,7 +2279,15 @@ export class ChatEffect {
             for (let i = msgs.length - 1; i >= 0; i--) {
                 let type = '';
                 if (msgs[i].content.msg_type === 'file') {
-                    type = this.util.sortByExt(msgs[i].content.msg_body.extras.fileType);
+                    if (msgs[i].content.msg_body.extras) {
+                        if (msgs[i].content.msg_body.extras.video) {
+                            type = 'video';
+                        } else if (msgs[i].content.msg_body.extras.fileType) {
+                            type = this.util.sortByExt(msgs[i].content.msg_body.extras.fileType);
+                        } else {
+                            type = 'other';
+                        }
+                    }
                 }
                 if ((type === info.type ||
                     (msgs[i].content.msg_type === info.type && info.type === 'image')) &&
@@ -2474,7 +2589,8 @@ export class ChatEffect {
     }
     private dispatchConversation (count, info, data) {
         if (count <= 0) {
-            let msgId = JSON.parse(this.storageService.get('msgId' + global.user));
+            let key = `msgId-${authPayload.appKey}-${global.user}`;
+            let msgId = JSON.parse(this.storageService.get(key));
             this.store$.dispatch({
                 type: chatAction.getConversationSuccess,
                 payload: {

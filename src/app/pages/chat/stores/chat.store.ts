@@ -81,5 +81,6 @@ export interface ChatStore {
         },
         loading: boolean
     };
-    readObj: Object
+    readObj: Object;
+    groupShield: Array<any>
 }

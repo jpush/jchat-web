@@ -42,7 +42,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         activeIndex: -1,
         type: 0,
         change: false,
-        shield: false
+        shield: false,
+        appkey: ''
     };
     private defaultPanelIsShow = true;
     private otherInfo = {
@@ -73,9 +74,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         show: false,
         description: {}
     };
-    private selfInfo = {
-        avatar: ''
-    };
+    private selfInfo: any = {};
     private isCacheArr = [];
     private storageKey;
     private playVideoShow = {
@@ -83,7 +82,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         url: ''
     };
     private eventArr = [];
-    private hasOffline = false;
+    private hasOffline = 0;
     // 其他操作触发滚动条到底部
     private otherOptionScrollBottom = false;
     // 切换用户触发滚动条到底部
@@ -114,7 +113,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         type: 0,
         key: 0,
         isTransmitMsg: true,
-        msg_id: 0
+        msg_id: 0,
+        unread_count: true,
+        msg_type: 0
     };
     private verifyModal = {
         info: {},
@@ -141,7 +142,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         },
         loading: false
     };
-    private asyncConversationCount = 0;
+    private isMySelf = false;
+    // private asyncConversationCount = 0;
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -153,10 +155,11 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
     }
     public ngOnInit() {
+        this.hasOffline = 0;
         this.subscribeStore();
         this.store$.dispatch({
             type: chatAction.getVoiceState,
-            payload: 'voiceState' + global.user
+            payload: `voiceState-${authPayload.appKey}-${global.user}`
         });
         this.store$.dispatch({
             type: chatAction.getFriendList,
@@ -164,6 +167,16 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         global.JIM.onMsgReceive((data) => {
             console.log(data);
+            if (data.messages[0].content.from_id === global.user) {
+                this.isMySelf = true;
+                this.store$.dispatch({
+                    type: chatAction.syncReceiveMessage,
+                    payload: data
+                });
+                return ;
+            } else {
+                this.isMySelf = false;
+            }
             // 群聊消息
             if (data.messages[0].msg_type === 4) {
                 this.store$.dispatch({
@@ -232,10 +245,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         // 离线消息同步监听
         global.JIM.onSyncConversation((data) => {
             console.log('离线消息1', data, JSON.stringify(data));
-            this.asyncConversationCount ++;
             // 限制只触发一次
-            if (this.asyncConversationCount <= 1) {
-                this.hasOffline = true;
+            if (this.hasOffline === 0) {
+                this.hasOffline ++;
                 this.store$.dispatch({
                     type: chatAction.getAllMessage,
                     payload: data
@@ -245,7 +257,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         // 如果3秒内没有加载离线消息则手动触发
         setTimeout(() => {
             console.log('setTimeout', this.hasOffline);
-            if (!this.hasOffline) {
+            if (this.hasOffline === 0) {
                 this.store$.dispatch({
                     type: chatAction.getAllMessage,
                     payload: []
@@ -312,7 +324,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.conversationList = chatState.conversation;
                 this.messageList = chatState.messageList;
                 // 如果是第一次登陆且有离线消息则存储当前msgId
-                this.storageKey = 'msgId' + global.user;
+                this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
                 if (chatState.msgId.length > 0 && !this.storageService.get(this.storageKey)) {
                     this.storageMsgId(chatState.msgId);
                 }
@@ -329,7 +341,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 }
                 this.messageList = chatState.messageList;
-                if (!chatState.newMessageIsDisturb) {
+                if (!chatState.newMessageIsDisturb && !this.isMySelf) {
                     this.notification(chatState.newMessage);
                     this.store$.dispatch({
                         type: chatAction.dispatchMessageUnread,
@@ -348,8 +360,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.sendSingleFile:
 
             case chatAction.sendGroupFile:
-
-            case chatAction.updateGroupMembersEvent:
                 // 触发滚动条向下滚动
                 this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 break;
@@ -406,7 +416,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.deleteConversationItem:
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                this.groupSetting.show = false;
+                // this.groupSetting.show = false;
+                this.closeGroupSettingEmit();
                 this.store$.dispatch({
                     type: chatAction.dispatchFriendList,
                     payload: chatState.friendList
@@ -443,12 +454,14 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.storageMsgId(chatState.msgId);
                 }
                 this.unreadList.show = false;
-                this.groupSetting.show = false;
+                // this.groupSetting.show = false;
+                this.closeGroupSettingEmit();
                 break;
             case mainAction.exitGroupSuccess:
                 this.conversationList = chatState.conversation;
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                this.groupSetting.show = false;
+                // this.groupSetting.show = false;
+                this.closeGroupSettingEmit();
                 break;
             case mainAction.addBlackListSuccess:
                 this.conversationList = chatState.conversation;
@@ -494,9 +507,15 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 }
                 break;
+            case chatAction.updateGroupMembersEvent:
+
             case chatAction.deleteGroupMembersEvent:
 
             case chatAction.exitGroupEvent:
+                if (activeIndex >= 0 && messageListActive && messageListActive.groupSetting) {
+                    this.groupSetting = Object.assign({},
+                        this.groupSetting, messageListActive.groupSetting);
+                }
                 if (chatState.currentIsActive) {
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 }
@@ -536,6 +555,12 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.transmitGroupLocation:
                 this.conversationList = chatState.conversation;
                 break;
+            case chatAction.emptyUnreadNumSyncEvent:
+                this.conversationList = chatState.conversation;
+                if (chatState.msgId.length > 0) {
+                    this.storageMsgId(chatState.msgId);
+                }
+                break;
                 // 转发消息成功(如果全部成功则为成功，有一个用户失败则不成功，会提示相关信息)
             case chatAction.transmitMessageComplete:
                 this.modalTipTransmitSuccess(chatState);
@@ -572,7 +597,12 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 break;
             case chatAction.saveMemoNameSuccess:
+
+            case chatAction.deleteFriendSyncEvent:
+
+            case chatAction.addFriendSyncEvent:
                 this.conversationList = chatState.conversation;
+                this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 this.store$.dispatch({
                     type: chatAction.dispatchFriendList,
                     payload: chatState.friendList
@@ -589,6 +619,15 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.unreadList.show = false;
                 break;
+            case chatAction.addGroupBlackSyncEvent:
+
+            case chatAction.addSingleNoDisturbSyncEvent:
+
+            case chatAction.deleteSingleNoDisturbSyncEvent:
+
+            case chatAction.addGroupNoDisturbSyncEvent:
+                this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
+                break;
             // case chatAction.groupAvatar:
             //     this.conversationList = chatState.conversation;
             //     this.groupSetting.groupInfo = messageListActive.groupSetting.groupInfo;
@@ -604,6 +643,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.msgReceiptChangeEvent:
                 this.conversationList = chatState.conversation;
+                break;
+            case mainAction.dispatchSendSelfCard:
+                this.sendCardEmit();
                 break;
             default:
         }
@@ -630,6 +672,13 @@ export class ChatComponent implements OnInit, OnDestroy {
             payload: {
                 show: false,
                 info: {}
+            }
+        });
+        this.store$.dispatch({
+            type: mainAction.showSelfInfo,
+            payload: {
+                show: false,
+                loading: false
             }
         });
     }
@@ -677,6 +726,16 @@ export class ChatComponent implements OnInit, OnDestroy {
                     }
                 });
                 break;
+            case 6:
+                if (!data.isOffline) {
+                    if (data.extra === 0) {
+                        this.store$.dispatch({
+                            type: chatAction.getFriendList,
+                            payload: null
+                        });
+                    }
+                }
+                break;
             case 5:
                 // 好友请求和应答事件
                 this.store$.dispatch({
@@ -705,17 +764,21 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case 10:
                 // 添加群成员事件
-                this.store$.dispatch({
-                    type: chatAction.addGroupMembersEvent,
-                    payload: data
-                });
+                if (data.extra === 0) {
+                    this.store$.dispatch({
+                        type: chatAction.addGroupMembersEvent,
+                        payload: data
+                    });
+                }
                 break;
             case 11:
                 // 删除群成员事件
-                this.store$.dispatch({
-                    type: chatAction.deleteGroupMembersEvent,
-                    payload: data
-                });
+                if (data.extra === 0) {
+                    this.store$.dispatch({
+                        type: chatAction.deleteGroupMembersEvent,
+                        payload: data
+                    });
+                }
                 break;
             case 12:
                 // 更新群信息事件
@@ -726,6 +789,15 @@ export class ChatComponent implements OnInit, OnDestroy {
                     });
                 }
                 break;
+            case 40:
+                if (!data.isOffline) {
+                    if (data.extra === 0) {
+                        this.store$.dispatch({
+                            type: mainAction.getSelfInfo,
+                            payload: null
+                        });
+                    }
+                }
             case 55:
                 // 消息撤回事件，不考虑离线的消息撤回事件
                 if (!data.isOffline) {
@@ -734,6 +806,128 @@ export class ChatComponent implements OnInit, OnDestroy {
                         payload: data
                     });
                 }
+                break;
+            case 100:
+                if (!data.isOffline) {
+                    this.updateFriendListSyncEvent(data);
+                }
+                break;
+            case 101:
+                if (!data.isOffline) {
+                    if (data.extra === 1) {
+                        this.store$.dispatch({
+                            type: chatAction.addGroupBlackSyncEvent,
+                            payload: data
+                        });
+                        this.store$.dispatch({
+                            type: mainAction.blackMenu,
+                            payload: {
+                                show: null
+                            }
+                        });
+                    } else if (data.extra === 2) {
+                        this.store$.dispatch({
+                            type: chatAction.deleteGroupBlackSyncEvent,
+                            payload: data
+                        });
+                        this.store$.dispatch({
+                            type: mainAction.blackMenu,
+                            payload: {
+                                show: null
+                            }
+                        });
+                    }
+                }
+                break;
+            case 102:
+                if (!data.isOffline) {
+                    this.updateNoDisturbSyncEvent(data);
+                }
+                break;
+            case 103:
+                if (!data.isOffline) {
+                    if (data.extra === 1) {
+                        this.store$.dispatch({
+                            type: chatAction.addGroupShieldSyncEvent,
+                            payload: data
+                        });
+                    } else if (data.extra === 2) {
+                        this.store$.dispatch({
+                            type: chatAction.deleteGroupShieldSyncEvent,
+                            payload: data
+                        });
+                    }
+                }
+                break;
+            case 200:
+                if (!data.isOffline) {
+                    if (data.description && data.description.username) {
+                        data.description.name = data.description.username;
+                    }
+                    this.store$.dispatch({
+                        type: chatAction.emptyUnreadNumSyncEvent,
+                        payload: data.description
+                    });
+                }
+                break;
+            default:
+        }
+    }
+    private updateFriendListSyncEvent(data) {
+        if (data.extra === 5) {
+            this.store$.dispatch({
+                type: chatAction.getFriendList,
+                payload: null
+            });
+            this.store$.dispatch({
+                type: chatAction.addFriendSyncEvent,
+                payload: data
+            });
+        } else if (data.extra === 6) {
+            this.store$.dispatch({
+                type: chatAction.getFriendList,
+                payload: null
+            });
+            this.store$.dispatch({
+                type: chatAction.deleteFriendSyncEvent,
+                payload: data
+            });
+        } else if (data.extra === 7) {
+            this.store$.dispatch({
+                type: chatAction.saveMemoNameSuccess,
+                payload: data
+            });
+        }
+    }
+    private updateNoDisturbSyncEvent(data) {
+        switch (data.extra) {
+            case 31:
+                this.store$.dispatch({
+                    type: chatAction.addSingleNoDisturbSyncEvent,
+                    payload: data
+                });
+                break;
+            case 32:
+                this.store$.dispatch({
+                    type: chatAction.deleteSingleNoDisturbSyncEvent,
+                    payload: data
+                });
+                break;
+            case 33:
+                this.store$.dispatch({
+                    type: chatAction.addGroupNoDisturbSyncEvent,
+                    payload: data
+                });
+                break;
+            case 34:
+                this.store$.dispatch({
+                    type: chatAction.deleteGroupNoDisturbSyncEvent,
+                    payload: data
+                });
+                break;
+            case 35:
+                break;
+            case 36:
                 break;
             default:
         }
@@ -747,47 +941,49 @@ export class ChatComponent implements OnInit, OnDestroy {
             if (newMessage.hasOwnProperty('isOffline')) {
                 if (newMessage.extra === 1) {
                     title = '好友邀请';
-                    body = `${newMessage.from_username}申请添加您为好友`;
+                    body = `${newMessage.from_nickname || newMessage.from_username}申请添加您为好友`;
                 } else if (newMessage.extra === 2) {
                     if (newMessage.return_code === 0) {
                         title = '同意好友申请';
-                        body = `${newMessage.from_username}同意了您的好友申请`;
+                        body = `${newMessage.from_nickname || newMessage.from_username}同意了您的好友申请`;
                     } else {
                         title = '拒绝好友申请';
-                        body = `${newMessage.from_username}拒绝了您的好友申请`;
+                        body = `${newMessage.from_nickname || newMessage.from_username}拒绝了您的好友申请`;
                     }
                 }
             // 普通消息
             } else {
                 if (newMessage.msg_type === 4) {
-                    title = newMessage.content.target_name;
+                    title = newMessage.content.target_name || '群';
+                    body += `${newMessage.content.memo_name ||
+                            newMessage.content.from_name || newMessage.content.from_id}:`;
                 } else {
-                    title = newMessage.content.from_name !== '' ?
-                            newMessage.content.from_name : newMessage.content.from_id;
+                    title = newMessage.content.memo_name ||
+                            newMessage.content.from_name || newMessage.content.from_id || ' ';
                 }
                 switch (newMessage.content.msg_type) {
                     case 'text':
-                        body = newMessage.content.msg_body.text;
+                        body += newMessage.content.msg_body.text;
                         break;
                     case 'image':
-                        body = '[图片]';
+                        body += '[图片]';
                         break;
                     case 'location':
-                        body = '[位置]';
+                        body += '[位置]';
                         break;
                     case 'voice':
-                        body = '[语音]';
+                        body += '[语音]';
                         break;
                     case 'file':
                         let extras = newMessage.content.msg_body.extras;
                         if (extras && extras.video) {
-                            body = '[视频]';
+                            body += '[视频]';
                         } else {
-                            body = '[文件]';
+                            body += '[文件]';
                         }
                         break;
                     default:
-                        body = '消息';
+                        body += '消息';
                 }
             }
             Push.create(title, {
@@ -816,14 +1012,15 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 存储消息id(用来计算消息未读数)
     private storageMsgId(msgId) {
-        this.storageKey = 'msgId' + global.user;
+        this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
         this.storageService.set(this.storageKey, JSON.stringify(msgId));
     }
     // 更新当前对话用户信息
     private changeActivePerson(chatState) {
+        this.closeGroupSettingEmit();
         this.active = chatState.activePerson;
         this.changeActiveScrollBottom = !this.changeActiveScrollBottom;
-        this.groupSetting.show = false;
+        // this.groupSetting.show = false;
         // 判断是否已经缓存
         if (this.isCacheArr.indexOf(this.active.key) === -1) {
             this.isCacheArr.push(this.active.key);
@@ -861,7 +1058,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 切换当前对话用户
     private selectTargetEmit(item) {
-        if (Number(this.active.key) === Number(item.key)) {
+        if ((item.type === 4 && Number(this.active.key) === Number(item.key)) ||
+            (item.type === 3 && this.active.name === item.name)) {
             return ;
         }
         this.store$.dispatch({
@@ -930,7 +1128,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             },
             ctime_ms: new Date().getTime(),
             success: 1,
-            msgKey: this.msgKey ++
+            msgKey: this.msgKey ++,
+            unread_count: true
         };
         // 转发消息失败重发单聊消息
         if (activePerson.type === 3 && data.repeatSend && data.isTransmitMsg) {
@@ -939,7 +1138,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     msgs: data,
                     select: {
-                        name: activePerson.name
+                        name: activePerson.name,
+                        type: 3
                     },
                     key: activePerson.key
                 }
@@ -951,7 +1151,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     msgs: data,
                     select: {
-                        key: activePerson.key
+                        key: activePerson.key,
+                        type: 4
                     },
                     key: activePerson.key
                 }
@@ -1012,7 +1213,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     singleMsg: data.singleMsg,
                     key: activePerson.key,
-                    msgs: data
+                    msgs: data,
+                    active: activePerson
                 }
             });
         // 重发群聊消息
@@ -1022,7 +1224,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     groupMsg: data.groupMsg,
                     key: activePerson.key,
-                    msgs: data
+                    msgs: data,
+                    active: activePerson
                 }
             });
         }
@@ -1038,7 +1241,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     msgs: data,
                     select: {
-                        name: this.active.name
+                        name: this.active.name,
+                        type: 3
                     },
                     key: this.active.key
                 }
@@ -1050,7 +1254,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     msgs: data,
                     select: {
-                        key: this.active.key
+                        key: this.active.key,
+                        type: 4
                     },
                     key: this.active.key
                 }
@@ -1062,7 +1267,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     singlePicFormData: data.singlePicFormData,
                     key: this.active.key,
-                    msgs: data
+                    msgs: data,
+                    active: this.active
                 }
             });
             return ;
@@ -1072,7 +1278,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     groupPicFormData: data.groupPicFormData,
                     key: this.active.key,
-                    msgs: data
+                    msgs: data,
+                    active: this.active
                 }
             });
             return ;
@@ -1114,7 +1321,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             },
             ctime_ms: new Date().getTime(),
             success: 1,
-            msgKey: this.msgKey ++
+            msgKey: this.msgKey ++,
+            unread_count: true
         };
         // 发送单聊图片
         if (this.active.type === 3) {
@@ -1132,7 +1340,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     singlePicFormData,
                     key: this.active.key,
-                    msgs
+                    msgs,
+                    active: this.active
                 }
             });
         // 发送群聊图片
@@ -1150,7 +1359,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     groupPicFormData,
                     key: this.active.key,
-                    msgs
+                    msgs,
+                    active: this.active
                 }
             });
         }
@@ -1163,7 +1373,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     msgs: data,
                     select: {
-                        name: this.active.name
+                        name: this.active.name,
+                        type: 3
                     },
                     key: this.active.key
                 }
@@ -1175,7 +1386,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     msgs: data,
                     select: {
-                        key: this.active.key
+                        key: this.active.key,
+                        type: 4
                     },
                     key: this.active.key
                 }
@@ -1202,7 +1414,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 },
                 ctime_ms: (new Date()).getTime(),
                 success: 1,
-                msgKey: this.msgKey ++
+                msgKey: this.msgKey ++,
+                unread_count: true
             };
         }
         // 发送单聊文件
@@ -1225,7 +1438,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     key: this.active.key,
                     msgs,
-                    singleFile
+                    singleFile,
+                    active: this.active
                }
             });
         // 发送群组文件
@@ -1247,7 +1461,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     key: this.active.key,
                     msgs,
-                    groupFile
+                    groupFile,
+                    active: this.active
                 }
             });
         }else if (this.active.type === 3 && data.repeatSend) {
@@ -1256,7 +1471,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     key: this.active.key,
                     msgs: data,
-                    singleFile: data.singleFile
+                    singleFile: data.singleFile,
+                    active: this.active
                }
             });
         }else if (this.active.type === 4 && data.repeatSend) {
@@ -1265,7 +1481,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: {
                     key: this.active.key,
                     msgs: data,
-                    groupFile: data.groupFile
+                    groupFile: data.groupFile,
+                    active: this.active
                 }
             });
         }
@@ -1279,7 +1496,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             payload = {
                 msgs: data,
                 select: {
-                    name: this.active.name
+                    name: this.active.name,
+                    type: 3
                 },
                 key: this.active.key
             };
@@ -1288,7 +1506,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             payload = {
                 msgs: data,
                 select: {
-                    key: this.active.key
+                    key: this.active.key,
+                    type: 4
                 },
                 key: this.active.key
             };
@@ -1323,8 +1542,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 用户信息面板中，关闭面板或者建立单聊
     private OtherInfoEmit(item) {
-        if (item && ((item.name !== this.active.name && this.active.type === 3)
-            || this.active.type === 4)) {
+        if (item && item.name !== this.active.name) {
             this.store$.dispatch({
                 type: chatAction.createOtherChat,
                 payload: item
@@ -1347,7 +1565,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 active: this.active,
                 show: true,
                 // 是否已经请求过
-                isCache: groupSetting && groupSetting.groupInfo
+                isCache: groupSetting && groupSetting.groupInfo,
+                loading: true
             }
         });
     }
@@ -1553,20 +1772,32 @@ export class ChatComponent implements OnInit, OnDestroy {
     private sendCardConfirm(info) {
         this.sendBusinessCardCount = 0;
         console.log(7777, info.selectList);
+        let newInfo;
+        if (this.otherInfo.show) {
+            newInfo = this.otherInfo.info;
+        } else {
+            if (this.selfInfo.username) {
+                this.selfInfo.name = this.selfInfo.username;
+            }
+            if (this.selfInfo.nickname) {
+                this.selfInfo.nickName = this.selfInfo.nickname;
+            }
+            newInfo = this.selfInfo;
+        }
         for (let select of info.selectList) {
             let msg = {
-                content: `[${this.otherInfo.info.name}的名片]`,
+                content: '推荐一张名片给你',
                 extras: {
-                    userName: this.otherInfo.info.name,
-                    appKey: this.otherInfo.info.appkey,
+                    userName: newInfo.name,
+                    appKey: newInfo.appkey,
                     businessCard: 'businessCard'
                 },
                 localExtras: {
-                    userName: this.otherInfo.info.name,
-                    appKey: this.otherInfo.info.appkey,
+                    userName: newInfo.name,
+                    appKey: newInfo.appkey,
                     businessCard: 'businessCard',
-                    media_url: this.otherInfo.info.avatarUrl,
-                    nickName: this.otherInfo.info.nickName
+                    media_url: newInfo.avatarUrl,
+                    nickName: newInfo.nickName
                 }
             };
             this.sendBusinessCardCount ++;
@@ -1584,9 +1815,15 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.transmitItem.hasLoad = false;
         this.transmitItem.content.from_id = global.user;
         this.transmitItem.isTransmitMsg = true;
+        this.transmitItem.unread_count = true;
         for (let item of info.selectList) {
             this.transmitItem.content.target_id = item.name;
             this.transmitItem.type = item.type;
+            if (item.type === 3) {
+                this.transmitItem.msg_type = 3;
+            } else {
+                this.transmitItem.msg_type = 4;
+            }
             let data = {
                 select: item,
                 msgs: Object.assign({}, this.transmitItem, {}),
@@ -1676,7 +1913,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
         });
     }
-    private sendCardEmit(info) {
+    private sendCardEmit() {
         this.messageTransmit.list = this.conversationList;
         this.messageTransmit.show = true;
         this.messageTransmit.type = 'sendCard';

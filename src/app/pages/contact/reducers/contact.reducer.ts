@@ -234,8 +234,12 @@ function friendVerify(state, payload) {
 }
 function filterFriendList(state, payload) {
     for (let friend of payload) {
-        friend.name = friend.username;
-        friend.nickName = friend.nickname;
+        if (friend.username && !friend.name) {
+            friend.name = friend.username;
+        }
+        if (friend.nickname && !friend.nickName) {
+            friend.nickName = friend.nickname;
+        }
         friend.type = 3;
     }
 }

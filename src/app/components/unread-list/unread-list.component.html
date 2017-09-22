@@ -13,7 +13,7 @@
                             <img [src]="unread.avatarUrl" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                         </div>
                         <div class="unread-list-name flex-1">
-                            {{unread.nickname || unread.username}}
+                            {{unread.memo_name || unread.nickname || unread.username}}
                         </div>
                     </div>
                 </perfect-scrollbar>
@@ -26,7 +26,7 @@
                             <img [src]="read.avatarUrl" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                         </div>
                         <div class="unread-list-name flex-1">
-                            {{read.nickname || read.username}}
+                            {{read.memo_name || read.nickname || read.username}}
                         </div>
                     </div>
                 </perfect-scrollbar>

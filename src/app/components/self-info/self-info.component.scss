@@ -1,14 +1,36 @@
+.modal-shadow{
+    z-index: 999;
+}
 .self-info-container{
     width: 320px;
     overflow: hidden;
     box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
     border-radius: 0;
     padding: 0 30px;
-    color: #808080;    
+    color: #808080;
     .modal-close{
-        top: 22px;
-        right: 22px;
+        top: 0;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        background-position: 9px 17px; 
+        &:hover{
+            background: #EB424C url(../../../assets/images/modal-close-active.svg) 9px 17px no-repeat;
+        }
     }
+    .self-info-more{
+        position: absolute;
+        top: 0;
+        right: 40px;
+        display: block;
+        width: 40px;
+        height: 40px;
+        background: url(../../../assets/images/drop-down.svg) 11px 16px no-repeat;
+        cursor: pointer;
+        &:hover{
+            background-color: #F3F7FB;
+        }
+    } 
     .self-info-avatar{
         padding: 52px 0 19px 0;
         margin-bottom: 14px;

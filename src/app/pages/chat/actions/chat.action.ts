@@ -90,5 +90,17 @@ export const chatAction = {
     getFriendList: '[chat] get friend list',
     getFriendListSuccess: '[chat] get friend list success',
     updateGroupInfoEvent: '[chat] update group info event',
-    updateGroupInfoEventSuccess: '[chat] update group info event success'
+    updateGroupInfoEventSuccess: '[chat] update group info event success',
+    deleteFriendSyncEvent: '[chat] delete friend sync event',
+    addFriendSyncEvent: '[chat] add friend sync event',
+    emptyUnreadNumSyncEvent: '[chat] empty unread num sync event',
+    addSingleNoDisturbSyncEvent: '[chat] add single no disturb sync event',
+    deleteSingleNoDisturbSyncEvent: '[chat] delete single no disturb sync event',
+    addGroupNoDisturbSyncEvent: '[chat] add group no disturb sync event',
+    deleteGroupNoDisturbSyncEvent: '[chat] delete group no disturb sync event',
+    addGroupShieldSyncEvent: '[chat] add group shield sync event',
+    deleteGroupShieldSyncEvent: '[chat] delete group shield sync event',
+    addGroupBlackSyncEvent: '[chat] add group black sync event',
+    deleteGroupBlackSyncEvent: '[chat] delete group black sync event',
+    syncReceiveMessage: '[chat] sync receive message'
 };

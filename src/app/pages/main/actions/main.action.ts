@@ -40,6 +40,7 @@ export const mainAction = {
     messageTransmitSearchComplete: '[main] message transmit search complete',
     addSingleNoDisturbAction: '[main] add single no disturb action',
     addSingleNoDisturbSuccess: '[main] add single no disturb success',
-    deleteFriend: '[chat] delete friend',
-    deleteFriendSuccess: '[chat] delete friend success',
+    deleteFriend: '[main] delete friend',
+    deleteFriendSuccess: '[main] delete friend success',
+    dispatchSendSelfCard: '[main] dispatch send self card'
 };

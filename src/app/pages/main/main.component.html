@@ -39,7 +39,7 @@
             </div>
         </div>
     </div>
-    <self-info-component *ngIf="selfInfo.show" [selfInfo]="selfInfo" [updateSelfInfoFlag]="updateSelfInfoFlag" (isShow)="selfInfoEmit($event)" (selectIsNotImage)="selectIsNotImageEmit()"></self-info-component>    
+    <self-info-component *ngIf="selfInfo.show" [selfInfo]="selfInfo" [updateSelfInfoFlag]="updateSelfInfoFlag" (isShow)="selfInfoEmit($event)" (selectIsNotImage)="selectIsNotImageEmit()" (sendCard)="sendCardEmit($event)"></self-info-component>    
     <create-group-component *ngIf="createGroup.show" [createGroup]="createGroup" (isCreateGroup)="createGroupEmit($event)"></create-group-component>
     <modify-password-component [hidden]="!isModifyPasswordShow" (modifyPassword)="modifyPasswordEmit($event)"></modify-password-component>
     <tip-modal-component *ngIf="tipModal.show" [info]="tipModal.info" (modalTipEmit)="modalTipEmit($event)"></tip-modal-component>

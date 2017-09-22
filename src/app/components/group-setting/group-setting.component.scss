@@ -7,7 +7,7 @@
     right: 0;
     box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
     border-bottom-right-radius: 3px;
-    z-index: 2;
+    z-index: 4;
     -webkit-transform: translateX(101%);
             transform: translateX(101%);
     &.in{
@@ -21,6 +21,17 @@
                 transform: translateX(101%);
         -webkit-transition: all 0.5s;
         transition: all 0.5s;
+    }
+    &.loading:after{
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        display: block;
+        background: rgba(0, 0, 0, 0.3) url(../../../assets/images/app-loading.gif) center center no-repeat;
+        background-size: 30px;
+        content: '';
     }
     .group-setting-close{
         position: absolute;

@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { SelfInfoComponent } from './self-info.component';
 import { SelectModule } from '../select';
 import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
+import { InfoMenuModule } from '../info-menu';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
     FormsModule,
     SelectModule,
     EllipsisPipeModule,
-    SanitizePipeModule
+    SanitizePipeModule,
+    InfoMenuModule
   ],
   exports: [
       SelfInfoComponent

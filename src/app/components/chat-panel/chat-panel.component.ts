@@ -7,9 +7,9 @@ import { AppStore } from '../../app.store';
 import { chatAction } from '../../pages/chat/actions';
 import { contactAction } from '../../pages/contact/actions';
 import { mainAction } from '../../pages/main/actions';
-import { global, emojiConfig, jpushConfig, imgRouter, pageNumber } from '../../services/common';
+import { global, emojiConfig, jpushConfig, imgRouter,
+        pageNumber, authPayload, StorageService } from '../../services/common';
 import { Util } from '../../services/util';
-import{ StorageService } from '../../services/common';
 import { Emoji } from '../../services/tools';
 import * as download from 'downloadjs';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
@@ -957,7 +957,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         this.inputNoBlur = false;
         // 计算@xxx的宽度
         let span = document.createElement('span');
-        span.innerHTML = `@${item.memo_name || item.nickName || item.username}&nbsp;`;
+        span.innerHTML = `@${item.nickName || item.username}&nbsp;`;
         span.style.fontSize = '14px';
         document.body.appendChild(span);
         const inputWidth = span.offsetWidth;
@@ -970,8 +970,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         // 输入框中插入@XXX
         const content = `<input style="width: ${inputWidth + 'px'}"
                         type="text" class="chat-panel-at-input"
-                        value="@${item.memo_name || item.nickName || item.username} "
-                        username="${item.username} " appkey="${item.appkey} "/>`;
+                        value="@${item.nickName || item.username} "
+                        username="${item.nickName || item.username} " appkey="${item.appkey} "/>`;
         this.util.insertAtCursor(this.contentDiv, content, false);
         this.atList.show = false;
         setTimeout(() => {
@@ -1147,7 +1147,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 };
                 this.voiceState.push(voiceState);
                 this.msg[index].content.havePlay = true;
-                const key = 'voiceState' + global.user;
+                const key = `voiceState-${authPayload.appKey}-${global.user}`;
                 const value = JSON.stringify(this.voiceState);
                 this.storageService.set(key, value);
             }
@@ -1228,7 +1228,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 i.content.msg_body.width = 128;
                 i.content.msg_body.height = 91;
             }
-        }, 10000);
+        }, 20000);
     }
     private changeMsgFileEmit(type) {
         this.store$.dispatch({

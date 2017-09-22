@@ -19,6 +19,8 @@ export class SelfInfoComponent implements OnChanges {
         private isShow: EventEmitter<any> = new EventEmitter();
     @Output()
         private selectIsNotImage: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private sendCard: EventEmitter<any> = new EventEmitter();
     private isEdit = false;
     private sexList = {
         active: {
@@ -50,6 +52,17 @@ export class SelfInfoComponent implements OnChanges {
     };
     private cameraShadow = true;
     // private saveLoading = false;
+    private infoMenu = {
+        info: [
+            {
+                name: '发送名片',
+                key: 0,
+                isRight: false,
+                show: true
+            }
+        ],
+        show: false
+    };
     constructor(
         private elementRef: ElementRef
     ) {}
@@ -58,23 +71,29 @@ export class SelfInfoComponent implements OnChanges {
         this.newInfo.nickname = this.selfInfo.info.nickname;
         this.newInfo.gender = this.selfInfo.info.gender;
         this.newInfo.region = this.selfInfo.info.region;
+        this.sexActive();
+        if (change.updateSelfInfoFlag) {
+            this.isEdit = false;
+        }
+    }
+    private sexActive() {
         switch (this.selfInfo.info.gender) {
             case 0 :
-                this.selfInfo.info.gender = '保密';
+                // this.selfInfo.info.gender = '保密';
                 this.sexList.active = {
                     key: 0,
                     name: '保密'
                 };
                 break;
             case 1 :
-                this.selfInfo.info.gender = '男';
+                // this.selfInfo.info.gender = '男';
                 this.sexList.active = {
                     key: 1,
                     name: '男'
                 };
                 break;
             case 2:
-                this.selfInfo.info.gender = '女';
+                // this.selfInfo.info.gender = '女';
                 this.sexList.active = {
                     key: 2,
                     name: '女'
@@ -82,13 +101,18 @@ export class SelfInfoComponent implements OnChanges {
                 break;
             default:
         }
-        if (change.updateSelfInfoFlag) {
-            this.isEdit = false;
-        }
+    }
+    private showMenu(event) {
+        event.stopPropagation();
+        this.infoMenu.show = !this.infoMenu.show;
     }
     private hideSelect(event) {
         event.stopPropagation();
         this.sexList.show = false;
+        this.infoMenu.show = false;
+    }
+    private selectMenuItemEmit() {
+        this.sendCard.emit(this.selfInfo.info);
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;
@@ -97,6 +121,7 @@ export class SelfInfoComponent implements OnChanges {
         const selfAvatarInput = this.elementRef.nativeElement.querySelector('#selfAvatarInput');
         selfAvatarInput.value = '';
         this.isEdit = false;
+        this.sexActive();
     }
     private selfClose(event) {
         event.stopPropagation();
