@@ -34,6 +34,7 @@ export const mainAction = {
     deleteMemberSuccess: '[main] delete member success',
     createGroupSearchAction: '[main] create group search action',
     createGroupSearchComplete: '[main] create group search complete',
+    businessCardSearchComplete: '[main] business card search complete',
     login: '[main] login',
     logoutKickShow: '[main] logout kick show',
     init: '[main] init',

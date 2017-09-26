@@ -173,6 +173,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case contactAction.selectContactItem:
             // 选择搜索出来的本地用户
         case mainAction.selectSearchUser:
+            console.log(1111, payload);
             state.defaultPanelIsShow = false;
             clearVoiceTimer(state);
             selectUserResult(state, payload, 'search');
@@ -305,8 +306,14 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 退群成功
         case mainAction.exitGroupSuccess:
-            showGroupSetting(state, false);
-            state.defaultPanelIsShow = true;
+            let isActive = (payload.item.name === state.activePerson.name &&
+                payload.item.type === 3 && state.activePerson.type === 3) ||
+                (payload.item.type === 4 &&
+                Number(payload.item.key) === Number(state.activePerson.key));
+            if (isActive) {
+                showGroupSetting(state, false);
+                state.defaultPanelIsShow = true;
+            }
             exitGroup(state, payload);
             deleteConversationItem(state, payload);
             break;
@@ -412,6 +419,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 },
                 isSearch: true
             };
+            break;
+        case mainAction.businessCardSearchComplete:
+            state.businessCardSearch = payload;
             break;
             // 显示验证消息模态框
         case chatAction.showVerifyModal:
@@ -556,10 +566,42 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.deleteGroupBlackSyncEvent:
             groupBlackSyncEvent(state, payload, false);
             break;
+        case chatAction.userInfUpdateEventSuccess:
+            userInfUpdateEventSuccess(state, payload);
+            break;
         default:
     }
     return state;
 };
+function userInfUpdateEventSuccess(state, payload) {
+    for (let friend of state.friendList) {
+        if (payload.name === friend.name) {
+            friend.nickName = payload.nickName;
+            friend.avatarUrl = payload.avatarUrl;
+            break;
+        }
+    }
+    for (let conversation of state.conversation) {
+        if (conversation.type === 3 && conversation.name === payload.name) {
+            conversation.nickName = payload.nickName;
+            conversation.avatarUrl = payload.avatarUrl;
+        }
+        if (conversation.recentMsg && conversation.recentMsg.content.from_id === payload.name) {
+            conversation.recentMsg.content.from_name = payload.nickName;
+        }
+    }
+    for (let messageList of state.messageList) {
+        for (let msg of messageList.msgs) {
+            if (msg.content.from_id === payload.name) {
+                msg.content.from_name = payload.nickName;
+                msg.content.avatarUrl = payload.avatarUrl;
+            }
+        }
+    }
+    if (payload.name === state.otherInfo.info.name) {
+        state.otherInfo.info = Object.assign({}, state.otherInfo.info, payload);
+    }
+}
 function friendSyncEvent(state, user, bool) {
     if (state.otherInfo.info.name === user.username &&
         state.otherInfo.info.appkey === user.appkey) {
@@ -769,6 +811,9 @@ function updateGroupInfoEventSuccess(state, payload) {
     payload.eventData.nickName = payload.eventData.nickname = payload.eventData.from_nickname;
     filterFriend(state, payload.eventData);
     if (Number(payload.eventData.gid) === Number(state.activePerson.key)) {
+        if (payload.groupInfo.name !== '') {
+            state.activePerson.name = payload.groupInfo.name;
+        }
         state.newMessageIsActive = true;
     } else {
         state.newMessageIsActive = false;
@@ -1511,6 +1556,14 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
     let usernames = payload.to_usernames;
     let addGroupOther = '';
     for (let user of usernames) {
+
+        if (user.nickname) {
+            user.nickName = user.nickname;
+        }
+        if (user.username) {
+            user.name = user.username;
+        }
+        filterFriend(state, user);
         if (user.username === global.user) {
             addGroupOther = '您' + '、';
         } else {
@@ -2126,7 +2179,7 @@ function deleteConversationItem(state: ChatStore, payload) {
         let conversationKey = Number(state.conversation[i].key);
         if (conversationKey === itemKey ||
             (state.conversation[i].name === payload.item.name &&
-                payload.item.type === 3)) {
+                payload.item.type === 3 && state.conversation[i].type === 3)) {
             state.conversation.splice(i, 1);
             break;
         }
@@ -2252,8 +2305,12 @@ function addMessage(state: ChatStore, payload) {
             let groupMsg = message.msg_type === 4 &&
                     Number(state.conversation[a].key) === Number(message.key);
             let singleMsg = message.msg_type === 3 && state.conversation[a].type &&
+                    state.conversation[a].type === 3 &&
                     state.conversation[a].name === message.content.name;
             if (groupMsg || singleMsg) {
+                if (groupMsg && message.content.target_name === '') {
+                    message.content.target_name = state.conversation[a].name;
+                }
                 let groupNoActive = message.msg_type === 4 &&
                         Number(state.activePerson.key) !== Number(message.key);
                 let singleNoActive = message.msg_type === 3 &&
@@ -2294,6 +2351,7 @@ function addMessage(state: ChatStore, payload) {
                 state.conversation[index].recentMsg = payload.messages[0];
                 payload.messages[0].conversation_time_show = 'today';
                 state.newMessageIsDisturb = state.conversation[index].noDisturb ? true : false;
+                break;
             }
         }
         for (let messageList of state.messageList) {
@@ -2457,6 +2515,15 @@ function filterNewMessage(state, payload, message) {
 }
 // 新消息用户不在会话列表中
 function addMessageUserNoConversation(state, payload, message) {
+    if (message.msg_type === 4) {
+        // 如果新消息没群名，从群列表中获取
+        for (let group of state.groupList) {
+            if (Number(group.gid) === Number(message.key) && message.content.target_name === '') {
+                message.content.target_name = group.name;
+                break;
+            }
+        }
+    }
     let msg;
     let conversationItem;
     if (message.msg_type === 3) {
@@ -2684,6 +2751,7 @@ function emptyUnreadNum(state: ChatStore, payload) {
 }
 // 将会话插入到置顶会话之后
 function filterTopConversation(state, item) {
+    console.log(3333, item);
     let flag = true;
     let index;
     for (let i = 0; i < state.conversation.length; i++) {

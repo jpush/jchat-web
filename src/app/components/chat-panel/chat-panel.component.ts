@@ -60,6 +60,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         private retract: EventEmitter<any> = new EventEmitter();
     @Output()
         private msgTransmit: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private businessCardSend: EventEmitter<any> = new EventEmitter();
     // @Output()
     //     private msgFile: EventEmitter<any> = new EventEmitter();
     private global = global;
@@ -180,6 +182,10 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         image: [],
         other: []
     };
+    private businessCard = {
+        show: false,
+        info: []
+    };
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -272,13 +278,14 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private subscribeStore() {
         this.chatStream$ = this.store$.select((state) => {
             const chatState = state['chatReducer'];
-            this.stateChanged(chatState);
+            const contactState = state['contactReducer'];
+            this.stateChanged(chatState, contactState);
             return state;
         }).subscribe((state) => {
             // pass
         });
     }
-    private stateChanged(chatState) {
+    private stateChanged(chatState, contactState) {
         switch (chatState.actionType) {
             case chatAction.receiveMessageSuccess:
                 this.messageList = chatState.messageList;
@@ -391,6 +398,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.friendReplyEventSuccess:
 
             case chatAction.updateGroupInfoEventSuccess:
+
+            case chatAction.userInfUpdateEventSuccess:
                 this.updateMsg(chatState);
                 break;
             case chatAction.msgFile:
@@ -398,6 +407,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 break;
             case chatAction.msgFileSuccess:
                 this.msgFileImageViewer.result = chatState.msgFileImageViewer;
+                break;
+            case chatAction.dispatchFriendList:
+                this.businessCard.info = contactState.friendList;
                 break;
             default:
         }
@@ -1220,7 +1232,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         // 为了兼容火狐下a链接下载，引入downloadjs
         download(url);
     }
-    // 10s内图片没有加载成功，则显示默认图
+    // 20s内图片没有加载成功，则显示默认图
     private imageError(event, i) {
         setTimeout(() => {
             if (event.target.src.indexOf('undefined') !== -1) {
@@ -1269,4 +1281,10 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             });
         }
     }
+     private showBusinessCardModal() {
+         this.businessCard.show = true;
+     }
+     private businessCardSendEmit(user) {
+        this.businessCardSend.emit(user);
+     }
 }

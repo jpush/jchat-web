@@ -90,7 +90,6 @@ export class ContactComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.friendReplyEventSuccess:
                 this.verifyMessageList = contactState.verifyMessageList;
-                this.friendList = contactState.friendList;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 this.store$.dispatch({
                     type: contactAction.dispatchContactUnreadNum,
@@ -112,11 +111,15 @@ export class ContactComponent implements OnInit, OnDestroy {
             case chatAction.groupAvatar:
                 this.groupList = contactState.groupList;
                 break;
+            case chatAction.addFriendSyncEvent:
+                this.verifyMessageList = contactState.verifyMessageList;
+                break;
             default:
         }
     }
     // 点击联系人
     private selectContactItemEmit(item) {
+        console.log(7777, item);
         this.store$.dispatch({
             type: contactAction.selectContactItem,
             payload: item

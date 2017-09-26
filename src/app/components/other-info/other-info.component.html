@@ -37,7 +37,7 @@
         </div>
         <p class="other-info-p display-flex">
             <span class="other-info-fixed-width">性&ensp;&ensp;别：</span>
-            <span class="flex-1">{{otherInfo.info.gender}}</span>       
+            <span class="flex-1">{{otherInfo.info.gender === 0 ? '保密' : (otherInfo.info.gender === 1 ? '男' : '女')}}</span>       
         </p>
         <p class="other-info-p display-flex">
             <span class="other-info-fixed-width">地&ensp;&ensp;区：</span>

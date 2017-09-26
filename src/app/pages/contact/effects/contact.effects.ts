@@ -31,7 +31,7 @@ export class ContactEffect {
                             let memberList = member.member_list;
                             let name = '';
                             for (let j = 0; j < memberList.length && j < 5; j++) {
-                                name = name + memberList[j].username;
+                                name = name + (memberList[j].nickName || memberList[j].username);
                                 let length = memberList.length < 5 ? memberList.length : 5;
                                 if (j < length - 1) {
                                     name += '、';

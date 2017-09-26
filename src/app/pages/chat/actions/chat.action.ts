@@ -102,5 +102,7 @@ export const chatAction = {
     deleteGroupShieldSyncEvent: '[chat] delete group shield sync event',
     addGroupBlackSyncEvent: '[chat] add group black sync event',
     deleteGroupBlackSyncEvent: '[chat] delete group black sync event',
-    syncReceiveMessage: '[chat] sync receive message'
+    syncReceiveMessage: '[chat] sync receive message',
+    userInfUpdateEvent: '[chat] user inf update event',
+    userInfUpdateEventSuccess: '[chat] user inf update event success'
 };

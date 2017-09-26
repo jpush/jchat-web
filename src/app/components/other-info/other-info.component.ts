@@ -77,18 +77,18 @@ export class OtherInfoComponent implements OnInit, OnChanges {
     public ngOnChanges() {
         this.infoMenu.info[1].isRight = this.otherInfo.info.noDisturb ? true : false;
         this.infoMenu.info[2].isRight = this.otherInfo.info.black ? true : false;
-        switch (this.otherInfo.info.gender) {
-            case 0:
-                this.otherInfo.info.gender = '保密';
-                break;
-            case 1:
-                this.otherInfo.info.gender = '男';
-                break;
-            case 2:
-                this.otherInfo.info.gender = '女';
-                break;
-            default:
-        }
+        // switch (this.otherInfo.info.gender) {
+        //     case 0:
+        //         this.otherInfo.info.gender = '保密';
+        //         break;
+        //     case 1:
+        //         this.otherInfo.info.gender = '男';
+        //         break;
+        //     case 2:
+        //         this.otherInfo.info.gender = '女';
+        //         break;
+        //     default:
+        // }
         if (this.otherInfo.info.infoType === 'watchOtherInfo' && !this.otherInfo.info.isFriend) {
             this.infoMenu.info[3].show = false;
         } else {

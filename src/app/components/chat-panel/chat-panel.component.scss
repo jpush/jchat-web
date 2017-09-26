@@ -827,6 +827,16 @@
             .chat-panel-singlePic-label.active{
                 background-image: url(../../../assets/images/img-active.svg);
             }
+            .send-business-card{
+                cursor: pointer;
+                width: 24px;
+                height: 24px;
+                background: url(../../../assets/images/businessCard-normal.svg) center center no-repeat;
+                &:hover{
+                    background-image: url(../../../assets/images/businessCard-active.svg);
+                }
+                margin-left: 16px;
+            }
         }
         .chat-panel-text-container{
              height: 127px;

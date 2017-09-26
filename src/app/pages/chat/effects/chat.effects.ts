@@ -87,43 +87,63 @@ export class ChatEffect {
             let flag = false;
             let content = obj.data.messages[0].content;
             // 如果消息所在的群聊不在消息列表中，且群名为空，需要获取群的成员，将群成员的昵称或用户名拼接
-            let result = obj.conversation.filter((item) => {
-                return Number(messages.key) === Number(item.key);
-            });
-            if (result.length === 0 && !messages.content.target_name) {
-                count ++;
-                global.JIM.getGroupMembers({gid: messages.content.target_id})
-                .onSuccess((data) => {
-                    let name = '';
-                    for (let list of data.member_list) {
-                        name += ((list.nickName !== '' ? list.nickName : list.username) + '、');
-                    }
-                    if (name.length > 20) {
-                        messages.content.target_name = name.substr(0, 20);
-                    } else {
-                        messages.content.target_name =
-                            name.substr(0, name.length - 1);
-                    }
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: obj.data
-                        });
-                    }
-                }).onFail((error) => {
-                    messages.content.target_name = '群名获取失败？？';
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: obj.data
-                        });
-                    }
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
-            }
+            // let result = obj.conversation.filter((item) => {
+            //     return Number(messages.key) === Number(item.key);
+            // });
+            // if (result.length === 0 && messages.content.target_name === '') {
+            //     count ++;
+            //     this.requestGroupName(messages.content, (error) => {
+            //         messages.content.target_name = '群名获取失败？？';
+            //         if (-- count <= 0) {
+            //             this.store$.dispatch({
+            //                 type: chatAction.receiveMessageSuccess,
+            //                 payload: obj.data
+            //             });
+            //         }
+            //         this.store$.dispatch({
+            //             type: appAction.errorApiTip,
+            //             payload: error
+            //         });
+            //     }, () => {
+            //         if (-- count <= 0) {
+            //             this.store$.dispatch({
+            //                 type: chatAction.receiveMessageSuccess,
+            //                 payload: obj.data
+            //             });
+            //         }
+            //     });
+                // global.JIM.getGroupMembers({gid: messages.content.target_id})
+                // .onSuccess((data) => {
+                //     let name = '';
+                //     for (let list of data.member_list) {
+                //         name += ((list.nickName !== '' ? list.nickName : list.username) + '、');
+                //     }
+                //     if (name.length > 20) {
+                //         messages.content.target_name = name.substr(0, 20);
+                //     } else {
+                //         messages.content.target_name =
+                //             name.substr(0, name.length - 1);
+                //     }
+                //     if (-- count <= 0) {
+                //         this.store$.dispatch({
+                //             type: chatAction.receiveMessageSuccess,
+                //             payload: obj.data
+                //         });
+                //     }
+                // }).onFail((error) => {
+                //     messages.content.target_name = '群名获取失败？？';
+                //     if (-- count <= 0) {
+                //         this.store$.dispatch({
+                //             type: chatAction.receiveMessageSuccess,
+                //             payload: obj.data
+                //         });
+                //     }
+                //     this.store$.dispatch({
+                //         type: appAction.errorApiTip,
+                //         payload: error
+                //     });
+                // });
+            // }
             if (messages.content.msg_body.media_id) {
                 count ++;
                 this.requestMediaUrl(obj.data, count);
@@ -446,21 +466,7 @@ export class ChatEffect {
                     }
                     if (conversation.type === 4 && conversation.name === '') {
                         count ++;
-                        global.JIM.getGroupMembers({gid: conversation.key})
-                        .onSuccess((member) => {
-                            count --;
-                            let name = '';
-                            for (let list of member.member_list) {
-                                name += (list.nickName !== '' ? list.nickName : list.username)
-                                        + '、';
-                            }
-                            if (name.length > 20) {
-                                conversation.name = name.substr(0, 20);
-                            } else {
-                                conversation.name = name.substr(0, name.length - 1);
-                            }
-                            this.dispatchConversation (count, info, data);
-                        }).onFail((error) => {
+                        this.requestGroupName(conversation, (error) => {
                             count --;
                             conversation.name = '群名获取失败？？';
                             this.store$.dispatch({
@@ -468,7 +474,33 @@ export class ChatEffect {
                                 payload: error
                             });
                             this.dispatchConversation (count, info, data);
+                        }, () => {
+                            count --;
+                            this.dispatchConversation (count, info, data);
                         });
+                        // global.JIM.getGroupMembers({gid: conversation.key})
+                        // .onSuccess((member) => {
+                        //     count --;
+                        //     let name = '';
+                        //     for (let list of member.member_list) {
+                        //         name += (list.nickName !== '' ? list.nickName : list.username)
+                        //                 + '、';
+                        //     }
+                        //     if (name.length > 20) {
+                        //         conversation.name = name.substr(0, 20);
+                        //     } else {
+                        //         conversation.name = name.substr(0, name.length - 1);
+                        //     }
+                        //     this.dispatchConversation (count, info, data);
+                        // }).onFail((error) => {
+                        //     count --;
+                        //     conversation.name = '群名获取失败？？';
+                        //     this.store$.dispatch({
+                        //         type: appAction.errorApiTip,
+                        //         payload: error
+                        //     });
+                        //     this.dispatchConversation (count, info, data);
+                        // });
                     }
                 }
                 this.dispatchConversation (count, info, data);
@@ -1951,51 +1983,7 @@ export class ChatEffect {
                         });
                     }
                 } else {
-                    global.JIM.getGroupMembers({gid: eventData.gid})
-                    .onSuccess((data) => {
-                        let name = '';
-                        let count = 0;
-                        for (let member of data.member_list) {
-                            name += (member.nickName !== '' ?
-                                member.nickName : member.username) + '、';
-                            for (let userList of eventData.to_usernames) {
-                                if (userList.username === member.username) {
-                                    global.JIM.getResource({media_id: member.avatar})
-                                    .onSuccess((urlInfo) => {
-                                        userList.avatarUrl = urlInfo.url;
-                                        count ++;
-                                        if (count === eventData.to_usernames.length) {
-                                            this.store$.dispatch({
-                                                type: chatAction.updateGroupMembersEvent,
-                                                payload: {
-                                                    eventData
-                                                }
-                                            });
-                                        }
-                                    }).onFail((error) => {
-                                        count ++;
-                                        if (count === eventData.to_usernames.length) {
-                                            this.store$.dispatch({
-                                                type: chatAction.updateGroupMembersEvent,
-                                                payload: {
-                                                    eventData
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                        if (name.length > 20) {
-                            eventData.name = name.substr(0, 20);
-                        } else {
-                            eventData.name = name.substr(0, name.length - 1);
-                        }
-                        this.store$.dispatch({
-                            type: chatAction.addGroupMembersEventSuccess,
-                            payload: eventData
-                        });
-                    }).onFail((error) => {
+                    this.requestGroupName(eventData, (error) => {
                         this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
@@ -2005,7 +1993,95 @@ export class ChatEffect {
                             type: chatAction.addGroupMembersEventSuccess,
                             payload: eventData
                         });
+                    }, () => {
+                        this.store$.dispatch({
+                            type: chatAction.addGroupMembersEventSuccess,
+                            payload: eventData
+                        });
+                    }, (member, count) => {
+                        for (let userList of eventData.to_usernames) {
+                            if (userList.username === member.username) {
+                                global.JIM.getResource({media_id: member.avatar})
+                                .onSuccess((urlInfo) => {
+                                    userList.avatarUrl = urlInfo.url;
+                                    count ++;
+                                    if (count === eventData.to_usernames.length) {
+                                        this.store$.dispatch({
+                                            type: chatAction.updateGroupMembersEvent,
+                                            payload: {
+                                                eventData
+                                            }
+                                        });
+                                    }
+                                }).onFail((error) => {
+                                    count ++;
+                                    if (count === eventData.to_usernames.length) {
+                                        this.store$.dispatch({
+                                            type: chatAction.updateGroupMembersEvent,
+                                            payload: {
+                                                eventData
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
                     });
+                    // global.JIM.getGroupMembers({gid: eventData.gid})
+                    // .onSuccess((data) => {
+                    //     let name = '';
+                    //     let count = 0;
+                    //     for (let member of data.member_list) {
+                    //         name += (member.nickName !== '' ?
+                    //             member.nickName : member.username) + '、';
+                    //         for (let userList of eventData.to_usernames) {
+                    //             if (userList.username === member.username) {
+                    //                 global.JIM.getResource({media_id: member.avatar})
+                    //                 .onSuccess((urlInfo) => {
+                    //                     userList.avatarUrl = urlInfo.url;
+                    //                     count ++;
+                    //                     if (count === eventData.to_usernames.length) {
+                    //                         this.store$.dispatch({
+                    //                             type: chatAction.updateGroupMembersEvent,
+                    //                             payload: {
+                    //                                 eventData
+                    //                             }
+                    //                         });
+                    //                     }
+                    //                 }).onFail((error) => {
+                    //                     count ++;
+                    //                     if (count === eventData.to_usernames.length) {
+                    //                         this.store$.dispatch({
+                    //                             type: chatAction.updateGroupMembersEvent,
+                    //                             payload: {
+                    //                                 eventData
+                    //                             }
+                    //                         });
+                    //                     }
+                    //                 });
+                    //             }
+                    //         }
+                    //     }
+                    //     if (name.length > 20) {
+                    //         eventData.name = name.substr(0, 20);
+                    //     } else {
+                    //         eventData.name = name.substr(0, name.length - 1);
+                    //     }
+                    //     this.store$.dispatch({
+                    //         type: chatAction.addGroupMembersEventSuccess,
+                    //         payload: eventData
+                    //     });
+                    // }).onFail((error) => {
+                    //     this.store$.dispatch({
+                    //         type: appAction.errorApiTip,
+                    //         payload: error
+                    //     });
+                    //     eventData.name = '群名获取失败？？';
+                    //     this.store$.dispatch({
+                    //         type: chatAction.addGroupMembersEventSuccess,
+                    //         payload: eventData
+                    //     });
+                    // });
                 }
             }).onFail((error) => {
                 this.store$.dispatch({
@@ -2486,6 +2562,7 @@ export class ChatEffect {
         .switchMap((info) => {
             const updateGroupInfoEvent = global.JIM.getGroupInfo({gid: info.gid})
             .onSuccess((data) => {
+                console.log(66666, data.group_info);
                 if (data.group_info.avatar && data.group_info.avatar !== '') {
                     global.JIM.getResource({media_id: data.group_info.avatar})
                     .onSuccess((urlInfo) => {
@@ -2538,6 +2615,65 @@ export class ChatEffect {
             return Observable.of(updateGroupInfoEvent)
                     .map(() => {
                         return {type: '[chat] update group info event useless'};
+                    });
+    });
+    // 验证消息请求头像
+    @Effect()
+    private userInfUpdateEvent$: Observable<Action> = this.actions$
+        .ofType(chatAction.userInfUpdateEvent)
+        .map(toPayload)
+        .switchMap((info) => {
+            info.name = info.from_username;
+            info.type = 3;
+            global.JIM.getUserInfo({
+                username: info.from_username
+            }).onSuccess((userInfo) => {
+                info.nickName = userInfo.user_info.nickname;
+                info = Object.assign({}, info, userInfo.user_info);
+                if (!userInfo.user_info.avatar || userInfo.user_info.avatar === '') {
+                    info.avatarUrl = '';
+                    this.store$.dispatch({
+                        type: chatAction.userInfUpdateEventSuccess,
+                        payload: info
+                    });
+                    return;
+                }
+                global.JIM.getResource({media_id: userInfo.user_info.avatar})
+                .onSuccess((urlInfo) => {
+                    info.avatarUrl = urlInfo.url;
+                    this.store$.dispatch({
+                        type: chatAction.userInfUpdateEventSuccess,
+                        payload: info
+                    });
+                }).onFail((error) => {
+                    info.avatarUrl = '';
+                    this.store$.dispatch({
+                        type: chatAction.userInfUpdateEventSuccess,
+                        payload: info
+                    });
+                }).onTimeout(() => {
+                    info.avatarUrl = '';
+                    this.store$.dispatch({
+                        type: chatAction.userInfUpdateEventSuccess,
+                        payload: info
+                    });
+                });
+            }).onFail((error) => {
+                info.avatarUrl = '';
+                this.store$.dispatch({
+                    type: chatAction.userInfUpdateEventSuccess,
+                    payload: info
+                });
+            }).onTimeout(() => {
+                info.avatarUrl = '';
+                this.store$.dispatch({
+                    type: chatAction.userInfUpdateEventSuccess,
+                    payload: info
+                });
+            });
+            return Observable.of('userInfUpdateEvent')
+                    .map(() => {
+                        return {type: '[chat] user inf update event useless'};
                     });
     });
     constructor(
@@ -2703,7 +2839,6 @@ export class ChatEffect {
             global.JIM.getResource({media_id: data.user_info.avatar})
             .onSuccess((urlInfo) => {
                 unread.avatarUrl = urlInfo.url;
-                console.log(333333333, JSON.stringify(unread));
                 this.store$.dispatch({
                     type: chatAction.watchUnreadListSuccess,
                     payload: {
@@ -2744,6 +2879,32 @@ export class ChatEffect {
                 type: appAction.errorApiTip,
                 payload: error
             });
+        });
+    }
+    private requestGroupName(eventData, callback1, callback2?, callback3?) {
+        global.JIM.getGroupMembers({gid: eventData.key || eventData.gid || eventData.target_id})
+        .onSuccess((data) => {
+            let name = '';
+            let count = 0;
+            for (let member of data.member_list) {
+                name += (member.nickName || member.nickname ||
+                    member.username || member.name) + '、';
+                if (callback3) {
+                    callback3(member, count);
+                }
+            }
+            if (name.length > 20) {
+                eventData.name = name.substr(0, 20);
+            } else {
+                eventData.name = name.substr(0, name.length - 1);
+            }
+            eventData.target_name = eventData.name;
+            eventData.group_name = eventData.name;
+            if (callback2) {
+                callback2();
+            }
+        }).onFail((error) => {
+            callback1(error);
         });
     }
 }

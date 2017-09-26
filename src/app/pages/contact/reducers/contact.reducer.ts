@@ -78,6 +78,9 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
         // case chatAction.groupAvatar:
         //     updateGroupAvatar(state, payload);
         //     break;
+        case chatAction.addFriendSyncEvent:
+            addFriendSyncEvent(state, payload);
+            break;
         default:
     }
     return state;
@@ -92,6 +95,17 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
 //         }
 //     }
 // }
+// 多端在线同意好友请求事件
+function addFriendSyncEvent(state, payload) {
+    for (let user of payload.to_usernames) {
+        for (let verifyMessage of state.verifyMessageList) {
+            if (verifyMessage.stateType === 0 && verifyMessage.name === user.username) {
+                verifyMessage.stateType = 4;
+                break;
+            }
+        }
+    }
+}
 // 同意或拒绝好友请求失败
 function addFriendError(state, payload) {
     for (let verifyMessage of state.verifyMessageList) {

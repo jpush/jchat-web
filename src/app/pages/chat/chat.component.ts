@@ -273,6 +273,10 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         global.JIM.onUserInfUpdate((data) => {
             console.log('onUserInfUpdate', data);
+            this.store$.dispatch({
+                type: chatAction.userInfUpdateEvent,
+                payload: data
+            });
         });
     }
     public ngOnDestroy() {
@@ -608,6 +612,13 @@ export class ChatComponent implements OnInit, OnDestroy {
                     payload: chatState.friendList
                 });
                 break;
+            case chatAction.userInfUpdateEventSuccess:
+                this.store$.dispatch({
+                    type: chatAction.dispatchFriendList,
+                    payload: chatState.friendList
+                });
+                this.otherInfo.info = chatState.otherInfo.info;
+                break;
             case mainAction.deleteFriendSuccess:
                 this.store$.dispatch({
                     type: chatAction.dispatchFriendList,
@@ -652,6 +663,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     private modalTipSendCardSuccess (chatState) {
         let count = this.sendBusinessCardCount;
+        console.log(count, chatState.sendBusinessCardSuccess);
         if (count !== 0 && count === chatState.sendBusinessCardSuccess) {
             this.sendBusinessCardCount = 0;
             this.store$.dispatch({
@@ -759,6 +771,17 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.store$.dispatch({
                         type: chatAction.exitGroupEvent,
                         payload: data
+                    });
+                } else {
+                    this.store$.dispatch({
+                        type: mainAction.exitGroupSuccess,
+                        payload: {
+                            item: {
+                                type: 4,
+                                name: data.group_name,
+                                key: data.gid
+                            }
+                        }
                     });
                 }
                 break;
@@ -1786,7 +1809,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
         for (let select of info.selectList) {
             let msg = {
-                content: '推荐一张名片给你',
+                content: '推荐了一张名片',
                 extras: {
                     userName: newInfo.name,
                     appKey: newInfo.appkey,
@@ -1803,6 +1826,24 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.sendBusinessCardCount ++;
             this.sendMsgEmit(msg, select);
         }
+    }
+    private businessCardSendEmit(user) {
+        let msg = {
+            content: '推荐了一张名片',
+            extras: {
+                userName: user.name,
+                appKey: user.appkey,
+                businessCard: 'businessCard'
+            },
+            localExtras: {
+                userName: user.name,
+                appKey: user.appkey,
+                businessCard: 'businessCard',
+                media_url: user.avatarUrl,
+                nickName: user.nickName
+            }
+        };
+        this.sendMsgEmit(msg);
     }
     private msgTransmitConfirm(info) {
         delete this.transmitItem.msg_id;

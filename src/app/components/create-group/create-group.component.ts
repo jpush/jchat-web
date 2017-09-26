@@ -166,7 +166,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             type: mainAction.createGroupSearchAction,
             payload: {
                 keywords,
-                type: 'create'
+                type: 'createGroup'
             }
         });
     }

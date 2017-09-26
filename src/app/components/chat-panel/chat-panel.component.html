@@ -359,6 +359,7 @@
             <label title="文件" for="sendFile" class="chat-panel-singleFile-label" [ngClass]="{'active': filePanelShow}"></label>
             <input type="file" id="sendPic" class="chat-panel-singlePic" (change) = "sendPicAction($event)" value="发送图片">
             <label title="图片" for="sendPic" class="chat-panel-singlePic-label"></label>
+            <span (click)="showBusinessCardModal()" title="名片" class="float-left send-business-card"></span>
         </div>
         <div class="chat-panel-text-container" (drop)="dropArea($event)" (click)="contentFocus($event)">
             <perfect-scrollbar class="chat-panel-content-scroll">
@@ -376,3 +377,4 @@
 <paste-image-component *ngIf="pasteImage.show" [pasteInfo]="pasteImage" (pasteImage)="pasteImageEmit()"></paste-image-component>
 <drop-file-component *ngIf="dropFileInfo.show" (dropFile)="dropFileEmit()" [dropFileInfo]="dropFileInfo"></drop-file-component>
 <at-list-component *ngIf="atList.show" [atList]="atList" (selectAtItem)="selectAtItemEmit($event)"></at-list-component>
+<card-modal-component *ngIf="businessCard.show" [businessCard]="businessCard" (businessCardSend)="businessCardSendEmit($event)"></card-modal-component>

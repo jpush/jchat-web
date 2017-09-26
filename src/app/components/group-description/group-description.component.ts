@@ -20,8 +20,9 @@ export class GroupDescriptionComponent implements OnInit {
     private stopPropagation(event) {
         event.stopPropagation();
     }
-    private groupAction(desc) {
+    private groupAction(event, desc) {
         console.log(6666, desc);
+        event.stopPropagation();
         if (desc) {
             desc.actionType = 'modifyDescription';
             this.updateGroupInfo.emit(desc);

@@ -31,6 +31,7 @@ import { PasteImageModule } from '../paste-image';
 import { DropFileModule } from '../drop-file';
 import { AtListModule } from '../../components/at-list';
 import { MessageFileModule } from '../../components/message-file';
+import { CardModalModule } from '../../components/card-modal';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { MessageFileModule } from '../../components/message-file';
     DropFileModule,
     AtListModule,
     FileNamePipeModule,
-    MessageFileModule
+    MessageFileModule,
+    CardModalModule
   ],
   exports: [
       ChatPanelComponent

@@ -82,5 +82,6 @@ export interface ChatStore {
         loading: boolean
     };
     readObj: Object;
-    groupShield: Array<any>
+    groupShield: Array<any>;
+    businessCardSearch: object;
 }

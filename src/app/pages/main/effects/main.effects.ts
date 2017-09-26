@@ -792,9 +792,14 @@ export class MainEffect {
                 type: mainAction.messageTransmitSearchComplete,
                 payload: item
             });
-        } else {
+        } else if (info.type === 'createGroup') {
             this.store$.dispatch({
                 type: mainAction.createGroupSearchComplete,
+                payload: item
+            });
+        } else if (info.type === 'businessCard') {
+            this.store$.dispatch({
+                type: mainAction.businessCardSearchComplete,
                 payload: item
             });
         }
