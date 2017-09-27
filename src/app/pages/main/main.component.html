@@ -7,13 +7,13 @@
             <div class="main-tab">
                 <div (click)="changeListTab(0)" class="main-chat">
                     <div class="main-conversation-icon" [ngClass]="{active: listTab === 0}" [hoverEvent]="conversationHover">
-                        <jui-badge *ngIf="badge.conversation > 0" class="main-badge" displayType="no-wrapper" [badgeNum]="badge.conversation" showZero="false" maxNum="999"></jui-badge>                        
+                        <jui-badge *ngIf="badge.conversation > 0" class="main-badge" displayType="no-wrapper" [badgeNum]="badge.conversation" showZero="false" maxNum="1000"></jui-badge>                        
                     </div>
                     <hover-tip-component [hidden]="!conversationHover.show" [hoverInfo]="conversationHover"></hover-tip-component>
                 </div>
                 <div (click)="changeListTab(1)" class="main-chat">
                     <div class="main-contact-icon" [ngClass]="{active: listTab === 1}" [hoverEvent]="contactHover">
-                        <jui-badge *ngIf="badge.contact > 0" class="main-badge" displayType="no-wrapper" [badgeNum]="badge.contact" showZero="false" maxNum="999"></jui-badge>
+                        <jui-badge *ngIf="badge.contact > 0" class="main-badge" displayType="no-wrapper" [badgeNum]="badge.contact" showZero="false" maxNum="1000"></jui-badge>
                     </div>
                     <hover-tip-component [hidden]="!contactHover.show" [hoverInfo]="contactHover"></hover-tip-component>
                 </div>

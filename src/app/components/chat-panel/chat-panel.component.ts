@@ -400,6 +400,14 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.updateGroupInfoEventSuccess:
 
             case chatAction.userInfUpdateEventSuccess:
+
+            case chatAction.transmitMessageComplete:
+
+            case chatAction.msgReceiptChangeEvent:
+
+            case chatAction.deleteGroupMembersEvent:
+
+            case chatAction.exitGroupEvent:
                 this.updateMsg(chatState);
                 break;
             case chatAction.msgFile:
@@ -415,6 +423,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         }
     }
     private updateMsg(chatState) {
+        console.log(44444);
         if (chatState.activePerson.activeIndex < 0) {
             return ;
         }
@@ -758,6 +767,18 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     private msgContentFocus() {
         this.flag = false;
+        this.store$.dispatch({
+            type: chatAction.msgFile,
+            payload: {
+                show: false
+            }
+        });
+        this.store$.dispatch({
+            type: chatAction.groupSetting,
+            payload: {
+                show: false
+            }
+        });
     }
     private watchOtherInfo(content) {
         let username = content.from_id ? content.from_id : content.name;
@@ -1134,7 +1155,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             payload: {
                 active: this.active,
                 messageList: this.messageList,
-                type: 'image'
+                type: 'image',
+                show: true
             }
         });
     }

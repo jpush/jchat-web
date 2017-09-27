@@ -369,7 +369,8 @@ export class MainEffect {
                     name: user.username,
                     username: user.username,
                     nickName: user.nickname,
-                    type: 3
+                    type: 3,
+                    appkey: user.appkey
                 };
                 if (user.avatar !== '') {
                     global.JIM.getResource({media_id: user.avatar})

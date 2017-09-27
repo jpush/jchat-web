@@ -87,6 +87,13 @@
                 padding-left: 10px;
                 box-sizing: border-box;
             }
+            .other-info-memo_name{
+                color: rgb(0, 12, 10);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 157px;
+            }
         }
     }
     .modal-btn{

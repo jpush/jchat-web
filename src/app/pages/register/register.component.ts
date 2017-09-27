@@ -6,6 +6,7 @@ import { AppStore } from '../../app.store';
 import { registerAction } from './actions';
 import { Util } from '../../services/util';
 import { appAction } from '../../actions';
+declare function JMessage(obj ?: Object): void;
 
 @Component({
     selector: 'app-register',
@@ -36,16 +37,20 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         private storageService: StorageService,
         private elementRef: ElementRef
     ) {
+        // pass
+    }
+    public ngOnInit() {
         this.store$.dispatch({
             type: registerAction.init,
             payload: null
         });
-    }
-    public ngOnInit() {
         this.JIMInit();
         this.registerStream = this.store$.select((state) => {
             const registerState = state['registerReducer'];
             switch (registerState.actionType) {
+                case registerAction.init:
+                    this.init();
+                    break;
                 case registerAction.registerSuccess:
                     this.tipModal = registerState.tipModal;
                     break;
@@ -136,5 +141,22 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tipModal.show = false;
         this.storageService.set('register-username', this.info.username);
         this.router.navigate(['/login']);
+    }
+    private init() {
+        this.info = {
+            username: '',
+            password: '',
+            repeatPassword: ''
+        };
+        this.tip = {
+            usernameTip: '',
+            passwordTip: '',
+            repeatPasswordTip: ''
+        };
+        this.isButtonAvailable = false;
+        this.tipModal = {
+            show: false,
+            info: {}
+        };
     }
 }

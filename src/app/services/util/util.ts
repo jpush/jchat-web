@@ -200,22 +200,14 @@ export class Util {
      */
     public sortByLetter(payload) {
         let letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-            'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+            'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '#'];
         let result = [];
-        let defaultResult = {
-            letter: '#',
-            data: []
-        };
         for (let item of letter) {
             result.push({
                 letter: item,
                 data: []
             });
         }
-        result.push({
-            letter: '#',
-            data: []
-        });
         for (let item of payload) {
             let flag = false;
             for (let re of result) {

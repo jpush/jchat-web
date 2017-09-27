@@ -114,8 +114,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         key: 0,
         isTransmitMsg: true,
         msg_id: 0,
-        unread_count: true,
-        msg_type: 0
+        unread_count: 0,
+        msg_type: 0,
+        success: 1
     };
     private verifyModal = {
         info: {},
@@ -149,12 +150,13 @@ export class ChatComponent implements OnInit, OnDestroy {
         private storageService: StorageService,
         private elementRef: ElementRef
     ) {
+        // pass
+    }
+    public ngOnInit() {
         this.store$.dispatch({
             type: chatAction.init,
             payload: null
         });
-    }
-    public ngOnInit() {
         this.hasOffline = 0;
         this.subscribeStore();
         this.store$.dispatch({
@@ -167,11 +169,18 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         global.JIM.onMsgReceive((data) => {
             console.log(data);
+            // 与feedback_的消息不做处理
+            let feedbackReg = /^feedback_/g;
+            if (data.messages[0].content.target_id.match(feedbackReg)) {
+                return ;
+            }
             if (data.messages[0].content.from_id === global.user) {
                 this.isMySelf = true;
                 this.store$.dispatch({
                     type: chatAction.syncReceiveMessage,
-                    payload: data
+                    payload: {
+                        data
+                    }
                 });
                 return ;
             } else {
@@ -315,8 +324,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     private stateChanged(chatState, mainState) {
         let activeIndex = chatState.activePerson.activeIndex;
         let messageListActive = chatState.messageList[activeIndex];
-        console.log(chatState);
+        console.log(chatState.actionType, 'chat', chatState);
         switch (chatState.actionType) {
+            case chatAction.init:
+                this.init();
+                break;
             case chatAction.getFriendListSuccess:
                 this.conversationList = chatState.conversation;
                 this.store$.dispatch({
@@ -426,6 +438,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     type: chatAction.dispatchFriendList,
                     payload: chatState.friendList
                 });
+                this.active = chatState.activePerson;
                 break;
             case chatAction.watchOtherInfoSuccess:
 
@@ -437,7 +450,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.otherInfo = chatState.otherInfo;
                 break;
             case chatAction.groupSetting:
-
+                if (activeIndex < 0) {
+                    this.groupSetting.show = false;
+                }
             case chatAction.groupInfo:
                 if (activeIndex >= 0 && messageListActive && messageListActive.groupSetting) {
                     this.groupSetting = Object.assign({},
@@ -466,6 +481,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 // this.groupSetting.show = false;
                 this.closeGroupSettingEmit();
+                this.active = chatState.activePerson;
                 break;
             case mainAction.addBlackListSuccess:
                 this.conversationList = chatState.conversation;
@@ -665,7 +681,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         let count = this.sendBusinessCardCount;
         console.log(count, chatState.sendBusinessCardSuccess);
         if (count !== 0 && count === chatState.sendBusinessCardSuccess) {
-            this.sendBusinessCardCount = 0;
             this.store$.dispatch({
                 type: mainAction.showModalTip,
                 payload: {
@@ -679,6 +694,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
             });
         }
+        this.sendBusinessCardCount = 0;
         this.store$.dispatch({
             type: chatAction.hideOtherInfo,
             payload: {
@@ -755,6 +771,16 @@ export class ChatComponent implements OnInit, OnDestroy {
                     payload: data
                 });
                 this.notification(data);
+                break;
+            case 7:
+                if (!data.isOffline) {
+                    if (data.extra === 0) {
+                        this.store$.dispatch({
+                            type: chatAction.getFriendList,
+                            payload: null
+                        });
+                    }
+                }
                 break;
             case 8:
                 // 创建群的事件
@@ -948,10 +974,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                     payload: data
                 });
                 break;
-            case 35:
-                break;
-            case 36:
-                break;
             default:
         }
     }
@@ -1021,14 +1043,14 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.newMessageNotice.num ++;
             clearInterval(this.newMessageNotice.timer);
             this.newMessageNotice.timer = setInterval(() => {
-                if (document.title === '极光 IM Demo') {
+                if (document.title === 'JChat - 极光 IM Demo') {
                     document.title = `jchat(${this.newMessageNotice.num})`;
                 } else {
-                    document.title = '极光 IM Demo';
+                    document.title = 'JChat - 极光 IM Demo';
                 }
                 if (this.newMessageNotice.num === 0) {
                     clearInterval(this.newMessageNotice.timer);
-                    document.title = '极光 IM Demo';
+                    document.title = 'JChat - 极光 IM Demo';
                 }
             }, 1000);
         }
@@ -1042,6 +1064,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     private changeActivePerson(chatState) {
         this.closeGroupSettingEmit();
         this.active = chatState.activePerson;
+        this.store$.dispatch({
+            type: chatAction.updateUnreadCount,
+            payload: this.active
+        });
         this.changeActiveScrollBottom = !this.changeActiveScrollBottom;
         // this.groupSetting.show = false;
         // 判断是否已经缓存
@@ -1152,7 +1178,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             ctime_ms: new Date().getTime(),
             success: 1,
             msgKey: this.msgKey ++,
-            unread_count: true
+            unread_count: 0
         };
         // 转发消息失败重发单聊消息
         if (activePerson.type === 3 && data.repeatSend && data.isTransmitMsg) {
@@ -1345,7 +1371,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             ctime_ms: new Date().getTime(),
             success: 1,
             msgKey: this.msgKey ++,
-            unread_count: true
+            unread_count: 0
         };
         // 发送单聊图片
         if (this.active.type === 3) {
@@ -1438,7 +1464,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 ctime_ms: (new Date()).getTime(),
                 success: 1,
                 msgKey: this.msgKey ++,
-                unread_count: true
+                unread_count: 0
             };
         }
         // 发送单聊文件
@@ -1565,6 +1591,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 用户信息面板中，关闭面板或者建立单聊
     private OtherInfoEmit(item) {
+        console.log(333333333, item);
         if (item && item.name !== this.active.name) {
             this.store$.dispatch({
                 type: chatAction.createOtherChat,
@@ -1828,6 +1855,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
     }
     private businessCardSendEmit(user) {
+        console.log(555, user);
         let msg = {
             content: '推荐了一张名片',
             extras: {
@@ -1856,7 +1884,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.transmitItem.hasLoad = false;
         this.transmitItem.content.from_id = global.user;
         this.transmitItem.isTransmitMsg = true;
-        this.transmitItem.unread_count = true;
+        this.transmitItem.unread_count = 0;
+        this.transmitItem.success = 1;
         for (let item of info.selectList) {
             this.transmitItem.content.target_id = item.name;
             this.transmitItem.type = item.type;
@@ -2051,5 +2080,126 @@ export class ChatComponent implements OnInit, OnDestroy {
             type: chatAction.watchOtherInfo,
             payload: info
         });
+    }
+    private init() {
+        this.isLoaded = false;
+        this.conversationList = [];
+        this.messageList = [
+            {
+                key: 0,
+                msgs: [],
+                groupSetting: {
+                    groupInfo: {},
+                    memberList: []
+                }
+            }
+        ];
+        this.active = {
+            name: '',
+            nickName: '',
+            key: '',
+            activeIndex: -1,
+            type: 0,
+            change: false,
+            shield: false,
+            appkey: ''
+        };
+        this.defaultPanelIsShow = true;
+        this.otherInfo = {
+            show: false,
+            info: {
+                name: '',
+                appkey: '',
+                avatarUrl: '',
+                nickName: ''
+            }
+        };
+        this.blackMenu = {
+            show: false,
+            menu: []
+        };
+        this.groupSetting = {
+            groupInfo: {
+                name: '',
+                desc: '',
+                gid: 0
+            },
+            memberList: [],
+            active: {},
+            show: false
+        };
+        this.msgKey = 1;
+        this.groupDescription = {
+            show: false,
+            description: {}
+        };
+        this.selfInfo = {};
+        this.isCacheArr = [];
+        this.playVideoShow = {
+            show: false,
+            url: ''
+        };
+        this.eventArr = [];
+        this.hasOffline = 0;
+        // 其他操作触发滚动条到底部
+        this.otherOptionScrollBottom = false;
+        // 切换用户触发滚动条到底部
+        this.changeActiveScrollBottom = false;
+        this.windowIsFocus = true;
+        this.newMessageNotice = {
+            timer: null,
+            num: 0
+        };
+        this.messageTransmit = {
+            list: [],
+            show: false,
+            type: ''
+        };
+        this.transmitItem = {
+            content: {
+                msg_type: '',
+                from_id: '',
+                target_id: ''
+            },
+            msgKey: -1,
+            totalTransmitNum: 0,
+            ctime_ms: 0,
+            conversation_time_show: '',
+            time_show: '',
+            hasLoad: false,
+            showMoreIcon: false,
+            type: 0,
+            key: 0,
+            isTransmitMsg: true,
+            msg_id: 0,
+            unread_count: 0,
+            msg_type: 0,
+            success: 1
+        };
+        this.verifyModal = {
+            info: {},
+            show: false
+        };
+        this.changeOtherInfoFlag = false;
+        this.sendBusinessCardCount = 0;
+        this.groupAvatar = {
+            info: {
+                src: '',
+                width: 0,
+                height: 0,
+                pasteFile: {}
+            },
+            show: false,
+            formData: {},
+            src: ''
+        };
+        this.unreadList = {
+            show: false,
+            info: {
+                read: [],
+                unread: []
+            },
+            loading: false
+        };
     }
 }

@@ -229,7 +229,7 @@
                             <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meFile)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
-                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
+                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '全部已读'}}</span>
                             </div>
                         </div>
                         <!-- 图片消息 -->
@@ -252,7 +252,7 @@
                             <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meImage)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
-                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
+                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '全部已读'}}</span>
                             </div>
                         </div>
                         <!-- 文件消息 -->
@@ -282,7 +282,7 @@
                             <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meFile)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
-                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
+                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '全部已读'}}</span>
                             </div>
                         </div>
                         <!-- 视频消息 -->
@@ -304,7 +304,7 @@
                             <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meVideo)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
-                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
+                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '全部已读'}}</span>
                             </div>
                         </div>
                         <!-- 地理定位 -->
@@ -323,7 +323,7 @@
                             <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meLocation)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
-                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
+                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '全部已读'}}</span>
                             </div>
                         </div>
                         <!-- 语音 -->
@@ -343,7 +343,7 @@
                             <div class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meVoice [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreVoice($event, i, meVoice)"></div>
                                 <span *ngIf="active.type === 3" [ngClass]="{'unread-single': i.unread_count > 0}">{{i.unread_count > 0 ? '未读' : '已读'}}</span>
-                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '已读'}}</span>
+                                <span *ngIf="active.type === 4" [ngClass]="{'unread-group': i.unread_count > 0}" (click)="unreadList(i)">{{i.unread_count > 0 ? i.unread_count + '人未读' : '全部已读'}}</span>
                             </div> 
                         </div>
                     </div>

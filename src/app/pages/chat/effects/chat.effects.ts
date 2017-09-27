@@ -23,12 +23,19 @@ export class ChatEffect {
         .ofType(chatAction.syncReceiveMessage)
         .map(toPayload)
         .switchMap((info) => {
-            if (info.messages[0].content.msg_body.media_id) {
-                this.requestMediaUrl(info, 0);
-            } else {
+            let count = 0;
+            if (info.data.messages[0].content.msg_body.media_id) {
+                count ++;
+                this.requestMediaUrl(info.data, count);
+            }
+            if (info.data.messages[0]) {
+                count ++;
+                this.requestMsgAvatarUrl(info.data.messages[0], info, count);
+            }
+            if (count <= 0) {
                 this.store$.dispatch({
                     type: chatAction.receiveMessageSuccess,
-                    payload: info
+                    payload: info.data
                 });
             }
             return Observable.of('syncReceiveMessage')
@@ -429,6 +436,13 @@ export class ChatEffect {
             const conversationObj = global.JIM.getConversation()
             .onSuccess((info) => {
                 console.log('会话列表：', JSON.stringify(info));
+                // 删除feedBack
+                for (let i = 0; i < info.conversations.length; i++) {
+                    if (info.conversations[i].name.match(/^feedback_/g)) {
+                        info.conversations.splice(i, 1);
+                    }
+                }
+                info.conversations.reverse();
                 // 对置顶会话进行排序
                 let topArr = [];
                 let notopArr = [];
@@ -761,8 +775,7 @@ export class ChatEffect {
                 target_gname: text.select.name,
                 msg_body: msgBody,
                 nead_receipt: true
-            })
-            .onSuccess((data, msgs) => {
+            }).onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = data.unread_count;
                 msgs.msg_type = 4;
@@ -1526,6 +1539,7 @@ export class ChatEffect {
                 //         payload: error
                 //     });
                 // });
+                console.log(1111, other);
                 if (other.hasOwnProperty('avatarUrl') || data.user_info.avatar === '') {
                     data.user_info.avatarUrl = other.avatarUrl ? other.avatarUrl : '';
                     this.store$.dispatch({
@@ -2295,7 +2309,9 @@ export class ChatEffect {
                 }).onSuccess((data) => {
                     this.store$.dispatch({
                         type: chatAction.saveMemoNameSuccess,
-                        payload: user
+                        payload: {
+                            to_usernames: [user]
+                        }
                     });
                 }).onFail((error) => {
                     this.store$.dispatch({
@@ -2350,6 +2366,12 @@ export class ChatEffect {
         .ofType(chatAction.msgFile)
         .map(toPayload)
         .switchMap((info) => {
+            if (!info.show) {
+                return Observable.of('msgFile')
+                        .map(() => {
+                            return {type: '[chat] msg file useless'};
+                        });
+            }
             let msgs = info.messageList[info.active.activeIndex].msgs;
             let count = 0;
             for (let i = msgs.length - 1; i >= 0; i--) {
@@ -2476,6 +2498,9 @@ export class ChatEffect {
         .switchMap((message) => {
             global.JIM.msgUnreadList({msg_id: message.msg_id})
             .onSuccess((list) => {
+                if (message.unread_count !== list.msg_unread_list.unread_list.length) {
+                    message.unread_count = list.msg_unread_list.unread_list.length;
+                }
                 for (let unread of list.msg_unread_list.unread_list) {
                     this.getUnreadListInfo(list, unread);
                 }
@@ -2554,6 +2579,30 @@ export class ChatEffect {
                         return {type: '[chat] friend invitation event useless'};
                     });
     });
+    // 上报未读数
+    @Effect()
+    private updateUnreadCount$: Observable<Action> = this.actions$
+        .ofType(chatAction.updateUnreadCount)
+        .map(toPayload)
+        .switchMap((active) => {
+            if (active.type === 3) {
+                if (active.name) {
+                    global.JIM._updateSingleUnreadCount({
+                        username: active.name
+                    });
+                }
+            } else if (active.type === 4) {
+                if (active.key) {
+                    global.JIM._updateGroupUnreadCount({
+                        gid: active.key,
+                    });
+                }
+            }
+            return Observable.of('updateUnreadCount')
+                    .map(() => {
+                        return {type: '[chat] update unread count useless'};
+                    });
+    });
     // 更新群信息事件
     @Effect()
     private updateGroupInfoEvent$: Observable<Action> = this.actions$
@@ -2575,6 +2624,7 @@ export class ChatEffect {
                             }
                         });
                     }).onFail((error) => {
+                        data.group_info.avatarUrl = '';
                         this.store$.dispatch({
                             type: chatAction.updateGroupInfoEventSuccess,
                             payload: {
@@ -2583,6 +2633,7 @@ export class ChatEffect {
                             }
                         });
                     }).onTimeout((error) => {
+                        data.group_info.avatarUrl = '';
                         this.store$.dispatch({
                             type: chatAction.updateGroupInfoEventSuccess,
                             payload: {
@@ -2592,6 +2643,7 @@ export class ChatEffect {
                         });
                     });
                 } else {
+                    data.group_info.avatarUrl = '';
                     this.store$.dispatch({
                         type: chatAction.updateGroupInfoEventSuccess,
                         payload: {
@@ -2683,8 +2735,10 @@ export class ChatEffect {
         private storageService: StorageService
     ) {}
     private requestMsgAvatarUrl(messages, obj, count) {
+        let username = messages.content.from_id !== global.user ?
+                    messages.content.from_id : messages.content.target_id;
         global.JIM.getUserInfo({
-            username: messages.content.from_id
+            username
         }).onSuccess((user) => {
             if (!user.user_info.avatar || user.user_info.avatar === '') {
                 messages.content.avatarUrl = '';

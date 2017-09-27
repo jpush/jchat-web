@@ -3,7 +3,7 @@ import { chatAction } from '../actions';
 import { ChatStore } from '../stores/chat.store';
 import { chatInit } from '../model';
 import { contactAction } from '../../contact/actions';
-import { global } from '../../../services/common';
+import { global, authPayload } from '../../../services/common';
 import { Util } from '../../../services/util';
 let util = new Util();
 
@@ -450,28 +450,12 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.otherInfo.info.noDisturb = false;
             changeSingleNoDisturb(state, payload);
             break;
-            // 个人资料中保存备注名
+            // 好友资料中保存备注名及备注名同步
         case chatAction.saveMemoNameSuccess:
-            for (let user of payload.to_usernames) {
-                user.name = user.username;
-                user.nickName = user.nickname;
-                user.memo_name = payload.description.memo_name;
-                modifyOtherInfoMemoName(state, user);
-                modifyFriendListMemoName(state, user);
-                modifyConversationMemoName(state, user);
-                modifyActiveMessageList(state, user);
-            }
+            saveMemoNameSuccess(state, payload);
             break;
         case chatAction.deleteFriendSyncEvent:
-            for (let user of payload.to_usernames) {
-                user.name = user.username;
-                user.nickName = user.nickname;
-                modifyOtherInfoMemoName(state, user);
-                modifyFriendListMemoName(state, user);
-                modifyConversationMemoName(state, user);
-                modifyActiveMessageList(state, user);
-                friendSyncEvent(state, user, false);
-            }
+            deleteFriendSyncEvent(state, payload);
             break;
         case chatAction.addFriendSyncEvent:
             for (let user of payload.to_usernames) {
@@ -497,7 +481,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.viewerImageUrl = payload;
             break;
         case chatAction.msgFile:
-            state.msgFile.show = true;
+            state.msgFile.show = payload.show;
             break;
         case chatAction.msgFileSuccess:
             if (payload.isFirst) {
@@ -573,6 +557,34 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
     }
     return state;
 };
+function saveMemoNameSuccess(state, payload) {
+    for (let user of payload.to_usernames) {
+        if (user.username) {
+            user.name = user.username;
+        }
+        if (user.nickname) {
+            user.nickName = user.nickname;
+        }
+        if (payload.description && payload.description.memo_name) {
+            user.memo_name = payload.description.memo_name;
+        }
+        modifyOtherInfoMemoName(state, user);
+        modifyFriendListMemoName(state, user);
+        modifyConversationMemoName(state, user);
+        modifyActiveMessageList(state, user);
+    }
+}
+function deleteFriendSyncEvent(state, payload) {
+    for (let user of payload.to_usernames) {
+        user.name = user.username;
+        user.nickName = user.nickname;
+        modifyOtherInfoMemoName(state, user);
+        modifyFriendListMemoName(state, user);
+        modifyConversationMemoName(state, user);
+        modifyActiveMessageList(state, user);
+        friendSyncEvent(state, user, false);
+    }
+}
 function userInfUpdateEventSuccess(state, payload) {
     for (let friend of state.friendList) {
         if (payload.name === friend.name) {
@@ -806,6 +818,7 @@ function filterUnreadListMemoName(state, payload) {
     }
 }
 function updateGroupInfoEventSuccess(state, payload) {
+    console.log(5555, payload.groupInfo.avatarUrl);
     payload.eventData.key = payload.eventData.gid;
     payload.eventData.name = payload.eventData.username = payload.eventData.from_username;
     payload.eventData.nickName = payload.eventData.nickname = payload.eventData.from_nickname;
@@ -853,7 +866,7 @@ function updateGroupInfoEventSuccess(state, payload) {
         if (state.conversation[i].type === 4 &&
             Number(state.conversation[i].key) === Number(payload.eventData.key)) {
             item = state.conversation.splice(i, 1)[0];
-            if (payload.groupInfo.avatarUrl !== '') {
+            if (payload.groupInfo.avatarUrl && payload.groupInfo.avatarUrl !== '') {
                 item.avatarUrl = payload.groupInfo.avatarUrl;
             }
             if (payload.groupInfo.name !== '') {
@@ -922,7 +935,7 @@ function emptyUnreadText(conversation, payload) {
     for (let receipt of payload.receipt_msgs) {
         if (conversation.recentMsg &&
             conversation.recentMsg.msg_id === receipt.msg_id) {
-            conversation.recentMsg.unread_count = false;
+            conversation.recentMsg.unread_count = 0;
             break;
         }
     }
@@ -1200,7 +1213,12 @@ function addNewFriendToConversation(state, payload, type) {
         state.newMessageIsActive = true;
     }
     console.log(44444, payload.name);
-    state.friendList.push(payload);
+    let result = state.friendList.filter((friend) => {
+        return friend.name === payload.name;
+    });
+    if (result.length === 0) {
+        state.friendList.push(payload);
+    }
     let item = null;
     let msg = {
         ctime_ms: payload.ctime_ms,
@@ -1212,7 +1230,7 @@ function addNewFriendToConversation(state, payload, type) {
             msg_type: 'event'
         },
         time_show: '',
-        conversation_time_show: 'today'
+        conversation_time_show: util.reducerDate(payload.ctime_ms)
     };
     for (let i = 0; i < state.conversation.length; i++) {
         if (state.conversation[i].type === 3 && state.conversation[i].name === payload.name) {
@@ -1222,10 +1240,10 @@ function addNewFriendToConversation(state, payload, type) {
                     if (list.msgs.length > 0) {
                         if (util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
                             payload.ctime_ms)) {
-                            msg.time_show = 'today';
+                            msg.time_show = util.reducerDate(payload.ctime_ms);
                         }
                     } else {
-                        msg.time_show = 'today';
+                        msg.time_show = util.reducerDate(payload.ctime_ms);
                     }
                     list.msgs.push(msg);
                     break;
@@ -1248,10 +1266,11 @@ function addNewFriendToConversation(state, payload, type) {
             msgs: [
                 msg
             ],
-            appkey: payload.appkey,
+            appkey: payload.appkey || authPayload.appKey,
             name: payload.name,
             type: 3
         });
+        msg.time_show = util.reducerDate(payload.ctime_ms);
     }
     item.recentMsg = msg;
     // state.conversation.unshift(item);
@@ -1485,7 +1504,7 @@ function createGroupSuccessEvent(state, payload) {
 function isRecentmsg(state, payload, addGroupOther, operation, index) {
     let flag = false;
     for (let messageList of state.messageList) {
-        if (state.conversation.type === 4 &&
+        if (state.conversation[index].type === 4 &&
             Number(state.conversation[index].key) === Number(messageList.key)) {
             flag = true;
             let msg = messageList['msgs'];
@@ -1556,7 +1575,6 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
     let usernames = payload.to_usernames;
     let addGroupOther = '';
     for (let user of usernames) {
-
         if (user.nickname) {
             user.nickName = user.nickname;
         }
@@ -1673,7 +1691,7 @@ function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
                     }
                     msgs.push(message);
                 } else {
-                    for (let j = 0; j < msgs.length; j++) {
+                    for (let j = 0; j < msgs.length - 1; j++) {
                         if (msgs[j].ctime_ms < payload.ctime_ms &&
                             payload.ctime_ms < msgs[j + 1].ctime_ms) {
                             if (util.fiveMinutes(msgs[j].ctime_ms, payload.ctime_ms)) {
@@ -2129,7 +2147,7 @@ function sendMsgComplete(state: ChatStore, payload) {
             // 给recentMsg添加msg_id
             if (payload.msgs.msg_type === 3) {
                 if (Number(payload.key) === Number(conversation.key)) {
-                    payload.msgs.unread_count = true;
+                    payload.msgs.unread_count = 1;
                     payload.msgs.conversation_time_show =
                         conversation.recentMsg.conversation_time_show;
                     payload.msgs.ctime_ms = conversation.recentMsg.ctime_ms;
@@ -2191,10 +2209,19 @@ function deleteConversationItem(state: ChatStore, payload) {
             break;
         }
     }
-    if (itemKey === Number(state.activePerson.key)) {
+    let group = state.activePerson.type === 4 && itemKey === Number(state.activePerson.key);
+    let single = state.activePerson.type === 3 && payload.item.name === state.activePerson.name;
+    if (group || single) {
         state.defaultPanelIsShow = true;
-        state.activePerson.activeIndex = -1;
-        state.activePerson.key = '0';
+        state.activePerson = {
+            key: '0',
+            name: '',
+            nickName: '',
+            activeIndex: -1,
+            noDisturb: false,
+            avatarUrl: '',
+            shield: ''
+        };
     }
     for (let i = 0; i < state.friendList.length; i++) {
         if (payload.item.type === 3 && payload.item.name === state.friendList[i].name) {
@@ -2236,7 +2263,7 @@ function transmitMessage (state, payload) {
             msgs: [payload.msgs],
             type: 3,
             name: payload.select.name,
-            appkey: payload.select.appkey
+            appkey: payload.select.appkey || authPayload.appKey
         });
         state.newMessage = payload.msgs;
     } else if (flag && payload.select.type === 4) {
@@ -2294,8 +2321,14 @@ function addMessage(state: ChatStore, payload) {
         if (message.msg_type === 3) {
             message.content.name = message.content.from_id !== global.user ?
                         message.content.from_id : message.content.target_id;
+            message.content.nickName = message.content.from_id !== global.user ?
+                        message.content.from_name : message.content.target_name;
+            message.content.appkey = message.content.from_id !== global.user ?
+                        message.content.from_appkey : message.content.target_appkey;
         } else {
             message.content.name = message.content.from_id;
+            message.content.nickName = message.content.from_name;
+            message.content.appkey = message.content.from_appkey;
         }
         filterFriend(state, message.content);
         filterNewMessage(state, payload, message);
@@ -2417,7 +2450,7 @@ function addMyselfMesssge(state: ChatStore, payload) {
                 msgs: [payload.msgs],
                 type: 3,
                 name: payload.active.name,
-                appkey: payload.active.appkey,
+                appkey: payload.active.appkey || authPayload.appKey,
                 // key: global.conversationKey
             });
         } else if (flag && payload.active.type === 4) {
@@ -2466,7 +2499,7 @@ function addMyselfMesssge(state: ChatStore, payload) {
             if (group || single) {
                 payload.msgs.conversation_time_show = 'today';
                 if (payload.msgs.msg_type === 3) {
-                    payload.msgs.unread_count = true;
+                    payload.msgs.unread_count = 1;
                 }
                 state.conversation[a].recentMsg = payload.msgs;
                 if (!state.conversation[a].extras || !state.conversation[a].extras.top_time_ms) {
@@ -2535,8 +2568,8 @@ function addMessageUserNoConversation(state, payload, message) {
             draft: '',
             content: message.content,
             type: 3,
-            name: message.content.from_name,
-            appkey: message.content.from_appkey
+            name: message.content.name,
+            appkey: message.content.appkey
         };
         conversationItem = {
             avatar: '',
@@ -2544,10 +2577,11 @@ function addMessageUserNoConversation(state, payload, message) {
             key: message.key,
             mtime: message.ctime_ms,
             name: message.content.name,
-            nickName: message.content.from_name,
+            nickName: message.content.nickName,
             type: 3,
             unreadNum: message.content.from_id !== global.user ? 1 : 0,
-            noDisturb: false
+            noDisturb: false,
+            extras: {}
         };
         for (let user of state.noDisturb.users) {
             if (user.username === message.content.name) {
@@ -2566,15 +2600,23 @@ function addMessageUserNoConversation(state, payload, message) {
             content: message.content,
             type: 4
         };
+        let avatarUrl;
+        for (let group of state.groupList) {
+            if (Number(group.gid) === Number(message.key)) {
+                avatarUrl = group.avatarUrl;
+                break;
+            }
+        }
         conversationItem = {
             avatar: '',
-            avatarUrl: message.content.avatarUrl,
+            avatarUrl: avatarUrl || '',
             key: message.key,
             mtime: message.ctime_ms,
-            name: message.content.target_name,
+            name: message.content.name,
             type: 4,
             unreadNum: message.content.from_id !== global.user ? 1 : 0,
-            noDisturb: false
+            noDisturb: false,
+            extras: {}
         };
         for (let group of state.noDisturb.groups) {
             if (Number(group.key) === Number(message.key)) {
@@ -2720,7 +2762,7 @@ function selectUserResult(state, payload, type?: string) {
                 msgs: [],
                 type: 3,
                 name: payload.name,
-                appkey: payload.appkey
+                appkey: payload.appkey || authPayload.appKey
             });
         } else if (payload.type === 4) {
             state.messageList.push({

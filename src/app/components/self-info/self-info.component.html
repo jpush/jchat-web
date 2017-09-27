@@ -11,7 +11,7 @@
                 <img id="selfAvatarImg" (load)="avatarLoad($event)" [src]="selfInfo.info.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
             </label>
             <input spellcheck="false" (change)="selfAvatarChange()" type="file" id="selfAvatarInput" style="display:none;">
-            <p class="self-info-avatar-username">{{selfInfo.info.nickname ? selfInfo.info.nickname : selfInfo.info.username}}</p>
+            <p class="self-info-avatar-username" [title]="selfInfo.info.nickname ? selfInfo.info.nickname : selfInfo.info.username">{{selfInfo.info.nickname ? selfInfo.info.nickname : selfInfo.info.username}}</p>
             <div class="self-info-signature">
                 <input spellcheck="false" maxlength="30" [ngModel]="selfInfo.info.signature" (change)="signatureChange($event)" class="self-info-input input-focus" [hidden]="!isEdit" spellcheck="false" type="text" placeholder="输入个性签名">
                 <p [hidden]="isEdit" [title]="selfInfo.info.signature ? selfInfo.info.signature : '暂无签名'">{{selfInfo.info.signature ? (selfInfo.info.signature | ellipsis: 32) : '暂无签名'}}</p>

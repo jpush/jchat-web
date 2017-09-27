@@ -71,6 +71,11 @@
                     margin: 10px 10px 0 10px;
                     overflow: hidden;
                 }
+                .search-member-username{
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
                 .search-member-label{
                     position: relative;
                     cursor: pointer;

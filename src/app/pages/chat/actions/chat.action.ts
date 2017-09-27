@@ -104,5 +104,6 @@ export const chatAction = {
     deleteGroupBlackSyncEvent: '[chat] delete group black sync event',
     syncReceiveMessage: '[chat] sync receive message',
     userInfUpdateEvent: '[chat] user inf update event',
-    userInfUpdateEventSuccess: '[chat] user inf update event success'
+    userInfUpdateEventSuccess: '[chat] user inf update event success',
+    updateUnreadCount: '[chat] update unread count'
 };

@@ -9,6 +9,7 @@
 }
 .chat-panel-operation-board{
     position: fixed;
+    z-index: 9;
 }
 .chat-panel-container{
     position: absolute;
@@ -33,6 +34,8 @@
             }
             .chat-panel-username{
                 cursor: pointer;
+                min-width: 5px;
+                height: 100%;
                 &:hover{
                     color: #2dd0cf;
                 }

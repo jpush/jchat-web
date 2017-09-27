@@ -146,13 +146,14 @@ export class MainComponent implements OnInit, OnDestroy {
         private storageService: StorageService,
         private router: Router
     ) {
+        // pass
+    }
+    public ngOnInit() {
         // 避免频繁切换用户时，store的数据依然还保留上一用户的状态
         this.store$.dispatch({
             type: mainAction.init,
             payload: null
         });
-    }
-    public ngOnInit() {
         this.subscribeStore();
         this.store$.dispatch({
             type: mainAction.getSelfInfo,
@@ -194,6 +195,9 @@ export class MainComponent implements OnInit, OnDestroy {
     private stateChanged(mainState, contactState) {
         console.log('main', mainState);
         switch (mainState.actionType) {
+            case mainAction.init:
+                this.init();
+                break;
             case contactAction.selectContactItem:
                 this.listTab = mainState.listTab;
                 break;
@@ -665,5 +669,125 @@ export class MainComponent implements OnInit, OnDestroy {
             type: mainAction.dispatchSendSelfCard,
             payload: info
         });
+    }
+    private init() {
+        this.listTab = 0;
+        this.selfInfo = {
+            show: false,
+            info: {
+                avatarUrl: ''
+            },
+            loading: false
+        };
+        this.updateSelfInfoFlag = false;
+        this.createGroup = {
+            show: false,
+            list: []
+        };
+        this.islogoutShow = false;
+        this.isModifyPasswordShow = false;
+        this.searchUserResult = {
+            isSearch: false,
+            result: {
+                singleArr: [],
+                groupArr: []
+            }
+        };
+        this.tipModal = {
+            show: false,
+            info: {
+                title: '',
+                tip: ''
+            }
+        };
+        this.createSingleChat = {
+            show: false,
+            info: ''
+        };
+        this.blackMenu = {
+            show: false,
+            menu: []
+        };
+        this.chatMenu = {
+            show: false,
+            info: [
+                {
+                    key: 0,
+                    name: '发起单聊'
+                },
+                {
+                    key: 1,
+                    name: '发起群聊'
+                },
+                {
+                    key: 2,
+                    name: '添加好友'
+                }
+            ]
+        };
+        this.settingMenu = {
+            show: false,
+            info: [
+                {
+                    key: 0,
+                    name: '修改密码'
+                },
+                {
+                    key: 1,
+                    name: '黑名单列表'
+                },
+                {
+                    key: 2,
+                    name: '退出登录'
+                }
+            ]
+        };
+        this.conversationHover = {
+            tip: '会话',
+            position: {
+                left: 56,
+                top: 4
+            },
+            show: false
+        };
+        this.contactHover = {
+            tip: '通讯录',
+            position: {
+                left: 56,
+                top: 4
+            },
+            show: false
+        };
+        this.createHover = {
+            tip: '创建',
+            position: {
+                left: 56,
+                top: 4
+            },
+            show: false
+        };
+        this.moreHover = {
+            tip: '更多',
+            position: {
+                left: 56,
+                top: 4
+            },
+            show: false
+        };
+        this.logoutKick = {
+            show: false,
+            info: {
+                title: '',
+                tip: ''
+            }
+        };
+        this.badge = {
+            conversation: 0,
+            contact: 0
+        };
+        this.createSingleOption = {
+            title: '发起单聊',
+            placeholder: '输入用户名查找'
+        };
     }
 }

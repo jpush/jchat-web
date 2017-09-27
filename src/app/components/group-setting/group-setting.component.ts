@@ -74,6 +74,7 @@ export class GroupSettingComponent implements OnInit {
         this.groupSetting.show = false;
         this.searchResult.result = [];
         this.searchResult.show = false;
+        this.closeGroupSetting.emit();
         this.elementRef.nativeElement.querySelector('#' + this.searchResult.id).value = '';
     }
     private clearInputEmit() {

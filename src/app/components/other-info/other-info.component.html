@@ -7,7 +7,7 @@
             <div class="other-info-show-avatar">
                 <img (load)="avatarLoad($event)" [src]="otherInfo.info.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
             </div>
-            <div class="other-info-avatar-username">
+            <div class="other-info-avatar-username" [title]="otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username">
                 {{otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username}}
                 <!-- <div [ngClass]="{'black': otherInfo.info.black}" class="self-info-blacklist-icon" [hoverEvent]="addBlackHover" (click)="addBlack()">
                     <hover-tip-component [hidden]="!addBlackHover.show" [hoverInfo]="addBlackHover"></hover-tip-component>
@@ -28,7 +28,7 @@
         <div class="other-info-p display-flex" *ngIf="otherInfo.info.isFriend">
             <span class="other-info-fixed-width">备&ensp;&ensp;注：</span>
             <span class="flex-1">
-                <i class="float-left" *ngIf="!isEdit" [style.color]="otherInfo.info.memo_name ? '#000C0A' : '#808080'">{{otherInfo.info.memo_name || '添加'}}</i>
+                <i class="float-left other-info-memo_name" *ngIf="!isEdit" [style.color]="otherInfo.info.memo_name ? '#000C0A' : '#808080'">{{otherInfo.info.memo_name || '添加'}}</i>
                 <div class="other-info-edit float-left" *ngIf="!isEdit" (click)="editBtn()" [hoverEvent]="editRmark">
                     <hover-tip-component [hidden]="!editRmark.show" [hoverInfo]="editRmark"></hover-tip-component>
                 </div>

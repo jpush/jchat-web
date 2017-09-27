@@ -22,12 +22,13 @@ export class ContactComponent implements OnInit, OnDestroy {
     constructor(
         private store$: Store<AppStore>
     ) {
+        // paa
+    }
+    public ngOnInit() {
         this.store$.dispatch({
             type: contactAction.init,
             payload: null
         });
-    }
-    public ngOnInit() {
         this.subscribeStore();
         this.store$.dispatch({
             type: contactAction.getGroupList,
