@@ -167,6 +167,10 @@ export class ChatComponent implements OnInit, OnDestroy {
             type: chatAction.getFriendList,
             payload: null
         });
+        this.store$.dispatch({
+            type: contactAction.getGroupList,
+            payload: null
+        });
         global.JIM.onMsgReceive((data) => {
             console.log(data);
             // 与feedback_的消息不做处理
@@ -253,7 +257,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 离线消息同步监听
         global.JIM.onSyncConversation((data) => {
-            console.log('离线消息1', data, JSON.stringify(data));
+            console.log('离线消息1', data);
             // 限制只触发一次
             if (this.hasOffline === 0) {
                 this.hasOffline ++;
@@ -386,10 +390,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.groupSetting.active = this.active;
                 }
                 this.store$.dispatch({
-                    type: chatAction.updateContactInfo,
-                    payload: {
-                        groupList: chatState.groupList
-                    }
+                    type: chatAction.dispatchGroupList,
+                    payload: chatState.groupList
                 });
                 // 触发滚动条向下滚动
                 if (chatState.newMessageIsActive) {
@@ -464,6 +466,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.messageList = chatState.messageList;
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
+                this.store$.dispatch({
+                    type: chatAction.dispatchGroupList,
+                    payload: chatState.groupList
+                });
                 break;
             case chatAction.createOtherChat:
                 this.messageList = chatState.messageList;
@@ -482,6 +488,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 // this.groupSetting.show = false;
                 this.closeGroupSettingEmit();
                 this.active = chatState.activePerson;
+                this.store$.dispatch({
+                    type: chatAction.dispatchGroupList,
+                    payload: chatState.groupList
+                });
                 break;
             case mainAction.addBlackListSuccess:
                 this.conversationList = chatState.conversation;
@@ -496,7 +506,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             // case chatAction.groupName:
             //     this.groupSetting.groupInfo.name = messageListActive.groupSetting.groupInfo.name;
             //     this.store$.dispatch({
-            //         type: chatAction.updateContactInfo,
+            //         type: chatAction.dispatchGroupList,
             //         payload: {
             //             groupList: chatState.groupList
             //         }
@@ -542,6 +552,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.createGroupSuccessEvent:
                 this.conversationList = chatState.conversation;
+                this.store$.dispatch({
+                    type: chatAction.dispatchGroupList,
+                    payload: chatState.groupList
+                });
                 break;
             case chatAction.msgRetractEvent:
                 this.conversationList = chatState.conversation;
@@ -673,6 +687,18 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case mainAction.dispatchSendSelfCard:
                 this.sendCardEmit();
+                break;
+            // case chatAction.createGroupSuccessEvent:
+
+            case contactAction.getGroupListSuccess:
+
+            // case mainAction.createGroupSuccess:
+
+            // case mainAction.exitGroupSuccess:
+                this.store$.dispatch({
+                    type: chatAction.dispatchGroupList,
+                    payload: chatState.groupList
+                });
                 break;
             default:
         }
@@ -1155,6 +1181,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 发送文本消息
     private sendMsgEmit(data, active ?) {
+        console.log(444, this.selfInfo.nickname);
         let activePerson = active || this.active;
         console.log(555, data);
         // repeatSend = true重发消息
@@ -1452,6 +1479,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     create_time: (new Date()).getTime(),
                     msg_type: 'file',
                     from_id: global.user,
+                    from_name: this.selfInfo.nickname,
                     msg_body: {
                         fname: data.fileData.name,
                         fsize: data.fileData.size,

@@ -8,7 +8,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class VideoTimePipe implements PipeTransform {
   public transform(time): string {
     let newTime;
-    time = Math.floor(time);
+    time = Math.ceil(time);
     if (time < 10) {
         newTime = '00:0' + time;
     } else if (time >= 10 && time < 60) {

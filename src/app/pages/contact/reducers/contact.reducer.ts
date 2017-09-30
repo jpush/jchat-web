@@ -15,26 +15,28 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             state = Object.assign({}, contactInit, {});
             break;
             // 成功获取群列表
-        case contactAction.getGroupListSuccess:
-            state.groupList = util.sortByLetter(payload);
-            break;
+        // case contactAction.getGroupListSuccess:
+        //     state.groupList = util.sortByLetter(payload);
+        //     break;
             // 创建群聊事件
-        case chatAction.createGroupSuccessEvent:
+        // case chatAction.createGroupSuccessEvent:
             // 创建群组
-        case mainAction.createGroupSuccess:
-            state.groupList = util.insertSortByLetter(state.groupList, payload);
-            break;
+        // case mainAction.createGroupSuccess:
+        //     state.groupList = util.insertSortByLetter(state.groupList, payload);
+        //     break;
             // 退群成功
-        case mainAction.exitGroupSuccess:
-            exitGroup(state, payload);
-            break;
+        // case mainAction.exitGroupSuccess:
+        //     exitGroup(state, payload);
+        //     break;
             // 删除本地会话
-        case chatAction.deleteConversationItem:
-            addInfoToContact(state, payload);
-            break;
+        // case chatAction.deleteConversationItem:
+        //     addInfoToContact(state, payload);
+        //     break;
             // 修改群名称后重新排序
-        case chatAction.updateContactInfo:
-            state.groupList = util.sortByLetter(payload.groupList);
+        case chatAction.dispatchGroupList:
+            console.log(9999, payload);
+            // state.groupList = util.sortByLetter(payload.groupList);
+            state.groupList = util.sortByLetter(payload);
             break;
         case mainAction.changeListTab:
             state.listTab = payload;
@@ -258,26 +260,26 @@ function filterFriendList(state, payload) {
     }
 }
 // 退出群聊时删除群组列表
-function exitGroup(state, payload) {
-    for (let group of state.groupList) {
-        for (let j = 0; j < group.data.length; j++) {
-            if (Number(payload.item.key) === Number(group.data[j].gid)) {
-                group.data.splice(j, 1);
-                break;
-            }
-        }
-    }
-}
+// function exitGroup(state, payload) {
+//     for (let group of state.groupList) {
+//         for (let j = 0; j < group.data.length; j++) {
+//             if (Number(payload.item.key) === Number(group.data[j].gid)) {
+//                 group.data.splice(j, 1);
+//                 break;
+//             }
+//         }
+//     }
+// }
 // 删除会话时将会话的信息转移到群或者好友
-function addInfoToContact(state, payload) {
-    for (let group of state.groupList){
-        for (let j = 0; j < group.data.length; j++) {
-            let itemKey = payload.item.key ? payload.item.key : payload.item.gid;
-            let flag = Number(group.data[j].gid) === Number(itemKey);
-            if (flag) {
-                group.data[j] = Object.assign({}, group.data[j], payload.item);
-                return;
-            }
-        }
-    }
-}
+// function addInfoToContact(state, payload) {
+//     for (let group of state.groupList){
+//         for (let j = 0; j < group.data.length; j++) {
+//             let itemKey = payload.item.key ? payload.item.key : payload.item.gid;
+//             let flag = Number(group.data[j].gid) === Number(itemKey);
+//             if (flag) {
+//                 group.data[j] = Object.assign({}, group.data[j], payload.item);
+//                 return;
+//             }
+//         }
+//     }
+// }

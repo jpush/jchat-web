@@ -91,6 +91,10 @@
                 height: 20px;
                 font-size: 12px;
                 color: #999;
+                max-width: 400px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             .chat-panel-see-more{
                 text-align: center;
@@ -145,6 +149,29 @@
                     cursor: -webkit-zoom-in;
                     cursor: zoom-in;
                     border-radius: 5px;
+                    display: block;
+                }
+                .img-loading{
+                    position: relative;
+                    &:after{
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        bottom: 0;
+                        right: 0;
+                        content: '';
+                        display: block;
+                        background: rgba(0, 0, 0, 0.2) url(../../../assets/images/app-loading.gif) center center no-repeat;
+                        background-size: 20px;
+                        border-radius: 5px;
+                    }
+                }
+                .chat-panel-message-jpush{
+                    width: 140px;
+                    height: 140px;
+                    cursor: default;
+                    border-radius: 5px;
+                    display: block;
                 }
                 .chat-panel-more{
                     height: 100%;                
@@ -235,6 +262,7 @@
                 position: relative;
                 cursor: pointer;
                 border-radius: 5px;
+                background: rgba(0, 0, 0, 0.2);
                 video{
                     height: 100%;
                     width: 100%;

@@ -263,7 +263,7 @@ export class ChatEffect {
             if (end >= 1) {
                 for (let i = end - 1; i >= end - pageNumber && i >= 0; i--) {
                     if (msgs[i].hasLoad) {
-                        break;
+                        continue;
                     }
                     msgs[i].hasLoad = true;
                     let msgBody = msgs[i].content.msg_body;
@@ -432,10 +432,10 @@ export class ChatEffect {
                     }
                 }
             }
-            console.log('离线消息2', data, JSON.stringify(data));
+            console.log('离线消息2', data);
             const conversationObj = global.JIM.getConversation()
             .onSuccess((info) => {
-                console.log('会话列表：', JSON.stringify(info));
+                console.log('会话列表：', info);
                 // 删除feedBack
                 for (let i = 0; i < info.conversations.length; i++) {
                     if (info.conversations[i].name.match(/^feedback_/g)) {
@@ -709,6 +709,7 @@ export class ChatEffect {
             return data;
         })
         .switchMap((text) => {
+            console.log(3333, text.groupMsg);
             const groupMessageObj = global.JIM.sendGroupMsg(text.groupMsg)
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
@@ -1511,7 +1512,7 @@ export class ChatEffect {
             const OtherInfoObj = global.JIM.getUserInfo({
                 username: other.username
             }).onSuccess((data) => {
-                data.user_info.infoType = 'watchInfo';
+                // data.user_info.infoType = 'watchInfo';
                 data.user_info.name = data.user_info.username;
                 data.user_info.nickName = data.user_info.nickname;
                 data.user_info.infoType = 'watchOtherInfo';
@@ -1539,7 +1540,6 @@ export class ChatEffect {
                 //         payload: error
                 //     });
                 // });
-                console.log(1111, other);
                 if (other.hasOwnProperty('avatarUrl') || data.user_info.avatar === '') {
                     data.user_info.avatarUrl = other.avatarUrl ? other.avatarUrl : '';
                     this.store$.dispatch({

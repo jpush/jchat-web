@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter,
     OnChanges, DoCheck, HostListener, ElementRef } from '@angular/core';
-
+import { authPayload} from '../../services/common';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
@@ -112,6 +112,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         event.target.src = avatarErrorIcon;
     }
     private sendMsgBtn() {
+        console.log(7777, this.otherInfo.info);
         let user = {
             avatar: this.otherInfo.info.avatar,
             avatarUrl: this.otherInfo.info.avatarUrl,
@@ -119,7 +120,8 @@ export class OtherInfoComponent implements OnInit, OnChanges {
             mtime: this.otherInfo.info.mtime,
             name: this.otherInfo.info.username,
             nickName: this.otherInfo.info.nickname,
-            type: 3
+            type: 3,
+            appkey: this.otherInfo.info.appkey || authPayload.appKey
         };
         this.isShow.emit(user);
     }

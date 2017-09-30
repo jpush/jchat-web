@@ -7,6 +7,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class FileNamePipe implements PipeTransform {
     public transform(fileName, num): string {
+        if (fileName.length <= num) {
+            return fileName;
+        }
         const index = fileName.lastIndexOf('.');
         let newName = '';
         if (index === -1) {
@@ -22,6 +25,11 @@ export class FileNamePipe implements PipeTransform {
                 const lastStr = name.substring(name.length - 2);
                 const firstStr = name.substr(0, num - ext.length - 2 - 3);
                 newName = `${firstStr}...${lastStr}${ext}`;
+            } else if (num <= 5 + ext.length && num > ext.length + 2) {
+                const n = name.substring(0, num - ext.length - 1);
+                newName = `${n}..${ext}`;
+            } else if (fileName.length > num) {
+                newName = fileName.substring(0, num - 3) + '...';
             } else {
                 newName = fileName;
             }

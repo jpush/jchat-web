@@ -1,6 +1,9 @@
-import { pinyin, md5 } from '../tools';
+import { md5 } from '../tools';
 import { authPayload } from '../common';
+import '../tools/dict/pinyin_dict_notone.js';
 
+import '../tools/pinyinUtil.js';
+declare let pinyinUtil: any;
 declare let BMap;
 
 export class Util {
@@ -208,6 +211,7 @@ export class Util {
                 data: []
             });
         }
+        console.log(1111, payload);
         for (let item of payload) {
             let flag = false;
             for (let re of result) {
@@ -230,10 +234,11 @@ export class Util {
                         break;
                     }
                 }else if (this.firstLetterIsChinese(name)) {
-                    let py = pinyin(firstLetter, {
-                        style: pinyin.STYLE_NORMAL
-                    });
-                    if (py[0][0].charAt(0).toUpperCase() === re.letter) {
+                    let py = pinyinUtil.getFirstLetter(firstLetter, false)[0];
+                    // let py = pinyin(firstLetter, {
+                    //     style: pinyin.STYLE_NORMAL
+                    // });
+                    if (py.toUpperCase() === re.letter) {
                         re.data.push(item);
                         flag = true;
                         break;
@@ -287,10 +292,11 @@ export class Util {
         if (name.match(/^[a-zA-Z]/)) {
             firstLetter = firstLetter.toUpperCase();
         } else if (this.firstLetterIsChinese(name)) {
-            let py = pinyin(firstLetter, {
-                style: pinyin.STYLE_NORMAL
-            });
-            firstLetter = py[0][0].charAt(0).toUpperCase();
+            // let py = pinyin(firstLetter, {
+            //     style: pinyin.STYLE_NORMAL
+            // });
+            let py = pinyinUtil.getFirstLetter(firstLetter, false)[0];
+            firstLetter = py.toUpperCase();
         } else {
             firstLetter = '#';
         }

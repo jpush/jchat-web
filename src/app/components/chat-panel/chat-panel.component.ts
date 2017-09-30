@@ -423,7 +423,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         }
     }
     private updateMsg(chatState) {
-        console.log(44444);
         if (chatState.activePerson.activeIndex < 0) {
             return ;
         }
@@ -675,11 +674,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 let arr = draft.match(atInputReg);
                 let usernameArr = [];
                 for (let item of arr) {
+                    let str = item.split('value="@')[1];
+                    let nickname = str.split(' ')[0];
                     let str1 = item.split('username="')[1];
                     let username = str1.split(' ')[0];
                     let str2 = item.split('appkey="')[1];
                     let appkey = str2.split(' ')[0];
-                    draft = draft.replace(item, '@' + username + ' ');
+                    draft = draft.replace(item, '@' + nickname + ' ');
                     usernameArr.push({
                         username,
                         appkey
@@ -1004,7 +1005,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         const content = `<input style="width: ${inputWidth + 'px'}"
                         type="text" class="chat-panel-at-input"
                         value="@${item.nickName || item.username} "
-                        username="${item.nickName || item.username} " appkey="${item.appkey} "/>`;
+                        username="${item.username} " appkey="${item.appkey} "/>`;
         this.util.insertAtCursor(this.contentDiv, content, false);
         this.atList.show = false;
         setTimeout(() => {
@@ -1130,6 +1131,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 type: 4
             };
         }
+        console.log(444444444);
         for (let i = 0; i < domArr.length; i ++) {
             let offsetTop = (domArr[i] as HTMLDivElement).offsetTop;
             if (scrollTop <= offsetTop && offsetTop <= scrollTop + offsetHeight) {
@@ -1230,7 +1232,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 视频加载完成
     private videoLoad(index) {
         this.msg[index].content.duration =
-            Math.floor(this.elementRef.nativeElement.querySelector('#video' + index).duration);
+            Math.ceil(this.elementRef.nativeElement.querySelector('#video' + index).duration);
         this.msg[index].content.load = 1;
         clearInterval(this.msg[index].content.timer4);
         this.msg[index].content.range = 0;
@@ -1254,15 +1256,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         // 为了兼容火狐下a链接下载，引入downloadjs
         download(url);
     }
-    // 20s内图片没有加载成功，则显示默认图
-    private imageError(event, i) {
-        setTimeout(() => {
-            if (event.target.src.indexOf('undefined') !== -1) {
-                event.target.src = imageError;
-                i.content.msg_body.width = 128;
-                i.content.msg_body.height = 91;
-            }
-        }, 20000);
+    private imgLoaded(i) {
+        i.content.msg_body.loading = true;
     }
     private changeMsgFileEmit(type) {
         this.store$.dispatch({
@@ -1270,7 +1265,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             payload: {
                 active: this.active,
                 messageList: this.messageList,
-                type
+                type,
+                show: true
             }
         });
     }

@@ -38,7 +38,7 @@ export const chatAction = {
     getVoiceState: '[chat] get voice state',
     getVoiceStateSuccess: '[chat] get voice state success',
     playVideoShow: '[chat] play video show',
-    updateContactInfo: '[chat] update contact info',
+    // updateContactInfo: '[chat] update contact info',
     updateGroupMembersEvent: '[chat] update group members',
     deleteGroupMembersEvent: '[chat] delete group members event',
     exitGroupEvent: '[chat] exit group event',
@@ -105,5 +105,6 @@ export const chatAction = {
     syncReceiveMessage: '[chat] sync receive message',
     userInfUpdateEvent: '[chat] user inf update event',
     userInfUpdateEventSuccess: '[chat] user inf update event success',
-    updateUnreadCount: '[chat] update unread count'
+    updateUnreadCount: '[chat] update unread count',
+    dispatchGroupList: '[chat] dispatch group list'
 };

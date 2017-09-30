@@ -81,6 +81,9 @@ export class AppComponent implements OnInit, OnDestroy {
             case 880104:
                 tip = `${name}密码错误`;
                 break;
+            case 880106:
+                tip = `${name}账号已被禁用`;
+                break;
             case 880203:
                 tip = `${name}该用户不存在`;
                 break;
