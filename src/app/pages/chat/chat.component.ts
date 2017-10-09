@@ -412,7 +412,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.messageList = chatState.messageList;
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                this.storageMsgId(chatState.msgId);
+                if (chatState.msgId.length > 0) {
+                    this.storageMsgId(chatState.msgId);
+                }
                 break;
             case chatAction.addReceiptReportAction:
                 if (chatState.readObj && chatState.readObj.msg_id.length > 0) {

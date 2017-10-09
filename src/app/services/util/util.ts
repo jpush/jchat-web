@@ -234,11 +234,11 @@ export class Util {
                         break;
                     }
                 }else if (this.firstLetterIsChinese(name)) {
-                    let py = pinyinUtil.getFirstLetter(firstLetter, false)[0];
+                    let py = pinyinUtil.getFirstLetter(name, false)[0];
                     // let py = pinyin(firstLetter, {
                     //     style: pinyin.STYLE_NORMAL
                     // });
-                    if (py.toUpperCase() === re.letter) {
+                    if (py && py.toUpperCase() === re.letter) {
                         re.data.push(item);
                         flag = true;
                         break;
@@ -296,7 +296,11 @@ export class Util {
             //     style: pinyin.STYLE_NORMAL
             // });
             let py = pinyinUtil.getFirstLetter(firstLetter, false)[0];
-            firstLetter = py.toUpperCase();
+            if (py) {
+                firstLetter = py.toUpperCase();
+            } else {
+                firstLetter = '#';
+            }
         } else {
             firstLetter = '#';
         }

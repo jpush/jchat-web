@@ -1931,6 +1931,10 @@ function changeActivePerson(state: ChatStore) {
                 break;
             }
         }
+        // 初始化图片消息的loading状态
+        if (msg.content.msg_type === 'image') {
+            msg.content.msg_body.loading = false;
+        }
     }
     // 给群成员中的好友添加备注名
     if (state.activePerson.type === 4 &&

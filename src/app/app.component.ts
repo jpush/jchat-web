@@ -22,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         // 创建JIM 对象
         global.JIM = new JMessage({
-            debug: true,
+            // debug: true,
             address: 'ws://183.232.25.91:9091'
         });
         this.appStream$ = this.store$.select((state) => {
