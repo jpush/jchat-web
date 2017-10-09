@@ -35,7 +35,6 @@ export class SearchTransmitComponent implements OnInit, OnChanges {
     public ngOnInit() {
         this.fileDom = this.elementRef.nativeElement.querySelector('#searchInput');
         Observable.fromEvent(this.fileDom, 'keyup')
-            .debounceTime(300)
             .subscribe((event: any) => {
                 if (event.keyCode !== 13) {
                     this.searchUser.emit(event.target.value);

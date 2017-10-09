@@ -144,6 +144,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         loading: false
     };
     private isMySelf = false;
+    private noLoadedMessage = [];
     // private asyncConversationCount = 0;
     constructor(
         private store$: Store<AppStore>,
@@ -172,44 +173,12 @@ export class ChatComponent implements OnInit, OnDestroy {
             payload: null
         });
         global.JIM.onMsgReceive((data) => {
+            if (!this.isLoaded) {
+                this.noLoadedMessage.push(data);
+                return ;
+            }
             console.log(data);
-            // 与用户名是feedback_开头的消息不做处理
-            let feedbackReg = /^feedback_/g;
-            if (data.messages[0].content.target_id.match(feedbackReg)) {
-                return ;
-            }
-            if (data.messages[0].content.from_id === global.user) {
-                this.isMySelf = true;
-                this.store$.dispatch({
-                    type: chatAction.syncReceiveMessage,
-                    payload: {
-                        data
-                    }
-                });
-                return ;
-            } else {
-                this.isMySelf = false;
-            }
-            // 群聊消息
-            if (data.messages[0].msg_type === 4) {
-                this.store$.dispatch({
-                    type: chatAction.receiveGroupMessage,
-                    payload: {
-                        data,
-                        conversation: this.conversationList,
-                        messageList: this.messageList
-                    }
-                });
-            // 单聊消息
-            } else {
-                this.store$.dispatch({
-                    type: chatAction.receiveSingleMessage,
-                    payload: {
-                        data,
-                        conversation: this.conversationList
-                    }
-                });
-            }
+            this.receiveNewMessage(data);
         });
         // 异常断线监听
         global.JIM.onDisconnect(() => {
@@ -253,6 +222,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.asyncEvent(item);
                 }
                 this.eventArr = [];
+                for (let message of this.noLoadedMessage) {
+                    this.receiveNewMessage(message);
+                }
+                this.noLoadedMessage = [];
             }
         });
         // 离线消息同步监听
@@ -359,6 +332,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                         this.storageMsgId(chatState.msgId);
                     }
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
+                    this.store$.dispatch({
+                        type: chatAction.updateUnreadCount,
+                        payload: this.active
+                    });
                 }
                 this.messageList = chatState.messageList;
                 if (!chatState.newMessageIsDisturb && !this.isMySelf) {
@@ -686,6 +663,46 @@ export class ChatComponent implements OnInit, OnDestroy {
             default:
         }
     }
+    // 收到新消息
+    private receiveNewMessage(data) {
+        // 与用户名是feedback_开头的消息不做处理
+        let feedbackReg = /^feedback_/g;
+        if (data.messages[0].content.target_id.match(feedbackReg)) {
+            return ;
+        }
+        if (data.messages[0].content.from_id === global.user) {
+            this.isMySelf = true;
+            this.store$.dispatch({
+                type: chatAction.syncReceiveMessage,
+                payload: {
+                    data
+                }
+            });
+            return ;
+        } else {
+            this.isMySelf = false;
+        }
+        // 群聊消息
+        if (data.messages[0].msg_type === 4) {
+            this.store$.dispatch({
+                type: chatAction.receiveGroupMessage,
+                payload: {
+                    data,
+                    conversation: this.conversationList,
+                    messageList: this.messageList
+                }
+            });
+        // 单聊消息
+        } else {
+            this.store$.dispatch({
+                type: chatAction.receiveSingleMessage,
+                payload: {
+                    data,
+                    conversation: this.conversationList
+                }
+            });
+        }
+    }
     // 发送名片成功的提示
     private modalTipSendCardSuccess (chatState) {
         let count = this.sendBusinessCardCount;
@@ -800,7 +817,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case 8:
                 // 创建群的事件
-                if (data.from_username === '') {
+                if (data.from_username === '' && !data.isOffline) {
                     this.store$.dispatch({
                         type: chatAction.createGroupEvent,
                         payload: data
@@ -1081,6 +1098,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 存储消息id(用来计算消息未读数)
     private storageMsgId(msgId) {
+        console.log('msgId', msgId);
         this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
         this.storageService.set(this.storageKey, JSON.stringify(msgId));
     }

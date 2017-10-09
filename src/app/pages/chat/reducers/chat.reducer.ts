@@ -212,6 +212,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 显示隐藏群组设置
         case chatAction.groupSetting:
+            console.log(777, payload);
             let msg = state.messageList[state.activePerson.activeIndex];
             if (msg && !msg.groupSetting) {
                 state.messageList[state.activePerson.activeIndex] = Object.assign({}, msg,
@@ -1503,12 +1504,16 @@ function createGroupSuccessEvent(state, payload) {
     filterTopConversation(state, item);
     state.messageList.push({
         key: payload.gid,
-        msgs: [],
-        addGroupOther: [
+        msgs: [
             {
-                text: '创建群聊',
                 ctime_ms: payload.ctime_ms,
-                time_show: 'today'
+                msg_type: 5,
+                content: {
+                    msg_body: {
+                        text: '创建群聊'
+                    }
+                },
+                time_show: util.reducerDate(payload.ctime_ms)
             }
         ],
         type: 4
@@ -1658,6 +1663,7 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
             name: payload.name,
             type: 4,
             unreadNum: 1,
+            avatarUrl: '',
             recentMsg: {
                 ctime_ms: payload.ctime_ms,
                 content: {
@@ -1670,6 +1676,18 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
                 msg_type: 4
             }
         };
+        // 如果群聊事件消息的群名和群头像不存在，去群组列表获取
+        for (let group of state.groupList) {
+            if (Number(group.gid) === Number(payload.gid)) {
+                if (group.avatarUrl) {
+                    conversation.avatarUrl = group.avatarUrl;
+                }
+                if (!payload.name || payload.name === '') {
+                    conversation.name = group.name;
+                }
+                break;
+            }
+        }
         filterTopConversation(state, conversation);
     }
     // 重新对conversation排序
@@ -2049,7 +2067,7 @@ function updateFilterMsgId(state: ChatStore, payload ? ) {
                         }
                     }
                 }
-                if (flag) {
+                if (flag && msgId) {
                     state.msgId.push({
                         key: pay.key,
                         msgId
@@ -2694,6 +2712,8 @@ function searchUser(state: ChatStore, payload) {
 }
 // 搜索单聊用户或好友
 function searchSingle(payload, singleArr, item) {
+    let existMemoName = item.memo_name &&
+        item.memo_name.toLowerCase().indexOf(payload.toLowerCase()) !== -1;
     let existNickName = item.nickName &&
         item.nickName.toLowerCase().indexOf(payload.toLowerCase()) !== -1;
     let existName = item.name &&
@@ -2705,13 +2725,19 @@ function searchSingle(payload, singleArr, item) {
     if (isExist.length > 0) {
         return;
     }
-    if (existSingle && existNickName) {
-        item.existNickName = true;
-        singleArr.push(item);
-    } else if (existSingle && existName) {
-        item.existName = true;
+    if (existSingle && (existMemoName || existNickName || existName)) {
         singleArr.push(item);
     }
+    // if (existSingle && existNickName) {
+    //     item.existNickName = true;
+    //     singleArr.push(item);
+    // } else if (existSingle && existName) {
+    //     item.existName = true;
+    //     singleArr.push(item);
+    // } else if (existSingle && existMemoName) {
+    //     item.existMemoName = true;
+    //     singleArr.push(item);
+    // }
 }
 // 选择搜索的用户、发起单聊
 function selectUserResult(state, payload, type?: string) {

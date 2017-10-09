@@ -45,7 +45,7 @@ export class ChatEffect {
         });
     // 接收到单聊新消息
     @Effect()
-    private receivesingleMessage$: Observable<Action> = this.actions$
+    private receiveSingleMessage$: Observable<Action> = this.actions$
         .ofType(chatAction.receiveSingleMessage)
         .map(toPayload)
         .switchMap((info) => {
@@ -2302,13 +2302,13 @@ export class ChatEffect {
         .ofType(chatAction.addReceiptReport)
         .map(toPayload)
         .switchMap((readObj) => {
-            console.log(11111111, readObj);
             if (readObj.type === 3) {
                 global.JIM.addSingleReceiptReport({
                     username: readObj.username,
                     msg_ids: readObj.msg_id
                 });
             } else {
+                console.log('已读回执', readObj, readObj.gid, readObj.msg_id,);
                 global.JIM.addGroupReceiptReport({
                     gid: readObj.gid,
                     msg_ids: readObj.msg_id

@@ -38,7 +38,7 @@ export class EmojiComponent implements OnInit {
     private emojiSelectAction(idName) {
         let contentId = document.getElementById(this.emojiInfo.contentId);
         let insertHtml = this.elementRef.nativeElement.querySelector('#' + idName).innerHTML;
-        insertHtml = insertHtml.replace('22', '18');
+        insertHtml = insertHtml.replace('width="22', 'width="18');
         this.util.insertAtCursor(contentId, insertHtml, false);
         this.emojiInfo.show = false;
     }

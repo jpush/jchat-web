@@ -43,9 +43,10 @@ export class SearchUserComponent implements OnInit, OnChanges {
     public ngOnInit() {
         this.fileDom = this.elementRef.nativeElement.querySelector('#searchInput');
         Observable.fromEvent(this.fileDom, 'keyup')
-            .debounceTime(300)
             .subscribe((event: any) => {
                 this.searchUser.emit(event.target.value);
+                this.singleShowText = '显示全部';
+                this.singleHeight = '200px';
             });
     }
     public ngOnChanges() {

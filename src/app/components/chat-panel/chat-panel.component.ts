@@ -408,6 +408,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.deleteGroupMembersEvent:
 
             case chatAction.exitGroupEvent:
+
+            case chatAction.createGroupSuccessEvent:
                 this.updateMsg(chatState);
                 break;
             case chatAction.msgFile:
@@ -769,18 +771,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     private msgContentFocus() {
         this.flag = false;
-        this.store$.dispatch({
-            type: chatAction.msgFile,
-            payload: {
-                show: false
-            }
-        });
-        this.store$.dispatch({
-            type: chatAction.groupSetting,
-            payload: {
-                show: false
-            }
-        });
     }
     // 查看对方用户资料
     private watchOtherInfo(content) {
@@ -838,6 +828,18 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         this.inputToLast = false;
         event.stopPropagation();
         this.atList.show = false;
+        this.store$.dispatch({
+            type: chatAction.msgFile,
+            payload: {
+                show: false
+            }
+        });
+        this.store$.dispatch({
+            type: chatAction.groupSetting,
+            payload: {
+                show: false
+            }
+        });
     }
     // 输入框keydown，ctrl + enter换行，enter发送消息，@用户
     private preKeydown(event) {
@@ -1180,6 +1182,18 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         this.contentDiv.focus();
         this.util.focusLast(this.contentDiv);
         this.emojiInfo.show = false;
+        this.store$.dispatch({
+            type: chatAction.msgFile,
+            payload: {
+                show: false
+            }
+        });
+        this.store$.dispatch({
+            type: chatAction.groupSetting,
+            payload: {
+                show: false
+            }
+        });
     }
     // 播放语音
     private playVoice(index) {

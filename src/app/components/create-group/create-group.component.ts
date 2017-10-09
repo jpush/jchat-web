@@ -150,9 +150,13 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             this.searchResult.show = true;
             for (let list of this.createGroup.list) {
                 for (let user of list.data) {
-                    let nameExist = user.name && user.name.indexOf(value) !== -1;
-                    let nickNameExist = user.nickName && user.nickName.indexOf(value) !== -1;
-                    if ((nameExist || nickNameExist) && user.show) {
+                    let memoNameExist = user.memo_name &&
+                            user.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                    let nameExist = user.name &&
+                            user.name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                    let nickNameExist = user.nickName &&
+                            user.nickName.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                    if ((memoNameExist || nameExist || nickNameExist) && user.show) {
                         this.searchResult.result.push(user);
                     }
                 }

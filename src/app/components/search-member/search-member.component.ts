@@ -34,7 +34,6 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
     public ngAfterViewInit() {
         this.fileDom = this.elementRef.nativeElement.querySelector('#' + this.searchResult.id);
         Observable.fromEvent(this.fileDom, 'keyup')
-            .debounceTime(200)
             .subscribe((event: any) => {
                 if (event.keyCode !== 13) {
                     this.searchKeyup.emit(event.target.value);

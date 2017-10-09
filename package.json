@@ -1,15 +1,15 @@
 {
-  "name": "ng2-jchat",
-  "version": "1.0.0",
+  "name": "jchat-web",
+  "version": "1.1.0",
   "description": "jchat",
   "main": "index.js",
-  "author": "xuwenqing <xuwenqing@jpush.cn>",
+  "author": "极光推送/IM JPush/JMesage",
   "repository": {
     "type": "git",
-    "url": "http://gitlab.jpushoa.com/xuwq/ng2-jchat.git"
+    "url": "https://github.com/jpush/jchat-web.git"
   },
   "bugs": {
-    "url": "http://gitlab.jpushoa.com/xuwq/ng2-jchat/issues"
+    "url": "https://github.com/jpush/jchat-web/issues"
   },
   "keywords": [
     "ng2",
