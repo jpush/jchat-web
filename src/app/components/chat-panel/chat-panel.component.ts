@@ -607,6 +607,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             info: this.pasteImage.info
         });
     }
+    // 拖拽预览文件或者图片
     private dropArea(event) {
         event.preventDefault();
         let fileList = event.dataTransfer.files;
@@ -781,6 +782,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             }
         });
     }
+    // 查看对方用户资料
     private watchOtherInfo(content) {
         let username = content.from_id ? content.from_id : content.name;
         let info: any = {
@@ -791,6 +793,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         }
         this.otherInfo.emit(info);
     }
+    // 点击查看名片
     private watchBusinessCardInfo(extras) {
         let info: any = {
             username: extras.userName
@@ -804,13 +807,16 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             this.otherInfo.emit(info);
         }
     }
+    // 查看自己的资料
     private watchSelfInfo() {
         this.selfInfoEmit.emit();
     }
+    // 查看群设置
     private groupSettingAction(event) {
         event.stopPropagation();
         this.groupSetting.emit();
     }
+    // 显示隐藏emoji面板
     private showEmojiPanel(event) {
         this.inputNoBlur = false;
         event.stopPropagation();
@@ -883,41 +889,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     let hasAt = text.substring(0, index).lastIndexOf('@');
                     if (at === '@') {
                         let newList = [];
-                        for (let item of memberList) {
-                            if (item.memo_name &&
-                                item.memo_name.toUpperCase().indexOf(letter) !== -1) {
-                                item.match = 'memo_name';
-                                newList.push(item);
-                                continue ;
-                            }
-                            if (item.nickName &&
-                                item.nickName.toUpperCase().indexOf(letter) !== -1) {
-                                item.match = 'nickName';
-                                newList.push(item);
-                                continue ;
-                            }
-                            if (item.username.toUpperCase().indexOf(letter) !== -1) {
-                                item.match = 'username';
-                                newList.push(item);
-                                continue ;
-                            }
-                            if (item.memo_nameFirstLetter && item.memo_nameFirstLetter === letter) {
-                                item.match = 'memo_name';
-                                newList.push(item);
-                                continue ;
-                            }
-                            if (item.nickNameFirstLetter && item.nickNameFirstLetter === letter) {
-                                item.match = 'nickName';
-                                newList.push(item);
-                                continue ;
-                            }
-                            if (item.usernameFirstLetter === letter) {
-                                item.match = 'username';
-                                newList.push(item);
-                                continue ;
-                            }
-                            item.match = '';
-                        }
+                        this.filterNewList1(letter, newList, memberList);
                         this.atDeleteNum = 2;
                         if (newList.length > 0) {
                             this.showAtList(range, newList, false);
@@ -928,26 +900,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                         this.atDeleteNum = index - hasAt;
                         letter = text.substr(hasAt + 1, this.atDeleteNum - 1).toUpperCase();
                         let newList = [];
-                        for (let item of memberList) {
-                            if (item.memo_name &&
-                                item.memo_name.toUpperCase().indexOf(letter) !== -1) {
-                                item.match = 'memo_name';
-                                newList.push(item);
-                                continue ;
-                            }
-                            if (item.nickName &&
-                                item.nickName.toUpperCase().indexOf(letter) !== -1) {
-                                item.match = 'nickName';
-                                newList.push(item);
-                                continue ;
-                            }
-                            if (item.username.toUpperCase().indexOf(letter) !== -1) {
-                                item.match = 'username';
-                                newList.push(item);
-                                continue ;
-                            }
-                            item.match = '';
-                        }
+                        this.filterNewList2(letter, newList, memberList);
                         if (newList.length > 0) {
                             this.showAtList(range, newList, false);
                         } else {
@@ -963,6 +916,65 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             } else {
                 this.atList.show = false;
             }
+        }
+    }
+    private filterNewList1(letter, newList, memberList) {
+        for (let item of memberList) {
+            if (item.memo_name &&
+                item.memo_name.toUpperCase().indexOf(letter) !== -1) {
+                item.match = 'memo_name';
+                newList.push(item);
+                continue ;
+            }
+            if (item.nickName &&
+                item.nickName.toUpperCase().indexOf(letter) !== -1) {
+                item.match = 'nickName';
+                newList.push(item);
+                continue ;
+            }
+            if (item.username.toUpperCase().indexOf(letter) !== -1) {
+                item.match = 'username';
+                newList.push(item);
+                continue ;
+            }
+            if (item.memo_nameFirstLetter && item.memo_nameFirstLetter === letter) {
+                item.match = 'memo_name';
+                newList.push(item);
+                continue ;
+            }
+            if (item.nickNameFirstLetter && item.nickNameFirstLetter === letter) {
+                item.match = 'nickName';
+                newList.push(item);
+                continue ;
+            }
+            if (item.usernameFirstLetter === letter) {
+                item.match = 'username';
+                newList.push(item);
+                continue ;
+            }
+            item.match = '';
+        }
+    }
+    private filterNewList2(letter, newList, memberList) {
+        for (let item of memberList) {
+            if (item.memo_name &&
+                item.memo_name.toUpperCase().indexOf(letter) !== -1) {
+                item.match = 'memo_name';
+                newList.push(item);
+                continue ;
+            }
+            if (item.nickName &&
+                item.nickName.toUpperCase().indexOf(letter) !== -1) {
+                item.match = 'nickName';
+                newList.push(item);
+                continue ;
+            }
+            if (item.username.toUpperCase().indexOf(letter) !== -1) {
+                item.match = 'username';
+                newList.push(item);
+                continue ;
+            }
+            item.match = '';
         }
     }
     // 显示@列表
@@ -1111,6 +1123,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             }, 500);
         }
     }
+    // 触发滚动事件，上报已读回执
     private scrollY() {
         let domArr = document.getElementsByClassName('msg-dom');
         let offsetHeight = this.elementRef.nativeElement.querySelector('#imgViewer').offsetHeight;
@@ -1131,7 +1144,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 type: 4
             };
         }
-        console.log(444444444);
         for (let i = 0; i < domArr.length; i ++) {
             let offsetTop = (domArr[i] as HTMLDivElement).offsetTop;
             if (scrollTop <= offsetTop && offsetTop <= scrollTop + offsetHeight) {
@@ -1148,6 +1160,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private addGroupAction() {
         this.addGroup.emit();
     }
+    // 显示聊天文件的侧边栏
     private msgFileAction(event) {
         event.stopPropagation();
         // this.msgFile.emit();
@@ -1259,6 +1272,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private imgLoaded(i) {
         i.content.msg_body.loading = true;
     }
+    // 切换聊天文件中的tab
     private changeMsgFileEmit(type) {
         this.store$.dispatch({
             type: chatAction.msgFile,
@@ -1270,6 +1284,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             }
         });
     }
+    // 预览聊天文件中的图片
     private showMsgFileImageViewerEmit(item) {
         for (let i = 0; i < this.msgFileImageViewer.result.length; i++) {
             let msgIdFlag = this.msgFileImageViewer.result[i].msg_id === item.msg_id && item.msg_id;
@@ -1285,12 +1300,14 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         this.msgFileImageViewer.show = true;
         this.viewer = this.msgFileImageViewer;
     }
+    // 聊天文件中的图片加载成功后，为了图片预览，在state中存储宽高
     private fileImageLoadEmit(message) {
         this.store$.dispatch({
             type: chatAction.fileImageLoad,
             payload: message
         });
     }
+    // 查看未读已读列表
     private unreadList(message) {
         if (message.unread_count > 0 && this.active.type === 4) {
             this.store$.dispatch({

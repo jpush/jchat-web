@@ -149,7 +149,7 @@ export class MainComponent implements OnInit, OnDestroy {
         // pass
     }
     public ngOnInit() {
-        // 避免频繁切换用户时，store的数据依然还保留上一用户的状态
+        // 初始化state，避免频繁切换用户时，store的数据依然还保留上一用户的状态
         this.store$.dispatch({
             type: mainAction.init,
             payload: null
@@ -471,7 +471,7 @@ export class MainComponent implements OnInit, OnDestroy {
         });
     }
     private modalTipEmit(info) {
-        // 模态框点击确定按钮
+        // 提示模态框点击确定按钮
         if (info) {
             switch (info.actionType) {
                 case '[main] logout show':

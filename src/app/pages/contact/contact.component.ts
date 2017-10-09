@@ -123,18 +123,21 @@ export class ContactComponent implements OnInit, OnDestroy {
             payload: item
         });
     }
+    // 切换联系人中的tab
     private changeTabEmit(tab) {
         this.store$.dispatch({
             type: contactAction.changeTab,
             payload: tab
         });
     }
+    // 同意或者拒绝好友请求
     private isAgreeAddFriendEmit(message) {
         this.store$.dispatch({
             type: contactAction.isAgreeAddFriend,
             payload: message
         });
     }
+    // 查看验证信息中的对方用户的资料
     private watchVerifyUserEmit(message) {
         this.store$.dispatch({
             type: contactAction.watchVerifyUser,

@@ -38,6 +38,7 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             // state.groupList = util.sortByLetter(payload.groupList);
             state.groupList = util.sortByLetter(payload);
             break;
+            // 切换联系人或者会话的tab
         case mainAction.changeListTab:
             state.listTab = payload;
             if (payload === 1) {
@@ -48,6 +49,7 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             }
             changeFirstOne(state, 'isContactFirstOne');
             break;
+            // 切换联系人中的tab
         case contactAction.changeTab:
             state.tab = payload;
             if (payload === 0) {
@@ -55,31 +57,39 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             }
             changeFirstOne(state, 'isVerifyFirstOne');
             break;
+            // 添好友邀请事件
         case chatAction.friendInvitationEventSuccess:
             friendVerify(state, payload);
             break;
+            // 自己拒绝添加好友
         case contactAction.refuseAddFriendSuccess:
             isAgreeAddFriend(state, payload, 3);
             break;
+            // 自己同意添加好友
         case contactAction.agreeAddFriendSuccess:
             isAgreeAddFriend(state, payload, 4);
             break;
+            // 自己同意添加好友失败
         case contactAction.addFriendError:
             addFriendError(state, payload);
             break;
+            // 传递好友列表的数据
         case chatAction.dispatchFriendList:
             filterFriendList(state, payload);
             state.friendList = util.sortByLetter(payload);
             break;
+            // 添加好友的应答事件
         case chatAction.friendReplyEventSuccess:
             friendReply(state, payload);
             break;
+            // 发送给好友验证信息
         case chatAction.addFriendConfirm:
             waitReply(state, payload);
             break;
         // case chatAction.groupAvatar:
         //     updateGroupAvatar(state, payload);
         //     break;
+            // 添加好友同步事件
         case chatAction.addFriendSyncEvent:
             addFriendSyncEvent(state, payload);
             break;
@@ -248,6 +258,7 @@ function friendVerify(state, payload) {
     }
     state.verifyMessageList.unshift(verifyMessage);
 }
+// 处理好友列表数据
 function filterFriendList(state, payload) {
     for (let friend of payload) {
         if (friend.username && !friend.name) {

@@ -93,64 +93,6 @@ export class ChatEffect {
             let messageList = obj.messageList;
             let flag = false;
             let content = obj.data.messages[0].content;
-            // 如果消息所在的群聊不在消息列表中，且群名为空，需要获取群的成员，将群成员的昵称或用户名拼接
-            // let result = obj.conversation.filter((item) => {
-            //     return Number(messages.key) === Number(item.key);
-            // });
-            // if (result.length === 0 && messages.content.target_name === '') {
-            //     count ++;
-            //     this.requestGroupName(messages.content, (error) => {
-            //         messages.content.target_name = '群名获取失败？？';
-            //         if (-- count <= 0) {
-            //             this.store$.dispatch({
-            //                 type: chatAction.receiveMessageSuccess,
-            //                 payload: obj.data
-            //             });
-            //         }
-            //         this.store$.dispatch({
-            //             type: appAction.errorApiTip,
-            //             payload: error
-            //         });
-            //     }, () => {
-            //         if (-- count <= 0) {
-            //             this.store$.dispatch({
-            //                 type: chatAction.receiveMessageSuccess,
-            //                 payload: obj.data
-            //             });
-            //         }
-            //     });
-                // global.JIM.getGroupMembers({gid: messages.content.target_id})
-                // .onSuccess((data) => {
-                //     let name = '';
-                //     for (let list of data.member_list) {
-                //         name += ((list.nickName !== '' ? list.nickName : list.username) + '、');
-                //     }
-                //     if (name.length > 20) {
-                //         messages.content.target_name = name.substr(0, 20);
-                //     } else {
-                //         messages.content.target_name =
-                //             name.substr(0, name.length - 1);
-                //     }
-                //     if (-- count <= 0) {
-                //         this.store$.dispatch({
-                //             type: chatAction.receiveMessageSuccess,
-                //             payload: obj.data
-                //         });
-                //     }
-                // }).onFail((error) => {
-                //     messages.content.target_name = '群名获取失败？？';
-                //     if (-- count <= 0) {
-                //         this.store$.dispatch({
-                //             type: chatAction.receiveMessageSuccess,
-                //             payload: obj.data
-                //         });
-                //     }
-                //     this.store$.dispatch({
-                //         type: appAction.errorApiTip,
-                //         payload: error
-                //     });
-                // });
-            // }
             if (messages.content.msg_body.media_id) {
                 count ++;
                 this.requestMediaUrl(obj.data, count);
@@ -492,29 +434,6 @@ export class ChatEffect {
                             count --;
                             this.dispatchConversation (count, info, data);
                         });
-                        // global.JIM.getGroupMembers({gid: conversation.key})
-                        // .onSuccess((member) => {
-                        //     count --;
-                        //     let name = '';
-                        //     for (let list of member.member_list) {
-                        //         name += (list.nickName !== '' ? list.nickName : list.username)
-                        //                 + '、';
-                        //     }
-                        //     if (name.length > 20) {
-                        //         conversation.name = name.substr(0, 20);
-                        //     } else {
-                        //         conversation.name = name.substr(0, name.length - 1);
-                        //     }
-                        //     this.dispatchConversation (count, info, data);
-                        // }).onFail((error) => {
-                        //     count --;
-                        //     conversation.name = '群名获取失败？？';
-                        //     this.store$.dispatch({
-                        //         type: appAction.errorApiTip,
-                        //         payload: error
-                        //     });
-                        //     this.dispatchConversation (count, info, data);
-                        // });
                     }
                 }
                 this.dispatchConversation (count, info, data);
@@ -1512,34 +1431,9 @@ export class ChatEffect {
             const OtherInfoObj = global.JIM.getUserInfo({
                 username: other.username
             }).onSuccess((data) => {
-                // data.user_info.infoType = 'watchInfo';
                 data.user_info.name = data.user_info.username;
                 data.user_info.nickName = data.user_info.nickname;
                 data.user_info.infoType = 'watchOtherInfo';
-                // global.JIM.getBlacks()
-                // .onSuccess((black) => {
-                //     that.store$.dispatch({
-                //         type: chatAction.watchOtherInfoSuccess,
-                //         payload: {
-                //             info: data.user_info,
-                //             show: true,
-                //             black: black.black_list
-                //         }
-                //     });
-                // }).onFail((error) => {
-                //     that.store$.dispatch({
-                //         type: chatAction.watchOtherInfoSuccess,
-                //         payload: {
-                //             info: data.user_info,
-                //             show: true,
-                //             black: []
-                //         }
-                //     });
-                //     that.store$.dispatch({
-                //         type: appAction.errorApiTip,
-                //         payload: error
-                //     });
-                // });
                 if (other.hasOwnProperty('avatarUrl') || data.user_info.avatar === '') {
                     data.user_info.avatarUrl = other.avatarUrl ? other.avatarUrl : '';
                     this.store$.dispatch({
@@ -1587,7 +1481,7 @@ export class ChatEffect {
                         return {type: '[chat] watch other info useless'};
                     });
     });
-    // 获取群组信息和群成员信息
+    // 获取群组信息
     @Effect()
     private groupInfo$: Observable<Action> = this.actions$
         .ofType(chatAction.groupSetting)
@@ -1658,42 +1552,6 @@ export class ChatEffect {
                     payload: error
                 });
             });
-            // let groupMemberObj = global.JIM.getGroupMembers({gid: info.active.key})
-            // .onSuccess((data) => {
-            //     that.store$.dispatch({
-            //         type: chatAction.groupInfo,
-            //         payload: {
-            //             memberList: data.member_list
-            //         }
-            //     });
-            //     for (let member of data.member_list) {
-            //         if (member.avatar) {
-            //             global.JIM.getResource({media_id: member.avatar})
-            //             .onSuccess((urlInfo) => {
-            //                 member.avatarUrl = urlInfo.url;
-            //                 that.store$.dispatch({
-            //                     type: chatAction.groupInfo,
-            //                     payload: {
-            //                         memberList: data.member_list
-            //                     }
-            //                 });
-            //             }).onFail((error) => {
-            //                 //
-            //             });
-            //         }
-            //     }
-            // }).onFail((error) => {
-            //     that.store$.dispatch({
-            //         type: appAction.errorApiTip,
-            //         payload: error
-            //     });
-            // }).onTimeout((data) => {
-            //     const error = {code: 910000};
-            //     that.store$.dispatch({
-            //         type: appAction.errorApiTip,
-            //         payload: error
-            //     });
-            // });
             return Observable.of(groupInfoObj)
                     .map(() => {
                         return {type: '[chat] group info useless'};
@@ -1767,12 +1625,7 @@ export class ChatEffect {
             }
             const groupInfoObj = global.JIM.updateGroupInfo(requestObj)
             .onSuccess((data) => {
-                if (info.actionType && info.actionType === 'modifyName') {
-                    // this.store$.dispatch({
-                    //     type: chatAction.groupName,
-                    //     payload: info
-                    // });
-                } else if (info.actionType && info.actionType === 'modifyDescription') {
+                if (info.actionType && info.actionType === 'modifyDescription') {
                     this.store$.dispatch({
                         type: chatAction.groupDescription,
                         payload: {
@@ -1781,10 +1634,6 @@ export class ChatEffect {
                         }
                     });
                 } else if (info.actionType && info.actionType === 'modifyGroupAvatar') {
-                    // this.store$.dispatch({
-                    //     type: chatAction.groupAvatar,
-                    //     payload: info
-                    // });
                     this.store$.dispatch({
                         type: mainAction.showModalTip,
                         payload: {
@@ -1925,16 +1774,6 @@ export class ChatEffect {
         .ofType(chatAction.addGroupMembersEvent)
         .map(toPayload)
         .switchMap((eventData) => {
-            // if (global.user === eventData.from_username) {
-            //     this.store$.dispatch({
-            //         type: chatAction.addGroupMembersEventSuccess,
-            //         payload: eventData
-            //     });
-            //     return Observable.of('addGroupMembersEventObj')
-            //         .map(() => {
-            //             return {type: '[chat] add group members event useless'};
-            //         });
-            // }
             let groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
             .onSuccess((obj) => {
                 if (obj.group_info.name && obj.group_info.name !== '') {
@@ -1948,7 +1787,6 @@ export class ChatEffect {
                         global.JIM.getUserInfo({
                             username: userList.username
                         }).onSuccess((user) => {
-                            // userList.key = user.uid;
                             if (user.user_info.avatar === '') {
                                 count ++;
                                 if (count === eventData.to_usernames.length) {
@@ -2041,61 +1879,6 @@ export class ChatEffect {
                             }
                         }
                     });
-                    // global.JIM.getGroupMembers({gid: eventData.gid})
-                    // .onSuccess((data) => {
-                    //     let name = '';
-                    //     let count = 0;
-                    //     for (let member of data.member_list) {
-                    //         name += (member.nickName !== '' ?
-                    //             member.nickName : member.username) + '、';
-                    //         for (let userList of eventData.to_usernames) {
-                    //             if (userList.username === member.username) {
-                    //                 global.JIM.getResource({media_id: member.avatar})
-                    //                 .onSuccess((urlInfo) => {
-                    //                     userList.avatarUrl = urlInfo.url;
-                    //                     count ++;
-                    //                     if (count === eventData.to_usernames.length) {
-                    //                         this.store$.dispatch({
-                    //                             type: chatAction.updateGroupMembersEvent,
-                    //                             payload: {
-                    //                                 eventData
-                    //                             }
-                    //                         });
-                    //                     }
-                    //                 }).onFail((error) => {
-                    //                     count ++;
-                    //                     if (count === eventData.to_usernames.length) {
-                    //                         this.store$.dispatch({
-                    //                             type: chatAction.updateGroupMembersEvent,
-                    //                             payload: {
-                    //                                 eventData
-                    //                             }
-                    //                         });
-                    //                     }
-                    //                 });
-                    //             }
-                    //         }
-                    //     }
-                    //     if (name.length > 20) {
-                    //         eventData.name = name.substr(0, 20);
-                    //     } else {
-                    //         eventData.name = name.substr(0, name.length - 1);
-                    //     }
-                    //     this.store$.dispatch({
-                    //         type: chatAction.addGroupMembersEventSuccess,
-                    //         payload: eventData
-                    //     });
-                    // }).onFail((error) => {
-                    //     this.store$.dispatch({
-                    //         type: appAction.errorApiTip,
-                    //         payload: error
-                    //     });
-                    //     eventData.name = '群名获取失败？？';
-                    //     this.store$.dispatch({
-                    //         type: chatAction.addGroupMembersEventSuccess,
-                    //         payload: eventData
-                    //     });
-                    // });
                 }
             }).onFail((error) => {
                 this.store$.dispatch({
@@ -2734,6 +2517,7 @@ export class ChatEffect {
         private router: Router,
         private storageService: StorageService
     ) {}
+    // 获取消息的发送方的头像
     private requestMsgAvatarUrl(messages, obj, count) {
         let username = messages.content.from_id !== global.user ?
                     messages.content.from_id : messages.content.target_id;
@@ -2777,6 +2561,7 @@ export class ChatEffect {
             }
         });
     }
+    // 获取会话列表
     private dispatchConversation (count, info, data) {
         if (count <= 0) {
             let key = `msgId-${authPayload.appKey}-${global.user}`;
@@ -2792,6 +2577,7 @@ export class ChatEffect {
             });
         }
     }
+    //  获取静态资源的url
     private requestMediaUrl(data, count) {
         global.JIM.getResource({media_id: data.messages[0].content.msg_body.media_id})
         .onSuccess((urlInfo) => {
@@ -2827,6 +2613,7 @@ export class ChatEffect {
             });
         });
     }
+    // 发送名片获取对方的信息
     private requestCardInfo(data, count) {
         global.JIM.getUserInfo({
             username: data.messages[0].content.msg_body.extras.userName,
@@ -2875,6 +2662,7 @@ export class ChatEffect {
             }
         });
     }
+    // 获取未读列表
     private getUnreadListInfo(list, unread) {
         global.JIM.getUserInfo({
             username: unread.username
@@ -2935,6 +2723,7 @@ export class ChatEffect {
             });
         });
     }
+    // 拼接群名称
     private requestGroupName(eventData, callback1, callback2?, callback3?) {
         global.JIM.getGroupMembers({gid: eventData.key || eventData.gid || eventData.target_id})
         .onSuccess((data) => {

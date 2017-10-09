@@ -25,6 +25,7 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             }
             state.selfInfo.loading = payload.loading;
             break;
+            // 更新自己的个人资料
         case mainAction.updateSelfInfo:
             state.selfInfo.loading = true;
             break;
@@ -32,6 +33,7 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case mainAction.changeListTab:
             state.listTab = payload;
             break;
+            // 点击选择联系人中的用户
         case contactAction.selectContactItem:
             state.listTab = 0;
             break;
@@ -72,11 +74,11 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case mainAction.showModalTip:
 
         case mainAction.hideModalTip:
-
+            // 成功加入黑名单列表
         case mainAction.addBlackListSuccess:
-
+            // 退群成功
         case mainAction.exitGroupSuccess:
-
+            // 删除群成员成功
         case mainAction.deleteMemberSuccess:
             state.tipModal = payload;
             break;
@@ -90,8 +92,8 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
                 show: false,
                 info: ''
             };
-            // state.listTab = 0;
             break;
+            // 对方资料中发起聊天
         case chatAction.createOtherChat:
             state.listTab = 0;
             break;
@@ -126,6 +128,7 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case mainAction.logoutKickShow:
             state.logoutKick = payload;
             break;
+            // 传递联系人和会话tab的未读数
         case contactAction.dispatchContactUnreadNum:
             state.contactUnreadNum = payload;
             break;

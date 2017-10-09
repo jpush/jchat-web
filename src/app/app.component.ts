@@ -53,6 +53,7 @@ export class AppComponent implements OnInit, OnDestroy {
             }
         });
     }
+    // api调用错误提示统一处理
     private errorApiTip(errorMsg) {
         let name = errorMsg.text ? errorMsg.text + ' : ' : '';
         let tip = '';
