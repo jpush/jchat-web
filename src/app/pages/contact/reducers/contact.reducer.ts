@@ -75,7 +75,6 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             break;
             // 传递好友列表的数据
         case chatAction.dispatchFriendList:
-            filterFriendList(state, payload);
             state.friendList = util.sortByLetter(payload);
             break;
             // 添加好友的应答事件
@@ -258,18 +257,7 @@ function friendVerify(state, payload) {
     }
     state.verifyMessageList.unshift(verifyMessage);
 }
-// 处理好友列表数据
-function filterFriendList(state, payload) {
-    for (let friend of payload) {
-        if (friend.username && !friend.name) {
-            friend.name = friend.username;
-        }
-        if (friend.nickname && !friend.nickName) {
-            friend.nickName = friend.nickname;
-        }
-        friend.type = 3;
-    }
-}
+
 // 退出群聊时删除群组列表
 // function exitGroup(state, payload) {
 //     for (let group of state.groupList) {

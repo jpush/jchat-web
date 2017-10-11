@@ -49,5 +49,6 @@ export const mainInit = {
             tip: ''
         }
     },
-    contactUnreadNum: 0
+    contactUnreadNum: 0,
+    friendList: []
 };

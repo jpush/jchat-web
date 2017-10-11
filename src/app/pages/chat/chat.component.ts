@@ -17,8 +17,8 @@ import * as Push from 'push.js';
 export class ChatComponent implements OnInit, OnDestroy {
     @Input()
         private hideAll;
-    private isLoadedSubject = new Subject();
-    private isLoaded$ = this.isLoadedSubject.asObservable();
+    private isLoadedSubject$ = new Subject();
+    private isLoaded$ = this.isLoadedSubject$.asObservable();
     private isLoaded = false;
     private util: Util = new Util();
     private chatStream$;
@@ -267,7 +267,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     public ngOnDestroy() {
         this.chatStream$.unsubscribe();
-        this.isLoadedSubject.unsubscribe();
+        this.isLoadedSubject$.unsubscribe();
     }
     @HostListener('window:blur') private onBlurWindow() {
         this.windowIsFocus = false;
@@ -312,6 +312,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                     type: chatAction.dispatchFriendList,
                     payload: chatState.friendList
                 });
+                if (chatState.activePerson.activeIndex > 0) {
+                    this.active = chatState.activePerson;
+                }
                 break;
             case chatAction.getConversationSuccess:
                 this.conversationList = chatState.conversation;
@@ -323,7 +326,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
                 if (chatState.isLoaded) {
                     this.isLoaded = chatState.isLoaded;
-                    this.isLoadedSubject.next(this.isLoaded);
+                    this.isLoadedSubject$.next(this.isLoaded);
                 }
                 break;
             case chatAction.receiveMessageSuccess:
@@ -506,10 +509,25 @@ export class ChatComponent implements OnInit, OnDestroy {
                 if (chatState.currentIsActive) {
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 }
+                this.store$.dispatch({
+                    type: chatAction.dispatchGroupList,
+                    payload: chatState.groupList
+                });
+                break;
+            case chatAction.deleteGroupMembersEvent:
+                this.store$.dispatch({
+                    type: chatAction.dispatchGroupList,
+                    payload: chatState.groupList
+                });
+                if (activeIndex >= 0 && messageListActive && messageListActive.groupSetting) {
+                    this.groupSetting = Object.assign({},
+                        this.groupSetting, messageListActive.groupSetting);
+                }
+                if (chatState.currentIsActive) {
+                    this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
+                }
                 break;
             case chatAction.updateGroupMembersEvent:
-
-            case chatAction.deleteGroupMembersEvent:
 
             case chatAction.exitGroupEvent:
                 if (activeIndex >= 0 && messageListActive && messageListActive.groupSetting) {
@@ -805,12 +823,12 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
                 break;
             case 7:
-                // 好友备注同步事件
+                // 非客户端修改好友关系事件
                 if (!data.isOffline) {
                     if (data.extra === 0) {
                         this.store$.dispatch({
                             type: chatAction.getFriendList,
-                            payload: null
+                            payload: 'api'
                         });
                     }
                 }

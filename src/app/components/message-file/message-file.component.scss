@@ -153,11 +153,12 @@
                     line-height: 14px;
                     font-size : 12px;
                     p{
+                        width: 115%;
                         -webkit-transform : scale(0.84, 0.84) translateX(-9.6%);
                                 transform : scale(0.84, 0.84) translateX(-9.6%);
                     }
                     .message-file-username{
-                        max-width: 85px;
+                        max-width: 80px;
                         overflow: hidden;
                         float: left;
                         text-overflow: ellipsis;

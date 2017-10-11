@@ -48,6 +48,11 @@ gulp.task('replacejs', function () {
         .pipe(replace('../../../assets/images/', WebpackConfig.output.publicPath + 'assets/images/'))
         .pipe(gulp.dest('./dist'));
 })
+gulp.task('replaceindex', function () {
+    return gulp.src('./dist/index.html')
+        .pipe(replace('http://7xo28s.com1.z0.glb.clouddn.com/web-jchat/0.0.1', '.'))
+        .pipe(gulp.dest('./dist'));
+})
 
 gulp.task('createDist', function (callback) {
     return gulp.src('./README.md')

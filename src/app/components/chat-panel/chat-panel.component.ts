@@ -876,7 +876,14 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         }
         let selection = window.getSelection();
         let range = selection.getRangeAt(0);
-        let memberList = this.messageList[this.active.activeIndex].groupSetting.memberList;
+        let groupSetting = this.messageList[this.active.activeIndex].groupSetting;
+        let memberList;
+        if (groupSetting) {
+            memberList = groupSetting.memberList;
+        }
+        if (!groupSetting || !memberList) {
+            return ;
+        }
         if (event.code === 'Digit2' && event.shiftKey) {
             this.showAtList(range, memberList, true);
         } else {

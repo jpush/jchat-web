@@ -111,6 +111,7 @@
                 .group-setting-desc-text{
                     cursor: pointer;
                     max-width: 170px;
+                    word-break: break-all;
                     &:hover{
                         color: #2dd0cf;
                     }

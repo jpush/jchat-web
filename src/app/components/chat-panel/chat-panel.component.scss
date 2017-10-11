@@ -368,6 +368,9 @@
                 line-height: 20px;
             }
             .chat-panel-voice{
+                &.chat-panel-voice-you{
+                    line-height: 0;
+                }
                 .chat-panel-voice-sound{
                     max-width: 150px;
                     height: 38px;
@@ -385,7 +388,7 @@
                         background: url(../../../assets/images/message-loading.gif) center center no-repeat;
                         background-size: 18px;
                     }
-                    div{
+                    >div{
                         height: 100%;
                         max-width: 150px;
                         min-width: 60px;
@@ -423,7 +426,8 @@
                     border: 1px solid #E2E9F0;                    
                     border-radius: 0 5px 5px 5px;
                     background-color: #F2F6FB;
-                    color: #999;                    
+                    color: #999;
+                    line-height: 40px;                
                     &:after{
                         left: -6px;                        
                         background: url(../../../assets/images/pao-you.svg) left top no-repeat;

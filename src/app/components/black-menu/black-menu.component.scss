@@ -10,6 +10,11 @@
             margin-right: 10px;
             overflow: hidden;
         }
+        .flex-1{
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
         button{
             width: 80px;
             height: 26px;

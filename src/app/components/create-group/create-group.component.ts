@@ -39,6 +39,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
 
     }
     public ngOnInit() {
+        console.log(8888, this.createGroup);
         this.initData();
         this.createGroupStream$ = this.store$.select((state) => {
             let mainState = state['mainReducer'];
@@ -79,8 +80,13 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
                             }
                         }
                     }
+                    // 如果搜索的是创建多人会话的默认成员，disabled
+                    let activeSingle = this.createGroup.info.activeSingle;
+                    if (activeSingle &&
+                        activeSingle.name === mainState.createGroupSearch.info.name) {
+                        result[0].disabled = true;
+                    }
                     this.searchResult.result = result;
-                    console.log(4444, this.searchResult.result);
                 } else {
                     this.searchResult.result = [];
                 }

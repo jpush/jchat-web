@@ -110,6 +110,7 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             if (payload.show !== null) {
                 state.blackMenu.show = payload.show;
             }
+            filterBlackMenuMemoName(state, payload.menu);
             state.blackMenu.menu = payload.menu;
             break;
             // 隐藏黑名单列表
@@ -132,10 +133,26 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case contactAction.dispatchContactUnreadNum:
             state.contactUnreadNum = payload;
             break;
+            // 传递好友列表
+        case chatAction.dispatchFriendList:
+            state.friendList = payload;
+            break;
         default:
     }
     return state;
 };
+// 为黑名单列表添加备注名
+function filterBlackMenuMemoName(state, payload) {
+    for (let black of payload) {
+        for (let friend of state.friendList) {
+            if (friend.username === black.username && friend.appkey === black.appkey &&
+                friend.memo_name && friend.memo_name !== '') {
+                black.memo_name = friend.memo_name;
+                break;
+            }
+        }
+    }
+}
 // 切换删除黑名单列表的loading状态
 function delSingleBlackLoading(state, payload, loadingValue) {
     for (let black of state.blackMenu.menu) {

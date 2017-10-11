@@ -44,4 +44,5 @@ export interface MainStore {
         }
     };
     contactUnreadNum: number;
+    friendList: Array<any>;
 }

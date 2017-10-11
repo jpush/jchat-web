@@ -168,7 +168,7 @@
                             </div>
                         </div>
                         <!-- 语音 -->
-                        <div *ngIf="i.content.msg_type === 'voice'" (mouseleave)="msgMouseleave()" class="chat-panel-voice clearfix">
+                        <div *ngIf="i.content.msg_type === 'voice'" (mouseleave)="msgMouseleave()" class="chat-panel-voice chat-panel-voice-you clearfix">
                             <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                             </div>
@@ -363,7 +363,7 @@
         </div>
         <div class="chat-panel-text-container" (drop)="dropArea($event)" (click)="contentFocus($event)">
             <perfect-scrollbar class="chat-panel-content-scroll">
-                <div (paste)="pasteMessage($event)" (click)="stopPropagation($event)" class="chat-panel-content-text" [myModel]="messageList[active.activeIndex]" id="contentDiv" spellcheck="false" contenteditable="true" (keydown)="preKeydown($event)" (keyup)="preKeyup($event)" (blur)="msgContentChange($event)" (focus)="msgContentFocus()" (click)="msgContentClick($event)"></div>
+                <div (paste)="pasteMessage($event)" class="chat-panel-content-text" [myModel]="messageList[active.activeIndex]" id="contentDiv" spellcheck="false" contenteditable="true" (keydown)="preKeydown($event)" (keyup)="preKeyup($event)" (blur)="msgContentChange($event)" (focus)="msgContentFocus()" (click)="msgContentClick($event)"></div>
             </perfect-scrollbar>
         </div>
         <button class="chat-panel-send-btn btn-white" type="button" (click) = "sendMsgAction()">发送</button>

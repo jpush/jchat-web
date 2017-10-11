@@ -158,13 +158,21 @@ export class ChatEffect {
     private getFriendList$: Observable<Action> = this.actions$
         .ofType(chatAction.getFriendList)
         .map(toPayload)
-        .switchMap(() => {
+        .switchMap((info) => {
             const friendListObj = global.JIM.getFriendList()
                 .onSuccess((data) => {
-                    console.log(3333333, data.friend_list);
+                    let payload;
+                    if (info === 'api') {
+                        payload = {
+                            friendList: data.friend_list,
+                            type: info
+                        };
+                    } else {
+                        payload = data.friend_list;
+                    }
                     this.store$.dispatch({
                         type: chatAction.getFriendListSuccess,
-                        payload: data.friend_list
+                        payload
                     });
                     for (let friend of data.friend_list) {
                         if (friend.avatar === '') {
@@ -1776,11 +1784,16 @@ export class ChatEffect {
         .switchMap((eventData) => {
             let groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
             .onSuccess((obj) => {
+                console.log(222, obj.group_info);
                 if (obj.group_info.name && obj.group_info.name !== '') {
                     eventData.name = obj.group_info.name;
-                    this.store$.dispatch({
-                        type: chatAction.addGroupMembersEventSuccess,
-                        payload: eventData
+                    this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
+                        console.log(333, avatarUrl);
+                        eventData.avatarUrl = avatarUrl || '';
+                        this.store$.dispatch({
+                            type: chatAction.addGroupMembersEventSuccess,
+                            payload: eventData
+                        });
                     });
                     let count = 0;
                     for (let userList of eventData.to_usernames) {
@@ -1841,14 +1854,20 @@ export class ChatEffect {
                             payload: error
                         });
                         eventData.name = '群名获取失败？？';
-                        this.store$.dispatch({
-                            type: chatAction.addGroupMembersEventSuccess,
-                            payload: eventData
+                        this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
+                            eventData.avatarUrl = avatarUrl || '';
+                            this.store$.dispatch({
+                                type: chatAction.addGroupMembersEventSuccess,
+                                payload: eventData
+                            });
                         });
                     }, () => {
-                        this.store$.dispatch({
-                            type: chatAction.addGroupMembersEventSuccess,
-                            payload: eventData
+                        this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
+                            eventData.avatarUrl = avatarUrl || '';
+                            this.store$.dispatch({
+                                type: chatAction.addGroupMembersEventSuccess,
+                                payload: eventData
+                            });
                         });
                     }, (member, count) => {
                         for (let userList of eventData.to_usernames) {
@@ -2308,7 +2327,7 @@ export class ChatEffect {
                     msg_ids: readObj.msg_id
                 });
             } else {
-                console.log('已读回执', readObj, readObj.gid, readObj.msg_id,);
+                console.log('已读回执', readObj, readObj.gid, readObj.msg_id);
                 global.JIM.addGroupReceiptReport({
                     gid: readObj.gid,
                     msg_ids: readObj.msg_id
@@ -2748,6 +2767,16 @@ export class ChatEffect {
             }
         }).onFail((error) => {
             callback1(error);
+        });
+    }
+    private requestGroupAvatarUrl(groupInfo, callback) {
+        global.JIM.getResource({media_id: groupInfo.avatar})
+        .onSuccess((urlInfo) => {
+            callback(urlInfo.url);
+        }).onFail((error) => {
+            callback();
+        }).onTimeout((errorInfo) => {
+            callback();
         });
     }
 }
