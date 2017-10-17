@@ -20,7 +20,6 @@ export class AtListComponent implements OnInit {
      }
     public ngOnInit() {
         // pass
-        console.log(11111, this.atList);
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;

@@ -6,6 +6,7 @@ import { CardModalComponent } from './card-modal.component';
 import { SearchCardModule } from '../search-card';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
+import { SanitizePipeModule } from '../../pipes';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
     CommonModule,
     FormsModule,
     PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
-    SearchCardModule
+    SearchCardModule,
+    SanitizePipeModule
   ],
   exports: [
       CardModalComponent

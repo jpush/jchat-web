@@ -177,7 +177,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.noLoadedMessage.push(data);
                 return ;
             }
-            console.log(data);
             this.receiveNewMessage(data);
         });
         // 异常断线监听
@@ -198,13 +197,11 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 监听在线事件消息
         global.JIM.onEventNotification((data) => {
-            console.log('event', data);
             data.isOffline = false;
             this.asyncEvent(data);
         });
         // 监听离线事件消息
         global.JIM.onSyncEvent((data) => {
-            console.log('asyncEvent', data);
             if (!this.isLoaded) {
                 this.eventArr = data;
             } else {
@@ -230,7 +227,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 离线消息同步监听
         global.JIM.onSyncConversation((data) => {
-            console.log('离线消息1', data);
             // 限制只触发一次
             if (this.hasOffline === 0) {
                 this.hasOffline ++;
@@ -242,7 +238,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 如果3秒内没有加载离线消息则手动触发
         setTimeout(() => {
-            console.log('setTimeout', this.hasOffline);
             if (this.hasOffline === 0) {
                 this.store$.dispatch({
                     type: chatAction.getAllMessage,
@@ -251,14 +246,12 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
         }, 3000);
         global.JIM.onMsgReceiptChange((data) => {
-            console.log('onMsgReceiptChange', data);
             this.store$.dispatch({
                 type: chatAction.msgReceiptChangeEvent,
                 payload: data
             });
         });
         global.JIM.onUserInfUpdate((data) => {
-            console.log('onUserInfUpdate', data);
             this.store$.dispatch({
                 type: chatAction.userInfUpdateEvent,
                 payload: data
@@ -301,7 +294,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     private stateChanged(chatState, mainState) {
         let activeIndex = chatState.activePerson.activeIndex;
         let messageListActive = chatState.messageList[activeIndex];
-        console.log(chatState.actionType, 'chat', chatState);
         switch (chatState.actionType) {
             case chatAction.init:
                 this.init();
@@ -724,7 +716,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     // 发送名片成功的提示
     private modalTipSendCardSuccess (chatState) {
         let count = this.sendBusinessCardCount;
-        console.log(count, chatState.sendBusinessCardSuccess);
         if (count !== 0 && count === chatState.sendBusinessCardSuccess) {
             this.store$.dispatch({
                 type: mainAction.showModalTip,
@@ -1116,7 +1107,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 存储消息id(用来计算消息未读数)
     private storageMsgId(msgId) {
-        console.log('msgId', msgId);
         this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
         this.storageService.set(this.storageKey, JSON.stringify(msgId));
     }
@@ -1214,9 +1204,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 发送文本消息
     private sendMsgEmit(data, active ?) {
-        console.log(444, this.selfInfo.nickname);
         let activePerson = active || this.active;
-        console.log(555, data);
         // repeatSend = true重发消息
         /**
          * success
@@ -1271,7 +1259,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             let singleMsg: any = {
                 target_username: activePerson.name,
                 content: data.content,
-                nead_receipt: true
+                need_receipt: true
             };
             if (data.extras) {
                 singleMsg.extras = data.extras;
@@ -1292,7 +1280,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             let groupMsg: any = {
                 target_gid: activePerson.key,
                 content: data.content,
-                nead_receipt: true
+                need_receipt: true
             };
             if (data.extras) {
                 groupMsg.extras = data.extras;
@@ -1437,7 +1425,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 target_username: this.active.name,
                 appkey: authPayload.appKey,
                 image: data,
-                nead_receipt: true
+                need_receipt: true
             };
             msgs.singlePicFormData = singlePicFormData;
             msgs.msg_type = 3;
@@ -1455,7 +1443,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             let groupPicFormData = {
                 target_gid: this.active.key,
                 image: data,
-                nead_receipt: true
+                need_receipt: true
             };
             msgs.groupPicFormData = groupPicFormData;
             msgs.msg_type = 4;
@@ -1535,7 +1523,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     fileSize: data.fileData.size,
                     fileType: ext
                 },
-                nead_receipt: true
+                need_receipt: true
             };
             msgs.singleFile = singleFile;
             msgs.msg_type = 3;
@@ -1558,7 +1546,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     fileSize: data.fileData.size,
                     fileType: ext
                 },
-                nead_receipt: true
+                need_receipt: true
             };
             msgs.groupFile = groupFile;
             msgs.msg_type = 4;
@@ -1880,7 +1868,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     // 发送名片发送模态框点击确定发送名片
     private sendCardConfirm(info) {
         this.sendBusinessCardCount = 0;
-        console.log(7777, info.selectList);
         let newInfo;
         if (this.otherInfo.show) {
             newInfo = this.otherInfo.info;
@@ -1915,7 +1902,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 消息面板发送名片
     private businessCardSendEmit(user) {
-        console.log(555, user);
         let msg = {
             content: '推荐了一张名片',
             extras: {

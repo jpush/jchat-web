@@ -18,10 +18,12 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.getConversationSuccess:
             if (payload.storage) {
                 state.conversation = payload.conversation;
-                state.messageList = payload.messageList;
-                unreadNum(state, payload);
-                filterRecentMsg(state);
-                state.msgId = initFilterMsgId(state);
+                if (payload.messageList.length > 0) {
+                    state.messageList = payload.messageList;
+                    unreadNum(state, payload);
+                    filterRecentMsg(state);
+                    state.msgId = initFilterMsgId(state);
+                }
                 state.isLoaded = true;
                 completionMessageList(state);
             }
@@ -164,7 +166,6 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case contactAction.selectContactItem:
             // 选择搜索出来的本地用户
         case mainAction.selectSearchUser:
-            console.log(1111, payload);
             state.defaultPanelIsShow = false;
             clearVoiceTimer(state);
             selectUserResult(state, payload, 'search');
@@ -218,7 +219,6 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 显示隐藏群组设置
         case chatAction.groupSetting:
-            console.log(777, payload);
             let msg = state.messageList[state.activePerson.activeIndex];
             if (msg && !msg.groupSetting) {
                 state.messageList[state.activePerson.activeIndex] = Object.assign({}, msg,
@@ -514,7 +514,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.addReceiptReportAction:
             state.readObj = payload;
             break;
-            // 晴空未读数的同步事件
+            // 清空未读数的同步事件
         case chatAction.emptyUnreadNumSyncEvent:
             emptyUnreadNumSyncEvent(state, payload);
             break;
@@ -607,14 +607,11 @@ function newMessageFilterMsgId(state, payload) {
     state.newMessageIsActive = (singleFlag || groupFlag) ? true : false;
     if (state.newMessageIsActive) {
         let newMsgKey = [];
-        // for (let item of payload.messages) {
-        // let key = item.msg_type === 4 ? item.from_gid : item.from_uid;
         newMsgKey.push({
             key: payload.messages[0].key,
             name: payload.messages[0].content.from_id,
             type: payload.messages[0].msg_type
         });
-        // }
         state.msgId = updateFilterMsgId(state, newMsgKey);
     }
 }
@@ -902,7 +899,6 @@ function filterUnreadListMemoName(state, payload) {
 }
 // 更新群组信息事件
 function updateGroupInfoEventSuccess(state, payload) {
-    console.log(5555, payload.groupInfo.avatarUrl);
     payload.eventData.key = payload.eventData.gid;
     payload.eventData.name = payload.eventData.username = payload.eventData.from_username;
     payload.eventData.nickName = payload.eventData.nickname = payload.eventData.from_nickname;
@@ -1316,7 +1312,6 @@ function addNewFriendToConversation(state, payload, type) {
     if (state.activePerson.type === 3 && payload.from_username === state.activePerson.name) {
         state.newMessageIsActive = true;
     }
-    console.log(44444, payload.name);
     let result = state.friendList.filter((friend) => {
         return friend.name === payload.name;
     });
@@ -1404,7 +1399,6 @@ function currentIsActive(state, payload) {
 }
 // 消息撤回
 function msgRetract(state, payload) {
-    console.log(444444, payload);
     let name = '';
     let recentMsg = {};
     let index;
@@ -1998,7 +1992,6 @@ function changeActivePerson(state: ChatStore) {
             break;
         }
     }
-    console.log(55555, state.activePerson);
     let list = state.messageList[state.activePerson.activeIndex];
     for (let msg of list.msgs) {
         let video = (msg.content.msg_body.extras && msg.content.msg_body.extras.video);
@@ -2235,7 +2228,6 @@ function hasNoMsgId(state, messageList) {
 }
 // 完成消息的发送接口的调用后，返回成功或者失败状态
 function sendMsgComplete(state: ChatStore, payload) {
-    console.log(6666, payload);
     if (payload.success === 2) {
         payload.msgs.success = 2;
         for (let conversation of state.conversation) {
@@ -2414,7 +2406,6 @@ function transmitMessage (state, payload) {
 }
 // 添加消息到消息面板
 function addMessage(state: ChatStore, payload) {
-    console.log(66666, payload);
     // 接收到别人的消息添加到消息列表/同步自己发送的消息
     if (payload.messages && payload.messages[0]) {
         let message = payload.messages[0];
@@ -2527,7 +2518,6 @@ function addMyselfMesssge(state: ChatStore, payload) {
                 item.name === payload.active.name) ||
                 (item.type === 4 && Number(item.key) === Number(payload.active.key));
     });
-    console.log(777777, payload, result);
     if (result.length === 0) {
         payload.active.extras = {};
         payload.msgs.conversation_time_show = 'today';
@@ -2560,7 +2550,6 @@ function addMyselfMesssge(state: ChatStore, payload) {
         }
         filterTopConversation(state, payload.active);
     } else {
-        console.log(2222222);
         // 更新imageViewer的数组
         if (payload.msgs && payload.msgs.content.from_id === global.user
             && payload.msgs.content.msg_type === 'image') {
@@ -2737,7 +2726,6 @@ function addMessageUserNoConversation(state, payload, message) {
 }
 // 添加会话列表中的@文本
 function messageHasAtList(atList) {
-    console.log(777, atList);
     let atUser = '';
     if (atList && atList.length === 0) {
         atUser = '@所有成员';
@@ -2805,20 +2793,9 @@ function searchSingle(payload, singleArr, item) {
     if (existSingle && (existMemoName || existNickName || existName)) {
         singleArr.push(item);
     }
-    // if (existSingle && existNickName) {
-    //     item.existNickName = true;
-    //     singleArr.push(item);
-    // } else if (existSingle && existName) {
-    //     item.existName = true;
-    //     singleArr.push(item);
-    // } else if (existSingle && existMemoName) {
-    //     item.existMemoName = true;
-    //     singleArr.push(item);
-    // }
 }
 // 选择搜索的用户、发起单聊
 function selectUserResult(state, payload, type?: string) {
-    console.log(55555, payload);
     if (payload.gid) {
         payload.key = payload.gid;
     }
@@ -2873,7 +2850,6 @@ function selectUserResult(state, payload, type?: string) {
         }
         filterTopConversation(state, payload);
     }
-    console.log(8888, payload.memo_name);
     if (type === 'search' && index) {
         state.activePerson = Object.assign({}, state.conversation[index], {});
     } else if (type === 'search') {
@@ -2892,10 +2868,8 @@ function initConversation(state, payload) {
         }
     } else if (payload.type === 4) {
         let group = state.noDisturb.groups.filter((item) => {
-            console.log(222222, item.gid);
             return Number(payload.key) === Number(item.gid);
         });
-        console.log(222222, group);
         if (group.length !== 0) {
             payload.noDisturb = true;
         }
@@ -2924,7 +2898,6 @@ function emptyUnreadNum(state: ChatStore, payload) {
 }
 // 将会话插入到置顶会话之后
 function filterTopConversation(state, item) {
-    console.log(3333, item);
     let flag = true;
     let index;
     for (let i = 0; i < state.conversation.length; i++) {

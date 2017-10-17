@@ -3,7 +3,7 @@
     <div class="verify-no-data" *ngIf="verifyMessageList.length === 0">暂无验证消息</div>
     <div class="display-flex verify-list align-items-center" *ngFor="let message of verifyMessageList">
         <div class="verify-avatar">
-            <img (load)="avatarLoad($event)" (click)="verifyUser(message)" (error)="avatarErrorIcon($event)" [src]="message.avatarUrl" alt="">
+            <img (load)="avatarLoad($event)" (click)="verifyUser(message)" (error)="avatarErrorIcon($event)" [src]="message.avatarUrl | sanitize : 'url'" alt="">
         </div>
         <div class="flex-1 verify-text" *ngIf="message.stateType !== 5 && message.stateType !== 6 && message.stateType !== 7">
             <div>{{message.nickName && message.nickName !== '' ? message.nickName : message.name}}请求添加为好友</div>

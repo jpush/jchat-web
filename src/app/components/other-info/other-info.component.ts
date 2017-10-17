@@ -112,11 +112,9 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         event.target.src = avatarErrorIcon;
     }
     private sendMsgBtn() {
-        console.log(7777, this.otherInfo.info);
         let user = {
             avatar: this.otherInfo.info.avatar,
             avatarUrl: this.otherInfo.info.avatarUrl,
-            // key: this.otherInfo.info.key || this.otherInfo.info.uid,
             mtime: this.otherInfo.info.mtime,
             name: this.otherInfo.info.username,
             nickName: this.otherInfo.info.nickname,

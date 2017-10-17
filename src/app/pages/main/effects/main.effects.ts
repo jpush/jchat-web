@@ -364,7 +364,6 @@ export class MainEffect {
                 let item = {
                     avatar: '',
                     avatarUrl: '',
-                    // key: user.key || user.uid,
                     mtime: user.mtime,
                     name: user.username,
                     username: user.username,
@@ -648,8 +647,8 @@ export class MainEffect {
             const loginObj = global.JIM.init({
                 appkey: authPayload.appKey,
                 random_str: authPayload.randomStr,
-                signature,
-                timestamp,
+                signature: authPayload.signature || signature,
+                timestamp: authPayload.timestamp || timestamp,
                 flag: authPayload.flag
             }).onSuccess((data) => {
                 global.JIM.login({

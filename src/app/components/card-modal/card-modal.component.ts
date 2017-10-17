@@ -30,7 +30,6 @@ export class CardModalComponent implements OnInit {
      }
     public ngOnInit() {
         // pass
-        console.log(0, this.businessCard);
         this.businessCardStream$ = this.store$.select((state) => {
             let chatState = state['chatReducer'];
             this.stateChanged(chatState);
@@ -42,7 +41,6 @@ export class CardModalComponent implements OnInit {
     private stateChanged(chatState) {
         switch (chatState.actionType) {
             case  mainAction.businessCardSearchComplete:
-                console.log(666, chatState.businessCardSearch);
                 if (chatState.businessCardSearch) {
                     if (chatState.businessCardSearch.name === global.user) {
                         chatState.businessCardSearch.disabled = true;
@@ -66,7 +64,6 @@ export class CardModalComponent implements OnInit {
         }
     }
     private confirmBusinessCard() {
-        console.log(666666, this.selectList);
         this.businessCardSend.emit(this.selectList);
         this.businessCard.show = false;
         for (let list of this.businessCard.info) {
@@ -99,7 +96,6 @@ export class CardModalComponent implements OnInit {
         }
     }
     private searchKeyupEmit(keywords) {
-        console.log(keywords);
         if (keywords === '') {
             this.searchResult.result = [];
             this.searchResult.show = false;
@@ -120,7 +116,6 @@ export class CardModalComponent implements OnInit {
                 }
             }
         }
-        console.log(result);
         this.searchResult.result = result;
         this.searchResult.show = true;
     }
@@ -130,7 +125,6 @@ export class CardModalComponent implements OnInit {
         this.searchResult.keywords = '';
     }
     private searchBtnEmit(keywords) {
-        console.log(keywords);
         this.store$.dispatch({
             type: mainAction.createGroupSearchAction,
             payload: {

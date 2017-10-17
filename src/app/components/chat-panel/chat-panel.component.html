@@ -135,7 +135,6 @@
                                 <div *ngIf="active.type === 4" class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="chat-panel-video">
                                     <video (click)="playVideo(i.content.msg_body.media_url)" [src]="i.content.msg_body.media_url | sanitize: 'url'" (loadstart)="videoLoadStart(num)" (loadeddata)="videoLoad(num)" [id]="'video' + num">
-                                        <!--<source [src]="i.content.msg_body.media_url">-->
                                     </video>
                                     <div class="chat-panel-video-play" (click)="playVideo(i.content.msg_body.media_url)" *ngIf="i.content.load === 1">
                                         <span>{{i.content.duration | videoTime}}</span>
@@ -176,7 +175,7 @@
                                 <div *ngIf="active.type === 4" class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="chat-panel-voice-sound chat-panel-voice-sound-you" [ngClass]="{loading: i.content.load === 0}">
                                     <div (click)="playVoice(num)" [ngStyle]="{'width': i.content.msg_body.duration * 20 + 'px'}">
-                                        <span class="float-right">{{i.content.msg_body.duration | floor}}''</span>
+                                        <span class="float-right chat-panel-voice-duration">{{i.content.msg_body.duration | floor}}''</span>
                                         <div class="chat-panel-voice-animate" [ngClass]="{'active': i.content.playing}"></div>
                                     </div>
                                     <b *ngIf="!i.content.havePlay"></b>                                    
@@ -294,7 +293,6 @@
                                 <div *ngIf="i.success === 1" class="chat-panel-send-loading"></div>
                                 <div *ngIf="i.success === 3" class="chat-panel-send-error" (click)="repeatSendFileAction(i)"></div>
                                 <video (click)="playVideo(i.content.msg_body.media_url)" [src]="i.content.msg_body.media_url | sanitize: 'url'" (loadstart)="videoLoadStart(num)" (loadeddata)="videoLoad(num)" [id]="'video' + num">
-                                    <!--<source [src]="i.content.msg_body.media_url">-->
                                 </video>
                                 <div class="chat-panel-video-play" (click)="playVideo(i.content.msg_body.media_url)" *ngIf="i.content.load === 1">
                                     <span>{{i.content.duration | videoTime}}</span>
@@ -333,11 +331,10 @@
                             </div>
                             <div class="float-right chat-panel-voice-sound chat-panel-voice-sound-me" [ngClass]="{loading: i.content.load === 0}">
                                 <div (click)="playVoice(num)" [ngStyle]="{'width': i.content.msg_body.duration * 20 + 'px'}">
-                                    <span class="float-right">{{i.content.msg_body.duration | floor}}''</span>
+                                    <span class="float-left chat-panel-voice-duration">{{i.content.msg_body.duration | floor}}''</span>
                                     <div class="chat-panel-voice-animate" [ngClass]="{'active': i.content.playing}"></div>
                                 </div>
                                 <audio [id]="'audio' + num" (ended)="voiceEnded(num)" (loadeddata)="voiceLoad(num)" [src]="i.content.msg_body.media_url | sanitize: 'url'">
-                                    <!-- <source [src]="i.content.msg_body.media_url"> -->
                                 </audio>
                             </div>
                             <div class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meVoice [ngClass]="{'show-more-icon': i.showMoreIcon}">

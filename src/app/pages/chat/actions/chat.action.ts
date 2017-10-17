@@ -38,7 +38,6 @@ export const chatAction = {
     getVoiceState: '[chat] get voice state',
     getVoiceStateSuccess: '[chat] get voice state success',
     playVideoShow: '[chat] play video show',
-    // updateContactInfo: '[chat] update contact info',
     updateGroupMembersEvent: '[chat] update group members',
     deleteGroupMembersEvent: '[chat] delete group members event',
     exitGroupEvent: '[chat] exit group event',

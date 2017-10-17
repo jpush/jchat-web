@@ -382,11 +382,9 @@ export class ChatEffect {
                     }
                 }
             }
-            console.log('离线消息2', data);
             const conversationObj = global.JIM.getConversation()
             .onSuccess((info) => {
-                console.log('会话列表：', info);
-                // 删除feedBack
+                // 删除feedBack_
                 for (let i = 0; i < info.conversations.length; i++) {
                     if (info.conversations[i].name.match(/^feedback_/g)) {
                         info.conversations.splice(i, 1);
@@ -497,10 +495,8 @@ export class ChatEffect {
             return data;
         })
         .switchMap((text) => {
-            console.log(44444, text);
             const msgObj = global.JIM.sendSingleMsg(text.singleMsg)
             .onSuccess((data, msgs) => {
-                console.log(555, data, msgs, text);
                 msgs.key = data.key;
                 msgs.unread_count = 1;
                 msgs.msg_type = 3;
@@ -566,7 +562,7 @@ export class ChatEffect {
                 target_username: text.select.name,
                 target_nickname: text.select.nickName,
                 msg_body: msgBody,
-                nead_receipt: true
+                need_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
@@ -636,13 +632,11 @@ export class ChatEffect {
             return data;
         })
         .switchMap((text) => {
-            console.log(3333, text.groupMsg);
             const groupMessageObj = global.JIM.sendGroupMsg(text.groupMsg)
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = data.unread_count;
                 msgs.msg_type = 4;
-                console.log(555, data, msgs);
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
                     payload: {
@@ -702,7 +696,7 @@ export class ChatEffect {
                 target_gid: text.select.key,
                 target_gname: text.select.name,
                 msg_body: msgBody,
-                nead_receipt: true
+                need_receipt: true
             }).onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = data.unread_count;
@@ -834,7 +828,7 @@ export class ChatEffect {
             const singlePicObj = global.JIM.sendSinglePic({
                 target_username: img.select.name,
                 msg_body: msgBody,
-                nead_receipt: true
+                need_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
@@ -967,7 +961,7 @@ export class ChatEffect {
             const sendGroupPicObj = global.JIM.sendGroupPic({
                 target_gid: img.select.key,
                 msg_body: msgBody,
-                nead_receipt: true
+                need_receipt: true
             }).onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = data.unread_count;
@@ -1098,10 +1092,9 @@ export class ChatEffect {
             let sendSingleFileObj = global.JIM.sendSingleFile({
                 target_username: file.select.name,
                 msg_body: msgBody,
-                nead_receipt: true
+                need_receipt: true
             })
             .onSuccess((data, msgs) => {
-                console.log(888, msgs);
                 msgs.key = data.key;
                 msgs.unread_count = 1;
                 msgs.msg_type = 3;
@@ -1165,7 +1158,6 @@ export class ChatEffect {
         .switchMap((file) => {
             const sendgroupFileObj = global.JIM.sendGroupFile(file.groupFile)
             .onSuccess((data, msgs) => {
-                console.log(3333, msgs);
                 msgs.key = data.key;
                 msgs.unread_count = data.unread_count;
                 msgs.msg_type = 4;
@@ -1232,7 +1224,7 @@ export class ChatEffect {
             const sendgroupFileObj = global.JIM.sendGroupFile({
                 target_gid: file.select.key,
                 msg_body: msgBody,
-                nead_receipt: true
+                need_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
@@ -1305,13 +1297,12 @@ export class ChatEffect {
             const sendSingleLocation = global.JIM.sendSingleLocation({
                 target_username: location.select.name,
                 msg_body: msgBody,
-                nead_receipt: true
+                need_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = 1;
                 msgs.msg_type = 3;
-                console.log(3333, msgs);
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -1378,13 +1369,12 @@ export class ChatEffect {
             const transmitGroupLocation = global.JIM.sendGroupLocation({
                 target_gid: location.select.key,
                 msg_body: msgBody,
-                nead_receipt: true
+                need_receipt: true
             })
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = data.unread_count;
                 msgs.msg_type = 4;
-                console.log(3333, msgs);
                 this.store$.dispatch({
                     type: chatAction.transmitMessageComplete,
                     payload: {
@@ -1784,11 +1774,9 @@ export class ChatEffect {
         .switchMap((eventData) => {
             let groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
             .onSuccess((obj) => {
-                console.log(222, obj.group_info);
                 if (obj.group_info.name && obj.group_info.name !== '') {
                     eventData.name = obj.group_info.name;
                     this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
-                        console.log(333, avatarUrl);
                         eventData.avatarUrl = avatarUrl || '';
                         this.store$.dispatch({
                             type: chatAction.addGroupMembersEventSuccess,
@@ -1948,7 +1936,6 @@ export class ChatEffect {
         .ofType(chatAction.msgRetract)
         .map(toPayload)
         .switchMap((item) => {
-            console.log(444, item);
             const msgRetract = global.JIM.msgRetract({
                     msg_id: item.msg_id,
                 }).onSuccess((data , msg) => {
@@ -1979,7 +1966,6 @@ export class ChatEffect {
         .ofType(chatAction.addFriendConfirm)
         .map(toPayload)
         .switchMap((user) => {
-            console.log(555, user.verifyModalText);
             const addFriendConfirm = global.JIM.addFriend({
                     target_name: user.name,
                     from_type: 1,
@@ -2262,7 +2248,6 @@ export class ChatEffect {
         .ofType(chatAction.conversationToTop)
         .map(toPayload)
         .switchMap((info) => {
-            console.log(2, info);
             let extras;
             if (info.extras.top_time_ms) {
                 extras = {};
@@ -2321,16 +2306,64 @@ export class ChatEffect {
         .ofType(chatAction.addReceiptReport)
         .map(toPayload)
         .switchMap((readObj) => {
+            // 调用超时或者失败重新调用一次
             if (readObj.type === 3) {
                 global.JIM.addSingleReceiptReport({
                     username: readObj.username,
                     msg_ids: readObj.msg_id
+                }).onSuccess((data) => {
+                    // pass
+                }).onFail((error) => {
+                    global.JIM.addSingleReceiptReport({
+                        username: readObj.username,
+                        msg_ids: readObj.msg_id
+                    }).onSuccess((success) => {
+                        // pass
+                    }).onFail((errorData) => {
+                        // pass
+                    }).onTimeout((timeout) => {
+                        // pass
+                    });
+                }).onTimeout((data) => {
+                    global.JIM.addSingleReceiptReport({
+                        username: readObj.username,
+                        msg_ids: readObj.msg_id
+                    }).onSuccess((success) => {
+                        // pass
+                    }).onFail((error) => {
+                        // pass
+                    }).onTimeout((timeout) => {
+                        // pass
+                    });
                 });
             } else {
-                console.log('已读回执', readObj, readObj.gid, readObj.msg_id);
                 global.JIM.addGroupReceiptReport({
                     gid: readObj.gid,
                     msg_ids: readObj.msg_id
+                }).onSuccess((data) => {
+                    // pass
+                }).onFail((error) => {
+                    global.JIM.addGroupReceiptReport({
+                        gid: readObj.gid,
+                        msg_ids: readObj.msg_id
+                    }).onSuccess((success) => {
+                        // pass
+                    }).onFail((errorData) => {
+                        // pass
+                    }).onTimeout((timeout) => {
+                        // pass
+                    });
+                }).onTimeout((data) => {
+                    global.JIM.addGroupReceiptReport({
+                        gid: readObj.gid,
+                        msg_ids: readObj.msg_id
+                    }).onSuccess((success) => {
+                        // pass
+                    }).onFail((error) => {
+                        // pass
+                    }).onTimeout((timeout) => {
+                        // pass
+                    });
                 });
             }
             return Observable.of('addReceiptReport')
@@ -2413,7 +2446,6 @@ export class ChatEffect {
         .switchMap((info) => {
             const updateGroupInfoEvent = global.JIM.getGroupInfo({gid: info.gid})
             .onSuccess((data) => {
-                console.log(66666, data.group_info);
                 if (data.group_info.avatar && data.group_info.avatar !== '') {
                     global.JIM.getResource({media_id: data.group_info.avatar})
                     .onSuccess((urlInfo) => {

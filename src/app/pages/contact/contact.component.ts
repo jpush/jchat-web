@@ -51,26 +51,13 @@ export class ContactComponent implements OnInit, OnDestroy {
         this.verifyUnreadNum = 0;
     }
     private stateChanged(contactState) {
-        console.log('contact', contactState);
         switch (contactState.actionType) {
             case contactAction.init:
                 this.init();
                 break;
-            // case contactAction.getGroupListSuccess:
-            //     this.groupList = contactState.groupList;
-            //     break;
-            // case chatAction.createGroupSuccessEvent:
-
-            // case mainAction.createGroupSuccess:
-            //     this.groupList = contactState.groupList;
-            //     break;
             case chatAction.dispatchGroupList:
-                console.log(0, contactState.groupList);
                 this.groupList = contactState.groupList;
                 break;
-            // case mainAction.exitGroupSuccess:
-            //     this.groupList = contactState.groupList;
-            //     break;
             case mainAction.changeListTab:
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 break;
@@ -106,9 +93,6 @@ export class ContactComponent implements OnInit, OnDestroy {
             case contactAction.addFriendError:
                 this.verifyMessageList = contactState.verifyMessageList;
                 break;
-            // case chatAction.groupAvatar:
-            //     this.groupList = contactState.groupList;
-            //     break;
             case chatAction.addFriendSyncEvent:
                 this.verifyMessageList = contactState.verifyMessageList;
                 break;
@@ -117,7 +101,6 @@ export class ContactComponent implements OnInit, OnDestroy {
     }
     // 点击联系人
     private selectContactItemEmit(item) {
-        console.log(7777, item);
         this.store$.dispatch({
             type: contactAction.selectContactItem,
             payload: item

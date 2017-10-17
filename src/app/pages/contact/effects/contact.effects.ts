@@ -94,7 +94,6 @@ export class ContactEffect {
                 global.JIM.declineFriend({
                     target_name: message.name,
                     appkey: message.appkey,
-                    // why: '拒绝'
                 }).onSuccess((data) => {
                     this.store$.dispatch({
                         type: contactAction.refuseAddFriendSuccess,
@@ -172,7 +171,6 @@ export class ContactEffect {
                 let user = data.user_info;
                 let item = {
                     avatar: user.avatar,
-                    // key: user.key || user.uid,
                     mtime: user.mtime,
                     name: user.username,
                     nickName: user.nickname,

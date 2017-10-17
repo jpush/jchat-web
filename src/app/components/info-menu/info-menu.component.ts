@@ -15,7 +15,6 @@ export class InfoMenuComponent implements OnInit {
         // pass
      }
     public ngOnInit() {
-        console.log(999, this.menu);
         // pass
     }
     private selectMenuItemAction(item) {

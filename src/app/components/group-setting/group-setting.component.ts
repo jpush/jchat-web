@@ -87,7 +87,6 @@ export class GroupSettingComponent implements OnInit {
             this.searchResult.show = true;
             let result = [];
             for (let member of this.groupSetting.memberList) {
-                console.log(member);
                 let memoNameExist = member.memo_name &&
                         member.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
                 let usernameExist = member.username &&

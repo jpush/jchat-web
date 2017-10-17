@@ -16,7 +16,7 @@ export class MainCanActivate implements CanActivate {
         private storageService: StorageService
     ) {}
     public canActivate(): boolean | Promise<boolean> {
-        // 如果是从登陆界面跳转过来的就直接return
+        // 如果是从登陆界面跳转过来的就直接return true
         if (window.location.href.match(/\/login$/g)) {
             return true;
         }
@@ -35,17 +35,16 @@ export class MainCanActivate implements CanActivate {
         }
     }
     private JIMInit(resolve) {
-        const that = this;
         const timestamp = new Date().getTime();
         const signature = this.util.createSignature(timestamp);
         global.JIM.init({
             appkey: authPayload.appKey,
             random_str: authPayload.randomStr,
-            signature,
-            timestamp,
+            signature: authPayload.signature || signature,
+            timestamp: authPayload.timestamp || timestamp,
             flag: authPayload.flag
         }).onSuccess((data) => {
-            that.autoLogin(resolve);
+            this.autoLogin(resolve);
         }).onFail((data) => {
             resolve(false);
         }).onTimeout((data) => {
@@ -53,14 +52,13 @@ export class MainCanActivate implements CanActivate {
         });
     }
     private autoLogin(resolve) {
-        const that = this;
         global.JIM.login({
             username: this.username,
             password: this.password,
             is_md5: true
         }).onSuccess((data) => {
             global.user = data.username;
-            global.password = that.password;
+            global.password = this.password;
             resolve(true);
         }).onFail((data) => {
             resolve(false);

@@ -7,7 +7,7 @@
         <ul>
             <li class="display-flex search-card-search-result" (click)="searchItemAction(item)" *ngFor="let item of searchResult.result">
                 <div>
-                    <img (load)="avatarLoad($event)" [src]="item.avatarUrl" (error)="avatarErrorIcon($event)" alt="">
+                    <img (load)="avatarLoad($event)" [src]="item.avatarUrl | sanitize : 'url'" (error)="avatarErrorIcon($event)" alt="">
                 </div>
                 <p class="flex-1">{{item.memo_name && item.memo_name.toLowerCase().indexOf(searchResult.keywords.toLowerCase()) !== -1 ? item.memo_name : (item.nickName && item.nickName.toLowerCase().indexOf(searchResult.keywords.toLowerCase()) !== -1 ? item.nickName : (item.username ? item.username : item.name))}}</p>
                 <label class="search-card-label">

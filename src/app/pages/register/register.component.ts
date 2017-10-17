@@ -77,8 +77,8 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         global.JIM.init({
             appkey: authPayload.appKey,
             random_str: authPayload.randomStr,
-            signature,
-            timestamp,
+            signature: authPayload.signature || signature,
+            timestamp: authPayload.timestamp || timestamp,
             flag: authPayload.flag
         }).onSuccess((data) => {
             // pass

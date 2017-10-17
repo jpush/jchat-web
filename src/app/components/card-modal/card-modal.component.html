@@ -8,8 +8,6 @@
             <div class="card-modal-list">
                 <div class="card-modal-search">
                     <search-card-component [searchResult]="searchResult" (searchKeyup)="searchKeyupEmit($event)" (clearInput)="clearInputEmit()" (searchBtn)="searchBtnEmit($event)" (changeChecked)="changeCheckedEmit($event)"></search-card-component>
-                    <!-- (clearInput)="clearInputEmit()" (searchBtn)="searchBtnEmit($event)" (changeChecked)="changeCheckedEmit($event)" -->
-                    <!-- <search-transmit-component [searchUserResult]="searchResult" (searchBtn)="searchBtnEmit($event)" (changeInput)="changeInputEmit($event)" (searchUser)="searchKeyupEmit($event)"></search-transmit-component> -->
                 </div>
                 <perfect-scrollbar class="card-modal-scroll">
                     <div *ngFor="let item of businessCard.info">
@@ -18,7 +16,7 @@
                             <div *ngFor="let user of item.data; let num = index" class="card-modal-item">
                                 <div class="display-flex">
                                     <div class="card-modal-avatar">
-                                        <img [src]="user.avatarUrl" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                        <img [src]="user.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                                     </div>
                                     <div class="flex-1">{{user.memo_name || user.nickName || user.name}}</div>
                                     <label class="card-modal-select-label">
@@ -37,7 +35,7 @@
                     <div *ngIf="selectList" class="card-modal-item">
                         <div class="display-flex">
                             <div class="card-modal-avatar">
-                                <img [src]="selectList.avatarUrl" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                <img [src]="selectList.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                             </div>
                             <div class="flex-1">{{selectList.memo_name || selectList.nickName || selectList.name}}</div>
                             <div class="card-modal-cancel-select" (click)="cancelSelect()"></div>

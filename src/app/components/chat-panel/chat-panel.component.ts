@@ -656,7 +656,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 发送文本
     private sendMsgAction() {
         let draft = this.contentDiv.innerHTML;
-        console.log(777, draft);
         if (draft) {
             draft = draft.replace(/^(<br>){1,}$/g, '');
             draft = draft.replace(/&nbsp;/g, ' ');
@@ -923,7 +922,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     this.showAtList(range, memberList, true);
                 }
             } else {
-                this.atList.show = false;
+                if (event.keyCode !== 16) {
+                    this.atList.show = false;
+                }
             }
         }
     }

@@ -394,13 +394,9 @@
                         min-width: 60px;
                         cursor: pointer;
                         position: relative;
-                        >span{
-                            margin-right: 5px;
-                        }
                         .chat-panel-voice-animate{
                             width: 20px;
                             height: 100%;
-                            margin-left: 10px;
                         }
                     }
                     b{
@@ -432,7 +428,11 @@
                         left: -6px;                        
                         background: url(../../../assets/images/pao-you.svg) left top no-repeat;
                     }
+                    .chat-panel-voice-duration{
+                        margin-right: 5px;
+                    }
                     .chat-panel-voice-animate{
+                        margin-left: 10px;                        
                         background: url(../../../assets/images/voice-normal-you.png) left center no-repeat;
                         &.active{
                             background-image: url(../../../assets/images/voice-active-you.gif);
@@ -448,8 +448,13 @@
                         right: -6px;
                         background: url(../../../assets/images/pao-me.svg) right top no-repeat;
                     }
+                    .chat-panel-voice-duration{
+                        margin-left: 10px;
+                    }
                     .chat-panel-voice-animate{
-                        background: url(../../../assets/images/voice-normal-me.png) left center no-repeat;
+                        float: right;
+                        margin-right: 10px;                        
+                        background: url(../../../assets/images/voice-normal-me.png) right center no-repeat;
                         &.active{
                             background-image: url(../../../assets/images/voice-active-me.gif);
                         }

@@ -50,7 +50,6 @@ export class VerifyComponent implements OnInit {
         } else if (stateType === 'agree') {
             message.stateType = 2;
         }
-        console.log(7777, message.name);
         this.isAgreeAddFriend.emit(message);
     }
     private verifyUser(message) {

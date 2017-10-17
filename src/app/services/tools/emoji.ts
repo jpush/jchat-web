@@ -17,8 +17,8 @@ export const Emoji = {
             isSupportEmoji = true;
         }
 
-		// 如果浏览器支持原生的emoji，无需转换
-        return isSupportEmoji ? text : Emoji.trans(text, fontSize);
+		// 如果浏览器支持原生的emoji，无需转换，去除两边空格
+        return isSupportEmoji ? text.trim() : Emoji.trans(text, fontSize);
     },
 
     trans(text, fontSize) {

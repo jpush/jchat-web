@@ -39,7 +39,6 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
 
     }
     public ngOnInit() {
-        console.log(8888, this.createGroup);
         this.initData();
         this.createGroupStream$ = this.store$.select((state) => {
             let mainState = state['mainReducer'];
@@ -100,7 +99,6 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         this.searchResult.keywords = '';
     }
     private initData() {
-        console.log(666666, this.createGroup.list);
         // 多人会话
         for (let list of this.createGroup.list) {
             for (let member of list.data) {

@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { AtListComponent } from './at-list.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
+import { SanitizePipeModule } from '../../pipes';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
   imports: [
     CommonModule,
     FormsModule,
-    PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG)
+    PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
+    SanitizePipeModule
   ],
   exports: [
       AtListComponent

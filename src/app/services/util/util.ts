@@ -211,7 +211,6 @@ export class Util {
                 data: []
             });
         }
-        console.log(1111, payload);
         for (let item of payload) {
             let flag = false;
             for (let re of result) {
@@ -394,14 +393,6 @@ export class Util {
         return false;
     }
     /**
-     * 生成JIM初始化的签名
-     * @param timestamp: number 当前的时间毫秒数
-     * @return string 签名
-     */
-    public createSignature(timestamp: number) {
-        return md5(`appkey=${authPayload.appKey}&timestamp=${timestamp}&random_str=${authPayload.randomStr}&key=${authPayload.masterkey}`);
-    }
-    /**
      * 获取当前光标的在页面中的位置
      * @param input: dom obj 输入框的dom元素
      * @return object 光标的位置
@@ -418,19 +409,17 @@ export class Util {
             let  clonedRange;
             let  rect;
             let shadowCaret;
-            if (range.endOffset - 1 > 0 && range.endContainer !== input) {
-                clonedRange = range.cloneRange();
-                clonedRange.setStart(range.endContainer, range.endOffset - 1);
-                clonedRange.setEnd(range.endContainer, range.endOffset);
-                rect = clonedRange.getBoundingClientRect();
-                offset = {
-                    height: rect.height,
-                    left: rect.left + rect.width,
-                    top: rect.top
-                };
-                clonedRange.detach();
-            }
-            if (!offset || (offset != null ? offset.height : void 0) === 0) {
+            clonedRange = range.cloneRange();
+            clonedRange.setStart(range.endContainer, range.endOffset - 1);
+            clonedRange.setEnd(range.endContainer, range.endOffset);
+            rect = clonedRange.getBoundingClientRect();
+            offset = {
+                height: rect.height,
+                left: rect.left + rect.width,
+                top: rect.top
+            };
+            clonedRange.detach();
+            if (input.innerHTML === '@') {
                 clonedRange = range.cloneRange();
                 shadowCaret = document.createTextNode('|');
                 clonedRange.insertNode(shadowCaret);
@@ -441,13 +430,8 @@ export class Util {
                     left: rect.left,
                     top: rect.top
                 };
-                let reg = /<font color="#2c2c2c" face="sans-serif">.+<\/font>/gi;
-                if (input.innerHTML.match(reg)) {
-                    input.innerHTML = '@';
-                    this.focusLast(input);
-                } else {
-                    input.removeChild(shadowCaret);
-                }
+                input.innerHTML = '@';
+                this.focusLast(input);
                 clonedRange.detach();
             }
         }
@@ -460,5 +444,13 @@ export class Util {
      */
     public deepCopyObj(obj) {
         return JSON.parse(JSON.stringify(obj));
+    }
+    /**
+     * 生成JIM初始化的签名
+     * @param timestamp: number 当前的时间毫秒数
+     * @return string 签名
+     */
+    public createSignature(timestamp: number) {
+        return md5(`appkey=${authPayload.appKey}&timestamp=${timestamp}&random_str=${authPayload.randomStr}&key=${authPayload.masterkey}`);
     }
 }

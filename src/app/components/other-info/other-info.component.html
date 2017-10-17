@@ -9,9 +9,6 @@
             </div>
             <div class="other-info-avatar-username" [title]="otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username">
                 {{otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username}}
-                <!-- <div [ngClass]="{'black': otherInfo.info.black}" class="self-info-blacklist-icon" [hoverEvent]="addBlackHover" (click)="addBlack()">
-                    <hover-tip-component [hidden]="!addBlackHover.show" [hoverInfo]="addBlackHover"></hover-tip-component>
-                </div> -->
             </div>
             <p class="other-info-signature">
                 <span [title]="otherInfo.info.signature || '暂无签名'">{{(otherInfo.info.signature | ellipsis: 32) || '暂无签名'}}</span>

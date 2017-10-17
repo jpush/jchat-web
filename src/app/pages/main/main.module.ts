@@ -25,7 +25,7 @@ import { ChatModule } from '../chat';
 import { ContactModule } from '../contact';
 import { HoverEventModule } from '../../directives';
 import { LogoutKickModule } from '../../components//logout-kick';
-
+import { SanitizePipeModule } from '../../pipes';
 import { BadgeModule } from 'jpush-ui/badge';
 
 @NgModule({
@@ -57,7 +57,8 @@ import { BadgeModule } from 'jpush-ui/badge';
     HoverTipModule,
     HoverEventModule,
     LogoutKickModule,
-    BadgeModule
+    BadgeModule,
+    SanitizePipeModule
   ],
   providers: [
   ]
