@@ -16,7 +16,7 @@ JChat 无需成为好友也可以聊天
 
 * 通过搜索对方的用户名可直接发起会话
 
-目前已覆盖 [Android](https://github.com/jpush/jchat-android) 、 [iOS](https://github.com/jpush/jchat-swift) 和 web 平台，开发者可参照 JChat 快速打造自己的产品，提高开发效率。
+目前已覆盖 [Android](https://github.com/jpush/jchat-android) 、 [iOS](https://github.com/jpush/jchat-swift) 、[windows](https://github.com/jpush/jchat-windows)和 web 平台，开发者可参照 JChat 快速打造自己的产品，提高开发效率。
 
 ![jiguang](./screenshot/webjchat.gif)
 
@@ -50,9 +50,10 @@ localhost:3000
 
 说明：
 * 如果使用的不是本地localhost服务器，则要在task/webpack.dev.js中的publicPath改成自己的ip和端口，在浏览器输入ip和端口去访问项目
-* appkey和masterKey在src/services/common/config.ts中配置，同时，将signature和timestamp改为空字符串'';
 
-* 项目压缩打包并发布(前提：已全局安装gulp)：
+* 应用配置：appkey和masterKey在src/services/common/config.ts中配置，同时，将signature和timestamp改为空字符串'';
+
+* 项目压缩打包并发布(前提：已全局安装gulp (终端输入cnpm install gulp -g))：
 
 1. 在task/webpack.prod.js中的publicPath改成'./'
 2. 终端输入gulp noqiniu-prod
