@@ -97,10 +97,10 @@
     "downloadjs": "^1.4.7",
     "jpush-ui": "^0.0.1",
     "libbase64": "^0.1.0",
-    "ngx-perfect-scrollbar": "^4.5.3",
+    "ngx-perfect-scrollbar": "4.5.3",
     "push.js": "^1.0.4",
     "reflect-metadata": "^0.1.10",
-    "rxjs": "^5.2.0",
+    "rxjs": "5.4.3",
     "tslib": "^1.6.0",
     "zone.js": "^0.7.7"
   },
