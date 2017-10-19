@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({
     name: 'datePipe'
 })
-export class datePipe implements PipeTransform {
+export class DatePipe implements PipeTransform {
     public transform(time): string {
         const newDate = new Date(time);
         const year = newDate.getFullYear();

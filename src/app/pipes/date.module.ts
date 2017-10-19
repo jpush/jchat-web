@@ -2,19 +2,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
-import { datePipe } from './date.pipe';
+import { DatePipe } from './date.pipe';
 
 @NgModule({
   declarations: [
-    datePipe
+    DatePipe
   ],
   imports: [
     CommonModule,
     FormsModule
   ],
   exports: [
-      datePipe
+      DatePipe
   ],
   providers: []
 })
-export class datePipeModule {}
+export class DatePipeModule {}

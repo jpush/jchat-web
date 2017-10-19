@@ -234,9 +234,6 @@ export class Util {
                     }
                 }else if (this.firstLetterIsChinese(name)) {
                     let py = pinyinUtil.getFirstLetter(name, false)[0];
-                    // let py = pinyin(firstLetter, {
-                    //     style: pinyin.STYLE_NORMAL
-                    // });
                     if (py && py.toUpperCase() === re.letter) {
                         re.data.push(item);
                         flag = true;
@@ -258,17 +255,6 @@ export class Util {
      */
     public insertSortByLetter(arr, payload) {
         let name = (payload.nickName && payload.nickName !== '') ? payload.nickName : payload.name;
-        // let firstLetter = name.charAt(0);
-        // if (name.match(/^[a-zA-Z]/)) {
-        //     firstLetter = firstLetter.toUpperCase();
-        // } else if (this.firstLetterIsChinese(name)) {
-        //     let py = pinyin(firstLetter, {
-        //         style: pinyin.STYLE_NORMAL
-        //     });
-        //     firstLetter = py[0][0].charAt(0).toUpperCase();
-        // } else {
-        //     firstLetter = '#';
-        // }
         let firstLetter = this.getFirstLetter(name);
         for (let item of arr) {
             if (item.letter === firstLetter) {
@@ -291,9 +277,6 @@ export class Util {
         if (name.match(/^[a-zA-Z]/)) {
             firstLetter = firstLetter.toUpperCase();
         } else if (this.firstLetterIsChinese(name)) {
-            // let py = pinyin(firstLetter, {
-            //     style: pinyin.STYLE_NORMAL
-            // });
             let py = pinyinUtil.getFirstLetter(firstLetter, false)[0];
             if (py) {
                 firstLetter = py.toUpperCase();
@@ -335,7 +318,6 @@ export class Util {
         if (obj.scroll) {
             map.enableScrollWheelZoom(true);
         }
-        // map.disableDragging();
         let marker = new BMap.Marker(point);  // 创建标注
         map.addOverlay(marker);              // 将标注添加到地图中
         map.panTo(point);

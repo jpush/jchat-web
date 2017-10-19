@@ -6,7 +6,7 @@ import { MessageFileComponent } from './message-file.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import { FileSizePipeModule, FileTypePipeModule,
-  datePipeModule, FileNamePipeModule } from '../../pipes';
+  DatePipeModule, FileNamePipeModule } from '../../pipes';
 
 @NgModule({
   declarations: [
@@ -18,7 +18,7 @@ import { FileSizePipeModule, FileTypePipeModule,
     PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
     FileSizePipeModule,
     FileTypePipeModule,
-    datePipeModule,
+    DatePipeModule,
     FileNamePipeModule
   ],
   exports: [

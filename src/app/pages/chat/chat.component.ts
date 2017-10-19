@@ -244,13 +244,22 @@ export class ChatComponent implements OnInit, OnDestroy {
                     payload: []
                 });
             }
-        }, 3000);
+        }, 4000);
+        // 监听已读回执
         global.JIM.onMsgReceiptChange((data) => {
             this.store$.dispatch({
                 type: chatAction.msgReceiptChangeEvent,
                 payload: data
             });
         });
+        // 监听同步的已读回执，用作补偿
+        global.JIM.onSyncMsgReceipt((data) => {
+            this.store$.dispatch({
+                type: chatAction.msgReceiptChangeEvent,
+                payload: data
+            });
+        });
+        // 监听用户的信息变化，只有用户信息变化且发了消息的才会触发
         global.JIM.onUserInfUpdate((data) => {
             this.store$.dispatch({
                 type: chatAction.userInfUpdateEvent,
@@ -408,7 +417,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.deleteConversationItem:
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                // this.groupSetting.show = false;
                 this.closeGroupSettingEmit();
                 this.store$.dispatch({
                     type: chatAction.dispatchFriendList,
@@ -453,13 +461,11 @@ export class ChatComponent implements OnInit, OnDestroy {
                     this.storageMsgId(chatState.msgId);
                 }
                 this.unreadList.show = false;
-                // this.groupSetting.show = false;
                 this.closeGroupSettingEmit();
                 break;
             case mainAction.exitGroupSuccess:
                 this.conversationList = chatState.conversation;
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                // this.groupSetting.show = false;
                 this.closeGroupSettingEmit();
                 this.active = chatState.activePerson;
                 this.store$.dispatch({

@@ -21,9 +21,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 if (payload.messageList.length > 0) {
                     state.messageList = payload.messageList;
                     unreadNum(state, payload);
-                    filterRecentMsg(state);
                     state.msgId = initFilterMsgId(state);
                 }
+                filterRecentMsg(state);
                 state.isLoaded = true;
                 completionMessageList(state);
             }
@@ -512,7 +512,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 上报消息已读
         case chatAction.addReceiptReportAction:
-            state.readObj = payload;
+            state.readObj = filterReceiptReport(state, payload);
             break;
             // 清空未读数的同步事件
         case chatAction.emptyUnreadNumSyncEvent:
@@ -558,6 +558,45 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
     }
     return state;
 };
+// 上报已读回执，防止漏报
+function filterReceiptReport(state, payload) {
+    if (payload.msg_id.length === 0) {
+        return payload;
+    }
+    for (let messageList of state.messageList) {
+        let group = messageList.type === 4 && Number(messageList.key) === Number(payload.gid);
+        let single = messageList.type === 3 && messageList.name === payload.username;
+        if (group || single) {
+            for (let msgId of payload.msg_id) {
+                for (let message of messageList.msgs) {
+                    if (message.msg_id === msgId) {
+                        message.hasRead = true;
+                        break;
+                    }
+                }
+            }
+            for (let message of messageList.msgs) {
+                if (message.msg_id === payload.msg_id[0]) {
+                    for (let i = messageList.msgs.length - 1; i >= 0; i --) {
+                        if (messageList.msgs[i].msg_id &&
+                            messageList.msgs[i].msg_id !== payload.msg_id[0] &&
+                            !messageList.msgs[i].hasRead &&
+                            messageList.msgs[i].content.from_id !== global.user) {
+                            messageList.msgs[i].hasRead = true;
+                            payload.msg_id.push(messageList.msgs[i].msg_id);
+                        }
+                        if (messageList.msgs[i].msg_id === payload.msg_id[0]) {
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    return payload;
+}
 // 处理好友列表数据
 function filterFriendList(state, payload) {
     for (let friend of payload) {
@@ -981,6 +1020,15 @@ function updateGroupInfoEventSuccess(state, payload) {
 }
 // 已读事件监听
 function msgReceiptChangeEvent(state, payload) {
+    if (payload instanceof Array) {
+        for (let item of payload) {
+            msgReceiptChange(state, item);
+        }
+    } else {
+        msgReceiptChange(state, payload);
+    }
+}
+function msgReceiptChange(state, payload) {
     for (let messageList of state.messageList) {
         if (payload.type === 3) {
             if (messageList.type === 3 && payload.username === messageList.name
@@ -999,7 +1047,9 @@ function updateUnreadCount(state, messageList, payload) {
     for (let receipt of payload.receipt_msgs) {
         for (let i = messageList.msgs.length - 1; i >= 0; i --) {
             if (messageList.msgs[i].msg_id === receipt.msg_id) {
-                messageList.msgs[i].unread_count = receipt.unread_count;
+                if (messageList.msgs[i].unread_count > receipt.unread_count) {
+                    messageList.msgs[i].unread_count = receipt.unread_count;
+                }
                 break;
             }
         }

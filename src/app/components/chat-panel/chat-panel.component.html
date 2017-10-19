@@ -10,8 +10,8 @@
             <div class="chat-panel-group-setting" [hoverEvent]="groupSettingHover" *ngIf="active.type === 4" (click)="groupSettingAction($event)">
                 <hover-tip-component [hidden]="!groupSettingHover.show" [hoverInfo]="groupSettingHover"></hover-tip-component>
             </div>
-            <div class="chat-panel-record-btn" [hoverEvent]="MsgFileHover" (click)="msgFileAction($event)">
-                <hover-tip-component [hidden]="!MsgFileHover.show" [hoverInfo]="MsgFileHover"></hover-tip-component>
+            <div class="chat-panel-record-btn" [hoverEvent]="msgFileHover" (click)="msgFileAction($event)">
+                <hover-tip-component [hidden]="!msgFileHover.show" [hoverInfo]="msgFileHover"></hover-tip-component>
             </div>
         </div>
         <div class="chat-panel-message-borad flex-1" id="imgViewer">

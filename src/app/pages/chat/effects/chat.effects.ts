@@ -2306,6 +2306,9 @@ export class ChatEffect {
         .ofType(chatAction.addReceiptReport)
         .map(toPayload)
         .switchMap((readObj) => {
+            if (readObj && readObj.msg_id.length === 0) {
+                return ;
+            }
             // 调用超时或者失败重新调用一次
             if (readObj.type === 3) {
                 global.JIM.addSingleReceiptReport({
@@ -2314,27 +2317,9 @@ export class ChatEffect {
                 }).onSuccess((data) => {
                     // pass
                 }).onFail((error) => {
-                    global.JIM.addSingleReceiptReport({
-                        username: readObj.username,
-                        msg_ids: readObj.msg_id
-                    }).onSuccess((success) => {
-                        // pass
-                    }).onFail((errorData) => {
-                        // pass
-                    }).onTimeout((timeout) => {
-                        // pass
-                    });
+                    // pass
                 }).onTimeout((data) => {
-                    global.JIM.addSingleReceiptReport({
-                        username: readObj.username,
-                        msg_ids: readObj.msg_id
-                    }).onSuccess((success) => {
-                        // pass
-                    }).onFail((error) => {
-                        // pass
-                    }).onTimeout((timeout) => {
-                        // pass
-                    });
+                    // pass
                 });
             } else {
                 global.JIM.addGroupReceiptReport({
@@ -2343,27 +2328,9 @@ export class ChatEffect {
                 }).onSuccess((data) => {
                     // pass
                 }).onFail((error) => {
-                    global.JIM.addGroupReceiptReport({
-                        gid: readObj.gid,
-                        msg_ids: readObj.msg_id
-                    }).onSuccess((success) => {
-                        // pass
-                    }).onFail((errorData) => {
-                        // pass
-                    }).onTimeout((timeout) => {
-                        // pass
-                    });
+                    // pass
                 }).onTimeout((data) => {
-                    global.JIM.addGroupReceiptReport({
-                        gid: readObj.gid,
-                        msg_ids: readObj.msg_id
-                    }).onSuccess((success) => {
-                        // pass
-                    }).onFail((error) => {
-                        // pass
-                    }).onTimeout((timeout) => {
-                        // pass
-                    });
+                    // pass
                 });
             }
             return Observable.of('addReceiptReport')

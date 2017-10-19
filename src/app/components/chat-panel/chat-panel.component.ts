@@ -99,7 +99,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         },
         show: false
     };
-    private MsgFileHover = {
+    private msgFileHover = {
         tip: '聊天文件',
         position: {
             left: -28,
@@ -862,7 +862,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     insertHtml += insertHtml;
                 }
             }
-            this.util.insertAtCursor(contentId, insertHtml, false);
+            let userAgent = navigator.userAgent;
+            let isSafari = userAgent.indexOf('Safari') > -1 &&
+                            userAgent.indexOf('Chrome') === -1;
+            // safari自身可以换行，不用处理
+            if (!isSafari) {
+                this.util.insertAtCursor(contentId, insertHtml, false);
+            }
         } else if (event.keyCode === 13) {
             this.sendMsgAction();
             event.preventDefault();
@@ -1118,12 +1124,11 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     }
                     const newLength = this.msg.length;
                     this.allPointerToMap(newLength - oldLength);
-                    const that = this;
                     return new Promise ((resolve, reject) => {
                         setTimeout(() => {
-                            const newContentHeight = that.componentScroll.directiveRef.geometry().h;
+                            const newContentHeight = this.componentScroll.directiveRef.geometry().h;
                             const gap = newContentHeight - oldContentHeight;
-                            that.componentScroll.directiveRef.scrollTo(0, gap);
+                            this.componentScroll.directiveRef.scrollTo(0, gap);
                             resolve();
                         }, 0);
                     }).catch(() => {
@@ -1143,7 +1148,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         if (this.active.type === 3) {
             readObj = {
                 username: this.active.name,
-                // appkey: this.active.appkey,
+                appkey: this.active.appkey,
                 msg_id: [],
                 type: 3
             };
