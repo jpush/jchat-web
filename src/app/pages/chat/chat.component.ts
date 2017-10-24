@@ -211,6 +211,16 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
             }
         });
+        // 多端在线清空会话未读数
+        global.JIM.onMutiUnreadMsgUpdate((data) => {
+            if (data.username) {
+                data.name = data.username;
+            }
+            this.store$.dispatch({
+                type: chatAction.emptyUnreadNumSyncEvent,
+                payload: data
+            });
+        });
         // 离线业务消息监听，加载完会话数据之后才执行
         this.isLoaded$.subscribe((isLoaded) => {
             if (isLoaded) {
@@ -961,18 +971,18 @@ export class ChatComponent implements OnInit, OnDestroy {
                     }
                 }
                 break;
-            case 200:
-                // 清空未读数的同步事件
-                if (!data.isOffline) {
-                    if (data.description && data.description.username) {
-                        data.description.name = data.description.username;
-                    }
-                    this.store$.dispatch({
-                        type: chatAction.emptyUnreadNumSyncEvent,
-                        payload: data.description
-                    });
-                }
-                break;
+            // case 200:
+            //     // 清空未读数的同步事件
+            //     if (!data.isOffline) {
+            //         if (data.description && data.description.username) {
+            //             data.description.name = data.description.username;
+            //         }
+            //         this.store$.dispatch({
+            //             type: chatAction.emptyUnreadNumSyncEvent,
+            //             payload: data.description
+            //         });
+            //     }
+            //     break;
             default:
         }
     }
