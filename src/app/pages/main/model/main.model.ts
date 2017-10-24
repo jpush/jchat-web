@@ -3,9 +3,10 @@ export const mainInit = {
     selfInfo: {
         info: {
             avatar: '',
-            avatarUrl: ''
+            avatarUrl: '',
         },
-        show: false
+        show: false,
+        loading: false
     },
     listTab: 0,
     createGroup: {
@@ -47,5 +48,7 @@ export const mainInit = {
             title: '',
             tip: ''
         }
-    }
+    },
+    contactUnreadNum: 0,
+    friendList: []
 };

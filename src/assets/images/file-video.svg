@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>视频@1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-2" transform="translate(-459.000000, -216.000000)">
+            <g id="Group-3" transform="translate(459.000000, 216.000000)">
+                <rect id="Rectangle-15-Copy-5" fill="#4DD1E1" x="0" y="0" width="50" height="50" rx="5"></rect>
+                <g id="Group" transform="translate(12.500000, 9.009978)">
+                    <rect id="Rectangle-4-Copy" stroke="#FFFFFF" x="0.5" y="0.8984375" width="24" height="30.2109375" rx="4"></rect>
+                    <polygon id="Triangle-Copy" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" points="17.5675676 13.3476562 8.78378378 18.9921875 8.78378378 7.703125"></polygon>
+                    <rect id="Rectangle-25-Copy" fill="#FFFFFF" x="1" y="24.3046875" width="23.3243243" height="1.328125"></rect>
+                    <ellipse id="Oval-15-Copy" fill="#FFFFFF" cx="12.5" cy="27.9570312" rx="1.01351351" ry="1"></ellipse>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

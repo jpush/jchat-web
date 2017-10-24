@@ -10,7 +10,7 @@
         width: 42px;
         height: 42px;
         border-radius: 21px;
-        background: url(../../../assets/images/viewer-close.png) center center no-repeat;
+        background: url(../../../assets/images/viewer-close.svg) center center no-repeat;
         background-size: 42px;
         position: absolute;
         top: 5px;
@@ -20,6 +20,16 @@
     img{
         cursor: move;
         position: fixed;
+    }
+    .image-viewer-loading{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 32px;
+        height: 32px;
+        margin: -16px 0 0 -16px;
+        background: url(../../../assets/images/app-loading.gif) center center no-repeat;
+        background-size: 32px;
     }
     .viewer-ratio-tip{
         display: inline-block;
@@ -51,11 +61,11 @@
             display: block;
             position: absolute;
             top: 15px;
-            background: url(../../../assets/images/download-normal.png) center center no-repeat;
+            background: url(../../../assets/images/download-normal.svg) center center no-repeat;
             background-size: 26px;
             right: 91px;
             &:hover{
-                background-image: url(../../../assets/images/download-active.png);
+                background-image: url(../../../assets/images/download-active.svg);
             }
         }
         button{
@@ -70,34 +80,34 @@
         }
         .viewer-prev{
             left: 22px;
-            background: url(../../../assets/images/prev-normal.png) center center no-repeat;
+            background: url(../../../assets/images/prev-normal.svg) center center no-repeat;
             background-size: 26px;
             &:hover{
-                background-image: url(../../../assets/images/prev-active.png);
+                background-image: url(../../../assets/images/prev-active.svg);
             }
         }
         .viewer-zoom-in{
             left: 92px;
-            background: url(../../../assets/images/zoom-in-normal.png) center center no-repeat;
+            background: url(../../../assets/images/zoom-in-normal.svg) center center no-repeat;
             background-size: 26px;
             &:hover{
-                background-image: url(../../../assets/images/zoom-in-active.png);
+                background-image: url(../../../assets/images/zoom-in-active.svg);
             }
         }
         .viewer-zoom-out{
             left: 166px;
-            background: url(../../../assets/images/zoom-out-normal.png) center center no-repeat;
+            background: url(../../../assets/images/zoom-out-normal.svg) center center no-repeat;
             background-size: 26px;
             &:hover{
-                background-image: url(../../../assets/images/zoom-out-active.png);
+                background-image: url(../../../assets/images/zoom-out-active.svg);
             }
         }
         .viewer-next{
             right: 22px;
-            background: url(../../../assets/images/next-normal.png) center center no-repeat;
+            background: url(../../../assets/images/next-normal.svg) center center no-repeat;
             background-size: 26px;
             &:hover{
-                background-image: url(../../../assets/images/next-active.png);
+                background-image: url(../../../assets/images/next-active.svg);
             }
         }
     }

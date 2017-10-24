@@ -13,7 +13,7 @@
         display: block;
         width: 32px;
         height: 32px;
-        background: url(../../../assets/images/viewer-close.png) center center no-repeat;
+        background: url(../../../assets/images/viewer-close.svg) center center no-repeat;
         background-size: 32px;
         cursor: pointer;
         z-index: 1;
@@ -32,17 +32,17 @@
             cursor: pointer;
             margin-left: 18px;
             &.play{
-                background: url(../../../assets/images/play-normal.png) center center no-repeat;
+                background: url(../../../assets/images/play-normal.svg) center center no-repeat;
                 background-size: 14px;
                 &:hover{
-                    background-image: url(../../../assets/images/play-active.png);
+                    background-image: url(../../../assets/images/play-active.svg);
                 }
             }
             &.pause{
-                background: url(../../../assets/images/pause-normal.png) center center no-repeat;
+                background: url(../../../assets/images/pause-normal.svg) center center no-repeat;
                 background-size: 14px;
                 &:hover{
-                    background-image: url(../../../assets/images/pause-active.png);
+                    background-image: url(../../../assets/images/pause-active.svg);
                 }
             }
         }

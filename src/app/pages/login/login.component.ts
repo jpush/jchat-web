@@ -7,6 +7,7 @@ import { global, authPayload, StorageService } from '../../services/common';
 import { md5 } from '../../services/tools';
 import { Util } from '../../services/util';
 import { ActivatedRoute, Router } from '@angular/router';
+declare function JMessage(obj ?: Object): void;
 
 @Component({
     selector: 'app-login',
@@ -34,6 +35,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         private elementRef: ElementRef
     ) {}
     public ngOnInit() {
+        // 创建JIM 对象，退出登录后重新创建对象
+        global.JIM = new JMessage({
+            address: 'ws://183.232.25.91:9091'
+        });
         if (this.username !== '' && this.password !== '') {
             this.isButtonAvailableAction();
         }
@@ -95,8 +100,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         global.JIM.init({
             appkey: authPayload.appKey,
             random_str: authPayload.randomStr,
-            signature,
-            timestamp,
+            signature: authPayload.signature || signature,
+            timestamp: authPayload.timestamp || timestamp,
             flag: authPayload.flag
         }).onSuccess((data) => {
             const username = this.storageService.get(md5('jchat-remember-username'), true);

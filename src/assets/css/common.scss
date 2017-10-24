@@ -18,6 +18,12 @@ body {
 button{
     border: none;
 }
+h1, h2, h3, h4, h5, h6{
+    margin: 0;
+}
+i{
+    font-style: normal;
+}
 input::-ms-clear{
     display:none;
 }
@@ -107,14 +113,14 @@ button:focus{
 
 a{
     text-decoration: none;
-    color: #333;
-    cursor: default;  
+    color: #262bcc;
+    cursor: pointer;  
 }
 a:focus{
     outline: none;
 }
 a:active{
-    color:#333;
+    color:#262bcc;
 }
 p{
     margin: 0;
@@ -166,6 +172,13 @@ ul,li,ol{
     align-items: center;
 }
 
+.align-items-end {
+    -webkit-box-align: flex-end;
+    -moz-align-items: flex-end;
+    -ms-flex-align: flex-end;
+    align-items: flex-end;
+}
+
 .justify-content-center {
     -webkit-box-pack: center;
     -moz-justify-content: center;
@@ -174,10 +187,10 @@ ul,li,ol{
 }
 
 .justify-content-end {
-    -webkit-box-pack: end;
+    -webkit-box-pack: flex-end;
     -moz-justify-content: flex-end;
-    -ms-flex-pack: end;
-    justify-content: end;
+    -ms-flex-pack: flex-end;
+    justify-content: flex-end;
 }
 
 .justify-content-top {
@@ -268,7 +281,7 @@ ul,li,ol{
             position: absolute;
             top: 18px;
             right: 4px;
-            background: url(../images/modal-close.png) center center no-repeat;
+            background: url(../images/modal-close.svg) center center no-repeat;
             cursor: pointer;
         }
         .modal-input{
@@ -306,14 +319,28 @@ ul,li,ol{
 }
 
 /* 模拟滚动条*/
+perfect-scrollbar {
+    height: auto !important;
+}
 .chat-panel-scroll .ps-content{
     padding-right: 20px;
+    padding-left: 20px;
+    box-sizing: border-box;
 }
 .search-user-result .ps-content,.search-user-result .ps--active-y{
     max-height: 452px;
 }
 .search-member-scroll-search .ps-content, .search-member-scroll-search .ps--active-y{
     max-height: 275px;
+}
+.at-list-contianer .ps-content, .at-list-contianer .ps{
+    max-height: 216px;
+}
+.search-card-scroll-search .ps-content, .search-card-scroll-search .ps{
+    max-height: 275px;
+}
+.ps__scrollbar-y-rail{
+    z-index: 2;
 }
 /* emoji*/
 .emoji-normal .emoji{
@@ -333,6 +360,34 @@ ul,li,ol{
     position: relative;
     top: -1px;
     vertical-align: middle;
+}
+// menu
+.chat-panel-operation-board .menu-wrap{
+    position: static !important;
+}
+// @xxx
+.chat-panel-at-input{
+    background-color: #fff;
+    line-height: 18px;
+    height: 18px;
+    font-size: 14px;
+    padding: 0;
+    cursor: text;
+    box-sizing: border-box;
+    letter-spacing: 0;
+    word-spacing: 0;
+}
+// badge徽标
+#main .jui-badge .display-no-wrapper{
+    background-color: #EB424C !important;
+    padding: 2px 4px;
+    color: #fff;
+    background: #EB424C;
+    line-height: 12px;
+    font-size: 12px;
+    border-radius: 8px;
+    min-width: 8px;
+    height: 13px;
 }
 
 

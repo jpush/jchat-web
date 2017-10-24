@@ -1,5 +1,8 @@
 <div class="menu-wrap">
     <ul>
-        <li class="menu-hover" *ngFor="let item of menu.info" (click)="selectMenuItemAction(item)">{{item.name}}</li>
+        <li class="menu-hover" *ngFor="let item of menu.info; let num = index;" (click)="selectMenuItemAction(item)">
+            {{item.name}}
+            <div *ngIf="num === menu.info.length - 1 && !menu.hiddenArror" class="menu-arror"></div>
+        </li>
     </ul>
 </div>

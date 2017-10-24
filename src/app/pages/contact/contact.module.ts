@@ -6,7 +6,7 @@ import { ContactComponent } from './contact.component';
 import { GroupListModule } from '../../components/group-list';
 import { ContactListModule } from '../../components/contact-list';
 import { LinkmanListModule } from '../../components/linkman-list';
-
+import { VerifyModule } from '../../components/verify';
 @NgModule({
   declarations: [
     ContactComponent
@@ -16,7 +16,8 @@ import { LinkmanListModule } from '../../components/linkman-list';
     FormsModule,
     GroupListModule,
     ContactListModule,
-    LinkmanListModule
+    LinkmanListModule,
+    VerifyModule
   ],
   exports: [
       ContactComponent

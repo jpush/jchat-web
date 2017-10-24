@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
 import { BlackMenuComponent } from './black-menu.component';
+import { SanitizePipeModule } from '../../pipes';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { BlackMenuComponent } from './black-menu.component';
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    SanitizePipeModule
   ],
   exports: [
       BlackMenuComponent

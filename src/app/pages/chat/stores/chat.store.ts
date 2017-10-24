@@ -20,13 +20,12 @@ export interface ChatStore {
     actionType: string;
     otherInfo: {
         show: boolean,
-        info: object,
-        black: Array<any>
+        info: {
+            black: boolean,
+            noDisturb: boolean
+        }
     };
-    blackMenu: {
-        menu: Array<any>,
-        show: boolean
-    };
+    blackMenu: Array<any>;
     searchUserResult: {
         result: object,
         isSearch: boolean
@@ -48,4 +47,41 @@ export interface ChatStore {
     isLoaded: boolean;
     currentIsActive: boolean;
     newMessageIsActive: boolean;
+    newMessageIsDisturb: boolean;
+    friendList: Array<any>;
+    messageTransmit: {
+        searchResult: object,
+        list: Array<any>
+    };
+    transmitSuccess: number;
+    verifyModal: {
+        info: object,
+        show: boolean
+    };
+    noDisturb: {
+        users: Array<any>,
+        groups: Array<any>
+    };
+    viewerImageUrl: object;
+    msgFile: {
+        show: boolean,
+        audio: Array<any>,
+        document: Array<any>,
+        video: Array<any>,
+        image: Array<any>,
+        other: Array<any>
+    };
+    msgFileImageViewer: Array<any>;
+    sendBusinessCardSuccess: number;
+    unreadList: {
+        show: boolean,
+        info: {
+            read: Array<any>,
+            unread: Array<any>
+        },
+        loading: boolean
+    };
+    readObj: Object;
+    groupShield: Array<any>;
+    businessCardSearch: object;
 }

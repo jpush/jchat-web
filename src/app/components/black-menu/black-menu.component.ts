@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-const avatarErrorIcon = '../../../assets/images/single-avatar.png';
+const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'black-menu-component',

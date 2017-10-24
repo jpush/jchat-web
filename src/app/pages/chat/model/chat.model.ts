@@ -3,6 +3,7 @@ export const chatInit = {
     messageList: [],
     newMessage: {},
     groupList: [],
+    friendList: [],
     activePerson: {
         key: '',
         name: '',
@@ -15,14 +16,13 @@ export const chatInit = {
     defaultPanelIsShow: true,
     actionType: '',
     otherInfo: {
-        info: {},
-        show: false,
-        black: []
-    },
-    blackMenu: {
-        menu: [],
+        info: {
+            black: false,
+            noDisturb: false
+        },
         show: false
     },
+    blackMenu: [],
     searchUserResult: {
         result: {},
         isSearch: false
@@ -43,5 +43,41 @@ export const chatInit = {
     },
     isLoaded: false,
     currentIsActive: false,
-    newMessageIsActive: false
+    newMessageIsActive: false,
+    newMessageIsDisturb: false,
+    messageTransmit: {
+        searchResult: {},
+        list: []
+    },
+    transmitSuccess: 0,
+    verifyModal: {
+        info: {},
+        show: false
+    },
+    noDisturb: {
+        users: [],
+        groups: []
+    },
+    viewerImageUrl: {},
+    msgFile: {
+        show: false,
+        audio: [],
+        document: [],
+        video: [],
+        image: [],
+        other: []
+    },
+    msgFileImageViewer: [],
+    sendBusinessCardSuccess: 0,
+    unreadList: {
+        show: false,
+        info: {
+            read: [],
+            unread: []
+        },
+        loading: false
+    },
+    readObj: {},
+    groupShield: [],
+    businessCardSearch: {}
 };

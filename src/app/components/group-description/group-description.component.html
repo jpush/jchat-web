@@ -2,14 +2,14 @@
     <div class="modal-content">
         <h2 class="modal-title">
             群描述
-            <span class="modal-close" (click)="groupAction()"></span>
+            <span class="modal-close" (click)="groupAction($event)"></span>
         </h2>
         <div class="description-textarea">
             <textarea spellcheck="false" [(ngModel)]="description.desc" class="input-focus" maxlength="80"></textarea>
         </div>
         <p class="modal-btn">
-            <button type="button" class="btn-cancel btn-white" (click)="groupAction()">取消</button>
-            <button type="button" class="btn-confirm btn-active" (click)="groupAction(description)">确定</button>            
+            <button type="button" class="btn-cancel btn-white" (click)="groupAction($event)">取消</button>
+            <button type="button" class="btn-confirm btn-active" (click)="groupAction($event, description)">确定</button>            
         </p>
     </div>
 </div>

@@ -14,6 +14,7 @@ export class MapComponent implements OnInit {
         private activatedRoute: ActivatedRoute
     ) {}
     public ngOnInit() {
+        // 获取url参数（地理坐标）
         let pointer = this.activatedRoute.snapshot.params.pointer;
         let arr = pointer.split('&');
         arr[0] = Number(arr[0]);

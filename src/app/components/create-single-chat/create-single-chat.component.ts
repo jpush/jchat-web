@@ -10,6 +10,8 @@ import { Component, Input, Output, EventEmitter, ElementRef,
 export class CreateSingleChatComponent implements OnInit, AfterViewInit {
     @Input()
         private info;
+    @Input()
+        private createSingleOption;
     private singleName = '';
     @Output()
         private createSingleChat: EventEmitter<any> = new EventEmitter();
@@ -27,8 +29,17 @@ export class CreateSingleChatComponent implements OnInit, AfterViewInit {
         this.elementRef.nativeElement.querySelector('#singleChatInput').focus();
     }
     private createSingleChatEmit(singleName) {
+        let type = '';
+        if (this.createSingleOption.title === '添加好友') {
+            type = 'addFriend';
+        } else if (this.createSingleOption.title === '发起单聊') {
+            type = 'createSingleChat';
+        }
         if (singleName || singleName === '') {
-            this.createSingleChat.emit(singleName);
+            this.createSingleChat.emit({
+                singleName,
+                type
+            });
         } else {
             this.createSingleChat.emit();
         }

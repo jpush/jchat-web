@@ -41,24 +41,33 @@
                         cursor: pointer;
                     }
                     .main-conversation-icon{
-                        background: url(../../../assets/images/chat-normal.png) center center no-repeat;                 
+                        background: url(../../../assets/images/chat-normal.svg) center center no-repeat;
+                        position: relative;               
                         &:hover{
-                            background-image: url(../../../assets/images/chat-active.png);
+                            background-image: url(../../../assets/images/chat-active.svg);
                         }
                         &.active{
-                            background-image: url(../../../assets/images/chat-active.png);
+                            background-image: url(../../../assets/images/chat-active.svg);
                         }
                     }
                     .main-contact-icon{
-                        background: url(../../../assets/images/contact-normal.png) center center no-repeat;              
+                        background: url(../../../assets/images/contact-normal.svg) center center no-repeat;
+                        position: relative;          
                         &:hover{
-                            background-image: url(../../../assets/images/contact-active.png);
+                            background-image: url(../../../assets/images/contact-active.svg);
                         }
                         &.active{
-                            background-image: url(../../../assets/images/contact-active.png);
+                            background-image: url(../../../assets/images/contact-active.svg);
                         }
                     }
                 }
+            }
+            .main-badge{
+                position: absolute;
+                top: 0;
+                right: 0;
+                -webkit-transform: translate(50%, -50%);
+                        transform: translate(50%, -50%);
             }
             .main-add-container{
                 position: absolute;
@@ -71,17 +80,17 @@
                     position: relative;
                     .main-add-single-icon{
                         cursor: pointer;                    
-                        background: url(../../../assets/images/add-single-normal.png) center center no-repeat;
+                        background: url(../../../assets/images/add-single-normal.svg) center center no-repeat;
                         background-size: 21px;
                         width: 21px;
                         height: 21px;
                         margin: 0 auto;
                         &:hover{
-                            background: url(../../../assets/images/add-single-active.png) center center no-repeat;
+                            background: url(../../../assets/images/add-single-active.svg) center center no-repeat;
                         }
                     }
                     .main-add-single-icon.active{
-                        background: url(../../../assets/images/add-single-active.png) center center no-repeat;
+                        background: url(../../../assets/images/add-single-active.svg) center center no-repeat;
                     }
                 }
                 .main-setting{
@@ -89,17 +98,17 @@
                     position: relative;
                     .main-setting-icon{
                         cursor: pointer;                    
-                        background: url(../../../assets/images/menu-normal.png) center center no-repeat;
+                        background: url(../../../assets/images/menu-normal.svg) center center no-repeat;
                         background-size: 21px;
                         width: 21px;
                         height: 21px;
                         margin: 0 auto;
                         &:hover{
-                            background: url(../../../assets/images/menu-active.png) center center no-repeat;
+                            background: url(../../../assets/images/menu-active.svg) center center no-repeat;
                         }
                     }
                     .main-setting-icon.active{
-                        background: url(../../../assets/images/menu-active.png) center center no-repeat;
+                        background: url(../../../assets/images/menu-active.svg) center center no-repeat;
                     }
                 }
             }

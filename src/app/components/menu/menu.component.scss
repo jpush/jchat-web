@@ -4,11 +4,11 @@
     left: 24px;
     width: 115px;
     background-color: #fff;
-    box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
     border-radius: 2px;
     ul{
         cursor: pointer;
-        line-height: 42px;
+        line-height: 36px;
         font-size: 14px;
         color: #808080;
         position: relative;
@@ -16,17 +16,17 @@
         li{
             padding-left: 22px;
             box-sizing: border-box;
-        }
-        &:after{
-            content: '';
-            display: block;
-            width: 0;
-            height: 0;
-            border: 6px solid transparent;
-            border-top-color: #fff;
-            position: absolute;
-            bottom: -11px;
-            left: 5px;
+            .menu-arror{
+                width: 14px;
+                height: 8px;
+                position: absolute;
+                bottom: -8px;
+                left: 8px;
+                background: url(../../../assets/images/menu-bottom-normal.svg) -8px -110px no-repeat;
+            }
+            &:hover .menu-arror{
+                background: url(../../../assets/images/menu-bottom-active.svg) -6px -36px no-repeat !important;
+            }
         }
     }
 }

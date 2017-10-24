@@ -1,24 +1,20 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild,
-    HostListener, ElementRef, DoCheck } from '@angular/core';
+    HostListener, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { PerfectScrollbarComponent, PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
 
 import { AppStore } from '../../app.store';
 import { chatAction } from '../../pages/chat/actions';
 import { global } from '../../services/common';
-const avatarErrorIcon = '../../../assets/images/single-avatar.png';
-
+const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
+const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 @Component({
     selector: 'group-setting-component',
     templateUrl: './group-setting.component.html',
     styleUrls: ['./group-setting.component.scss']
 })
 
-export class GroupSettingComponent implements OnInit, DoCheck {
-    @ViewChild(PerfectScrollbarComponent) private componentScroll;
-    @ViewChild(PerfectScrollbarDirective) private directiveScroll;
-
+export class GroupSettingComponent implements OnInit {
     @Input()
         private groupSetting;
     @Output()
@@ -39,8 +35,9 @@ export class GroupSettingComponent implements OnInit, DoCheck {
         private deleteMember: EventEmitter<any> = new EventEmitter();
     @Output()
         private modifyGroupName: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private updateGroupAvatar: EventEmitter<any> = new EventEmitter();
     private global = global;
-    private settingAnimate = 'in';
     private searchResult = {
         result: [],
         show: false,
@@ -68,18 +65,6 @@ export class GroupSettingComponent implements OnInit, DoCheck {
     public ngOnInit() {
         // pass
     }
-    public ngDoCheck() {
-        // 修改群描述时，调整群成员列表的位置
-        const header = this.elementRef.nativeElement.querySelector('#groupSettingHeader');
-        if (header) {
-            this.listTop = header.offsetHeight;
-        }
-        if (this.groupSetting.show) {
-            this.settingAnimate = 'in';
-        } else {
-            this.settingAnimate = 'void';
-        }
-    }
     private stopPropagation(event) {
         event.stopPropagation();
         this.searchResult.show = false;
@@ -87,9 +72,9 @@ export class GroupSettingComponent implements OnInit, DoCheck {
     }
     @HostListener('window:click') private onWindowClick() {
         this.groupSetting.show = false;
-        this.settingAnimate = 'void';
         this.searchResult.result = [];
         this.searchResult.show = false;
+        this.closeGroupSetting.emit();
         this.elementRef.nativeElement.querySelector('#' + this.searchResult.id).value = '';
     }
     private clearInputEmit() {
@@ -102,9 +87,13 @@ export class GroupSettingComponent implements OnInit, DoCheck {
             this.searchResult.show = true;
             let result = [];
             for (let member of this.groupSetting.memberList) {
-                let nickNameExist = member.nickName.indexOf(value) !== -1;
-                let usernameExist = member.username.indexOf(value) !== -1;
-                if (nickNameExist || usernameExist) {
+                let memoNameExist = member.memo_name &&
+                        member.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                let usernameExist = member.username &&
+                        member.username.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                let nickNameExist = member.nickName &&
+                        member.nickName.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                if (memoNameExist || nickNameExist || usernameExist) {
                     result.push(member);
                 }
             }
@@ -117,7 +106,7 @@ export class GroupSettingComponent implements OnInit, DoCheck {
         this.addMember.emit();
     }
     private closeGroupSettingAction() {
-        this.settingAnimate = 'void';
+        this.groupSetting.show = false;
         this.closeGroupSetting.emit();
     }
     private exitGroupAction() {
@@ -133,12 +122,20 @@ export class GroupSettingComponent implements OnInit, DoCheck {
         }, 0);
     }
     private modifyGroupNameBlur(event) {
-        this.modifyGroupName.emit(event.target.value);
+        if (this.groupSetting.groupInfo.name !== event.target.value) {
+            this.modifyGroupName.emit(event.target.value);
+        }
         this.modifyGroupNameShow = false;
     }
     private changeGroupShieldEmit() {
         this.store$.dispatch({
             type: chatAction.changeGroupShield,
+            payload: this.groupSetting.active
+        });
+    }
+    private changeGroupNoDisturbEmit() {
+        this.store$.dispatch({
+            type: chatAction.changeGroupNoDisturb,
             payload: this.groupSetting.active
         });
     }
@@ -180,5 +177,11 @@ export class GroupSettingComponent implements OnInit, DoCheck {
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;
+    }
+    private groupAvatarErrorIcon(event) {
+        event.target.src = groupAvatarErrorIcon;
+    }
+    private groupAvatarChange(event) {
+        this.updateGroupAvatar.emit(event.target);
     }
 }

@@ -2,7 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter, trigger, state, style, 
         animate, HostListener, ElementRef, OnChanges, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
-const avatarErrorIcon = '../../../assets/images/single-avatar.png';
+const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
+const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 @Component({
     selector: 'search-user-component',
@@ -42,9 +43,10 @@ export class SearchUserComponent implements OnInit, OnChanges {
     public ngOnInit() {
         this.fileDom = this.elementRef.nativeElement.querySelector('#searchInput');
         Observable.fromEvent(this.fileDom, 'keyup')
-            .debounceTime(300)
             .subscribe((event: any) => {
                 this.searchUser.emit(event.target.value);
+                this.singleShowText = '显示全部';
+                this.singleHeight = '200px';
             });
     }
     public ngOnChanges() {
@@ -82,6 +84,9 @@ export class SearchUserComponent implements OnInit, OnChanges {
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;
+    }
+    private groupAvatarErrorIcon(event) {
+        event.target.src = groupAvatarErrorIcon;
     }
     private clearInput() {
         this.searchKeyword = '';

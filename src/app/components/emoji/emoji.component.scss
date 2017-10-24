@@ -4,6 +4,7 @@
     background: #fff;
     position: absolute;
     border: 1px solid #D9DEE4;
+    z-index: 10;
     .emoji-normal{
         padding:  15px 20px 0 20px;
         overflow: hidden;
@@ -86,11 +87,11 @@
             }
         }
         .emoji-tab-normal{
-            background: url(../../../assets/images/emoji-simple.png) center center no-repeat;
+            background: url(../../../assets/images/emoji-simple.svg) center center no-repeat;
             background-size: 20px;
         }
         .emoji-tab-jpush{
-            background: url(../../../assets/images/emoji-jpush.png) center center no-repeat;
+            background: url(../../../assets/images/emoji-jpush.svg) center center no-repeat;
             background-size: 30px;
         }
     }

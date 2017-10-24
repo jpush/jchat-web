@@ -28,7 +28,11 @@ export const loginReducer = (state: LoginStore = loginInit, {type, payload}) => 
             break;
         case loginAction.loginFailed:
             state.isLoginSuccess = false;
-            state.loginTip = '用户名或密码错误';
+            if (Number(payload.code) === 880106) {
+                state.loginTip = '账号已被禁用';
+            } else {
+                state.loginTip = '用户名或密码错误';
+            }
             break;
         case loginAction.isButtonAvailableAction:
             isButtonAvailable(state, payload);

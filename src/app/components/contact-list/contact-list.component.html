@@ -1,4 +1,8 @@
 <ul class="contact-list-ul">
-    <li class="contact-linkman" [ngClass]="{'active': listIndex == 1}" (click)="changeList(1)">联系人</li>
+    <li class="contact-verify" [ngClass]="{'active': listIndex == 0}" (click)="changeList(0)">
+        验证消息
+        <jui-badge *ngIf="verifyUnreadNum > 0" class="conversation-badge" displayType="no-wrapper" [badgeNum]="verifyUnreadNum" showZero="false" maxNum="99"></jui-badge>        
+    </li>
+    <li class="contact-linkman" [ngClass]="{'active': listIndex == 1}" (click)="changeList(1)">好友</li>
     <li class="contact-group" [ngClass]="{'active': listIndex == 2}" (click)="changeList(2)">群组</li>
 </ul>

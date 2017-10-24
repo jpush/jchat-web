@@ -10,6 +10,10 @@ import { OtherInfoModule } from '../../components/other-info';
 import { GroupSettingModule } from '../../components/group-setting';
 import { GroupDescriptionModule } from '../../components/group-description';
 import { VideoModule } from '../../components/video';
+import { MessageTransmitModule } from '../../components/message-transmit';
+import { VerifyModalModule } from '../../components/verify-modal';
+import { GroupAvatarModule } from '../../components/group-avatar';
+import { UnreadListModule } from '../../components/unread-list';
 
 @NgModule({
   declarations: [
@@ -24,7 +28,11 @@ import { VideoModule } from '../../components/video';
     OtherInfoModule,
     GroupSettingModule,
     GroupDescriptionModule,
-    VideoModule
+    VideoModule,
+    MessageTransmitModule,
+    VerifyModalModule,
+    GroupAvatarModule,
+    UnreadListModule
   ],
   exports: [
       ChatComponent

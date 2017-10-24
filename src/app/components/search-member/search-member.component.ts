@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter,
     AfterViewInit, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
-const avatarErrorIcon = '../../../assets/images/single-avatar.png';
+const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'search-member-component',
@@ -34,7 +34,6 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
     public ngAfterViewInit() {
         this.fileDom = this.elementRef.nativeElement.querySelector('#' + this.searchResult.id);
         Observable.fromEvent(this.fileDom, 'keyup')
-            .debounceTime(200)
             .subscribe((event: any) => {
                 if (event.keyCode !== 13) {
                     this.searchKeyup.emit(event.target.value);
@@ -63,7 +62,7 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
             this.searchBtn.emit(this.searchResult.keywords);
         }
     }
-    private changeCheckedAction(input, item) {
+    private changeCheckedAction(item) {
         this.changeChecked.emit(item);
     }
     private avatarLoad(event) {

@@ -1,0 +1,54 @@
+.paste-image-content{
+    width: 400px;
+    height: 360px;
+    background: #FFFFFF;
+    box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    padding: 0 35px;
+    box-sizing: border-box;
+    h2{
+        height: 74px;
+        font-size: 16px;
+        color: #2C2C2C;
+        font-weight: 100;
+        line-height: 74px;
+        text-align: center;
+    }
+    .modal-close{
+        width: 14px;
+        height: 14px;
+        content: '';
+        display: block;
+        position: absolute;
+        top: 21px;
+        right: 21px;
+        background: url(../../../assets/images/modal-close.svg) center center no-repeat;
+        cursor: pointer;
+    }
+    .paste-img-container{
+        text-align: center;
+        width: 330px;
+        height: 200px;
+        img{
+            max-width: 330px;
+            max-height: 200px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+    .modal-btn{
+        height: 86px;
+        padding-top: 31px;
+        box-sizing: border-box;
+        button{
+            width: 150px;
+        }
+    }
+}

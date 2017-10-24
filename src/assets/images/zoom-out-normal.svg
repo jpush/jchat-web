@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>缩小@1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-2" transform="translate(-376.000000, -578.000000)" fill="#FFFFFF">
+            <g id="Group-18" transform="translate(377.000000, 579.000000)">
+                <path d="M10,18.4615385 C14.6731787,18.4615385 18.4615385,14.6731787 18.4615385,10 C18.4615385,5.32682135 14.6731787,1.53846154 10,1.53846154 C5.32682135,1.53846154 1.53846154,5.32682135 1.53846154,10 C1.53846154,14.6731787 5.32682135,18.4615385 10,18.4615385 Z M10,20 C4.4771525,20 0,15.5228475 0,10 C0,4.4771525 4.4771525,0 10,0 C15.5228475,0 20,4.4771525 20,10 C20,15.5228475 15.5228475,20 10,20 Z" id="Oval-7-Copy" fill-rule="nonzero"></path>
+                <rect id="Rectangle-12" x="5" y="9" width="10" height="1.5" rx="0.75"></rect>
+                <rect id="Rectangle-11-Copy-2" transform="translate(19.596194, 20.596194) rotate(45.000000) translate(-19.596194, -20.596194) " x="13.8609" y="19.8314882" width="11.4705882" height="1.52941176" rx="0.764705882"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,51 @@
+.at-list-contianer{
+    position: fixed;
+    line-height: 36px;
+    width: 150px;
+    background-color: #fff;
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
+    font-size: 12px;
+    color: #2C2C2C;
+    cursor: pointer;
+    max-height: 216px;
+    &:after{
+        content: '';
+        display: block;
+        width: 14px;
+        height: 8px;
+        position: absolute;
+        bottom: -8px;
+        left: 8px;
+        background: url(../../../assets/images/menu-bottom-normal.svg) -8px -110px no-repeat;
+    }
+    .at-list-avatar{
+        width: 24px;
+        height: 24px;
+        overflow: hidden;
+        margin: 6px 8px 0 10px;
+        img{
+            max-height: 100%;
+            max-width: 100%;
+        }
+    }
+    .at-list-text{
+        width: 94px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .at-list-all{
+        color: #2C2C2C;        
+        &:hover{
+            background: #F3F7FB;
+        }
+    }
+    ul{
+        li{
+        color: #2C2C2C;        
+            &:hover{
+                background: #F3F7FB;
+            }
+        }
+    }
+}

@@ -1,6 +1,7 @@
-<div class="image-viewer-container" id="viewerWrap">
-    <button class="viewer-close" type="button" (click)="closeViewerAction()"></button>
+<div class="image-viewer-container" id="viewerWrap" (click)="stopPropagation($event)">
+    <button class="viewer-close" type="button" (click)="closeViewerAction($event)"></button>
     <img (load)="imgLoad()" [hidden]="imgHidden" (wheel)="wheelScroll($event)" (mousewheel)="wheelScroll($event)" (DOMMouseScroll)="wheelScroll($event)" ondragstart="return false;" draggable="false" (mousedown)="imgMousedown($event)"  (touchstart)="imgMousedown($event)" (mouseup)="imgMouseup()"  (touchend)="imgMouseup()" [ngStyle]="{'transform': 'translate(' + position.left + 'px,' + (position.top - 60) + 'px)', '-webkit-transform': 'translate(' + position.left + 'px,' + (position.top - 60) + 'px)', 'width': position.width + 'px', 'height': position.height + 'px'}" [src]="imageViewer.active.src | sanitize: 'url'" alt="">
+    <div [hidden]="!imgHidden" class="image-viewer-loading"></div>
     <p class="viewer-ratio-tip" *ngIf="ratioTip !== ''">{{ratioTip}}</p>
     <div class="viewer-toolbar">
         <button class="viewer-prev" type="button" (click)="prev()"></button>

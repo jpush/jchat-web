@@ -15,17 +15,23 @@
     .conversation-list{
         li{
             cursor: pointer;
-            line-height: 25px;
+            line-height: 22px;
             height: 70px;
             background-color: #fff;
             position: relative;
             padding: 15px 0 0 20px;
             box-sizing: border-box;
             &.active{
-                background: #F3F7FB;
+                background: #E7EDF1 !important;
+            }
+            &.isTop{
+                background-color: #F5F6F8;
             }
             &:hover .conversation-delete{
                 display: block;
+            }
+            &:hover{
+                background-color: #f1f1f2;
             }
             .conversation-avatar{
                 width: 40px;
@@ -41,16 +47,8 @@
                     }
                 }
                 .conversation-unreadNum{
-                    position: absolute;
                     top: -7px;
                     right: -7px;
-                    display: inline-block;
-                    padding: 2px 4px;
-                    color: #fff;
-                    background: #EB424C;
-                    line-height: 12px;
-                    font-size: 12px;
-                    border-radius: 8px;
                 }
                 .conversation-dot{
                     position: absolute;
@@ -64,7 +62,7 @@
                 }
             }
             .conversation-nickname{
-                line-height: 20px;
+                line-height: 22px;
                 margin-bottom: 2px;
                 font-size: 14px;
                 color:#2c2c2c;
@@ -75,14 +73,17 @@
             .conversation-draft{
                 line-height: 18px;
                 font-size: 12px;
-                color: #EB424C;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                width: 170px;
+                width: 180px;
                 height: 18px;
-                span{
+                .conversation-draft-text{
+                    color: #EB424C;                    
+                }
+                .conversation-draft-msg{
                     color: #999;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    width: 145px;
                 }
             }
             .conversation-delete{
@@ -93,7 +94,7 @@
                 cursor: pointer;
                 display: none;
                 &:hover{
-                    color: #71E1DB;
+                    color: #02BDBC;
                 }        
             }
             .conversation-time{
@@ -101,13 +102,13 @@
                 color: #C8C8C8;
                 margin: 0 9px 0 6px;
             }
-            .conversation-no-disturb{
+            .conversation-shield{
                 position: absolute;
                 top: 42px;
                 right: 11px;
                 width: 14px;
                 height: 14px;
-                background: url(../../../assets/images/no-disturb.png) center center no-repeat;
+                background: url(../../../assets/images/shield.svg) center center no-repeat;
                 background-size: 14px;
             }
             .conversation-recentMsg{
@@ -119,7 +120,39 @@
                 overflow: hidden;
                 width: 170px;
                 height: 18px;
+                .conversation-unread-text{
+                    color: #2DD0CF;
+                }
             }
+            .conversation-at{
+                color: #EB424C;
+            }
+            .conversation-badge{
+                position: absolute;
+                top: -7px;
+                right: -7px;
+                font-size: 12px;
+                line-height: 13px;
+            }
+        }
+    }
+}
+.conversation-top-menu{
+    position: fixed;
+    width: 115px;
+    background-color: #fff;
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
+    border-radius: 2px;
+    ul{
+        cursor: pointer;
+        line-height: 36px;
+        font-size: 14px;
+        color: #808080;
+        position: relative;
+        border-radius: 2px;
+        li{
+            padding-left: 22px;
+            box-sizing: border-box;
         }
     }
 }

@@ -7,6 +7,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 
 export class ContactListComponent implements OnInit {
+    @Input()
+        private verifyUnreadNum;
     private listIndex = 1;
     @Output()
         private changeTab: EventEmitter<any> = new EventEmitter();

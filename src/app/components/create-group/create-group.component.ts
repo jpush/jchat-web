@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
 import { mainAction } from '../../pages/main/actions';
-const avatarErrorIcon = '../../../assets/images/single-avatar.png';
+const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'create-group-component',
@@ -39,8 +39,8 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
 
     }
     public ngOnInit() {
-       this.initData();
-       this.createGroupStream$ = this.store$.select((state) => {
+        this.initData();
+        this.createGroupStream$ = this.store$.select((state) => {
             let mainState = state['mainReducer'];
             this.stateChanged(mainState);
             return state;
@@ -64,7 +64,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
                     }
                     // 如果搜索的结果有已经disabled的、checked的
                     for (let item of this.selectList) {
-                        if (Number(result[0].key) === Number(item.key)) {
+                        if (result[0].name === item.name) {
                             result[0].checked = item.checked;
                             result[0].disabled = item.disabled;
                         }
@@ -78,6 +78,12 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
                                 break;
                             }
                         }
+                    }
+                    // 如果搜索的是创建多人会话的默认成员，disabled
+                    let activeSingle = this.createGroup.info.activeSingle;
+                    if (activeSingle &&
+                        activeSingle.name === mainState.createGroupSearch.info.name) {
+                        result[0].disabled = true;
                     }
                     this.searchResult.result = result;
                 } else {
@@ -100,25 +106,25 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
                 member.disabled = false;
                 member.show = true;
                 let activeSingle = this.createGroup.info.activeSingle;
-                let keyFlag = activeSingle && Number(activeSingle.key) === Number(member.key);
-                if (keyFlag) {
+                let nameFlag = activeSingle && activeSingle.name === member.name;
+                if (nameFlag) {
                     member.checked = true;
                     member.disabled = true;
                     this.createGroup.info.activeSingle.disabled = true;
                     this.createGroup.info.activeSingle.checked = true;
-                    this.selectList.push(this.createGroup.info.activeSingle);
                 }
-           }
-       }
-        // 添加群成员
+            }
+        }
+        if (this.createGroup.info.activeSingle) {
+            this.selectList.push(this.createGroup.info.activeSingle);
+        }
+        // 添加群成员，过滤掉已有成员
         if (this.createGroup.info.filter) {
             for (let list of this.createGroup.list) {
                 for (let data of list.data) {
                     for (let filter of this.createGroup.info.filter) {
-                        let keyFlag = Number(filter.uid) === Number(data.key)
-                                        || Number(filter.key) === Number(data.key);
-                        let nameFlag = filter.username === data.name && data.type === 3;
-                        if (keyFlag || nameFlag) {
+                        let nameFlag = filter.username === data.name;
+                        if (nameFlag) {
                             data.show = false;
                             break;
                         }
@@ -130,7 +136,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         for (let list of this.createGroup.list) {
             let flag = false;
             for (let member of list.data) {
-                if (member.show && member.type === 3) {
+                if (member.show) {
                     flag = true;
                     break;
                 }
@@ -147,13 +153,15 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         if (value) {
             this.searchResult.show = true;
             for (let list of this.createGroup.list) {
-                if (!list.allGroup) {
-                    for (let user of list.data) {
-                        let nameExist = user.name && user.name.indexOf(value) !== -1;
-                        let nickNameExist = user.nickName && user.nickName.indexOf(value) !== -1;
-                        if ((nameExist || nickNameExist) && user.show && user.type === 3) {
-                            this.searchResult.result.push(user);
-                        }
+                for (let user of list.data) {
+                    let memoNameExist = user.memo_name &&
+                            user.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                    let nameExist = user.name &&
+                            user.name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                    let nickNameExist = user.nickName &&
+                            user.nickName.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                    if ((memoNameExist || nameExist || nickNameExist) && user.show) {
+                        this.searchResult.result.push(user);
                     }
                 }
             }
@@ -164,13 +172,16 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     private searchBtnEmit(keywords) {
         this.store$.dispatch({
             type: mainAction.createGroupSearchAction,
-            payload: keywords
+            payload: {
+                keywords,
+                type: 'createGroup'
+            }
         });
     }
     private changeCheckedEmit(item) {
         let flag = true;
         for (let i = 0; i < this.selectList.length; i++) {
-            if (Number(item.key) === Number(this.selectList[i].key)) {
+            if (item.name === this.selectList[i].name) {
                 flag = false;
                 this.selectList.splice(i, 1);
                 item.checked = false;
@@ -182,12 +193,10 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             this.selectList.push(item);
         }
         for (let list of this.createGroup.list) {
-            if (!list.allGroup) {
-                for (let member of list.data) {
-                    if (Number(item.key) === Number(member.key) && member.type === 3) {
-                        member.checked = item.checked;
-                        return ;
-                    }
+            for (let member of list.data) {
+                if (item.name === member.name) {
+                    member.checked = item.checked;
+                    return ;
                 }
             }
         }
@@ -251,9 +260,6 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         if (!event.target.checked) {
             this.deleteItem(user);
         } else {
-            if (user.key) {
-                user.uid = user.key;
-            }
             if (user.name) {
                 user.username = user.name;
             }
@@ -262,7 +268,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         }
         for (let list of this.createGroup.list) {
             for (let member of list.data) {
-                if (Number(member.key) === Number(user.key)) {
+                if (member.name === user.name) {
                     member.checked = event.target.checked;
                     return ;
                 }
@@ -273,7 +279,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         this.deleteItem(user);
         for (let list of this.createGroup.list) {
             for (let member of list.data) {
-                if (Number(member.key) === Number(user.key)) {
+                if (member.name === user.name) {
                     member.checked = false;
                     return ;
                 }
@@ -283,7 +289,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     // 删除已选元素操作
     private deleteItem(user) {
         for (let i = 0; i < this.selectList.length; i++) {
-            if (Number(this.selectList[i].key) === Number(user.key)) {
+            if (this.selectList[i].name === user.name) {
                 this.selectList.splice(i, 1);
                 break;
             }

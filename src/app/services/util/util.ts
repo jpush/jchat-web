@@ -1,6 +1,9 @@
-import { pinyin, md5 } from '../tools';
+import { md5 } from '../tools';
 import { authPayload } from '../common';
+import '../tools/dict/pinyin_dict_notone.js';
 
+import '../tools/pinyinUtil.js';
+declare let pinyinUtil: any;
 declare let BMap;
 
 export class Util {
@@ -25,6 +28,47 @@ export class Util {
     public getExt(name) {
         const index = name.lastIndexOf('.');
         return index === -1 ? '' : name.substring(index + 1);
+    }
+    /**
+     * 将文件后缀名分类
+     * @param ext string
+     * @return string 后缀名
+     */
+    public sortByExt(ext: string) {
+        if (ext === '') {
+            return 'other';
+        }
+        const audio = ['wav', 'mp3', 'wma', 'midi'];
+        const document = ['ppt', 'pptx', 'doc', 'docx', 'pdf', 'xls', 'xlsx', 'txt', 'wps'];
+        const video = ['mp4', 'mov', 'rm', 'rmvb', 'wmv', 'avi', '3gp', 'mkv'];
+        const image = ['jpg', 'jpeg', 'png', 'bmp', 'gif'];
+        let newType = '';
+        if (audio.indexOf(ext) !== -1) {
+            // 音频
+            newType = 'audio';
+        } else if (document.indexOf(ext) !== -1) {
+            // 文档
+            newType = 'document';
+        } else if (video.indexOf(ext) !== -1) {
+            // 视频
+            newType = 'video';
+        } else if (image.indexOf(ext) !== -1) {
+            // 图片
+            newType = 'image';
+        } else {
+            // 其他
+            newType = 'other';
+        }
+        return newType;
+    }
+    /**
+     * fileReader预览图片返回img url
+     * @param file: Object, input file 对象
+     * @param callback: function 回调函数
+     * @param callback2: function 回调函数
+     */
+    public doubleNumber(num) {
+        return num < 10 ? '0' + num : num;
     }
     /**
      * fileReader预览图片返回img url
@@ -73,7 +117,7 @@ export class Util {
      */
     public fileReader(file, callback ?: Function) {
         let files = file.files[0];
-        if (!files.type && files.type !== '') {
+        if (!files.type || files.type === '') {
             return false;
         }
         if (!/image\/\w+/.test(files.type)) {
@@ -159,26 +203,25 @@ export class Util {
      */
     public sortByLetter(payload) {
         let letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-            'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+            'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '#'];
         let result = [];
-        let defaultResult = {
-            letter: '#',
-            data: []
-        };
         for (let item of letter) {
             result.push({
                 letter: item,
                 data: []
             });
         }
-        result.push({
-            letter: '#',
-            data: []
-        });
         for (let item of payload) {
             let flag = false;
             for (let re of result) {
-                let name = (item.nickName && item.nickName !== '') ? item.nickName : item.name;
+                let name;
+                if (item.memo_name && item.memo_name !== '') {
+                    name = item.memo_name;
+                } else if (item.nickName && item.nickName !== '') {
+                    name = item.nickName;
+                } else {
+                    name = item.name;
+                }
                 if (!name || name.length === 0) {
                     break;
                 }
@@ -190,10 +233,8 @@ export class Util {
                         break;
                     }
                 }else if (this.firstLetterIsChinese(name)) {
-                    let py = pinyin(firstLetter, {
-                        style: pinyin.STYLE_NORMAL
-                    });
-                    if (py[0][0].charAt(0).toUpperCase() === re.letter) {
+                    let py = pinyinUtil.getFirstLetter(name, false)[0];
+                    if (py && py.toUpperCase() === re.letter) {
                         re.data.push(item);
                         flag = true;
                         break;
@@ -214,24 +255,56 @@ export class Util {
      */
     public insertSortByLetter(arr, payload) {
         let name = (payload.nickName && payload.nickName !== '') ? payload.nickName : payload.name;
-        let firstLetter = name.charAt(0);
-        if (name.match(/^[a-zA-Z]/)) {
-            firstLetter = firstLetter.toUpperCase();
-        } else if (this.firstLetterIsChinese(name)) {
-            let py = pinyin(firstLetter, {
-                style: pinyin.STYLE_NORMAL
-            });
-            firstLetter = py[0][0].charAt(0).toUpperCase();
-        } else {
-            firstLetter = '#';
-        }
+        let firstLetter = this.getFirstLetter(name);
         for (let item of arr) {
             if (item.letter === firstLetter) {
-                item.data.push(payload);
+                let result = item.data.filter((friend) => {
+                    return friend.name === payload.name;
+                });
+                if (result.length === 0) {
+                    item.data.push(payload);
+                }
                 break;
             }
         }
         return arr;
+    }
+    /**
+     * 获取首字母
+     */
+    public getFirstLetter(name) {
+        let firstLetter = name.charAt(0);
+        if (name.match(/^[a-zA-Z]/)) {
+            firstLetter = firstLetter.toUpperCase();
+        } else if (this.firstLetterIsChinese(name)) {
+            let py = pinyinUtil.getFirstLetter(firstLetter, false)[0];
+            if (py) {
+                firstLetter = py.toUpperCase();
+            } else {
+                firstLetter = '#';
+            }
+        } else {
+            firstLetter = '#';
+        }
+        return firstLetter;
+    }
+    public getMembersFirstLetter(arr) {
+        for (let item of arr) {
+            if (item.nickName && item.nickName !== '') {
+                item.nickNameFirstLetter = this.getFirstLetter(item.nickName);
+            }
+            if (item.username && item.username !== '') {
+                item.usernameFirstLetter = this.getFirstLetter(item.username);
+            }
+            if (item.memo_name && item.memo_name !== '') {
+                item.memo_nameFirstLetter = this.getFirstLetter(item.memo_name);
+            }
+        }
+    }
+    public getMemo_nameFirstLetter(member) {
+        if (member.memo_name && member.memo_name !== '') {
+            member.memo_nameFirstLetter = this.getFirstLetter(member.memo_name);
+        }
     }
     /**
      * 将接收到的地理定位坐标转化为地图
@@ -245,7 +318,6 @@ export class Util {
         if (obj.scroll) {
             map.enableScrollWheelZoom(true);
         }
-        // map.disableDragging();
         let marker = new BMap.Marker(point);  // 创建标注
         map.addOverlay(marker);              // 将标注添加到地图中
         map.panTo(point);
@@ -301,6 +373,59 @@ export class Util {
             return true;
         }
         return false;
+    }
+    /**
+     * 获取当前光标的在页面中的位置
+     * @param input: dom obj 输入框的dom元素
+     * @return object 光标的位置
+     */
+    public getOffset(input) {
+        let userAgent = navigator.userAgent;
+        let sel = window.getSelection();
+        let range = sel.getRangeAt(0);
+        let offset;
+        let isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
+        if (!isSafari) {
+            offset = range.getBoundingClientRect();
+        } else {
+            let  clonedRange;
+            let  rect;
+            let shadowCaret;
+            clonedRange = range.cloneRange();
+            clonedRange.setStart(range.endContainer, range.endOffset - 1);
+            clonedRange.setEnd(range.endContainer, range.endOffset);
+            rect = clonedRange.getBoundingClientRect();
+            offset = {
+                height: rect.height,
+                left: rect.left + rect.width,
+                top: rect.top
+            };
+            clonedRange.detach();
+            if (input.innerHTML === '@') {
+                clonedRange = range.cloneRange();
+                shadowCaret = document.createTextNode('|');
+                clonedRange.insertNode(shadowCaret);
+                clonedRange.selectNode(shadowCaret);
+                rect = clonedRange.getBoundingClientRect();
+                offset = {
+                    height: rect.height,
+                    left: rect.left,
+                    top: rect.top
+                };
+                input.innerHTML = '@';
+                this.focusLast(input);
+                clonedRange.detach();
+            }
+        }
+        return offset;
+    }
+    /**
+     * 深度拷贝对象
+     * @param obj: object 需要拷贝的对象
+     * @return result 新的对象
+     */
+    public deepCopyObj(obj) {
+        return JSON.parse(JSON.stringify(obj));
     }
     /**
      * 生成JIM初始化的签名

@@ -9,9 +9,9 @@
                 <div>
                     <img (load)="avatarLoad($event)" [src]="item.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
                 </div>
-                <p class="flex-1">{{item.nickName.indexOf(searchResult.keywords) !== -1 ? item.nickName : (item.username ? item.username : item.name)}}</p>
-                <label class="search-member-label">
-                    <input spellcheck="false" #input *ngIf="searchResult.checkbox" (click)="changeCheckedAction(input, item)" [ngModel]="item.checked" [disabled]="item.disabled" type="checkbox">
+                <p class="flex-1 search-member-username" [title]="item.memo_name && item.memo_name.toLowerCase().indexOf(searchResult.keywords.toLowerCase()) !== -1 ? item.memo_name : (item.nickName && item.nickName.toLowerCase().indexOf(searchResult.keywords.toLowerCase()) !== -1 ? item.nickName : (item.username ? item.username : item.name))">{{item.memo_name && item.memo_name.indexOf(searchResult.keywords) !== -1 ? item.memo_name : (item.nickName && item.nickName.indexOf(searchResult.keywords) !== -1 ? item.nickName : (item.username ? item.username : item.name))}}</p>
+                <label class="search-member-label" *ngIf="searchResult.checkbox">
+                    <input spellcheck="false" (click)="changeCheckedAction(item)" [ngModel]="item.checked" [disabled]="item.disabled" type="checkbox">
                     <b></b>
                 </label>
             </li>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="60px" height="60px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>头像60px copy@1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-2" transform="translate(-249.000000, -10.000000)">
+            <g id="Group-4-Copy-6" transform="translate(249.000000, 10.000000)">
+                <rect id="Rectangle-4" fill="#2DD0CF" x="0" y="0" width="60" height="60"></rect>
+                <g id="Group-3" transform="translate(15.600000, 13.800000)">
+                    <path d="M18.7608,16.2 C17.454,16.9314 15.9366,17.3412 14.3004,17.3136 C12.837,17.289 11.4696,16.8906 10.2798,16.2102 C4.329,18.0306 0,23.565 0,30.1122 C0,30.762 0.0474,31.3998 0.1302,32.0268 L28.947,32.0268 C29.0286,31.3998 29.0754,30.762 29.0754,30.1122 C29.0754,23.5524 24.7302,18.0096 18.7608,16.2" id="Fill-1" fill="#ABECEC"></path>
+                    <circle id="Oval-2" fill="#FFFFFF" cx="14.4" cy="7.8" r="7.8"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

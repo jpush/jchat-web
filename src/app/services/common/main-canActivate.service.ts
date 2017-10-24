@@ -16,7 +16,7 @@ export class MainCanActivate implements CanActivate {
         private storageService: StorageService
     ) {}
     public canActivate(): boolean | Promise<boolean> {
-        // 如果是从登陆界面跳转过来的就直接return
+        // 如果是从登陆界面跳转过来的就直接return true
         if (window.location.href.match(/\/login$/g)) {
             return true;
         }
@@ -40,8 +40,8 @@ export class MainCanActivate implements CanActivate {
         global.JIM.init({
             appkey: authPayload.appKey,
             random_str: authPayload.randomStr,
-            signature,
-            timestamp,
+            signature: authPayload.signature || signature,
+            timestamp: authPayload.timestamp || timestamp,
             flag: authPayload.flag
         }).onSuccess((data) => {
             this.autoLogin(resolve);

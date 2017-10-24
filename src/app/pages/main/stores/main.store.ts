@@ -6,6 +6,7 @@ export interface MainStore {
             avatarUrl: string;
         },
         show: boolean;
+        loading: boolean;
     };
     listTab: number;
     createGroup: {
@@ -42,4 +43,6 @@ export interface MainStore {
             tip: string
         }
     };
+    contactUnreadNum: number;
+    friendList: Array<any>;
 }

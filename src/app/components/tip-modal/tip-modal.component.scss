@@ -1,7 +1,20 @@
-.paddingBottomNone{
-    padding-bottom: 0 !important;
-}
-.tip-modal-success, .tip-modal-error{
-    vertical-align: middle;
-    margin-right: 6px;
+.tip-modal{
+    z-index: 9999999;
+    .paddingBottomNone{
+        padding-bottom: 0 !important;
+    }
+    .tip-modal-success, .tip-modal-error{
+        vertical-align: middle;
+        margin-right: 6px;
+        position: relative;
+        top: -2px;
+    }
+    .modal-warn-tip{
+        line-height: 28px;
+        .sub-tip{
+            font-size: 14px;
+            color: #808080;
+            line-height: 22px;
+        }
+    }
 }

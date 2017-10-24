@@ -1,15 +1,15 @@
 {
-  "name": "ng2-jchat",
-  "version": "1.0.0",
+  "name": "jchat-web",
+  "version": "1.1.0",
   "description": "jchat",
   "main": "index.js",
-  "author": "xuwenqing <xuwenqing@jpush.cn>",
+  "author": "极光推送/JMesage",
   "repository": {
     "type": "git",
-    "url": "http://gitlab.jpushoa.com/xuwq/ng2-jchat.git"
+    "url": "https://github.com/jpush/jchat-web.git"
   },
   "bugs": {
-    "url": "http://gitlab.jpushoa.com/xuwq/ng2-jchat/issues"
+    "url": "https://github.com/jpush/jchat-web/issues"
   },
   "keywords": [
     "ng2",
@@ -92,12 +92,15 @@
     "@ngrx/core": "^1.2.0",
     "@ngrx/effects": "^2.0.3",
     "@ngrx/store": "^2.2.2",
+    "clipboard": "^1.7.1",
     "core-js": "^2.4.1",
     "downloadjs": "^1.4.7",
+    "jpush-ui": "^0.0.1",
     "libbase64": "^0.1.0",
-    "ngx-perfect-scrollbar": "^4.5.3",
+    "ngx-perfect-scrollbar": "4.5.3",
+    "push.js": "^1.0.4",
     "reflect-metadata": "^0.1.10",
-    "rxjs": "^5.2.0",
+    "rxjs": "5.4.3",
     "tslib": "^1.6.0",
     "zone.js": "^0.7.7"
   },

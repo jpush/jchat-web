@@ -17,7 +17,7 @@
         position: absolute;
         top: 0;
         right: 0;
-        background: url(../../../assets/images/search-user.png) center center no-repeat;
+        background: url(../../../assets/images/search-user.svg) center center no-repeat;
         background-size: 14px;
         cursor: pointer;
     }
@@ -29,7 +29,7 @@
         display: block;
         width: 12px;
         height: 12px;
-        background: url(../../../assets/images/search-user-delete.png) center center no-repeat;
+        background: url(../../../assets/images/search-user-delete.svg) center center no-repeat;
         background-size: 12px;
     }
     .search-member-no-serach-data{
@@ -71,6 +71,11 @@
                     margin: 10px 10px 0 10px;
                     overflow: hidden;
                 }
+                .search-member-username{
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
                 .search-member-label{
                     position: relative;
                     cursor: pointer;
@@ -84,15 +89,15 @@
                         width: 100%;
                         height: 100%;
                         display: block;
-                        background: #fff url(../../../assets/images/select-member-normal.png) center center no-repeat;
+                        background: #fff url(../../../assets/images/select-member-normal.svg) center center no-repeat;
                         background-size: 24px;
                         border-radius: 12px;
                     }
                     input:checked + b{
-                        background-image: url(../../../assets/images/select-member-active.png);
+                        background-image: url(../../../assets/images/select-member-active.svg);
                     }
                     input:disabled + b{
-                        background-image: url(../../../assets/images/has-select.png);
+                        background-image: url(../../../assets/images/has-select.svg);
                         cursor: default;
                     }
                 }

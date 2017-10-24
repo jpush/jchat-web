@@ -13,21 +13,27 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             break;
             // 成功获取个人信息
         case mainAction.showSelfInfo:
-            if (payload.show !== 'undefined') {
-                state.selfInfo.show = payload.show;
-            }
-            // 获取个人信息成功
+            // 获取个人信息成功或失败
             if (payload.info) {
                 state.selfInfo.info = Object.assign({}, state.selfInfo.info , payload.info);
             }
             if (payload.avatar) {
                 state.selfInfo.info.avatarUrl = payload.avatar.url;
             }
+            if (!payload.info && !payload.avatar && payload.show !== undefined) {
+                state.selfInfo.show = payload.show;
+            }
+            state.selfInfo.loading = payload.loading;
+            break;
+            // 更新自己的个人资料
+        case mainAction.updateSelfInfo:
+            state.selfInfo.loading = true;
             break;
             // 切换好友或者最近列表
         case mainAction.changeListTab:
             state.listTab = payload;
             break;
+            // 点击选择联系人中的用户
         case contactAction.selectContactItem:
             state.listTab = 0;
             break;
@@ -68,11 +74,11 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case mainAction.showModalTip:
 
         case mainAction.hideModalTip:
-
+            // 成功加入黑名单列表
         case mainAction.addBlackListSuccess:
-
+            // 退群成功
         case mainAction.exitGroupSuccess:
-
+            // 删除群成员成功
         case mainAction.deleteMemberSuccess:
             state.tipModal = payload;
             break;
@@ -86,6 +92,9 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
                 show: false,
                 info: ''
             };
+            break;
+            // 对方资料中发起聊天
+        case chatAction.createOtherChat:
             state.listTab = 0;
             break;
             // 清除单聊模态框的提示信息
@@ -98,7 +107,11 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             break;
             // 成功获取黑名单列表
         case mainAction.blackMenuSuccess:
-            state.blackMenu = payload;
+            if (payload.show !== null) {
+                state.blackMenu.show = payload.show;
+            }
+            filterBlackMenuMemoName(state, payload.menu);
+            state.blackMenu.menu = payload.menu;
             break;
             // 隐藏黑名单列表
         case mainAction.hideBlackMenu:
@@ -116,10 +129,30 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case mainAction.logoutKickShow:
             state.logoutKick = payload;
             break;
+            // 传递联系人和会话tab的未读数
+        case contactAction.dispatchContactUnreadNum:
+            state.contactUnreadNum = payload;
+            break;
+            // 传递好友列表
+        case chatAction.dispatchFriendList:
+            state.friendList = payload;
+            break;
         default:
     }
     return state;
 };
+// 为黑名单列表添加备注名
+function filterBlackMenuMemoName(state, payload) {
+    for (let black of payload) {
+        for (let friend of state.friendList) {
+            if (friend.username === black.username && friend.appkey === black.appkey &&
+                friend.memo_name && friend.memo_name !== '') {
+                black.memo_name = friend.memo_name;
+                break;
+            }
+        }
+    }
+}
 // 切换删除黑名单列表的loading状态
 function delSingleBlackLoading(state, payload, loadingValue) {
     for (let black of state.blackMenu.menu) {

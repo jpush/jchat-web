@@ -1,0 +1,37 @@
+<div class="modal-shadow unread-list">
+    <div class="modal-content">
+        <h2 class="modal-title">
+            消息查看列表
+            <span class="modal-close" (click)="closeModal()"></span>
+        </h2>
+        <div class="unread-list-main display-flex" [ngClass]="{'loading': unreadList.loading}">
+            <div class="unread-list-left flex-1">
+                <div class="unread-list-title">未读成员（{{unreadList.info.unread.length}}）</div>                
+                <perfect-scrollbar class="scroll">
+                    <div class="unread-list-item display-flex" (click)="watchOtherInfo(unread)" *ngFor="let unread of unreadList.info.unread">
+                        <div class="unread-list-avatar">
+                            <img [src]="unread.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                        </div>
+                        <div class="unread-list-name flex-1" [title]="unread.memo_name || unread.nickname || unread.username">
+                            {{unread.memo_name || unread.nickname || unread.username}}
+                        </div>
+                    </div>
+                </perfect-scrollbar>
+            </div>
+            <div class="unread-list-right flex-1">
+                <div class="unread-list-title">已读成员（{{unreadList.info.read.length}}）</div>
+                <perfect-scrollbar class="scroll">
+                    <div class="unread-list-item display-flex" (click)="watchOtherInfo(read)" *ngFor="let read of unreadList.info.read">
+                        <div class="unread-list-avatar">
+                            <img [src]="read.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                        </div>
+                        <div class="unread-list-name flex-1" [title]="read.memo_name || read.nickname || read.username">
+                            {{read.memo_name || read.nickname || read.username}}
+                        </div>
+                    </div>
+                </perfect-scrollbar>
+            </div>
+            
+        </div>
+    </div>
+</div>

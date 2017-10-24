@@ -20,4 +20,7 @@ export class HoverEventDirective implements OnInit {
     @HostListener('mouseleave') private onMouseleave() {
         this.hoverEvent.show = false;
     }
+    @HostListener('click') private onClick() {
+        this.hoverEvent.show = false;
+    }
 }

@@ -7,7 +7,7 @@
     right: 0;
     box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
     border-bottom-right-radius: 3px;
-    z-index: 2;
+    z-index: 4;
     -webkit-transform: translateX(101%);
             transform: translateX(101%);
     &.in{
@@ -22,6 +22,17 @@
         -webkit-transition: all 0.5s;
         transition: all 0.5s;
     }
+    &.loading:after{
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        display: block;
+        background: rgba(0, 0, 0, 0.3) url(../../../assets/images/app-loading.gif) center center no-repeat;
+        background-size: 30px;
+        content: '';
+    }
     .group-setting-close{
         position: absolute;
         top: 15px;
@@ -29,7 +40,7 @@
         cursor: pointer;
         width: 14px;
         height: 14px;
-        background: url(../../../assets/images/modal-close.png) center center no-repeat;
+        background: url(../../../assets/images/modal-close.svg) center center no-repeat;
         background-size: 14px;
     }
     .group-setting-header{
@@ -43,45 +54,81 @@
             color: #2C2C2C;
             margin-bottom: 10px;
         }
+        .group-avatar-info{
+            height: 60px;
+            .group-avatar{
+                width: 60px;
+                height: 60px;
+                margin-right: 6px;
+                position: relative;
+                display: block;
+                cursor: pointer;
+                overflow: hidden;         
+                &:hover:after{
+                    content: '';
+                    display: block;
+                    background: rgba(0, 0, 0, 0.6) url(../../../assets/images/camera.svg) center center no-repeat;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                }
+            }
+            .group-avatar-file{
+                display: none;
+            }
+            .group-setting-name{
+                line-height: 25px;
+                font-size: 14px;
+                .group-setting-name-text{
+                    white-space: nowrap;
+                    max-width: 150px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    cursor: pointer;
+                    margin-left: 5px;
+                    float: left;
+                    &:hover{
+                        color: #2dd0cf;
+                    }
+                }
+                .group-setting-name-input{
+                    width: 150px;
+                    height: 25px;
+                    border: 1px solid #E3E6EB;
+                    border-radius: 3px;
+                    padding-left: 5px;
+                    box-sizing: border-box;
+                    font-size: 14px;
+                }
+            }
+            .group-setting-desc{
+                line-height: 17px;
+                font-size: 12px;
+                color: #999;
+                margin-left: 5px;
+                .group-setting-desc-text{
+                    cursor: pointer;
+                    max-width: 170px;
+                    word-break: break-all;
+                    &:hover{
+                        color: #2dd0cf;
+                    }
+                }
+            }
+        }
         .group-setting-text{
             line-height: 34px;
             font-size: 12px;
             color: #2C2C2C;
             padding-right: 20px;
-            .group-setting-name-text{
-                white-space: nowrap;
-                max-width: 170px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                cursor: pointer;
-                &:hover{
-                    color: #2dd0cf;
-                }
-            }
-            .group-setting-name-input{
-                width: 170px;
-                height: 24px;
-                border: 1px solid #E3E6EB;
-                border-radius: 3px;
-                padding-left: 10px;
-                box-sizing: border-box;
-                margin-top: 5px;
-            }
             .group-setting-switch{
                 margin-top: 10px;
             }
-            .group-setting-dec{
-                cursor: pointer;
-                line-height: 20px;
-                margin: 7px 0;
-                max-width: 170px;
-                &:hover{
-                    color: #2dd0cf;
-                }
-            }
         }
         .group-setting-search{
-            margin: 20px 10px 0 0;
+            margin: 6px 20px 10px 0;
         }
     }
     .group-setting-list{
@@ -90,6 +137,7 @@
         bottom: 0;
         left: 0;
         right: 0;
+        top: 215px;
         .group-setting-add{
             line-height: 34px;
             height: 34px;
@@ -126,10 +174,15 @@
                         cursor: pointer;
                     }
                 }
+                .flex-1{
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
                 .group-setting-host{
                     width: 16px;
                     height: 12px;
-                    background: url(../../../assets/images/group-host.png) center center no-repeat;
+                    background: url(../../../assets/images/group-host.svg) center center no-repeat;
                     background-size: 16px;
                     margin: 19px 20px 0 0;
                     position: relative;

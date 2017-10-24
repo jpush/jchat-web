@@ -1,0 +1,103 @@
+.verify-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    h2{
+        font-size: 16px;
+        color: #2C2C2C;
+        font-weight: 900;
+        line-height: 40px;
+        margin-bottom: 10px;
+        padding-left: 18px;
+    }
+    .verify-no-data{
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        color: #808080;
+        font-size: 14px;
+        opacity: 0.4;
+    }
+    .verify-list{
+        min-height: 70px;        
+        padding: 15px 30px 15px 20px;
+        box-sizing: border-box;
+        &:hover{
+            background: #F2F6FB;
+        }
+        .verify-avatar{
+            width: 40px;
+            height: 40px;
+            margin-right: 9px;
+            cursor: pointer;
+            img{
+                max-height: 100%;
+                max-width: 100%;
+            }
+        }
+        .verify-text{
+            overflow: auto;
+            div{
+                line-height: 20px;
+                font-size: 14px;
+                color: #2C2C2C;
+            }
+            p{
+                font-size: 12px;
+                color: #999999;
+                line-height: 17px;
+                word-break: break-all;
+            }
+        }
+        .verify-username{
+            line-height: 40px;
+            font-size: 14px;
+            color: #2C2C2C;
+        }
+        .verify-operation{
+            width: 185px;
+            .verify-btn-group{
+                padding-top: 5px;
+                box-sizing: border-box;
+                position: relative;
+                div{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                }
+                button.loading:after{
+                    position: absolute;                    
+                    content: '';
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    display: block;
+                    background: rgba(0, 0, 0, 0.2) url(../../../assets/images/message-loading.gif) center center no-repeat;
+                    background-size: 20px;
+                }
+                .verify-btn-refuse{
+                    width: 70px;
+                    position: relative;
+                }
+                .verify-btn-agree{
+                    margin-left: 10px;
+                    margin-left: 15px;            
+                    width: 70px;
+                    position: relative;
+                }
+            }
+            p{
+                line-height: 40px;
+                font-size: 14px;
+                color: #999999;
+                text-align: right;
+            }
+        }
+    }
+}

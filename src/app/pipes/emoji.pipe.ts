@@ -7,14 +7,23 @@ import { Emoji } from '../services/tools';
     name: 'emoji'
 })
 export class EmojiPipe implements PipeTransform {
-  public transform(text, nbsp) {
+  public transform(text, option) {
     let newText = text.replace(/</g, '&lt;');
     newText = newText.replace(/>/g, '&gt;');
-    newText = newText.replace(/\n/g, '<br>');
-    if (nbsp) {
-      newText = newText.replace(/\s/g, '&nbsp;');
+    // 匹配url地址
+    if (option.href) {
+      let regUrl = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-|%|#|\+|:|;|\\|`|~|!|@|\$|\^|\*|\(|\)|<|>|？|{|}|\[|\]|[\u4e00-\u9fa5])+)/g;
+      newText = newText.replace(regUrl,
+              "<a href='$1$2' class='text-href' target='_blank'>$1$2</a>");
     }
-    newText = Emoji.emoji(newText);
+    newText = newText.replace(/\n/g, '<br>');
+    // 匹配nbsp
+    if (option.nbsp) {
+      newText = newText.replace(/\s/g, '&nbsp;');
+      newText = newText.replace(/<a.+href='(.+)'.+class='text-href'.+target='_blank'>(.+)<\/a>/g,
+              "<a href='$1' class='text-href' target='_blank'>$1</a>");
+    }
+    newText = Emoji.emoji(newText, option.fontSize);
     return newText;
   }
 }

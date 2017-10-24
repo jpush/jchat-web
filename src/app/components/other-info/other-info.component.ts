@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, DoCheck } from '@angular/core';
-
-const avatarErrorIcon = '../../../assets/images/single-avatar.png';
+import { Component, OnInit, Input, Output, EventEmitter,
+    OnChanges, DoCheck, HostListener, ElementRef } from '@angular/core';
+import { authPayload} from '../../services/common';
+const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'other-info-component',
@@ -8,55 +9,104 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.png';
     styleUrls: ['./other-info.component.scss']
 })
 
-export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
+export class OtherInfoComponent implements OnInit, OnChanges {
     @Input()
         private otherInfo;
+    @Input()
+        private changeOtherInfoFlag;
     @Output()
         private isShow: EventEmitter<any> = new EventEmitter();
     @Output()
-        private addBlackList: EventEmitter<any> = new EventEmitter();
+        private changeSingleBlack: EventEmitter<any> = new EventEmitter();
     @Output()
-        private alreadyBlack: EventEmitter<any> = new EventEmitter();
-    private addBlackHover = {
-        tip: '加入黑名单',
+        private sendCard: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private changeSingleNoDisturb: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private addFriend: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private saveMemoName: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private deleteFriend: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private verifyUserBtn: EventEmitter<any> = new EventEmitter();
+    private editRmark = {
+        tip: '修改备注名',
         position: {
             left: -28,
             top: 27
         },
         show: false
     };
-    constructor() {
+    private infoMenu = {
+        info: [
+            {
+                name: '发送名片',
+                key: 0,
+                isRight: false,
+                show: true
+            },
+            {
+                name: '消息免打扰',
+                key: 1,
+                isRight: false,
+                show: true
+            },
+            {
+                name: '加入黑名单',
+                key: 2,
+                isRight: false,
+                show: true
+            },
+            {
+                name: '删除好友',
+                key: 3,
+                isRight: false,
+                show: true
+            }
+        ],
+        show: false
+    };
+    private isEdit = false;
+    constructor(private elementRef: ElementRef) {
         // pass
     }
     public ngOnInit() {
         // pass
     }
     public ngOnChanges() {
-        switch (this.otherInfo.info.gender) {
-            case 0 :
-                this.otherInfo.info.gender = '保密';
-                break;
-            case 1 :
-                this.otherInfo.info.gender = '男';
-                break;
-            case 2:
-                this.otherInfo.info.gender = '女';
-                break;
-            default:
+        this.infoMenu.info[1].isRight = this.otherInfo.info.noDisturb ? true : false;
+        this.infoMenu.info[2].isRight = this.otherInfo.info.black ? true : false;
+        // switch (this.otherInfo.info.gender) {
+        //     case 0:
+        //         this.otherInfo.info.gender = '保密';
+        //         break;
+        //     case 1:
+        //         this.otherInfo.info.gender = '男';
+        //         break;
+        //     case 2:
+        //         this.otherInfo.info.gender = '女';
+        //         break;
+        //     default:
+        // }
+        if (this.otherInfo.info.infoType === 'watchOtherInfo' && !this.otherInfo.info.isFriend) {
+            this.infoMenu.info[3].show = false;
+        } else {
+            this.infoMenu.info[3].show = true;
         }
     }
-    public ngDoCheck() {
-        if (this.otherInfo.black && this.otherInfo.info) {
-            for (let item of this.otherInfo.black){
-                if (item.username === this.otherInfo.info.username) {
-                    this.otherInfo.info.black = 1;
-                    break;
-                }
-            }
-        }
+    private saveMemoNameAction(event) {
+        let value = event.target.value;
+        this.saveMemoName.emit({
+            name: this.otherInfo.info.name,
+            memo_name: value,
+            appkey: this.otherInfo.info.appkey
+        });
+        this.isEdit = false;
     }
     private stopPropagation(event) {
         event.stopPropagation();
+        this.infoMenu.show = false;
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;
@@ -65,11 +115,11 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
         let user = {
             avatar: this.otherInfo.info.avatar,
             avatarUrl: this.otherInfo.info.avatarUrl,
-            key: this.otherInfo.info.key || this.otherInfo.info.uid,
             mtime: this.otherInfo.info.mtime,
             name: this.otherInfo.info.username,
             nickName: this.otherInfo.info.nickname,
-            type: 3
+            type: 3,
+            appkey: this.otherInfo.info.appkey || authPayload.appKey
         };
         this.isShow.emit(user);
     }
@@ -78,11 +128,37 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
         this.isShow.emit(false);
     }
     private addBlack() {
-        if (this.otherInfo.info.black === 1) {
-            this.alreadyBlack.emit();
-        } else {
-            this.addBlackList.emit(this.otherInfo.info);
+        this.changeSingleBlack.emit(this.otherInfo.info);
+    }
+    private addFriendBtn() {
+        this.addFriend.emit(this.otherInfo.info);
+    }
+    private showMenu(event) {
+        event.stopPropagation();
+        this.infoMenu.show = !this.infoMenu.show;
+    }
+    private selectMenuItemEmit(item) {
+        switch (item.key) {
+            case 0:
+                this.sendCard.emit(this.otherInfo.info);
+                break;
+            case 1:
+                this.changeSingleNoDisturb.emit(this.otherInfo.info);
+                break;
+            case 2:
+                this.changeSingleBlack.emit(this.otherInfo.info);
+                break;
+            case 3:
+                this.deleteFriend.emit(this.otherInfo.info);
+                break;
+            default:
         }
+    }
+    private editBtn() {
+        this.isEdit = true;
+        setTimeout(() => {
+            this.elementRef.nativeElement.querySelector('#editMemoName').focus();
+        }, 0);
     }
     private avatarLoad(event) {
         if (event.target.naturalHeight > event.target.naturalWidth) {
@@ -92,5 +168,9 @@ export class OtherInfoComponent implements OnInit, OnChanges, DoCheck {
             event.target.style.height = '100%';
             event.target.style.width = 'auto';
         }
+    }
+    private verifyBtn(num) {
+        this.otherInfo.info.stateType = num;
+        this.verifyUserBtn.emit(this.otherInfo.info);
     }
 }

@@ -12,6 +12,9 @@ export class SanitizePipe implements PipeTransform {
     private sanitizer: DomSanitizer
   ) { }
   public transform(value: string, type: string) {
+    if (!value) {
+      return '';
+    }
     if (type === 'html') {
       return this.sanitizer.bypassSecurityTrustHtml(value);
     } else if (type === 'url') {

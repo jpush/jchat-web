@@ -2,7 +2,7 @@ export const mainAction = {
     getSelfInfo: '[main] get self info',
     showSelfInfo: '[main] show self info',
     updateSelfInfo: '[main] update self info',
-    updateSelfAvatar: '[main] update self avatar',
+    updateSelfInfoFlag: '[main] update self info flag',
     changeListTab: '[main] change list tab',
     logoutAction: '[main] logout action',
     createGroupShow: '[main] create group show',
@@ -34,7 +34,14 @@ export const mainAction = {
     deleteMemberSuccess: '[main] delete member success',
     createGroupSearchAction: '[main] create group search action',
     createGroupSearchComplete: '[main] create group search complete',
+    businessCardSearchComplete: '[main] business card search complete',
     login: '[main] login',
     logoutKickShow: '[main] logout kick show',
-    init: '[main] init'
+    init: '[main] init',
+    messageTransmitSearchComplete: '[main] message transmit search complete',
+    addSingleNoDisturbAction: '[main] add single no disturb action',
+    addSingleNoDisturbSuccess: '[main] add single no disturb success',
+    deleteFriend: '[main] delete friend',
+    deleteFriendSuccess: '[main] delete friend success',
+    dispatchSendSelfCard: '[main] dispatch send self card'
 };

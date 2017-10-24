@@ -8,7 +8,7 @@
     h2{
         font-size: 16px;
         color: #2C2C2C;
-        font-weight: 100;
+        font-weight: 900;
         line-height: 40px;
         margin-bottom: 10px;
         padding-left: 18px;        
@@ -54,8 +54,7 @@
            margin: 10px 10px 0 0;
            overflow: hidden;
            img{
-               max-width: 100%;
-               max-height: 100%;
+               width: 100%;
            }
        }
        &:hover{

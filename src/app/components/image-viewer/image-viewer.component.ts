@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter,
     HostListener, ElementRef } from '@angular/core';
+import { Store, Action } from '@ngrx/store';
+import { chatAction } from '../../pages/chat/actions';
 import * as download from 'downloadjs';
 @Component({
     selector: 'image-viewer-component',
@@ -10,8 +12,7 @@ import * as download from 'downloadjs';
 export class ImageViewerComponent implements OnInit {
     @Input()
         private imageViewer;
-    @Output()
-        private closeViewer: EventEmitter<any> = new EventEmitter();
+    private imageStream$;
     private ratio = 1;
     private ratioTip = '';
     private moveFlag = false;
@@ -30,8 +31,10 @@ export class ImageViewerComponent implements OnInit {
         y: 0
     };
     private imgHidden = false;
+    private index;
     constructor(
-        private elementRef: ElementRef
+        private elementRef: ElementRef,
+        private store$: Store<any>
     ) {
 
     }
@@ -47,9 +50,35 @@ export class ImageViewerComponent implements OnInit {
                 show: false
             };
         }
-        this.initImviewer();
+        this.initImgviewer();
+        this.imageStream$ = this.store$.select((state) => {
+            const chatState = state['chatReducer'];
+            this.stateChanged(chatState);
+            return state;
+        }).subscribe((state) => {
+            // pass
+        });
     }
-    private initImviewer() {
+    private stateChanged(chatState) {
+        switch (chatState.actionType) {
+            case chatAction.loadViewerImageSuccess:
+                this.addImageUrl(chatState.viewerImageUrl);
+                break;
+            default:
+        }
+    }
+    private addImageUrl(viewerImageUrl) {
+        for (let img of this.imageViewer.result) {
+            if (img.index === viewerImageUrl.index && img.src === viewerImageUrl.src) {
+                img.src = viewerImageUrl.src;
+                this.imageViewer.active = Object.assign({},
+                    this.imageViewer.result[this.index], {});
+                this.imageViewer.active.index = this.index;
+                break;
+            }
+        }
+    }
+    private initImgviewer() {
         const viewerWrap = this.elementRef.nativeElement.querySelector('#viewerWrap');
         let activeWidth = this.imageViewer.active.width;
         let activeHeight = this.imageViewer.active.height;
@@ -73,7 +102,7 @@ export class ImageViewerComponent implements OnInit {
         this.position.top = (offsetHeight - this.position.height) / 2;
     }
     @HostListener('window:resize', ['$event']) private onResize(event) {
-        this.initImviewer();
+        this.initImgviewer();
     }
     @HostListener('window:mousemove', ['$event']) private onMousemove(event) {
         if (this.moveFlag) {
@@ -132,17 +161,25 @@ export class ImageViewerComponent implements OnInit {
     private prev() {
         let activeIndex = this.imageViewer.active.index;
         let index = activeIndex > 0 ? activeIndex - 1 : activeIndex;
+        this.index = index;
         if (index !== activeIndex) {
-            // 为了解决相邻两张相同的base64图片不触发onload事件
-            if (this.imageViewer.active.src === this.imageViewer.result[index].src) {
-                this.imgHidden = false;
-            } else {
+            // 如果该图片的url尚未加载，则去请求url
+            if (!this.imageViewer.result[index].src) {
                 this.imgHidden = true;
+                this.store$.dispatch({
+                    type: chatAction.loadViewerImage,
+                    payload: this.imageViewer.result[index]
+                });
+            } else {
+                // 为了解决相邻两张相同的base64图片不触发onload事件
+                if (this.imageViewer.active.src === this.imageViewer.result[index].src) {
+                    this.imgHidden = false;
+                } else {
+                    this.imgHidden = true;
+                }
+                this.imageViewer.active = Object.assign({}, this.imageViewer.result[index], {});
+                this.imageViewer.active.index = index;
             }
-            this.imageViewer.active = Object.assign({}, this.imageViewer.result[index], {});
-            this.imageViewer.active.index = index;
-            this.initImviewer();
-            this.ratio = 1;
         } else {
             this.showTip('已经是第一张了');
         }
@@ -160,20 +197,24 @@ export class ImageViewerComponent implements OnInit {
             }
             this.imageViewer.active = Object.assign({}, this.imageViewer.result[index], {});
             this.imageViewer.active.index = index;
-            this.initImviewer();
-            this.ratio = 1;
         } else {
             this.showTip('已经是最后一张了');
         }
     }
-    private closeViewerAction() {
+    private closeViewerAction(event) {
         this.imageViewer.show = false;
+        event.stopPropagation();
     }
     private imgLoad() {
         this.imgHidden = false;
+        this.ratio = 1;
+        this.initImgviewer();
     }
     private download(url) {
         // 为了兼容火狐下a链接下载，引入downloadjs
         download(url);
+    }
+    private stopPropagation(event) {
+        event.stopPropagation();
     }
 }

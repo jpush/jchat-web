@@ -13,16 +13,16 @@
                 </div>
                 <perfect-scrollbar class="create-group-scroll">
                     <div *ngFor="let item of createGroup.list">
-                        <div class="create-group-letter" *ngIf="!item.allGroup && !item.allFilter && item.data.length > 0">{{item.letter}}</div>
-                        <div class="create-group-member" *ngIf="!item.allGroup && !item.allFilter && item.data.length > 0">
+                        <div class="create-group-letter" *ngIf="!item.allFilter && item.data.length > 0">{{item.letter}}</div>
+                        <div class="create-group-member" *ngIf="!item.allFilter && item.data.length > 0">
                             <div *ngFor="let user of item.data; let num = index" class="create-group-item">
-                                <div class="display-flex" *ngIf="user.show && user.type === 3">
+                                <div class="display-flex" *ngIf="user.show">
                                     <div class="create-group-avatar">
-                                        <img [src]="user.avatarUrl ? (user.avatarUrl | sanitize: 'url') : ''" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                        <img [src]="user.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                                     </div>
-                                    <div class="flex-1">{{user.nickName ? user.nickName : user.name}}</div>
+                                    <div class="flex-1 create-group-username">{{user.memo_name || user.nickName || user.name}}</div>
                                     <label class="create-group-select-label">
-                                        <input spellcheck="false" type="checkbox" (change)="selectItem($event,user)" [checked]="user.checked" [disabled]="user.disabled">
+                                        <input spellcheck="false" type="checkbox" (change)="selectItem($event, user)" [checked]="user.checked" [disabled]="user.disabled">
                                         <b></b>                                   
                                     </label>
                                 </div>
@@ -37,9 +37,9 @@
                     <div *ngFor="let user of selectList" class="create-group-item">
                         <div class="display-flex">
                             <div class="create-group-avatar">
-                                <img [src]="user.avatarUrl ? (user.avatarUrl | sanitize: 'url') : ''" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                <img [src]="user.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
                             </div>
-                            <div class="flex-1">{{user.nickName ? user.nickName : user.name}}</div>
+                            <div class="flex-1 create-group-username">{{user.memo_name || user.nickName || user.name}}</div>
                             <div class="create-group-cancel-select" *ngIf="!createGroup.info.activeSingle || (createGroup.info.activeSingle.key && user.key != createGroup.info.activeSingle.key)" (click)="cancelSelect(user)"></div>
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 <div class="search-user-container">
     <h1 class="float-left search-user-title">JCHAT</h1>
     <div (click)="stopPropagation($event)" [@flyIn]="inputAnimate" class="search-user-input-wrap float-right">
-        <input spellcheck="false" id="searchInput" [(ngModel)]="searchKeyword" spellcheck="false" class="search-user-input input-focus" type="text" placeholder="搜索">
+        <input spellcheck="false" id="searchInput" [(ngModel)]="searchKeyword" spellcheck="false" class="search-user-input input-focus" type="text" placeholder="搜索联系人、群组">
         <span (click)="clearInput()" *ngIf="searchUserResult.isSearch"></span>
         <p></p>
     </div>
@@ -13,11 +13,11 @@
             <span class="float-right" *ngIf="searchUserResult.result.singleArr.length > 4" (click)="singleShowAll()">{{singleShowText}}</span>
         </div>
         <ul class="search-user-single" *ngIf="searchUserResult.result.singleArr.length > 0" [ngStyle]="{'max-height': singleHeight}">
-            <li class="display-flex" *ngFor="let item of searchUserResult.result.singleArr" [title]="item.name.indexOf(searchKeyword) != -1 ? item.name: item.nickName" (click)="selectSearchItem(item)">
+            <li class="display-flex" *ngFor="let item of searchUserResult.result.singleArr" [title]="item.memo_name && item.memo_name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1 ? item.memo_name : (item.nickName && item.nickName.toLowerCase().indexOf(searchKeyword.toLowerCase()) != -1 ? item.nickName: item.name)" (click)="selectSearchItem(item)">
                 <div class="search-user-avatar-container">
                     <img (load)="avatarLoad($event)" [src]="item.avatarUrl | sanitize: 'url'" alt="" (error)="avatarErrorIcon($event)">
                 </div>
-                <span class="search-user-name flex-1">{{item.name.indexOf(searchKeyword) != -1 ? item.name: item.nickName}}</span>
+                <span class="search-user-name flex-1">{{item.memo_name && item.memo_name.toLowerCase().indexOf(searchKeyword.toLowerCase()) !== -1 ? item.memo_name : (item.nickName && item.nickName.toLowerCase().indexOf(searchKeyword.toLowerCase()) != -1 ? item.nickName: item.name)}}</span>
             </li>
         </ul>
         <div class="search-user-show" *ngIf="searchUserResult.result.groupArr.length > 0">
@@ -25,11 +25,11 @@
             <span class="float-right" *ngIf="searchUserResult.result.groupArr.length > 4" (click)="groupShowAll()">{{groupShowText}}</span>
         </div>
         <ul class="search-user-group" *ngIf="searchUserResult.result.groupArr.length > 0" [ngStyle]="{'max-height': groupHeight}">
-            <li class="display-flex" *ngFor="let item of searchUserResult.result.groupArr" [title]="item.name.indexOf(searchKeyword) != -1 ? item.name: item.nickName" (click)="selectSearchItem(item)">
+            <li class="display-flex" *ngFor="let item of searchUserResult.result.groupArr" [title]="item.name" (click)="selectSearchItem(item)">
                 <div class="search-user-avatar-container">
-                    <img (load)="avatarLoad($event)" src="../../../assets/images/group-avatar.png" alt="">
+                    <img (load)="avatarLoad($event)" (error)="groupAvatarErrorIcon($event)" [src]="item.avatarUrl | sanitize: 'url'" alt="">
                 </div>
-                <span class="search-user-name flex-1">{{item.name.indexOf(searchKeyword) != -1 ? item.name: item.nickName}}</span>
+                <span class="search-user-name flex-1">{{item.name}}</span>
             </li>
         </ul>
     </perfect-scrollbar>

@@ -1,0 +1,68 @@
+.unread-list{
+    .modal-content{
+        height: 490px;
+        width: 640px;
+    }
+    .unread-list-main{
+        width: 598px;
+        height: 400px;
+        border: 1px solid #D9DEE4;
+        border-top: none;
+        &.loading:after{
+            content: '';
+            display: block;
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -15px 0 0 -15px;
+            background: url(../../../assets/images/app-loading.gif) center center no-repeat;
+            background-size: 30px;
+        }
+        .unread-list-left{
+            border-right: 1px solid #D9DEE4;
+            position: relative;
+
+        }
+        .unread-list-right{
+            position: relative;
+        }
+        .unread-list-title{
+            font-size: 14px;
+            color: #808080;
+            line-height: 47px;
+            height: 47px;
+            padding-left: 20px;
+            box-sizing: border-box;
+        }
+        .scroll{
+            position: absolute;
+            top: 47px;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+        .unread-list-item{
+            height: 50px;
+            line-height: 50px;
+            cursor: pointer;
+            &:hover{
+                background-color: #F2F6FB;
+            }
+            .unread-list-avatar{
+                width: 30px;
+                height: 30px;
+                margin: 10px 10px 0 20px;
+                overflow: hidden;
+            }
+            .unread-list-name{
+                font-size: 14px;
+                color: #2C2C2C;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}

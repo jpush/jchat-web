@@ -21,7 +21,7 @@ export class MainEffect {
         .ofType(mainAction.getSelfInfo)
         .map(toPayload)
         .switchMap((info) => {
-            let usrInfoObj = global.JIM.getUserInfo({
+            const usrInfoObj = global.JIM.getUserInfo({
                 username: global.user
             }).onSuccess((data) => {
                 if (!data.user_info.avatar || data.user_info.avatar === '') {
@@ -30,7 +30,8 @@ export class MainEffect {
                         type: mainAction.showSelfInfo,
                         payload: {
                             info: data.user_info,
-                            show: false
+                            show: false,
+                            loading: false
                         }
                     });
                     return;
@@ -42,7 +43,8 @@ export class MainEffect {
                         type: mainAction.showSelfInfo,
                         payload: {
                             info: data.user_info,
-                            show: false
+                            show: false,
+                            loading: false
                         }
                     });
                 }).onFail((error) => {
@@ -51,7 +53,8 @@ export class MainEffect {
                         type: mainAction.showSelfInfo,
                         payload: {
                             info: data.user_info,
-                            show: false
+                            show: false,
+                            loading: false
                         }
                     });
                 });
@@ -78,7 +81,7 @@ export class MainEffect {
         .ofType(mainAction.logoutAction)
         .map(toPayload)
         .switchMap(() => {
-            let loginOutObj = global.JIM.loginOut();
+            const loginOutObj = global.JIM.loginOut();
             return Observable.of(loginOutObj)
                     .map(() => {
                         this.router.navigate(['/login']);
@@ -90,22 +93,49 @@ export class MainEffect {
     private updateSelfInfo$: Observable<Action> = this.actions$
         .ofType(mainAction.updateSelfInfo)
         .map(toPayload)
-        .switchMap((info) => {
-            let updateSelfInfo = global.JIM.updateSelfInfo(info)
+        .switchMap((self) => {
+            const updateSelfInfo = global.JIM.updateSelfInfo(self.info)
                 .onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: mainAction.showSelfInfo,
-                        payload: {
-                            info,
-                            show: true
-                        }
-                    });
+                    if (self.avatar && self.avatar.url) {
+                        this.updateSelfAvatar(self);
+                    } else {
+                        this.store$.dispatch({
+                            type: mainAction.showSelfInfo,
+                            payload: {
+                                info: self.info,
+                                loading: false
+                            }
+                        });
+                        this.store$.dispatch({
+                            type: mainAction.updateSelfInfoFlag
+                        });
+                    }
                 }).onFail((error) => {
+                    if (self.avatar && self.avatar.url) {
+                        this.updateSelfAvatar(self);
+                    } else {
+                        this.store$.dispatch({
+                            type: mainAction.showSelfInfo,
+                            payload: {
+                                loading: false
+                            }
+                        });
+                    }
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }).onTimeout((data) => {
+                    if (self.avatar && self.avatar.url) {
+                        this.updateSelfAvatar(self);
+                    } else {
+                        this.store$.dispatch({
+                            type: mainAction.showSelfInfo,
+                            payload: {
+                                loading: false
+                            }
+                        });
+                    }
                     const error = {code: 910000};
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
@@ -117,45 +147,13 @@ export class MainEffect {
                         return {type: '[main] update self info useless'};
                     });
         });
-    // 更新个人头像信息
-    @Effect()
-    private updateSelfAvatar$: Observable<Action> = this.actions$
-        .ofType(mainAction.updateSelfAvatar)
-        .map(toPayload)
-        .switchMap((avatar) => {
-            let updateSelfAvatar = global.JIM.updateSelfAvatar({avatar: avatar.formData})
-                .onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: mainAction.showSelfInfo,
-                        payload: {
-                            avatar,
-                            show: true
-                        }
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
-            return Observable.of(updateSelfAvatar)
-                    .map(() => {
-                        return {type: '[main] update self info useless'};
-                    });
-        });
     // 创建群聊
     @Effect()
     private createGroup$: Observable<Action> = this.actions$
         .ofType(mainAction.createGroup)
         .map(toPayload)
         .switchMap((groupInfo) => {
-            let createGroupObj = global.JIM.createGroup({
+            const createGroupObj = global.JIM.createGroup({
                 group_name:  groupInfo.groupName,
                 group_description: groupInfo.groupDescription
             }).onSuccess((data) => {
@@ -212,7 +210,7 @@ export class MainEffect {
         .ofType(mainAction.addGroupMember)
         .map(toPayload)
         .switchMap((info) => {
-            let addGroupMemberObj = global.JIM.addGroupMembers({
+            const addGroupMemberObj = global.JIM.addGroupMembers({
                 gid: info.activeGroup.key,
                 member_usernames: info.memberUsernames
             }).onSuccess((data) => {
@@ -243,7 +241,7 @@ export class MainEffect {
         .ofType(mainAction.modifyPassword)
         .map(toPayload)
         .switchMap((passwordInfo) => {
-            let passwordInfoObj = global.JIM.updateSelfPwd({
+            const passwordInfoObj = global.JIM.updateSelfPwd({
                 old_pwd: md5(passwordInfo.old_pwd),
                 new_pwd: md5(passwordInfo.new_pwd),
                 is_md5: true
@@ -286,18 +284,18 @@ export class MainEffect {
                         return {type: '[main] modify password useless'};
                     });
     });
-    // 创建单聊
+    // 创建单聊/添加好友
     @Effect()
     private createSingleChatAction$: Observable<Action> = this.actions$
         .ofType(mainAction.createSingleChatAction)
         .map(toPayload)
-        .switchMap((singleName) => {
-            let createSingleChatObj = global.JIM.getUserInfo({username: singleName})
+        .switchMap((info) => {
+            const createSingleChatObj = global.JIM.getUserInfo({username: info.singleName})
             .onSuccess((data) => {
                 let user = data.user_info;
                 let item = {
                     avatar: user.avatar,
-                    key: user.key || user.uid,
+                    // key: user.key || user.uid,
                     mtime: user.mtime,
                     name: user.username,
                     nickName: user.nickname,
@@ -307,9 +305,10 @@ export class MainEffect {
                     signature: user.signature,
                     gender: user.gender,
                     region: user.region,
-                    avatarUrl: ''
+                    avatarUrl: '',
+                    infoType: info.type
                 };
-                if (item.avatar) {
+                if (item.avatar !== '') {
                     global.JIM.getResource({media_id: data.user_info.avatar})
                     .onSuccess((urlInfo) => {
                         item.avatarUrl = urlInfo.url;
@@ -352,51 +351,40 @@ export class MainEffect {
                         return {type: '[main] create single chat action useless'};
                     });
     });
-    // 创建群聊搜索联系人
+    // 创建群聊搜索联系人或者转发消息搜索联系人
     @Effect()
     private createGroupSearchAction$: Observable<Action> = this.actions$
         .ofType(mainAction.createGroupSearchAction)
         .map(toPayload)
-        .switchMap((keywords) => {
-            let createGroupSearchObj = global.JIM.getUserInfo({
-                username: keywords
+        .switchMap((info) => {
+            const createGroupSearchObj = global.JIM.getUserInfo({
+                username: info.keywords
             }).onSuccess((data) => {
                 let user = data.user_info;
                 let item = {
                     avatar: '',
                     avatarUrl: '',
-                    key: user.key || user.uid,
                     mtime: user.mtime,
                     name: user.username,
+                    username: user.username,
                     nickName: user.nickname,
-                    type: 3
+                    type: 3,
+                    appkey: user.appkey
                 };
                 if (user.avatar !== '') {
                     global.JIM.getResource({media_id: user.avatar})
                     .onSuccess((urlInfo) => {
                         item.avatarUrl = urlInfo.url;
-                        this.store$.dispatch({
-                            type: mainAction.createGroupSearchComplete,
-                            payload: item
-                        });
+                        this.searUserType(info, item);
                     }).onFail((error) => {
-                        this.store$.dispatch({
-                            type: mainAction.createGroupSearchComplete,
-                            payload: item
-                        });
+                        this.searUserType(info, item);
                     });
                 } else {
-                    this.store$.dispatch({
-                        type: mainAction.createGroupSearchComplete,
-                        payload: item
-                    });
+                    this.searUserType(info, item);
                 }
             }).onFail((error) => {
                 if (error.code === 882002) {
-                    this.store$.dispatch({
-                        type: mainAction.createGroupSearchComplete,
-                        payload: null
-                    });
+                    this.searUserType(info, null);
                 } else {
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
@@ -420,14 +408,14 @@ export class MainEffect {
     private blackMenuShow$: Observable<Action> = this.actions$
         .ofType(mainAction.blackMenu)
         .map(toPayload)
-        .switchMap(() => {
-            let blackMenuObj = global.JIM.getBlacks()
+        .switchMap((isShow) => {
+            const blackMenuObj = global.JIM.getBlacks()
             .onSuccess((data) => {
                 if (data.black_list.length === 0) {
                     this.store$.dispatch({
                         type: mainAction.blackMenuSuccess,
                         payload: {
-                            show: true,
+                            show: isShow.show,
                             menu: data.black_list
                         }
                     });
@@ -440,7 +428,7 @@ export class MainEffect {
                         this.store$.dispatch({
                             type: mainAction.blackMenuSuccess,
                             payload: {
-                                show: true,
+                                show: isShow.show,
                                 menu: data.black_list
                             }
                         });
@@ -448,7 +436,7 @@ export class MainEffect {
                         this.store$.dispatch({
                             type: mainAction.blackMenuSuccess,
                             payload: {
-                                show: true,
+                                show: isShow.show,
                                 menu: data.black_list
                             }
                         });
@@ -477,7 +465,7 @@ export class MainEffect {
         .ofType(mainAction.delSingleBlack)
         .map(toPayload)
         .switchMap((user) => {
-            let delSingleBlackObj = global.JIM.delSingleBlacks({
+            const delSingleBlackObj = global.JIM.delSingleBlacks({
                 member_usernames: [{
                     username: user.username,
                     appkey: authPayload.appKey
@@ -510,12 +498,24 @@ export class MainEffect {
         .ofType(mainAction.addBlackListAction)
         .map(toPayload)
         .switchMap((active) => {
-            let addBlackListObj = global.JIM.addSingleBlacks({
+            const addBlackListObj = global.JIM.addSingleBlacks({
                 member_usernames: [{
                     username: active.name || active.username,
                     appkey: authPayload.appKey
                 }]
             }).onSuccess((data) => {
+                this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '加入黑名单',
+                            tip: '加入黑名单成功',
+                            actionType: '[main] add single black useless',
+                            success: 1
+                        }
+                    }
+                });
                 this.store$.dispatch({
                     type: mainAction.addBlackListSuccess,
                     payload: {
@@ -559,7 +559,7 @@ export class MainEffect {
             }
         })
         .switchMap((gid) => {
-            let exitGroupObj = global.JIM.exitGroup({gid})
+            const exitGroupObj = global.JIM.exitGroup({gid})
             .onSuccess((data) => {
                 this.store$.dispatch({
                     type: mainAction.exitGroupSuccess,
@@ -599,7 +599,7 @@ export class MainEffect {
         .ofType(mainAction.deleteMemberAction)
         .map(toPayload)
         .switchMap((info) => {
-            let deleteMember = global.JIM.delGroupMembers({
+            const deleteMember = global.JIM.delGroupMembers({
                 gid: info.group.key,
                 member_usernames: [
                     {username: info.deleteItem.username}
@@ -644,11 +644,11 @@ export class MainEffect {
         .switchMap((val) => {
             const timestamp = new Date().getTime();
             const signature = util.createSignature(timestamp);
-            let loginObj = global.JIM.init({
+            const loginObj = global.JIM.init({
                 appkey: authPayload.appKey,
                 random_str: authPayload.randomStr,
-                signature,
-                timestamp,
+                signature: authPayload.signature || signature,
+                timestamp: authPayload.timestamp || timestamp,
                 flag: authPayload.flag
             }).onSuccess((data) => {
                 global.JIM.login({
@@ -683,9 +683,165 @@ export class MainEffect {
                         return {type: '[main] login useless'};
                     });
     });
+    // 用户资料中删除免打扰
+    @Effect()
+    private addSingleNoDisturbAction$: Observable<Action> = this.actions$
+        .ofType(mainAction.addSingleNoDisturbAction)
+        .map(toPayload)
+        .switchMap((user) => {
+            const loginObj = global.JIM.addSingleNoDisturb({
+                    target_name: user.name
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: true,
+                            info: {
+                                title: '添加消息免打扰',
+                                tip: '添加消息免打扰成功',
+                                actionType: '[main] add single no disturb action useless',
+                                success: 1
+                            }
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.addSingleNoDisturbSuccess,
+                        payload: user
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.hideModalTip,
+                        payload: {
+                            show: false,
+                            info: {}
+                        }
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.hideModalTip,
+                        payload: {
+                            show: false,
+                            info: {}
+                        }
+                    });
+                });
+            return Observable.of(loginObj)
+                    .map(() => {
+                        return {type: '[main] add single no disturb action useless'};
+                    });
+    });
+    // 删除好友
+    @Effect()
+    private deleteFriend$: Observable<Action> = this.actions$
+        .ofType(mainAction.deleteFriend)
+        .map(toPayload)
+        .switchMap((user) => {
+            const deleteFriend = global.JIM.delFriend({
+                    target_name: user.name
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: true,
+                            info: {
+                                title: '删除好友',
+                                tip: '删除好友成功',
+                                actionType: '[main] delete friend success useless',
+                                success: 1
+                            }
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.deleteFriendSuccess,
+                        payload: user
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(deleteFriend)
+                    .map(() => {
+                        return {type: '[main] delete friend useless'};
+                    });
+    });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,
         private router: Router
     ) {}
+    private searUserType (info, item) {
+        if (info.type === 'transmit') {
+            this.store$.dispatch({
+                type: mainAction.messageTransmitSearchComplete,
+                payload: item
+            });
+        } else if (info.type === 'createGroup') {
+            this.store$.dispatch({
+                type: mainAction.createGroupSearchComplete,
+                payload: item
+            });
+        } else if (info.type === 'businessCard') {
+            this.store$.dispatch({
+                type: mainAction.businessCardSearchComplete,
+                payload: item
+            });
+        }
+    }
+    // 更新个人头像
+    private updateSelfAvatar(self) {
+        global.JIM.updateSelfAvatar({avatar: self.avatar.formData})
+        .onSuccess((data) => {
+            this.store$.dispatch({
+                type: mainAction.showSelfInfo,
+                payload: {
+                    avatar: self.avatar,
+                    info: self.info,
+                    loading: false
+                }
+            });
+            this.store$.dispatch({
+                type: mainAction.updateSelfInfoFlag
+            });
+        }).onFail((error) => {
+            this.store$.dispatch({
+                type: mainAction.showSelfInfo,
+                payload: {
+                    loading: false
+                }
+            });
+            this.store$.dispatch({
+                type: appAction.errorApiTip,
+                payload: error
+            });
+        }).onTimeout((data) => {
+            this.store$.dispatch({
+                type: mainAction.showSelfInfo,
+                payload: {
+                    loading: false
+                }
+            });
+            const error = {code: 910000};
+            this.store$.dispatch({
+                type: appAction.errorApiTip,
+                payload: error
+            });
+        });
+    }
 }

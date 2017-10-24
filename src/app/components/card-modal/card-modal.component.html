@@ -1,0 +1,52 @@
+<div class="modal-shadow" (click)="hideSearch()">
+    <div class="modal-content card-modal-container">
+        <h2 class="modal-title">
+            <span>发送名片</span>
+            <span class="modal-close" (click)="cancelBusinessCard()"></span>
+        </h2>
+        <div class="card-modal-main">
+            <div class="card-modal-list">
+                <div class="card-modal-search">
+                    <search-card-component [searchResult]="searchResult" (searchKeyup)="searchKeyupEmit($event)" (clearInput)="clearInputEmit()" (searchBtn)="searchBtnEmit($event)" (changeChecked)="changeCheckedEmit($event)"></search-card-component>
+                </div>
+                <perfect-scrollbar class="card-modal-scroll">
+                    <div *ngFor="let item of businessCard.info">
+                        <div class="card-modal-letter" *ngIf="item.data.length > 0">{{item.letter}}</div>
+                        <div class="card-modal-member" *ngIf="item.data.length > 0">
+                            <div *ngFor="let user of item.data; let num = index" class="card-modal-item">
+                                <div class="display-flex">
+                                    <div class="card-modal-avatar">
+                                        <img [src]="user.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                    </div>
+                                    <div class="flex-1">{{user.memo_name || user.nickName || user.name}}</div>
+                                    <label class="card-modal-select-label">
+                                        <input spellcheck="false" type="checkbox" (change)="selectItem(user)" [checked]="user.checked" [disabled]="user.disabled">
+                                        <b></b>                                   
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </perfect-scrollbar>
+            </div>
+            <div class="card-modal-select">
+                <p class="card-modal-select-title">已选成员</p>
+                <perfect-scrollbar class="card-modal-scroll-select">
+                    <div *ngIf="selectList" class="card-modal-item">
+                        <div class="display-flex">
+                            <div class="card-modal-avatar">
+                                <img [src]="selectList.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                            </div>
+                            <div class="flex-1">{{selectList.memo_name || selectList.nickName || selectList.name}}</div>
+                            <div class="card-modal-cancel-select" (click)="cancelSelect()"></div>
+                        </div>
+                    </div>
+                </perfect-scrollbar>
+            </div>
+        </div>
+        <p class="modal-btn modal-input card-modal-name">
+            <button type="button" (click)="confirmBusinessCard()" class="btn-confirm btn-active float-right">确定</button>                     
+            <button type="button" (click)="cancelBusinessCard()" class="btn-cancel btn-white float-right">取消</button>         
+        </p>
+    </div>
+</div>
