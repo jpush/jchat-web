@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 /**
- * 将毫秒数转化固定的日期格式，为了解决angular2原生的date管道在IE11下的兼容问题
+ * 格式化长度过长的文件名（保留后缀名）
  */
 @Pipe({
     name: 'fileName'

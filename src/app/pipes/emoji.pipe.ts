@@ -12,16 +12,28 @@ export class EmojiPipe implements PipeTransform {
     newText = newText.replace(/>/g, '&gt;');
     // 匹配url地址
     if (option.href) {
-      let regUrl = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-|%|#|\+|:|;|\\|`|~|!|@|\$|\^|\*|\(|\)|<|>|？|{|}|\[|\]|[\u4e00-\u9fa5])+)/g;
-      newText = newText.replace(regUrl,
-              "<a href='$1$2' class='text-href' target='_blank'>$1$2</a>");
+      let regUrl = /((http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-|%|#|\+|:|;|\\|`|~|!|@|\$|\^|\*|\(|\)|<|>|？|{|}|\[|\]|[\u4e00-\u9fa5])+)){1}/g;
+      let arr = newText.match(regUrl);
+      if (arr && arr.length > 0) {
+        for (let item of arr) {
+          newText = newText.replace(item,
+            `<a href='${item}' class='text-href' target='_blank'>${item}</a>`);
+        }
+      }
     }
     newText = newText.replace(/\n/g, '<br>');
     // 匹配nbsp
     if (option.nbsp) {
       newText = newText.replace(/\s/g, '&nbsp;');
-      newText = newText.replace(/<a.+href='(.+)'.+class='text-href'.+target='_blank'>(.+)<\/a>/g,
-              "<a href='$1' class='text-href' target='_blank'>$1</a>");
+      let reg = /<a.+?href='(.+?)'.+?class='text-href'.+?target='_blank'>(.+?)<\/a>/g;
+      let arr = newText.match(reg);
+      if (arr && arr.length > 0) {
+        for (let item of arr) {
+          item.match(reg);
+          newText = newText.replace(item,
+            `<a href='${RegExp.$1}' class='text-href' target='_blank'>${RegExp.$1}</a>`);
+        }
+      }
     }
     newText = Emoji.emoji(newText, option.fontSize);
     return newText;
