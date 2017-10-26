@@ -976,7 +976,14 @@ function updateGroupInfoEventSuccess(state, payload) {
             }
             list.msgs.push(msg);
             if (list.groupSetting && list.groupSetting.groupInfo) {
+                let name;
+                if (payload.groupInfo.name || payload.groupInfo.name === '') {
+                    name = list.groupSetting.groupInfo.name;
+                }
                 list.groupSetting.groupInfo = payload.groupInfo;
+                if (name) {
+                    list.groupSetting.groupInfo.name = name;
+                }
             }
             break;
         }

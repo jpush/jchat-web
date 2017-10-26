@@ -145,7 +145,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     };
     private isMySelf = false;
     private noLoadedMessage = [];
-    // private asyncConversationCount = 0;
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -198,7 +197,11 @@ export class ChatComponent implements OnInit, OnDestroy {
         // 监听在线事件消息
         global.JIM.onEventNotification((data) => {
             data.isOffline = false;
-            this.asyncEvent(data);
+            if (!this.isLoaded) {
+                this.eventArr.push(data);
+            } else {
+                this.asyncEvent(data);
+            }
         });
         // 监听离线事件消息
         global.JIM.onSyncEvent((data) => {
@@ -224,15 +227,13 @@ export class ChatComponent implements OnInit, OnDestroy {
         // 离线业务消息监听，加载完会话数据之后才执行
         this.isLoaded$.subscribe((isLoaded) => {
             if (isLoaded) {
+                for (let message of this.noLoadedMessage) {
+                    this.receiveNewMessage(message);
+                }
                 for (let item of this.eventArr) {
                     item.isOffline = true;
                     this.asyncEvent(item);
                 }
-                this.eventArr = [];
-                for (let message of this.noLoadedMessage) {
-                    this.receiveNewMessage(message);
-                }
-                this.noLoadedMessage = [];
             }
         });
         // 离线消息同步监听
@@ -2272,5 +2273,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             },
             loading: false
         };
+        this.isMySelf = false;
+        this.noLoadedMessage = [];
     }
 }
