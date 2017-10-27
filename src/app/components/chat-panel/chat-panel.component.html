@@ -243,10 +243,11 @@
                                 </div>
                             </div>
                             <!-- 表情 -->
-                            <div *ngIf="i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon'" class="float-right">
+                            <div *ngIf="i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon'" class="float-right chat-panel-jpush-emoji">
                                 <div class="float-left" style="width: 140px;height: 140px;" [ngClass]="{'!img-loading': i.content.msg_body.loading}">
                                     <img (load)="imgLoaded(i)" class="chat-panel-message-jpush" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
+                                <div *ngIf="i.success === 3" class="chat-panel-send-error" (click)="repeatSendPicAction(i)"></div>
                             </div>
                             <div *ngIf="i.success !== 1 && i.success !== 3" class="chat-panel-more chat-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
                                 <div class="chat-panel-operation" (click)="showMeMoreOther($event, i, meImage)"></div>

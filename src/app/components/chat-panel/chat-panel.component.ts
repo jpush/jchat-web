@@ -62,8 +62,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         private msgTransmit: EventEmitter<any> = new EventEmitter();
     @Output()
         private businessCardSend: EventEmitter<any> = new EventEmitter();
-    // @Output()
-    //     private msgFile: EventEmitter<any> = new EventEmitter();
     private global = global;
     private change;
     private flag = false;
@@ -1348,5 +1346,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
      }
      private businessCardSendEmit(user) {
         this.businessCardSend.emit(user);
+     }
+     private jpushEmojiSelectEmit(jpushEmoji) {
+        console.log(jpushEmoji);
+        this.sendPic.emit({
+            jpushEmoji,
+            type: 'jpushEmoji'
+        });
      }
 }

@@ -314,6 +314,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private stateChanged(chatState, mainState) {
         let activeIndex = chatState.activePerson.activeIndex;
         let messageListActive = chatState.messageList[activeIndex];
+        console.log('chatState', chatState);
         switch (chatState.actionType) {
             case chatAction.init:
                 this.init();
@@ -779,6 +780,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     }
                 }
             });
+            this.transmitItem.totalTransmitNum = 0;
         }
     }
     // 事件消息
@@ -972,18 +974,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                     }
                 }
                 break;
-            // case 200:
-            //     // 清空未读数的同步事件
-            //     if (!data.isOffline) {
-            //         if (data.description && data.description.username) {
-            //             data.description.name = data.description.username;
-            //         }
-            //         this.store$.dispatch({
-            //             type: chatAction.emptyUnreadNumSyncEvent,
-            //             payload: data.description
-            //         });
-            //     }
-            //     break;
             default:
         }
     }
@@ -1356,7 +1346,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                         name: this.active.name,
                         type: 3
                     },
-                    key: this.active.key
+                    key: this.active.key,
+                    sendType: 'repeatSend'
                 }
             });
             return ;
@@ -1369,7 +1360,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                         key: this.active.key,
                         type: 4
                     },
-                    key: this.active.key
+                    key: this.active.key,
+                    sendType: 'repeatSend'
                 }
             });
             return ;
@@ -1400,7 +1392,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         if (data.type === 'paste') {
             this.sendPicContent(msgs, data.info, data.img);
         // 正常发送图片
-        } else {
+        } else if (data.type === 'send') {
             this.util.imgReader(file, () => {
                 this.store$.dispatch({
                     type: mainAction.showModalTip,
@@ -1416,6 +1408,41 @@ export class ChatComponent implements OnInit, OnDestroy {
                 });
             }, (value) => {
                 this.sendPicContent(msgs, value, data.img);
+            });
+            // 发送极光熊表情
+        } else if (data.type === 'jpushEmoji') {
+            let msg = {
+                content: {
+                    from_id: global.user,
+                    create_time: new Date().getTime(),
+                    msg_type: 'image',
+                    msg_body: data.jpushEmoji.body,
+                    target_id: this.active.name
+                },
+                ctime_ms: new Date().getTime(),
+                success: 1,
+                msgKey: this.msgKey ++,
+                unread_count: 0,
+                hasLoad: false,
+                showMoreIcon: false,
+                conversation_time_show: 'today',
+                isTransmitMsg: true
+            };
+            let message = {
+                select: this.active,
+                msgs: msg,
+                key: this.active.key,
+                sendType: 'jpushEmoji'
+            };
+            let type;
+            if (this.active.type === 3) {
+                type = chatAction.transmitSinglePic;
+            } else if (this.active.type === 4) {
+                type = chatAction.transmitGroupPic;
+            }
+            this.store$.dispatch({
+                type,
+                payload: message
             });
         }
     }
@@ -2086,7 +2113,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
         });
     }
-    // 粘贴图片获取图片对象
+    // 获取图片对象
     private getImgObj(file) {
         if (!file || !file.type || file.type === '') {
             return false;

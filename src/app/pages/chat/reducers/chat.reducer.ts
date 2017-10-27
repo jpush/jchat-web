@@ -1598,7 +1598,7 @@ function createGroupSuccessEvent(state, payload) {
         key: payload.gid,
         name: payload.name,
         type: 4,
-        unreadNum: 1,
+        unreadNum: 0,
         recentMsg: {
             ctime_ms: payload.ctime_ms,
             content: {
@@ -1751,9 +1751,6 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
                 let item = state.conversation.splice(i, 1);
                 index = filterTopConversation(state, item[0]);
             }
-            if (Number(state.activePerson.key) !== Number(state.conversation[index].key)) {
-                state.conversation[index].unreadNum ++;
-            }
             isRecentmsg(state, payload, addGroupOther, operation, index);
             break;
         }
@@ -1766,7 +1763,7 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
                 }
                 group.type = 4;
                 group.key = group.gid;
-                group.unreadNum = 1;
+                group.unreadNum = 0;
                 let index = filterTopConversation(state, group);
                 flag1 = false;
                 isRecentmsg(state, payload, addGroupOther, operation, index);
@@ -1783,7 +1780,7 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
             key: payload.gid,
             name: payload.name,
             type: 4,
-            unreadNum: 1,
+            unreadNum: 0,
             avatarUrl: payload.avatarUrl,
             recentMsg: {
                 ctime_ms: payload.ctime_ms,
