@@ -1,6 +1,6 @@
 <div class="search-card-search" (click)="stopPropagation($event)">
-    <input placeholder="搜索" spellcheck="false" id="searchCard" (keyup.enter)="searchBtnAction()" type="text" [(ngModel)]="searchResult.keywords" class="input-focus">
-    <span (click)="searchBtnAction()"></span>
+    <input placeholder="搜索" spellcheck="false" id="searchCard" type="text" [(ngModel)]="searchResult.keywords" class="input-focus">
+    <span></span>
     <p (click)="clearInputAction()" *ngIf="searchResult.show"></p>
     <div class="search-card-no-serach-data" *ngIf="searchResult.result.length === 0 && searchResult.show">找不到匹配的结果</div>
     <perfect-scrollbar *ngIf="searchResult.result.length > 0 && searchResult.show" class="search-card-scroll-search">

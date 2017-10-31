@@ -7,7 +7,7 @@
         <div class="card-modal-main">
             <div class="card-modal-list">
                 <div class="card-modal-search">
-                    <search-card-component [searchResult]="searchResult" (searchKeyup)="searchKeyupEmit($event)" (clearInput)="clearInputEmit()" (searchBtn)="searchBtnEmit($event)" (changeChecked)="changeCheckedEmit($event)"></search-card-component>
+                    <search-card-component [searchResult]="searchResult" (searchKeyup)="searchKeyupEmit($event)" (clearInput)="clearInputEmit()" (changeChecked)="changeCheckedEmit($event)"></search-card-component>
                 </div>
                 <perfect-scrollbar class="card-modal-scroll">
                     <div *ngFor="let item of businessCard.info">

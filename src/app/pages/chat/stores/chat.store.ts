@@ -83,5 +83,5 @@ export interface ChatStore {
     };
     readObj: Object;
     groupShield: Array<any>;
-    businessCardSearch: object;
+    createGroupSearch: object;
 }

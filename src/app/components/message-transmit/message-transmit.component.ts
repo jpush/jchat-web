@@ -63,60 +63,29 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
                 for (let item of this.searchResult.result.singleArr) {
                     item.checked = false;
                     for (let select of this.selectList) {
-                        if (item.username === select.name) {
+                        if (select.type === 3 && item.username === select.name) {
                             item.checked = true;
                         }
+                    }
+                    if (item.username === global.user) {
+                        item.checked = true;
+                        item.disabled = true;
                     }
                 }
                 for (let item of this.searchResult.result.groupArr) {
                     item.checked = false;
                     for (let select of this.selectList) {
-                        if (Number(item.gid) === Number(select.key)) {
+                        if (select.type === 3 && Number(item.gid) === Number(select.key)) {
                             item.checked = true;
                         }
                     }
                 }
-                break;
-            case mainAction.messageTransmitSearchComplete:
-                let result = chatState.messageTransmit.searchResult.result.singleArr;
-                if (result.length > 0 && result[0].name === global.user) {
-                    result[0].checked = true;
-                    result[0].disabled = true;
-                }
-                for (let item of result) {
-                    item.checked = false;
-                    for (let select of this.selectList) {
-                        if (item.username === select.name) {
-                            item.checked = true;
-                        }
-                    }
-                }
-                this.searchResult = chatState.messageTransmit.searchResult;
                 break;
             default:
         }
     }
     private searchKeyupEmit(value) {
         this.searchMessageTransmit.emit(value);
-    }
-    private searchBtnEmit(keywords) {
-        // 如果搜索到左边列表有的用户
-        for (let member of this.messageTransmit.list) {
-            if (member.type === 3 && keywords === member.name) {
-                this.searchResult.result = {
-                    singleArr: [member],
-                    groupArr: []
-                };
-                return ;
-            }
-        }
-        this.store$.dispatch({
-            type: mainAction.createGroupSearchAction,
-            payload: {
-                keywords,
-                type: 'transmit'
-            }
-        });
     }
     private changeInputEmit(item) {
         let flag = true;
@@ -156,11 +125,13 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
         event.target.src = item.type === 4 ? groupErrorIcon : singleErrorIcon;
     }
     private confirmMessageTransmit() {
-        this.confirmTransmit.emit({
-            type: this.messageTransmit.type,
-            selectList: this.selectList
-        });
-        this.messageTransmit.show = false;
+        if (this.selectList.length > 0) {
+            this.confirmTransmit.emit({
+                type: this.messageTransmit.type,
+                selectList: this.selectList
+            });
+            this.messageTransmit.show = false;
+        }
     }
     private cancelMessageTransmit() {
         this.messageTransmit.show = false;

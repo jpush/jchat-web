@@ -133,7 +133,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         },
         show: false,
         formData: {},
-        src: ''
+        src: '',
+        filename: '',
+        title: '群组头像'        
     };
     private unreadList = {
         show: false,
@@ -2115,35 +2117,32 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 获取图片对象
     private getImgObj(file) {
-        if (!file || !file.type || file.type === '') {
-            return false;
-        }
-        if (!/image\/\w+/.test(file.type)) {
+        this.util.getAvatarImgObj(file, () => {
             this.selectIsNotImage();
-            return false;
-        }
-        const that = this;
-        let img = new Image();
-        let pasteFile = file;
-        let reader = new FileReader();
-        reader.readAsDataURL(pasteFile);
-        let fd = new FormData();
-        fd.append(file.name, file);
-        reader.onload = function(e) {
-            img.src = this.result;
-            const _this = this;
-            img.onload = function() {
-                that.groupAvatar.info = {
-                    src: _this.result,
-                    width: img.naturalWidth,
-                    height: img.naturalHeight,
-                    pasteFile
-                };
-                that.groupAvatar.formData = fd;
-                that.groupAvatar.src =  _this.result;
-                that.groupAvatar.show = true;
+        }, () => {
+            this.store$.dispatch({
+                type: mainAction.showModalTip,
+                payload: {
+                    show: true,
+                    info: {
+                        title: '提示',
+                        tip: '选择的图片宽或高的尺寸太小，请重新选择图片',
+                        actionType: '[chat] must be image',
+                        cancel: true
+                    }
+                }
+            });
+        }, (that, pasteFile, img) => {
+            this.groupAvatar.info = {
+                src: that.result,
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+                pasteFile
             };
-        };
+            this.groupAvatar.src =  that.result;
+            this.groupAvatar.show = true;
+            this.groupAvatar.filename = file.name;
+        });
     }
     // 修改群头像
     private groupAvatarEmit(groupAvatarInfo) {
@@ -2290,7 +2289,9 @@ export class ChatComponent implements OnInit, OnDestroy {
             },
             show: false,
             formData: {},
-            src: ''
+            src: '',
+            filename: '',
+            title: '群组头像'
         };
         this.unreadList = {
             show: false,

@@ -38,9 +38,6 @@ export const mainInit = {
         menu: [],
         show: false
     },
-    createGroupSearch: {
-        info: null
-    },
     errorApiTip: {},
     logoutKick: {
         show: false,

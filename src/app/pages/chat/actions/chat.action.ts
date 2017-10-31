@@ -105,5 +105,6 @@ export const chatAction = {
     userInfUpdateEvent: '[chat] user inf update event',
     userInfUpdateEventSuccess: '[chat] user inf update event success',
     updateUnreadCount: '[chat] update unread count',
-    dispatchGroupList: '[chat] dispatch group list'
+    dispatchGroupList: '[chat] dispatch group list',
+    createGroupSearchComplete: '[chat] create group search complete'
 };

@@ -101,10 +101,6 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case mainAction.emptySingleChatTip:
             state.createSingleChat.info = payload.info;
             break;
-            // 创建群聊搜索联系人
-        case mainAction.createGroupSearchComplete:
-            state.createGroupSearch.info = payload;
-            break;
             // 成功获取黑名单列表
         case mainAction.blackMenuSuccess:
             if (payload.show !== null) {

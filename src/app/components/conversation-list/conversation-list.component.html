@@ -26,6 +26,7 @@
                     <span class="float-left conversation-at" *ngIf="item.atUser">[{{item.atUser}}]</span>
                     <span class="float-left" [ngClass]="{'conversation-unread-text': item.recentMsg.unread_count}" *ngIf="item.recentMsg.msg_type === 3 && item.recentMsg.content.from_id === global.user && ((item.recentMsg.success && item.recentMsg.success === 2) || !item.recentMsg.success)">{{item.recentMsg.unread_count ? '[未读]' : '[已读]'}}</span>
                     <span class="float-left" *ngIf="item.recentMsg.msg_type === 4 && item.recentMsg.content.msg_type !== 'event'">{{item.recentMsg.content.from_id === global.user ? '我' : (item.recentMsg.content.memo_name || item.recentMsg.content.from_name || item.recentMsg.content.from_id)}}&nbsp;:&nbsp;</span>
+                    <span class="conversation-send-error" *ngIf="item.recentMsg.success === 3"></span>
                     <span *ngSwitchCase="'text'" [innerHTML]="item.recentMsg.content.msg_body.text | emoji: {nbsp: true, href: false, fontSize: 18} | sanitize: 'html'"></span>
                     <span *ngIf="item.recentMsg.content.msg_type === 'image' && item.recentMsg.content.msg_body?.extras?.kLargeEmoticon !== 'kLargeEmoticon'">[图片]</span>
                     <span *ngIf="item.recentMsg.content.msg_type === 'image' && item.recentMsg.content.msg_body?.extras?.kLargeEmoticon === 'kLargeEmoticon'">[表情]</span>

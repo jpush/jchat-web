@@ -1625,7 +1625,6 @@ export class ChatEffect {
             } else if (info.actionType && info.actionType === 'modifyGroupAvatar') {
                 requestObj.avatar = info.avatar;
             }
-            console.log(5555, requestObj);
             const groupInfoObj = global.JIM.updateGroupInfo(requestObj)
             .onSuccess((data) => {
                 if (info.actionType && info.actionType === 'modifyDescription') {

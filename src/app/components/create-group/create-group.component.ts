@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
 import { mainAction } from '../../pages/main/actions';
+import { chatAction } from '../../pages/chat/actions';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
@@ -41,8 +42,8 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.initData();
         this.createGroupStream$ = this.store$.select((state) => {
-            let mainState = state['mainReducer'];
-            this.stateChanged(mainState);
+            let chatState = state['chatReducer'];
+            this.stateChanged(chatState);
             return state;
         }).subscribe((state) => {
             // pass
@@ -51,46 +52,50 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     public ngOnDestroy() {
         this.createGroupStream$.unsubscribe();
     }
-    private stateChanged(mainState) {
-        switch (mainState.actionType) {
-            case  mainAction.createGroupSearchComplete:
+    private stateChanged(chatState) {
+        switch (chatState.actionType) {
+            case  chatAction.createGroupSearchComplete:
                 this.searchResult.show = true;
-                if (mainState.createGroupSearch.info) {
-                    let result = [];
-                    result.push(mainState.createGroupSearch.info);
-                    // 如果搜索自己，disabled
-                    if (result[0].name === global.user) {
-                        result[0].disabled = true;
-                    }
-                    // 如果搜索的结果有已经disabled的、checked的
-                    for (let item of this.selectList) {
-                        if (result[0].name === item.name) {
-                            result[0].checked = item.checked;
-                            result[0].disabled = item.disabled;
-                        }
-                    }
-                    // 如果搜索的是已经在群里的，disabled
-                    let filter = this.createGroup.info.filter;
-                    if (filter) {
-                        for (let item of filter) {
-                            if (item.username === mainState.createGroupSearch.info.name) {
-                                result[0].disabled = true;
-                                break;
-                            }
-                        }
-                    }
-                    // 如果搜索的是创建多人会话的默认成员，disabled
-                    let activeSingle = this.createGroup.info.activeSingle;
-                    if (activeSingle &&
-                        activeSingle.name === mainState.createGroupSearch.info.name) {
-                        result[0].disabled = true;
-                    }
-                    this.searchResult.result = result;
-                } else {
-                    this.searchResult.result = [];
+                // 深度拷贝
+                let result = JSON.parse(JSON.stringify(chatState.createGroupSearch));
+                if (result.length > 0) {
+                    this.reducerSearchResult(result);
                 }
+                this.searchResult.result = result;
                 break;
             default:
+        }
+    }
+    // 处理搜索结果
+    private reducerSearchResult(result) {
+        for (let user of result) {
+            // 如果搜索自己，disabled
+            if (user.name === global.user) {
+                user.disabled = true;
+            }
+            // 如果搜索的结果有已经disabled的、checked的
+            for (let item of this.selectList) {
+                if (user.name === item.name) {
+                    user.checked = item.checked;
+                    user.disabled = item.disabled;
+                }
+            }
+            // 如果搜索的是已经在群里的，disabled
+            let filter = this.createGroup.info.filter;
+            if (filter) {
+                for (let item of filter) {
+                    if (item.username === user.name) {
+                        user.disabled = true;
+                        break;
+                    }
+                }
+            }
+            // 如果搜索的是创建多人会话的默认成员，disabled
+            let activeSingle = this.createGroup.info.activeSingle;
+            if (activeSingle &&
+                activeSingle.name === user.name) {
+                user.disabled = true;
+            }
         }
     }
     private stopPropagation(event) {
@@ -148,26 +153,9 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             }
         }
     }
-    private searchKeyupEmit(value) {
+    private searchKeyupEmit() {
         this.searchResult.result = [];
-        if (value) {
-            this.searchResult.show = true;
-            for (let list of this.createGroup.list) {
-                for (let user of list.data) {
-                    let memoNameExist = user.memo_name &&
-                            user.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-                    let nameExist = user.name &&
-                            user.name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-                    let nickNameExist = user.nickName &&
-                            user.nickName.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-                    if ((memoNameExist || nameExist || nickNameExist) && user.show) {
-                        this.searchResult.result.push(user);
-                    }
-                }
-            }
-        } else {
-            this.searchResult.show = false;
-        }
+        this.searchResult.show = false;
     }
     private searchBtnEmit(keywords) {
         this.store$.dispatch({

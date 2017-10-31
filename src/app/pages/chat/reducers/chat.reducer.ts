@@ -20,9 +20,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 state.conversation = payload.conversation;
                 if (payload.messageList.length > 0) {
                     state.messageList = payload.messageList;
-                    unreadNum(state, payload);
                     state.msgId = initFilterMsgId(state);
                 }
+                unreadNum(state, payload);
                 filterRecentMsg(state);
                 state.isLoaded = true;
                 completionMessageList(state);
@@ -393,20 +393,6 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.msgRetractEvent:
             msgRetract(state, payload);
             break;
-            // 转发消息模态框搜索用户成功
-        case mainAction.messageTransmitSearchComplete:
-            state.messageTransmit.searchResult = {
-                result: {
-                    groupArr: [],
-                    singleArr: payload ? [payload] : []
-                },
-                isSearch: true
-            };
-            break;
-            // 名片模态框搜索完成
-        case mainAction.businessCardSearchComplete:
-            state.businessCardSearch = payload;
-            break;
             // 显示验证消息模态框
         case chatAction.showVerifyModal:
             state.verifyModal = payload;
@@ -553,6 +539,10 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 用户信息更新事件
         case chatAction.userInfUpdateEventSuccess:
             userInfUpdateEventSuccess(state, payload);
+            break;
+            // 创建群聊、多人会话、添加群成员搜索成功
+        case chatAction.createGroupSearchComplete:
+            state.createGroupSearch = searchSingleUser(state, payload);
             break;
         default:
     }
@@ -977,7 +967,7 @@ function updateGroupInfoEventSuccess(state, payload) {
             list.msgs.push(msg);
             if (list.groupSetting && list.groupSetting.groupInfo) {
                 let name;
-                if (payload.groupInfo.name || payload.groupInfo.name === '') {
+                if (!payload.groupInfo.name || payload.groupInfo.name === '') {
                     name = list.groupSetting.groupInfo.name;
                 }
                 list.groupSetting.groupInfo = payload.groupInfo;
@@ -2792,6 +2782,27 @@ function messageHasAtList(atList) {
         }
     }
     return atUser;
+}
+// 搜索单聊或者好友
+function searchSingleUser(state, payload) {
+    let singleArr = [];
+    // 查找最近联系人
+    for (let item of state.conversation) {
+        searchSingle(payload.keywords, singleArr, item);
+    }
+    // 查找好友
+    for (let item of state.friendList) {
+        searchSingle(payload.keywords, singleArr, item);
+    }
+    if (payload.result) {
+        let item = singleArr.filter((single) => {
+            return single.name === payload.result.name;
+        });
+        if (item.length === 0) {
+            singleArr.push(payload.result);
+        }
+    }
+    return singleArr;
 }
 // 搜索用户、群组
 function searchUser(state: ChatStore, payload) {

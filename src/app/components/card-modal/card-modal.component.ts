@@ -30,30 +30,6 @@ export class CardModalComponent implements OnInit {
      }
     public ngOnInit() {
         // pass
-        this.businessCardStream$ = this.store$.select((state) => {
-            let chatState = state['chatReducer'];
-            this.stateChanged(chatState);
-            return state;
-        }).subscribe((state) => {
-            // pass
-        });
-    }
-    private stateChanged(chatState) {
-        switch (chatState.actionType) {
-            case  mainAction.businessCardSearchComplete:
-                if (chatState.businessCardSearch) {
-                    if (chatState.businessCardSearch.name === global.user) {
-                        chatState.businessCardSearch.disabled = true;
-                    }
-                    this.searchResult.result = [chatState.businessCardSearch];
-                    this.searchResult.show = true;
-                } else {
-                    this.searchResult.result = [];
-                    this.searchResult.show = true;
-                }
-                break;
-            default:
-        }
     }
     private cancelBusinessCard() {
         this.businessCard.show = false;
@@ -64,11 +40,13 @@ export class CardModalComponent implements OnInit {
         }
     }
     private confirmBusinessCard() {
-        this.businessCardSend.emit(this.selectList);
-        this.businessCard.show = false;
-        for (let list of this.businessCard.info) {
-            for (let item of list.data) {
-                item.checked = false;
+        if (this.selectList) {
+            this.businessCardSend.emit(this.selectList);
+            this.businessCard.show = false;
+            for (let list of this.businessCard.info) {
+                for (let item of list.data) {
+                    item.checked = false;
+                }
             }
         }
     }
@@ -123,15 +101,6 @@ export class CardModalComponent implements OnInit {
         this.searchResult.show = false;
         this.searchResult.result = [];
         this.searchResult.keywords = '';
-    }
-    private searchBtnEmit(keywords) {
-        this.store$.dispatch({
-            type: mainAction.createGroupSearchAction,
-            payload: {
-                keywords,
-                type: 'businessCard'
-            }
-        });
     }
     private hideSearch() {
         this.searchResult.show = false;

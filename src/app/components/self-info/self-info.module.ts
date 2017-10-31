@@ -6,6 +6,7 @@ import { SelfInfoComponent } from './self-info.component';
 import { SelectModule } from '../select';
 import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
 import { InfoMenuModule } from '../info-menu';
+import { GroupAvatarModule } from '../group-avatar';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { InfoMenuModule } from '../info-menu';
     SelectModule,
     EllipsisPipeModule,
     SanitizePipeModule,
-    InfoMenuModule
+    InfoMenuModule,
+    GroupAvatarModule
   ],
   exports: [
       SelfInfoComponent

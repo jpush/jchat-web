@@ -111,6 +111,41 @@ export class Util {
         });
     }
     /**
+     * 获取头像裁剪的预览对象
+     * @param file input dom 对象的files[0]
+     * @param callback1 回调函数1
+     * @param callback2 回调函数2
+     * @param callback3 回调函数3
+     */
+    public getAvatarImgObj(file, callback1, callback2, callback3) {
+        if (!file || !file.type || file.type === '') {
+            return false;
+        }
+        if (!/image\/\w+/.test(file.type)) {
+            callback1();
+            return false;
+        }
+        const that = this;
+        let img = new Image();
+        let pasteFile = file;
+        let reader = new FileReader();
+        reader.readAsDataURL(pasteFile);
+        let fd = new FormData();
+        fd.append(file.name, file);
+        reader.onload = function(e) {
+            img.src = this.result;
+            const _this = this;
+            img.onload = function() {
+                // 如果选择的图片尺寸小于60*60，弹窗提示
+                if (img.naturalWidth < 60 || img.naturalHeight < 60) {
+                    callback2();
+                    return ;
+                }
+                callback3(_this, pasteFile, img);
+            };
+        };
+    }
+    /**
      * fileReader预览图片url
      * @param file: Object, input file 对象
      * @param callback: function 回调函数

@@ -32,9 +32,6 @@ export interface MainStore {
         menu: Array<any>;
         show: boolean;
     };
-    createGroupSearch: {
-        info: object;
-    };
     errorApiTip: object;
     logoutKick: {
         show: boolean,

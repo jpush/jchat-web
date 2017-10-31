@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { AppStore } from '../../../app.store';
 import { mainAction } from '../actions';
+import { chatAction } from '../../../pages/chat/actions';
 import { global, authPayload } from '../../../services/common';
 import { md5 } from '../../../services/tools';
 import { Util } from '../../../services/util';
@@ -375,16 +376,18 @@ export class MainEffect {
                     global.JIM.getResource({media_id: user.avatar})
                     .onSuccess((urlInfo) => {
                         item.avatarUrl = urlInfo.url;
-                        this.searUserType(info, item);
+                        this.searUserType(info, item, info.keywords);
                     }).onFail((error) => {
-                        this.searUserType(info, item);
+                        this.searUserType(info, item, info.keywords);
+                    }).onTimeout(() => {
+                        this.searUserType(info, item, info.keywords);
                     });
                 } else {
-                    this.searUserType(info, item);
+                    this.searUserType(info, item, info.keywords);
                 }
             }).onFail((error) => {
                 if (error.code === 882002) {
-                    this.searUserType(info, null);
+                    this.searUserType(info, null, info.keywords);
                 } else {
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
@@ -392,6 +395,7 @@ export class MainEffect {
                     });
                 }
             }).onTimeout((data) => {
+                this.searUserType(info, null, info.keywords);
                 const error = {code: 910000};
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
@@ -786,21 +790,14 @@ export class MainEffect {
         private store$: Store<AppStore>,
         private router: Router
     ) {}
-    private searUserType (info, item) {
-        if (info.type === 'transmit') {
+    private searUserType (info, item, keywords) {
+        if (info.type === 'createGroup') {
             this.store$.dispatch({
-                type: mainAction.messageTransmitSearchComplete,
-                payload: item
-            });
-        } else if (info.type === 'createGroup') {
-            this.store$.dispatch({
-                type: mainAction.createGroupSearchComplete,
-                payload: item
-            });
-        } else if (info.type === 'businessCard') {
-            this.store$.dispatch({
-                type: mainAction.businessCardSearchComplete,
-                payload: item
+                type: chatAction.createGroupSearchComplete,
+                payload: {
+                    result: item,
+                    keywords
+                }
             });
         }
     }

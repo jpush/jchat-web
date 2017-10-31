@@ -25,8 +25,6 @@ export class SearchTransmitComponent implements OnInit, OnChanges {
         private searchUser: EventEmitter<any> = new EventEmitter();
     @Output()
         private changeInput: EventEmitter<any> = new EventEmitter();
-    @Output()
-        private searchBtn: EventEmitter<any> = new EventEmitter();
     constructor(
         private elementRef: ElementRef
     ) {
@@ -36,9 +34,7 @@ export class SearchTransmitComponent implements OnInit, OnChanges {
         this.fileDom = this.elementRef.nativeElement.querySelector('#searchInput');
         Observable.fromEvent(this.fileDom, 'keyup')
             .subscribe((event: any) => {
-                if (event.keyCode !== 13) {
-                    this.searchUser.emit(event.target.value);
-                }
+                this.searchUser.emit(event.target.value);
             });
     }
     public ngOnChanges() {
@@ -105,10 +101,5 @@ export class SearchTransmitComponent implements OnInit, OnChanges {
     }
     private changeChecked(item) {
         this.changeInput.emit(item);
-    }
-    private searchBtnAction() {
-        if (this.searchKeyword.length > 0) {
-            this.searchBtn.emit(this.searchKeyword);
-        }
     }
 }

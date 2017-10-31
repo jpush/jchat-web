@@ -7,7 +7,7 @@
         <div class="create-group-main">
             <div class="create-group-list">
                 <div class="create-group-search">
-                    <search-transmit-component [searchUserResult]="searchResult" (searchBtn)="searchBtnEmit($event)" (changeInput)="changeInputEmit($event)" (searchUser)="searchKeyupEmit($event)"></search-transmit-component>
+                    <search-transmit-component [searchUserResult]="searchResult" (changeInput)="changeInputEmit($event)" (searchUser)="searchKeyupEmit($event)"></search-transmit-component>
                 </div>
                 <perfect-scrollbar class="create-group-scroll">
                     <div *ngFor="let user of messageTransmit.list">

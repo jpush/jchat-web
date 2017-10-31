@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, AfterContentInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 let Cropper =  require('../../../assets/static/js/cropper.min.js');
 import '../../../assets/static/js/cropper.min.css';
 import 'rxjs/add/operator/map';
@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
+import '../../../assets/static//js/canvas-to-blob.js';
 
 @Component({
     selector: 'group-avatar-component',
@@ -16,7 +17,7 @@ import { chatAction } from '../../pages/chat/actions';
     styleUrls: ['./group-avatar.component.scss']
 })
 
-export class GroupAvatarComponent implements OnInit, AfterContentInit {
+export class GroupAvatarComponent implements OnInit {
     @Input()
         private groupAvatarInfo;
     @Output()
@@ -34,69 +35,55 @@ export class GroupAvatarComponent implements OnInit, AfterContentInit {
     public ngOnInit() {
         // pass
     }
-    public ngAfterContentInit() {
+    private cropperImgLoad() {
         let image = document.getElementById('cropper');
-        setTimeout(() => {
-            this.cropper = new Cropper(image, {
-                aspectRatio: 1 / 1,
-                zoomable: false,
-                rotatable: false,
-                viewMode: 1,
-                crop: function (e) {
-                    console.log(3333, e);
-                    this.width = e.detail.width;
-                    this.height = e.detail.height;
-                    this.minWidth = e.detail.minWidth;
-                    this.minHeight = e.detail.minHeight;
-                    this.maxWidth = e.detail.maxWidth;
-                    this.maxHeight = e.detail.maxHeight;
-                }
-            });
-        }, 2000)
+        this.cropper = new Cropper(image, {
+            aspectRatio: 1 / 1,
+            zoomable: false,
+            rotatable: false,
+            viewMode: 1,
+            minCropBoxWidth: 25,
+            crop (event) {
+                this.width = event.detail.width;
+                this.height = event.detail.height;
+                this.minWidth = event.detail.minWidth;
+                this.minHeight = event.detail.minHeight;
+                this.maxWidth = event.detail.maxWidth;
+                this.maxHeight = event.detail.maxHeight;
+            }
+        });
     }
     private modalAction(event, type ?) {
         event.stopPropagation();
-        this.groupAvatarInfo.show = false;
-        if (type) {
-            this.groupAvatar.emit(this.groupAvatarInfo);
+        if (type === 'confirm') {
+            let that = this;
+            let canvas = this.cropper.getCroppedCanvas({
+                width: that.width,
+                height: that.height,
+                minWidth: that.minWidth,
+                minHeight: that.minHeight,
+                maxWidth: that.maxWidth,
+                maxHeight: that.maxHeight,
+                fillColor: '#fff',
+                imageSmoothingEnabled: false,
+                imageSmoothingQuality: 'high'
+            });
+            if (canvas.toBlob) {
+                canvas.toBlob((blob) => {
+                    let formData = new FormData();
+                    formData.append(that.groupAvatarInfo.filename, blob,
+                        that.groupAvatarInfo.filename);
+                    that.groupAvatarInfo.formData = formData;
+                    that.groupAvatarInfo.src = canvas.toDataURL('image/png', 1.0);
+                    that.groupAvatar.emit(that.groupAvatarInfo);
+                    that.groupAvatarInfo.show = false;
+                }, '');
+            }
+        } else {
+            this.groupAvatarInfo.show = false;
         }
     }
     private stopPropagation(event) {
         event.stopPropagation();
-    }
-    private cropperAction() {
-        let that = this;
-        let canvas = this.cropper.getCroppedCanvas({
-            width: that.width,
-            height: that.height,
-            minWidth: that.minWidth,
-            minHeight: that.minHeight,
-            maxWidth: that.maxWidth,
-            maxHeight: that.maxHeight,
-            fillColor: '#fff',
-            imageSmoothingEnabled: false,
-            imageSmoothingQuality: 'high'
-        });
-        let blob;
-        // 兼容ie
-        if (canvas.msToBlob) {
-            blob = canvas.msToBlob();
-        } else if (canvas.toBlob) {
-            blob = canvas.toBlob(() => {
-                // pass
-            });
-        }
-        let formData = new FormData();
-        formData.append('image', blob);
-        let data = {
-            actionType: 'modifyGroupAvatar',
-            avatar: formData,
-            gid: 23303505,
-            src: canvas.toDataURL()
-        };
-        this.store$.dispatch({
-            type: chatAction.updateGroupInfo,
-            payload: data
-        });
     }
 }

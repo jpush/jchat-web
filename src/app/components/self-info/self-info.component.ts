@@ -1,6 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnChanges, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter,
+    OnChanges, ElementRef, AfterViewInit } from '@angular/core';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 import { Util } from '../../services/util';
+import { Store } from '@ngrx/store';
+import { mainAction } from '../../pages/main/actions';
 
 @Component({
     selector: 'self-info-component',
@@ -8,7 +11,7 @@ import { Util } from '../../services/util';
     styleUrls: ['./self-info.component.scss']
 })
 
-export class SelfInfoComponent implements OnChanges {
+export class SelfInfoComponent implements OnChanges, AfterViewInit {
     private util: Util = new Util();
     @Input()
         private selfInfo;
@@ -51,7 +54,6 @@ export class SelfInfoComponent implements OnChanges {
         url: ''
     };
     private cameraShadow = true;
-    // private saveLoading = false;
     private infoMenu = {
         info: [
             {
@@ -63,8 +65,24 @@ export class SelfInfoComponent implements OnChanges {
         ],
         show: false
     };
+    private avatarConfig = {
+        info: {
+            src: '',
+            width: 0,
+            height: 0,
+            pasteFile: {}
+        },
+        show: false,
+        formData: {},
+        src: '',
+        filename: '',
+        title: '个人头像'
+    };
+    private selfAvatarImg;
+    private selfAvatarInput;
     constructor(
-        private elementRef: ElementRef
+        private elementRef: ElementRef,
+        private store$: Store<any>
     ) {}
     public ngOnChanges(change) {
         this.newInfo.signature = this.selfInfo.info.signature;
@@ -76,24 +94,25 @@ export class SelfInfoComponent implements OnChanges {
             this.isEdit = false;
         }
     }
+    public ngAfterViewInit() {
+        this.selfAvatarImg = this.elementRef.nativeElement.querySelector('#selfAvatarImg');
+        this.selfAvatarInput = this.elementRef.nativeElement.querySelector('#selfAvatarInput');
+    }
     private sexActive() {
         switch (this.selfInfo.info.gender) {
             case 0 :
-                // this.selfInfo.info.gender = '保密';
                 this.sexList.active = {
                     key: 0,
                     name: '保密'
                 };
                 break;
             case 1 :
-                // this.selfInfo.info.gender = '男';
                 this.sexList.active = {
                     key: 1,
                     name: '男'
                 };
                 break;
             case 2:
-                // this.selfInfo.info.gender = '女';
                 this.sexList.active = {
                     key: 2,
                     name: '女'
@@ -118,8 +137,7 @@ export class SelfInfoComponent implements OnChanges {
         event.target.src = avatarErrorIcon;
     }
     private selfCancel() {
-        const selfAvatarInput = this.elementRef.nativeElement.querySelector('#selfAvatarInput');
-        selfAvatarInput.value = '';
+        this.selfAvatarInput.value = '';
         this.isEdit = false;
         this.sexActive();
     }
@@ -141,36 +159,50 @@ export class SelfInfoComponent implements OnChanges {
             info: Object.assign({}, this.newInfo, {gender: this.sexList.active.key}),
             avatar: this.newAvatar
         };
-        // this.saveLoading = true;
         this.isShow.emit(newInfo);
-        // setTimeout(() => {
-        //     this.saveLoading = false;
-        //     this.isEdit = false;
-        // }, 800);
     }
     private selfAvatarChange() {
-        const selfAvatarImg = this.elementRef.nativeElement.querySelector('#selfAvatarImg');
-        const selfAvatarInput = this.elementRef.nativeElement.querySelector('#selfAvatarInput');
-        const that = this;
-        if (!selfAvatarInput.files[0]) {
-            return;
-        }
-        let imgFile = this.util.fileReader(selfAvatarInput, () => {
-            that.selectIsNotImage.emit();
-        });
-        if (imgFile) {
-            imgFile.then((url: string) => {
-                selfAvatarImg.src = url;
-                this.newAvatar.url = url;
-                this.cameraShadow = false;
-            }).catch(() => {
-                console.log('Promise Rejected');
+        this.getImgObj(this.selfAvatarInput.files[0]);
+        this.selfAvatarInput.value = '';
+    }
+    // 获取图片对象
+    private getImgObj(file) {
+        this.util.getAvatarImgObj(file, () => {
+            this.selectIsNotImage.emit();
+        }, () => {
+            this.store$.dispatch({
+                type: mainAction.showModalTip,
+                payload: {
+                    show: true,
+                    info: {
+                        title: '提示',
+                        tip: '选择的图片宽或高的尺寸太小，请重新选择图片',
+                        actionType: '[chat] must be image',
+                        cancel: true
+                    }
+                }
             });
-        }
-        this.newAvatar.formData = this.util.getFileFormData(selfAvatarInput);
+        }, (that, pasteFile, img) => {
+            this.avatarConfig.info = {
+                src: that.result,
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+                pasteFile
+            };
+            this.avatarConfig.src =  that.result;
+            this.avatarConfig.show = true;
+            this.avatarConfig.filename = file.name;
+        });
+    }
+    private avatarConfirmEmit(avatarConfig) {
+        this.newAvatar.formData = avatarConfig.formData;
+        this.selfAvatarImg.src = avatarConfig.src;
+        this.newAvatar.url = avatarConfig.src;
+        this.cameraShadow = false;
     }
     private toEdit() {
         this.isEdit = true;
+        this.selfAvatarImg.src = this.selfInfo.info.avatarUrl;
     }
     private avatarLoad(event) {
         if (event.target.naturalHeight >= event.target.naturalWidth) {

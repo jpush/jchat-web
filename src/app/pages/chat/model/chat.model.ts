@@ -79,5 +79,5 @@ export const chatInit = {
     },
     readObj: {},
     groupShield: [],
-    businessCardSearch: {}
+    createGroupSearch: []
 };

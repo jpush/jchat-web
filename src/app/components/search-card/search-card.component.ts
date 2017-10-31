@@ -35,11 +35,7 @@ export class SearchCardComponent implements OnInit, AfterViewInit {
         this.fileDom = this.elementRef.nativeElement.querySelector('#searchCard');
         Observable.fromEvent(this.fileDom, 'keyup')
             .subscribe((event: any) => {
-                if (event.keyCode !== 13) {
-                    this.searchKeyup.emit(event.target.value);
-                } else if (event.target.value.length > 0){
-                    this.searchBtn.emit(event.target.value);
-                }
+                this.searchKeyup.emit(event.target.value);
             });
     }
     private stopPropagation(event) {
@@ -55,11 +51,6 @@ export class SearchCardComponent implements OnInit, AfterViewInit {
         this.fileDom.focus();
         this.searchResult.keywords = '';
         this.clearInput.emit();
-    }
-    private searchBtnAction() {
-        if (this.searchResult.keywords.length > 0) {
-            this.searchBtn.emit(this.searchResult.keywords);
-        }
     }
     private changeCheckedAction(item) {
         this.changeChecked.emit(item);

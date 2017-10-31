@@ -9,7 +9,7 @@
         <div class="create-group-main">
             <div class="create-group-list">
                 <div class="craete-group-search">
-                    <search-member-component [searchResult]="searchResult" (searchKeyup)="searchKeyupEmit($event)" (clearInput)="clearInputEmit()" (searchBtn)="searchBtnEmit($event)" (changeChecked)="changeCheckedEmit($event)"></search-member-component>
+                    <search-member-component [searchResult]="searchResult" (searchKeyup)="searchKeyupEmit()" (clearInput)="clearInputEmit()" (searchBtn)="searchBtnEmit($event)" (changeChecked)="changeCheckedEmit($event)"></search-member-component>
                 </div>
                 <perfect-scrollbar class="create-group-scroll">
                     <div *ngFor="let item of createGroup.list">
