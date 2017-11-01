@@ -386,6 +386,7 @@ export class ChatEffect {
             .onSuccess((info) => {
                 // 删除feedBack_
                 for (let i = 0; i < info.conversations.length; i++) {
+                    info.conversations[i].unreadNum = info.conversations[i].unread_msg_count;
                     if (info.conversations[i].name.match(/^feedback_/g)) {
                         info.conversations.splice(i, 1);
                     }
@@ -420,10 +421,10 @@ export class ChatEffect {
                         .onSuccess((urlInfo) => {
                             conversation.avatarUrl = urlInfo.url;
                             count --;
-                            this.dispatchConversation (count, info, data);
+                            this.dispatchConversation(count, info, data);
                         }).onFail((error) => {
                             count --;
-                            this.dispatchConversation (count, info, data);
+                            this.dispatchConversation(count, info, data);
                         });
                     }
                     if (conversation.type === 4 && conversation.name === '') {
@@ -435,14 +436,14 @@ export class ChatEffect {
                                 type: appAction.errorApiTip,
                                 payload: error
                             });
-                            this.dispatchConversation (count, info, data);
+                            this.dispatchConversation(count, info, data);
                         }, () => {
                             count --;
-                            this.dispatchConversation (count, info, data);
+                            this.dispatchConversation(count, info, data);
                         });
                     }
                 }
-                this.dispatchConversation (count, info, data);
+                this.dispatchConversation(count, info, data);
                 // 获取屏蔽列表
                 global.JIM.groupShieldList()
                 .onSuccess((groupList) => {
@@ -2385,7 +2386,7 @@ export class ChatEffect {
                         return {type: '[chat] friend invitation event useless'};
                     });
     });
-    // 上报未读数
+    // 清空会话未读数
     @Effect()
     private updateUnreadCount$: Observable<Action> = this.actions$
         .ofType(chatAction.updateUnreadCount)
@@ -2533,6 +2534,30 @@ export class ChatEffect {
                         return {type: '[chat] user inf update event useless'};
                     });
     });
+    // 清空会话未读数
+    @Effect()
+    private emptyUnreadNum$: Observable<Action> = this.actions$
+        .ofType(chatAction.emptyUnreadNum)
+        .map(toPayload)
+        .switchMap((unread) => {
+            if (unread.type === 3) {
+                if (unread.name) {
+                    global.JIM.resetUnreadCount({
+                        username: unread.name
+                    });
+                }
+            } else if (unread.type === 4) {
+                if (unread.key) {
+                    global.JIM.resetUnreadCount({
+                        gid: unread.key
+                    });
+                }
+            }
+            return Observable.of('emptyUnreadNum')
+                    .map(() => {
+                        return {type: '[chat] update unread count useless'};
+                    });
+    });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,
@@ -2584,15 +2609,15 @@ export class ChatEffect {
         });
     }
     // 获取会话列表
-    private dispatchConversation (count, info, data) {
+    private dispatchConversation(count, info, data) {
         if (count <= 0) {
-            let key = `msgId-${authPayload.appKey}-${global.user}`;
-            let msgId = JSON.parse(this.storageService.get(key));
+            // let key = `msgId-${authPayload.appKey}-${global.user}`;
+            // let msgId = JSON.parse(this.storageService.get(key));
             this.store$.dispatch({
                 type: chatAction.getConversationSuccess,
                 payload: {
                     conversation: info.conversations,
-                    msgId,
+                    // msgId,
                     storage: true,
                     messageList: data
                 }

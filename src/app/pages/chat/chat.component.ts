@@ -135,7 +135,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         formData: {},
         src: '',
         filename: '',
-        title: '群组头像'        
+        title: '群组头像'
     };
     private unreadList = {
         show: false,
@@ -335,10 +335,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.conversationList = chatState.conversation;
                 this.messageList = chatState.messageList;
                 // 如果是第一次登陆且有离线消息则存储当前msgId
-                this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
-                if (chatState.msgId.length > 0 && !this.storageService.get(this.storageKey)) {
-                    this.storageMsgId(chatState.msgId);
-                }
+                // this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
+                // if (chatState.msgId.length > 0 && !this.storageService.get(this.storageKey)) {
+                //     this.storageMsgId(chatState.msgId);
+                // }
                 if (chatState.isLoaded) {
                     this.isLoaded = chatState.isLoaded;
                     this.isLoadedSubject$.next(this.isLoaded);
@@ -346,9 +346,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.receiveMessageSuccess:
                 if (chatState.newMessageIsActive) {
-                    if (chatState.msgId.length > 0) {
-                        this.storageMsgId(chatState.msgId);
-                    }
+                    this.emptyUnreadCount(chatState.unreadCount);
+                    // if (chatState.msgId.length > 0) {
+                    //     this.storageMsgId(chatState.msgId);
+                    // }
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                     this.store$.dispatch({
                         type: chatAction.updateUnreadCount,
@@ -394,9 +395,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
                 break;
             case chatAction.sendMsgComplete:
-                if (chatState.msgId.length > 0) {
-                    this.storageMsgId(chatState.msgId);
-                }
+                // if (chatState.msgId.length > 0) {
+                //     this.storageMsgId(chatState.msgId);
+                // }
+                // this.emptyUnreadCount(chatState.unreadCount);
                 this.modalTipSendCardSuccess(chatState);
                 break;
             case chatAction.changeActivePerson:
@@ -407,9 +409,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.messageList = chatState.messageList;
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                if (chatState.msgId.length > 0) {
-                    this.storageMsgId(chatState.msgId);
-                }
+                // if (chatState.msgId.length > 0) {
+                //     this.storageMsgId(chatState.msgId);
+                // }
+                this.emptyUnreadCount(chatState.unreadCount);
                 break;
             case chatAction.addReceiptReportAction:
                 if (chatState.readObj && chatState.readObj.msg_id.length > 0) {
@@ -471,9 +474,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.messageList = chatState.messageList;
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                if (chatState.msgId.length > 0) {
-                    this.storageMsgId(chatState.msgId);
-                }
+                // if (chatState.msgId.length > 0) {
+                //     this.storageMsgId(chatState.msgId);
+                // }
+                this.emptyUnreadCount(chatState.unreadCount);
                 this.unreadList.show = false;
                 this.closeGroupSettingEmit();
                 break;
@@ -560,9 +564,9 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.msgRetractEvent:
                 this.conversationList = chatState.conversation;
                 this.messageList = chatState.messageList;
-                if (chatState.msgId.length > 0) {
-                    this.storageMsgId(chatState.msgId);
-                }
+                // if (chatState.msgId.length > 0) {
+                //     this.storageMsgId(chatState.msgId);
+                // }
                 break;
                 // 转发单聊文本消息
             case chatAction.transmitSingleMessage:
@@ -591,16 +595,16 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.emptyUnreadNumSyncEvent:
                 this.conversationList = chatState.conversation;
-                if (chatState.msgId.length > 0) {
-                    this.storageMsgId(chatState.msgId);
-                }
+                // if (chatState.msgId.length > 0) {
+                //     this.storageMsgId(chatState.msgId);
+                // }
                 break;
                 // 转发消息成功(如果全部成功则为成功，有一个用户失败则不成功，会提示相关信息)
             case chatAction.transmitMessageComplete:
                 this.modalTipTransmitSuccess(chatState);
-                if (chatState.msgId.length > 0) {
-                    this.storageMsgId(chatState.msgId);
-                }
+                // if (chatState.msgId.length > 0) {
+                //     this.storageMsgId(chatState.msgId);
+                // }
                 break;
             case contactAction.agreeAddFriendSuccess:
                 this.conversationList = chatState.conversation;
@@ -691,6 +695,15 @@ export class ChatComponent implements OnInit, OnDestroy {
                 });
                 break;
             default:
+        }
+    }
+    // 清空未读数
+    private emptyUnreadCount(unread) {
+        if (unread.type === 3 || unread.type === 4) {
+            this.store$.dispatch({
+                type: chatAction.emptyUnreadNum,
+                payload: unread
+            });
         }
     }
     // 收到新消息
@@ -1115,10 +1128,10 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
     }
     // 存储消息id(用来计算消息未读数)
-    private storageMsgId(msgId) {
-        this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
-        this.storageService.set(this.storageKey, JSON.stringify(msgId));
-    }
+    // private storageMsgId(msgId) {
+    //     this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
+    //     this.storageService.set(this.storageKey, JSON.stringify(msgId));
+    // }
     // 更新当前对话用户信息
     private changeActivePerson(chatState) {
         this.closeGroupSettingEmit();
@@ -1880,7 +1893,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
     }
     // 消息撤回
-    private MsgRetractEmit(item) {
+    private msgRetractEmit(item) {
         this.store$.dispatch({
             type: chatAction.msgRetract,
             payload: item

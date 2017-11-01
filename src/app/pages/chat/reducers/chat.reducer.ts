@@ -20,10 +20,11 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 state.conversation = payload.conversation;
                 if (payload.messageList.length > 0) {
                     state.messageList = payload.messageList;
-                    state.msgId = initFilterMsgId(state);
+                    // state.msgId = initFilterMsgId(state);
                 }
-                unreadNum(state, payload);
+                // unreadNum(state, payload);
                 filterRecentMsg(state);
+                filterAtList(state);
                 state.isLoaded = true;
                 completionMessageList(state);
             }
@@ -59,7 +60,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 接收消息
         case chatAction.receiveMessageSuccess:
             addMessage(state, payload);
-            newMessageFilterMsgId(state, payload);
+            // newMessageFilterMsgId(state, payload);
             break;
             // 发送单聊文本消息
         case chatAction.sendSingleMessage:
@@ -90,13 +91,20 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 发送消息成功（包括所有类型的消息）
         case chatAction.sendMsgComplete:
             sendMsgComplete(state, payload);
-            if (payload.success === 2) {
-                state.msgId = updateFilterMsgId(state, [{
-                    key: payload.key,
-                    name: payload.name,
-                    type: payload.type
-                }]);
-            }
+            // if (payload.success === 2) {
+            //     state.unreadCount = {
+            //         key: payload.key,
+            //         name: payload.name,
+            //         type: payload.type
+            //     };
+                // state.msgId = updateFilterMsgId(state, [{
+                //     key: payload.key,
+                //     name: payload.name,
+                //     type: payload.type
+                // }]);
+            // } else {
+            //     emptyUnreadCount(state);
+            // }
             if (payload.msgs) {
                 let bussinessExtras = payload.msgs.content.msg_body.extras;
                 if (bussinessExtras && bussinessExtras.businessCard && payload.success !== 2) {
@@ -140,13 +148,19 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             sendMsgComplete(state, payload);
             if (payload.success !== 2) {
                 state.transmitSuccess = 0;
+                // emptyUnreadCount(state);
             } else {
                 state.transmitSuccess ++;
-                state.msgId = updateFilterMsgId(state, [{
-                    key: payload.key,
-                    name: payload.name,
-                    type: payload.type
-                }]);
+                // state.unreadCount = {
+                //     key: payload.key,
+                //     name: payload.name,
+                //     type: payload.type
+                // };
+                // state.msgId = updateFilterMsgId(state, [{
+                //     key: payload.key,
+                //     name: payload.name,
+                //     type: payload.type
+                // }]);
             }
             break;
             // 切换当前会话用户
@@ -155,11 +169,16 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.activePerson = Object.assign({}, payload.item, {});
             state.defaultPanelIsShow = payload.defaultPanelIsShow;
             emptyUnreadNum(state, payload.item);
-            state.msgId = updateFilterMsgId(state, [{
+            state.unreadCount = {
                 key: state.activePerson.key,
                 name: state.activePerson.name,
                 type: state.activePerson.type
-            }]);
+            };
+            // state.msgId = updateFilterMsgId(state, [{
+            //     key: state.activePerson.key,
+            //     name: state.activePerson.name,
+            //     type: state.activePerson.type
+            // }]);
             changeActivePerson(state);
             break;
             // 选择联系人
@@ -171,11 +190,16 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             selectUserResult(state, payload, 'search');
             changeActivePerson(state);
             emptyUnreadNum(state, payload);
-            state.msgId = updateFilterMsgId(state, [{
+            state.unreadCount = {
                 key: state.activePerson.key,
                 name: state.activePerson.name,
                 type: state.activePerson.type
-            }]);
+            };
+            // state.msgId = updateFilterMsgId(state, [{
+            //     key: state.activePerson.key,
+            //     name: state.activePerson.name,
+            //     type: state.activePerson.type
+            // }]);
             break;
             // 删除本地会话列表
         case chatAction.deleteConversationItem:
@@ -282,11 +306,16 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.activePerson = Object.assign({}, payload, {});
             changeActivePerson(state);
             emptyUnreadNum(state, payload);
-            state.msgId = updateFilterMsgId(state, [{
+            state.unreadCount = {
                 key: state.activePerson.key,
                 name: state.activePerson.name,
                 type: state.activePerson.type
-            }]);
+            };
+            // state.msgId = updateFilterMsgId(state, [{
+            //     key: state.activePerson.key,
+            //     name: state.activePerson.name,
+            //     type: state.activePerson.type
+            // }]);
             break;
             // 获取群组列表成功
         case contactAction.getGroupListSuccess:
@@ -548,6 +577,35 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
     }
     return state;
 };
+// 登录时处理会话at提示
+function filterAtList(state) {
+    if (state.messageList.length > 0) {
+        for (let conversation of state.conversation) {
+            let num = conversation.unreadNum;
+            if (num > 0) {
+                for (let messageList of state.messageList) {
+                    let group = messageList.type === 4 &&
+                            Number(messageList.key) === Number(conversation.key);
+                    let single = messageList.type === 3 && messageList.name === conversation.name;
+                    if (messageList.msgs && messageList.msgs.length > 0 && (group || single)) {
+                        let length = messageList.msgs.length;
+                        for (let i = length - 1; i >= length - 1 - num && i >= 0; i--) {
+                            let atUser = messageHasAtList(messageList.msgs[i].content.at_list);
+                            if (atUser !== '') {
+                                conversation.atUser = atUser;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+function emptyUnreadCount(state) {
+    state.unreadCount = {};
+}
 // 上报已读回执，防止漏报
 function filterReceiptReport(state, payload) {
     if (payload.msg_id.length === 0) {
@@ -628,22 +686,22 @@ function addToGroupList(state, payload) {
     });
 }
 // 收到新消息，如果是当前会话，需要更新用来计算未读数的msgId
-function newMessageFilterMsgId(state, payload) {
-    let singleFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
-        && state.newMessage.msg_type === 3;
-    let groupFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
-        && state.newMessage.msg_type === 4;
-    state.newMessageIsActive = (singleFlag || groupFlag) ? true : false;
-    if (state.newMessageIsActive) {
-        let newMsgKey = [];
-        newMsgKey.push({
-            key: payload.messages[0].key,
-            name: payload.messages[0].content.from_id,
-            type: payload.messages[0].msg_type
-        });
-        state.msgId = updateFilterMsgId(state, newMsgKey);
-    }
-}
+// function newMessageFilterMsgId(state, payload) {
+//     let singleFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
+//         && state.newMessage.msg_type === 3;
+//     let groupFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
+//         && state.newMessage.msg_type === 4;
+//     state.newMessageIsActive = (singleFlag || groupFlag) ? true : false;
+//     if (state.newMessageIsActive) {
+//         let newMsgKey = [];
+//         newMsgKey.push({
+//             key: payload.messages[0].key,
+//             name: payload.messages[0].content.from_id,
+//             type: payload.messages[0].msg_type
+//         });
+//         state.msgId = updateFilterMsgId(state, newMsgKey);
+//     }
+// }
 // 保存备注名成功
 function saveMemoNameSuccess(state, payload) {
     for (let user of payload.to_usernames) {
@@ -861,11 +919,16 @@ function emptyUnreadNumSyncEvent(state, payload) {
                 conversation.name === payload.name;
         if (group || single) {
             conversation.unreadNum = 0;
-            state.msgId = updateFilterMsgId(state, [{
-                key: conversation.key,
-                name: conversation.name,
-                type: conversation.type
-            }]);
+            // state.unreadCount = {
+            //     key: conversation.key,
+            //     name: conversation.name,
+            //     type: conversation.type
+            // };
+            // state.msgId = updateFilterMsgId(state, [{
+            //     key: conversation.key,
+            //     name: conversation.name,
+            //     type: conversation.type
+            // }]);
             break;
         }
     }
@@ -1515,11 +1578,11 @@ function msgRetract(state, payload) {
                     list.msgs.splice(i, 0, eventMsg);
                     if (i === list.msgs.length - 1) {
                         state.conversation[index].recentMsg = recentMsg;
-                        state.msgId = updateFilterMsgId(state, [{
-                            key: state.conversation[index].key,
-                            name: state.conversation[index].name,
-                            type: state.conversation[index].type
-                        }]);
+                        // state.msgId = updateFilterMsgId(state, [{
+                        //     key: state.conversation[index].key,
+                        //     name: state.conversation[index].name,
+                        //     type: state.conversation[index].type
+                        // }]);
                     }
                     break;
                 }
@@ -2114,78 +2177,78 @@ function filterRecentMsg(state: ChatStore) {
     sortConversationByRecentMsg(state);
 }
 // 初始化msgId(用来判断消息未读数量)
-function initFilterMsgId (state) {
-    let msgId = [];
-    for (let conversation of state.conversation) {
-        for (let messageList of state.messageList) {
-            let group = conversation.type === 4 &&
-                        Number(conversation.key) === Number(messageList.key);
-            let single = conversation.type === 3 && messageList.type === 3 &&
-                        conversation.name === messageList.name;
-            if (group || single) {
-                let msgs = messageList.msgs;
-                if (!conversation.unreadNum && msgs.length > 0) {
-                    msgId.push({
-                        key: messageList.key,
-                        msgId: msgs[msgs.length - 1].msg_id
-                    });
-                } else {
-                    if (conversation.unreadNum !== msgs.length && msgs.length > 0) {
-                        let id = msgs[msgs.length - 1 - conversation.unreadNum].msg_id;
-                        msgId.push({
-                            key: messageList.key,
-                            msgId: id
-                        });
-                    }
-                }
-                break;
-            }
-        }
-    }
-    return msgId;
-}
+// function initFilterMsgId (state) {
+//     let msgId = [];
+//     for (let conversation of state.conversation) {
+//         for (let messageList of state.messageList) {
+//             let group = conversation.type === 4 &&
+//                         Number(conversation.key) === Number(messageList.key);
+//             let single = conversation.type === 3 && messageList.type === 3 &&
+//                         conversation.name === messageList.name;
+//             if (group || single) {
+//                 let msgs = messageList.msgs;
+//                 if (!conversation.unreadNum && msgs.length > 0) {
+//                     msgId.push({
+//                         key: messageList.key,
+//                         msgId: msgs[msgs.length - 1].msg_id
+//                     });
+//                 } else {
+//                     if (conversation.unreadNum !== msgs.length && msgs.length > 0) {
+//                         let id = msgs[msgs.length - 1 - conversation.unreadNum].msg_id;
+//                         msgId.push({
+//                             key: messageList.key,
+//                             msgId: id
+//                         });
+//                     }
+//                 }
+//                 break;
+//             }
+//         }
+//     }
+//     return msgId;
+// }
 // 更新msgId
-function updateFilterMsgId(state: ChatStore, payload ? ) {
-    let msgId;
-    for (let messageList of state.messageList) {
-        for (let pay of payload) {
-            let group = pay.type === 4 && Number(messageList.key) === Number(pay.key);
-            let single = pay.type === 3 && messageList.type === 3 &&
-                        messageList.name === pay.name;
-            if (group || single) {
-                if (messageList.msgs.length > 0) {
-                    for (let i = messageList.msgs.length - 1; i >= 0; i--) {
-                        if (messageList.msgs[i].msg_id) {
-                            msgId = messageList.msgs[i].msg_id;
-                            break;
-                        }
-                    }
-                }
-                let flag = true;
-                if (msgId) {
-                    for (let a = 0; a < state.msgId.length; a++) {
-                        if (Number(state.msgId[a].key) === Number(pay.key)) {
-                            flag = false;
-                            state.msgId[a] = {
-                                key: pay.key,
-                                msgId
-                            };
-                            break;
-                        }
-                    }
-                }
-                if (flag && msgId) {
-                    state.msgId.push({
-                        key: pay.key,
-                        msgId
-                    });
-                }
-                break;
-            }
-        }
-    }
-    return state.msgId;
-}
+// function updateFilterMsgId(state: ChatStore, payload ? ) {
+//     let msgId;
+//     for (let messageList of state.messageList) {
+//         for (let pay of payload) {
+//             let group = pay.type === 4 && Number(messageList.key) === Number(pay.key);
+//             let single = pay.type === 3 && messageList.type === 3 &&
+//                         messageList.name === pay.name;
+//             if (group || single) {
+//                 if (messageList.msgs.length > 0) {
+//                     for (let i = messageList.msgs.length - 1; i >= 0; i--) {
+//                         if (messageList.msgs[i].msg_id) {
+//                             msgId = messageList.msgs[i].msg_id;
+//                             break;
+//                         }
+//                     }
+//                 }
+//                 let flag = true;
+//                 if (msgId) {
+//                     for (let a = 0; a < state.msgId.length; a++) {
+//                         if (Number(state.msgId[a].key) === Number(pay.key)) {
+//                             flag = false;
+//                             state.msgId[a] = {
+//                                 key: pay.key,
+//                                 msgId
+//                             };
+//                             break;
+//                         }
+//                     }
+//                 }
+//                 if (flag && msgId) {
+//                     state.msgId.push({
+//                         key: pay.key,
+//                         msgId
+//                     });
+//                 }
+//                 break;
+//             }
+//         }
+//     }
+//     return state.msgId;
+// }
 // 将群主放在第一位
 function sortGroupMember(memberList) {
     for (let i = 0; i < memberList.length; i++) {
@@ -2197,79 +2260,79 @@ function sortGroupMember(memberList) {
     }
 }
 // 初始化消息未读数量
-function unreadNum(state: ChatStore, payload) {
-    if (!payload.msgId) {
-        return ;
-    }
-    for (let messageList of state.messageList) {
-        let flag = false;
-        // 当localstorage里面存储了该会话人的msgId
-        for (let msgId of payload.msgId) {
-            if (Number(messageList.key) === Number(msgId.key)) {
-                flag = true;
-                let idFlag = false;
-                for (let j = 0; j < messageList.msgs.length; j++) {
-                    let memberListId = Number(messageList.msgs[j].msg_id);
-                    let payloadId = Number(msgId.msgId);
-                    if (memberListId === payloadId) {
-                        idFlag = true;
-                        let unreadNum = 0;
-                        let atUser = '';
-                        for (let c = j + 1; c < messageList.msgs.length; c++) {
-                            if (messageList.msgs[c].content.from_id !== global.user) {
-                                unreadNum ++;
-                                let atList = messageList.msgs[c].content.at_list;
-                                if (messageHasAtList(atList) !== '') {
-                                    atUser = messageHasAtList(atList);
-                                }
-                            }
-                        }
-                        for (let conversation of state.conversation) {
-                            let memberListKey = Number(messageList.key);
-                            let conversationLey = Number(conversation.key);
-                            if (memberListKey === conversationLey) {
-                                conversation.unreadNum = unreadNum;
-                                conversation.atUser = atUser;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-                // 当localstorage里面存储该会话人，但是没有储存对应的msgId
-                if (!idFlag) {
-                    hasNoMsgId(state, messageList);
-                }
-                break;
-            }
-        }
-        // 当localstorage里面没有存储该会话人的msgId
-        if (!flag) {
-            hasNoMsgId(state, messageList);
-        }
-    }
-}
+// function unreadNum(state: ChatStore, payload) {
+//     if (!payload.msgId) {
+//         return ;
+//     }
+//     for (let messageList of state.messageList) {
+//         let flag = false;
+//         // 当localstorage里面存储了该会话人的msgId
+//         for (let msgId of payload.msgId) {
+//             if (Number(messageList.key) === Number(msgId.key)) {
+//                 flag = true;
+//                 let idFlag = false;
+//                 for (let j = 0; j < messageList.msgs.length; j++) {
+//                     let memberListId = Number(messageList.msgs[j].msg_id);
+//                     let payloadId = Number(msgId.msgId);
+//                     if (memberListId === payloadId) {
+//                         idFlag = true;
+//                         let unreadNum = 0;
+//                         let atUser = '';
+//                         for (let c = j + 1; c < messageList.msgs.length; c++) {
+//                             if (messageList.msgs[c].content.from_id !== global.user) {
+//                                 unreadNum ++;
+//                                 let atList = messageList.msgs[c].content.at_list;
+//                                 if (messageHasAtList(atList) !== '') {
+//                                     atUser = messageHasAtList(atList);
+//                                 }
+//                             }
+//                         }
+//                         for (let conversation of state.conversation) {
+//                             let memberListKey = Number(messageList.key);
+//                             let conversationKey = Number(conversation.key);
+//                             if (memberListKey === conversationKey) {
+//                                 conversation.unreadNum = unreadNum;
+//                                 conversation.atUser = atUser;
+//                                 break;
+//                             }
+//                         }
+//                         break;
+//                     }
+//                 }
+//                 // 当localstorage里面存储该会话人，但是没有储存对应的msgId
+//                 if (!idFlag) {
+//                     hasNoMsgId(state, messageList);
+//                 }
+//                 break;
+//             }
+//         }
+//         // 当localstorage里面没有存储该会话人的msgId
+//         if (!flag) {
+//             hasNoMsgId(state, messageList);
+//         }
+//     }
+// }
 // 会话没有存储该msgId
-function hasNoMsgId(state, messageList) {
-    let unreadNum = 0;
-    let atUser = '';
-    for (let msg of messageList.msgs) {
-        if (msg.content.from_id !== global.user) {
-            unreadNum ++;
-            const text = messageHasAtList(msg.content.at_list);
-            if (text !== '') {
-                atUser = text;
-            }
-        }
-    }
-    for (let conversation of state.conversation) {
-        if (Number(messageList.key) === Number(conversation.key)) {
-            conversation.unreadNum = unreadNum;
-            conversation.atUser = atUser;
-            break;
-        }
-    }
-}
+// function hasNoMsgId(state, messageList) {
+//     let unreadNum = 0;
+//     let atUser = '';
+//     for (let msg of messageList.msgs) {
+//         if (msg.content.from_id !== global.user) {
+//             unreadNum ++;
+//             const text = messageHasAtList(msg.content.at_list);
+//             if (text !== '') {
+//                 atUser = text;
+//             }
+//         }
+//     }
+//     for (let conversation of state.conversation) {
+//         if (Number(messageList.key) === Number(conversation.key)) {
+//             conversation.unreadNum = unreadNum;
+//             conversation.atUser = atUser;
+//             break;
+//         }
+//     }
+// }
 // 完成消息的发送接口的调用后，返回成功或者失败状态
 function sendMsgComplete(state: ChatStore, payload) {
     if (payload.success === 2) {

@@ -79,5 +79,6 @@ export const chatInit = {
     },
     readObj: {},
     groupShield: [],
-    createGroupSearch: []
+    createGroupSearch: [],
+    unreadCount: {}
 };

@@ -84,4 +84,5 @@ export interface ChatStore {
     readObj: Object;
     groupShield: Array<any>;
     createGroupSearch: object;
+    unreadCount: object;
 }
