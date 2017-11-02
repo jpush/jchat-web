@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { appAction } from './actions';
 import { global } from './services/common/global';
-import '../assets/static/js/jmessage-sdk-web.2.4.1.min.js';
+import '../assets/static/js/jmessage-sdk-web.2.5.0.min.js';
 declare function JMessage(obj ?: Object): void;
 
 @Component({

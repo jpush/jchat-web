@@ -1348,7 +1348,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         this.businessCardSend.emit(user);
      }
      private jpushEmojiSelectEmit(jpushEmoji) {
-        console.log(jpushEmoji);
         this.sendPic.emit({
             jpushEmoji,
             type: 'jpushEmoji'

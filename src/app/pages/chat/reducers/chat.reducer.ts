@@ -60,7 +60,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 接收消息
         case chatAction.receiveMessageSuccess:
             addMessage(state, payload);
-            // newMessageFilterMsgId(state, payload);
+            newMessageIsActive(state, payload);
             break;
             // 发送单聊文本消息
         case chatAction.sendSingleMessage:
@@ -603,9 +603,9 @@ function filterAtList(state) {
         }
     }
 }
-function emptyUnreadCount(state) {
-    state.unreadCount = {};
-}
+// function emptyUnreadCount(state) {
+//     state.unreadCount = {};
+// }
 // 上报已读回执，防止漏报
 function filterReceiptReport(state, payload) {
     if (payload.msg_id.length === 0) {
@@ -686,22 +686,22 @@ function addToGroupList(state, payload) {
     });
 }
 // 收到新消息，如果是当前会话，需要更新用来计算未读数的msgId
-// function newMessageFilterMsgId(state, payload) {
-//     let singleFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
-//         && state.newMessage.msg_type === 3;
-//     let groupFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
-//         && state.newMessage.msg_type === 4;
-//     state.newMessageIsActive = (singleFlag || groupFlag) ? true : false;
-//     if (state.newMessageIsActive) {
-//         let newMsgKey = [];
-//         newMsgKey.push({
-//             key: payload.messages[0].key,
-//             name: payload.messages[0].content.from_id,
-//             type: payload.messages[0].msg_type
-//         });
-//         state.msgId = updateFilterMsgId(state, newMsgKey);
-//     }
-// }
+function newMessageIsActive(state, payload) {
+    let singleFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
+        && state.newMessage.msg_type === 3;
+    let groupFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
+        && state.newMessage.msg_type === 4;
+    state.newMessageIsActive = (singleFlag || groupFlag) ? true : false;
+    // if (state.newMessageIsActive) {
+    //     let newMsgKey = [];
+    //     newMsgKey.push({
+    //         key: payload.messages[0].key,
+    //         name: payload.messages[0].content.from_id,
+    //         type: payload.messages[0].msg_type
+    //     });
+    //     state.msgId = updateFilterMsgId(state, newMsgKey);
+    // }
+}
 // 保存备注名成功
 function saveMemoNameSuccess(state, payload) {
     for (let user of payload.to_usernames) {
