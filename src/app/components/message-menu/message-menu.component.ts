@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter,
     HostListener, AfterViewInit } from '@angular/core';
 import * as Clipboard from 'clipboard/dist/clipboard.min.js';
+
 @Component({
     selector: 'message-menu-component',
     templateUrl: './message-menu.component.html',

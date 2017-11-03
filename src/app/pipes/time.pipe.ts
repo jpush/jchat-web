@@ -5,6 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({
     name: 'time'
 })
+
 export class TimePipe implements PipeTransform {
     public transform(time, str: string): string {
         let t = new Date(time);

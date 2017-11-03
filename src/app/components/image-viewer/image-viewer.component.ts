@@ -3,6 +3,7 @@ import { Component, OnInit, Input, Output, EventEmitter,
 import { Store, Action } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
 import * as download from 'downloadjs';
+
 @Component({
     selector: 'image-viewer-component',
     templateUrl: './image-viewer.component.html',

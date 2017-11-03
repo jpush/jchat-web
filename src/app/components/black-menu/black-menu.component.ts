@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-
+import { Util } from '../../services/util';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
@@ -31,12 +31,6 @@ export class BlackMenuComponent implements OnInit {
         this.delSingleBlack.emit(item);
     }
     private avatarLoad(event) {
-        if (event.target.offsetHeight > event.target.offsetWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
 }

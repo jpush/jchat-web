@@ -8,7 +8,6 @@ import { appAction } from '../../../actions';
 import { global } from '../../../services/common/global';
 
 @Injectable()
-
 export class LoginEffect {
     // 登录
     @Effect()

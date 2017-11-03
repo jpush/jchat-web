@@ -2,12 +2,13 @@ import { Component, OnInit, Input, Output, EventEmitter, ViewChild,
     HostListener, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-
 import { AppStore } from '../../app.store';
 import { chatAction } from '../../pages/chat/actions';
 import { global } from '../../services/common';
+import { Util } from '../../services/util';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
+
 @Component({
     selector: 'group-setting-component',
     templateUrl: './group-setting.component.html',
@@ -167,13 +168,7 @@ export class GroupSettingComponent implements OnInit {
         this.deleteMember.emit(item);
     }
     private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;

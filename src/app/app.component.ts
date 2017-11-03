@@ -10,6 +10,7 @@ declare function JMessage(obj ?: Object): void;
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
+
 export class AppComponent implements OnInit, OnDestroy {
     private appStream$;
     private tipModal = {
@@ -22,8 +23,8 @@ export class AppComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         // 创建JIM 对象
         global.JIM = new JMessage({
-            debug: true,
-            address: 'ws://183.232.25.91:9091'
+            // debug: true,
+            address: 'ws://183.232.25.91:9092'
         });
         this.appStream$ = this.store$.select((state) => {
             let appState = state['appReducer'];

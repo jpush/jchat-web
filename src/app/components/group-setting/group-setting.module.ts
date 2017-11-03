@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { GroupSettingComponent } from './group-setting.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
@@ -31,4 +30,5 @@ import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
   ],
   providers: []
 })
+
 export class GroupSettingModule {}

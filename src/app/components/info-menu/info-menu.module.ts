@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { InfoMenuComponent } from './info-menu.component';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { InfoMenuComponent } from './info-menu.component';
   ],
   providers: []
 })
+
 export class InfoMenuModule {}

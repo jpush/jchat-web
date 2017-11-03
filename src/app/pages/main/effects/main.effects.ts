@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import { AppStore } from '../../../app.store';
 import { mainAction } from '../actions';
 import { chatAction } from '../../../pages/chat/actions';
@@ -11,10 +10,8 @@ import { global, authPayload } from '../../../services/common';
 import { md5 } from '../../../services/tools';
 import { Util } from '../../../services/util';
 import { appAction } from '../../../actions';
-let util = new Util();
 
 @Injectable()
-
 export class MainEffect {
     // 获取个人信息
     @Effect ()
@@ -647,7 +644,7 @@ export class MainEffect {
         .map(toPayload)
         .switchMap((val) => {
             const timestamp = new Date().getTime();
-            const signature = util.createSignature(timestamp);
+            const signature = Util.createSignature(timestamp);
             const loginObj = global.JIM.init({
                 appkey: authPayload.appKey,
                 random_str: authPayload.randomStr,

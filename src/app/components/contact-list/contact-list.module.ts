@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { ContactListComponent } from './contact-list.component';
 import { BadgeModule } from 'jpush-ui/badge';
 
@@ -19,4 +18,5 @@ import { BadgeModule } from 'jpush-ui/badge';
   ],
   providers: []
 })
+
 export class ContactListModule {}

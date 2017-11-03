@@ -14,13 +14,13 @@ import * as Push from 'push.js';
     styleUrls: ['./chat.component.scss'],
     templateUrl: './chat.component.html'
 })
+
 export class ChatComponent implements OnInit, OnDestroy {
     @Input()
         private hideAll;
     private isLoadedSubject$ = new Subject();
     private isLoaded$ = this.isLoadedSubject$.asObservable();
     private isLoaded = false;
-    private util: Util = new Util();
     private chatStream$;
     private conversationList = [];
     private messageList = [
@@ -1408,7 +1408,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.sendPicContent(msgs, data.info, data.img);
         // 正常发送图片
         } else if (data.type === 'send') {
-            this.util.imgReader(file, () => {
+            Util.imgReader(file, () => {
                 this.store$.dispatch({
                     type: mainAction.showModalTip,
                     payload: {
@@ -1549,7 +1549,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         // repeatSend = true重发消息
         let msgs;
         if (!data.repeatSend) {
-            const ext = this.util.getExt(data.fileData.name);
+            const ext = Util.getExt(data.fileData.name);
             msgs  = {
                 content: {
                     create_time: (new Date()).getTime(),
@@ -1573,7 +1573,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
         // 发送单聊文件
         if (this.active.type === 3 && !data.repeatSend) {
-            const ext = this.util.getExt(data.fileData.name);
+            const ext = Util.getExt(data.fileData.name);
             let singleFile = {
                 file: data.file,
                 target_username: this.active.name,
@@ -1597,7 +1597,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             });
         // 发送群组文件
         }else if (this.active.type === 4 && !data.repeatSend) {
-            const ext = this.util.getExt(data.fileData.name);
+            const ext = Util.getExt(data.fileData.name);
             let groupFile = {
                 file : data.file,
                 target_gid: this.active.key,
@@ -1904,7 +1904,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.messageTransmit.list = this.conversationList;
         this.messageTransmit.show = true;
         this.messageTransmit.type = 'msgTransmit';
-        this.transmitItem = this.util.deepCopyObj(item);
+        this.transmitItem = Util.deepCopyObj(item);
     }
     // 转发消息或发送名片弹窗搜索
     private searchMessageTransmitEmit(keywords) {
@@ -2130,7 +2130,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 获取图片对象
     private getImgObj(file) {
-        this.util.getAvatarImgObj(file, () => {
+        Util.getAvatarImgObj(file, () => {
             this.selectIsNotImage();
         }, () => {
             this.store$.dispatch({

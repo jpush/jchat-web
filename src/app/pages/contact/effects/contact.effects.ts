@@ -4,13 +4,11 @@ import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appAction } from '../../../actions';
-
 import { global, authPayload } from '../../../services/common';
 import { AppStore } from '../../../app.store';
 import { contactAction } from '../actions';
 
 @Injectable()
-
 export class ContactEffect {
     // 获取群组列表
     @Effect()

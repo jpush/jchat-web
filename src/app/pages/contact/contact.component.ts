@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-
 import { global, authPayload } from '../../services/common';
 import { AppStore } from '../../app.store';
 import { contactAction } from './actions';
@@ -12,6 +11,7 @@ import { chatAction } from '../chat/actions';
     styleUrls: ['./contact.component.scss'],
     templateUrl: './contact.component.html'
 })
+
 export class ContactComponent implements OnInit, OnDestroy {
     private contactStream$;
     private groupList = [];

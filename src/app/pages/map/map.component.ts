@@ -7,8 +7,8 @@ import { Util } from '../../services/util';
     styleUrls: ['./map.component.scss'],
     templateUrl: './map.component.html'
 })
+
 export class MapComponent implements OnInit {
-    private util = new Util();
     private errorTipShow = false;
     constructor(
         private activatedRoute: ActivatedRoute
@@ -22,7 +22,7 @@ export class MapComponent implements OnInit {
         if (Number.isNaN(arr[0]) || Number.isNaN(arr[1])) {
             this.errorTipShow = true;
         } else {
-            this.util.theLocation({
+            Util.theLocation({
                 id: 'mapContainer',
                 longitude: arr[0],
                 latitude: arr[1],

@@ -528,7 +528,7 @@ export const emojiConfig = [
 export const jpushConfig = [
     {
         imgNum: 1,
-        text: '',
+        text: '呆萌',
         body: {
             format: 'png',
             fsize: 4533,
@@ -544,7 +544,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 2,
-        text: '',
+        text: '卡哇伊',
         body: {
             format: 'png',
             fsize: 4361,
@@ -560,7 +560,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 3,
-        text: '',
+        text: '笑哭',
         body: {
             format: 'png',
             fsize: 5562,
@@ -576,7 +576,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 4,
-        text: '',
+        text: '羞哒哒',
         body: {
             format: 'png',
             fsize: 4652,
@@ -593,7 +593,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 5,
-        text: '',
+        text: '闪瞎',
         body: {
             format: 'png',
             fsize: 4939,
@@ -610,7 +610,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 6,
-        text: '',
+        text: '什么情况',
         body: {
             format: 'png',
             fsize: 4282,
@@ -627,7 +627,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 7,
-        text: '',
+        text: '怒气冲天',
         body: {
             format: 'png',
             fsize: 4998,
@@ -644,7 +644,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 8,
-        text: '',
+        text: '吓屁了',
         body: {
             format: 'png',
             fsize: 5197,
@@ -661,7 +661,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 9,
-        text: '',
+        text: '额~尴尬了',
         body: {
             format: 'png',
             fsize: 4117,
@@ -678,7 +678,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 10,
-        text: '',
+        text: '哭泣',
         body: {
             format: 'png',
             fsize: 5169,
@@ -695,7 +695,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 11,
-        text: '',
+        text: '流汗',
         body: {
             format: 'png',
             fsize: 4411,
@@ -712,7 +712,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 12,
-        text: '',
+        text: '懵逼了',
         body: {
             format: 'png',
             fsize: 4676,
@@ -729,7 +729,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 13,
-        text: '',
+        text: '笑死',
         body: {
             format: 'png',
             fsize: 5012,
@@ -746,7 +746,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 14,
-        text: '',
+        text: '约会周公',
         body: {
             format: 'png',
             fsize: 4393,
@@ -763,7 +763,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 15,
-        text: '',
+        text: '哼哼哈嘿',
         body: {
             format: 'png',
             fsize: 5157,
@@ -780,7 +780,7 @@ export const jpushConfig = [
     },
     {
         imgNum: 16,
-        text: '',
+        text: '我是老大',
         body: {
             format: 'png',
             fsize: 4882,
@@ -797,14 +797,14 @@ export const jpushConfig = [
     },
     {
         imgNum: 17,
-        text: '',
+        text: '嘴儿一个',
         body: {
             format: 'png',
-            fsize: 4591,
+            fsize: 4684,
             height: 240,
             loading: true,
-            media_crc32: 3703220224,
-            media_id: 'qiniu/image/j/60B4C128E7B2DF0E8893BE0B2C6FCAF7.png',
+            media_crc32: 3617721261,
+            media_id: 'qiniu/image/j/28A4148B84584B542C7AA2F28902D619.png',
             media_url: '../../../assets/images/jpush/17.png',
             width: 240,
             extras: {
@@ -814,14 +814,14 @@ export const jpushConfig = [
     },
     {
         imgNum: 18,
-        text: '',
+        text: '看我大白眼',
         body: {
             format: 'png',
-            fsize: 5555,
+            fsize: 4591,
             height: 240,
             loading: true,
-            media_crc32: 3903917023,
-            media_id: 'qiniu/image/j/93F5C6A5E4192817218C84230F42C528.png',
+            media_crc32: 3703220224,
+            media_id: 'qiniu/image/j/60B4C128E7B2DF0E8893BE0B2C6FCAF7.png',
             media_url: '../../../assets/images/jpush/18.png',
             width: 240,
             extras: {
@@ -831,14 +831,14 @@ export const jpushConfig = [
     },
     {
         imgNum: 19,
-        text: '',
+        text: '邪恶',
         body: {
             format: 'png',
-            fsize: 5478,
+            fsize: 5555,
             height: 240,
             loading: true,
-            media_crc32: 1300923030,
-            media_id: 'qiniu/image/j/BD43FA9BC130EC7D2994446FBF6C3985.png',
+            media_crc32: 3903917023,
+            media_id: 'qiniu/image/j/93F5C6A5E4192817218C84230F42C528.png',
             media_url: '../../../assets/images/jpush/19.png',
             width: 240,
             extras: {
@@ -848,14 +848,14 @@ export const jpushConfig = [
     },
     {
         imgNum: 20,
-        text: '',
+        text: '32个赞',
         body: {
             format: 'png',
-            fsize: 5599,
+            fsize: 5478,
             height: 240,
             loading: true,
-            media_crc32: 3165375826,
-            media_id: 'qiniu/image/j/118E97F05277755DB8A48403BE7DD302.png',
+            media_crc32: 1300923030,
+            media_id: 'qiniu/image/j/BD43FA9BC130EC7D2994446FBF6C3985.png',
             media_url: '../../../assets/images/jpush/20.png',
             width: 240,
             extras: {
@@ -865,14 +865,14 @@ export const jpushConfig = [
     },
     {
         imgNum: 21,
-        text: '',
+        text: '拜拜了您的',
         body: {
             format: 'png',
-            fsize: 5988,
+            fsize: 5599,
             height: 240,
             loading: true,
-            media_crc32: 232147965,
-            media_id: 'qiniu/image/j/47C8CF846603D31687B08B20ED42AC29.png',
+            media_crc32: 3165375826,
+            media_id: 'qiniu/image/j/118E97F05277755DB8A48403BE7DD302.png',
             media_url: '../../../assets/images/jpush/21.png',
             width: 240,
             extras: {
@@ -882,14 +882,14 @@ export const jpushConfig = [
     },
     {
         imgNum: 22,
-        text: '',
+        text: '哇~红包',
         body: {
             format: 'png',
-            fsize: 6438,
+            fsize: 5988,
             height: 240,
             loading: true,
-            media_crc32: 1228539628,
-            media_id: 'qiniu/image/j/29D3BD633FF812048A2CAD8965B8194E.png',
+            media_crc32: 232147965,
+            media_id: 'qiniu/image/j/47C8CF846603D31687B08B20ED42AC29.png',
             media_url: '../../../assets/images/jpush/22.png',
             width: 240,
             extras: {
@@ -899,14 +899,14 @@ export const jpushConfig = [
     },
     {
         imgNum: 23,
-        text: '',
+        text: '冻人不美丽',
         body: {
             format: 'png',
-            fsize: 4668,
+            fsize: 6438,
             height: 240,
             loading: true,
-            media_crc32: 4265504358,
-            media_id: 'qiniu/image/j/50E0597DB7761F9353DDE658D8837D9C.png',
+            media_crc32: 1228539628,
+            media_id: 'qiniu/image/j/29D3BD633FF812048A2CAD8965B8194E.png',
             media_url: '../../../assets/images/jpush/23.png',
             width: 240,
             extras: {
@@ -916,14 +916,14 @@ export const jpushConfig = [
     },
     {
         imgNum: 24,
-        text: '',
+        text: '呆若木鸡',
         body: {
             format: 'png',
-            fsize: 4684,
+            fsize: 4668,
             height: 240,
             loading: true,
-            media_crc32: 3617721261,
-            media_id: 'qiniu/image/j/28A4148B84584B542C7AA2F28902D619.png',
+            media_crc32: 4265504358,
+            media_id: 'qiniu/image/j/50E0597DB7761F9353DDE658D8837D9C.png',
             media_url: '../../../assets/images/jpush/24.png',
             width: 240,
             extras: {

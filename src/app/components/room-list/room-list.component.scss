@@ -1,0 +1,35 @@
+.room-list{
+    .room-list-item{
+        padding: 14px 20px;
+        box-sizing: border-box;
+        cursor: pointer;
+        &:hover{
+            background-color: #f1f1f2;
+        }
+        .room-list-avatar{
+            width: 40px;
+            height: 40px;
+            overflow: hidden;
+            margin-right: 9px;
+            img{
+                display: block;
+            }
+        }
+        .room-list-info{
+            .room-list-name{
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                line-height: 20px;
+                margin-bottom: 3px;
+                font-size: 14px;
+                color: #2C2C2C;
+            }
+            .room-list-description{
+                color: #999;
+                font-size: 12px;
+                line-height: 17px;
+            }
+        }
+    }
+}

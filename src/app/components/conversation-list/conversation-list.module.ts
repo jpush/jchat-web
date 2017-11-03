@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
-
 import { ConversationListComponent } from './conversation-list.component';
 import { DayPipeModule, EmojiPipeModule, TimePipeModule,
          SanitizePipeModule } from '../../pipes';
@@ -28,4 +27,5 @@ import { BadgeModule } from 'jpush-ui/badge';
   ],
   providers: []
 })
+
 export class ConversationListModule {}

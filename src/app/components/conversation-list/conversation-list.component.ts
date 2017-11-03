@@ -1,7 +1,9 @@
 import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { global } from '../../services/common';
+import { Util } from '../../services/util';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
+
 @Component({
     selector: 'conversation-list-component',
     templateUrl: './conversation-list.component.html',
@@ -61,12 +63,6 @@ export class ConversationListComponent implements OnInit {
         this.conversationToTop.emit(this.topPosition.item);
     }
     private avatarLoad(event, item) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
 }

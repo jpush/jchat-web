@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { CreateSingleChatComponent } from './create-single-chat.component';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { CreateSingleChatComponent } from './create-single-chat.component';
   ],
   providers: []
 })
+
 export class CreateSingleChatModule {}

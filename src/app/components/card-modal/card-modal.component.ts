@@ -1,9 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 import { Store } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
 import { mainAction } from '../../pages/main/actions';
 import { global } from '../../services/common';
+import { Util } from '../../services/util';
+const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'card-modal-component',
@@ -134,12 +135,6 @@ export class CardModalComponent implements OnInit {
         event.target.src = avatarErrorIcon;
     }
     private avatarLoad(event) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
 }

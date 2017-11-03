@@ -1,16 +1,13 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import { global, authPayload, StorageService } from '../../services/common';
 import { AppStore } from '../../app.store';
 import { mainAction } from './actions';
 import { contactAction } from '../contact/actions';
 import { chatAction } from '../chat/actions';
 import { md5 } from '../../services/tools';
-
 import { Util } from '../../services/util';
-
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
@@ -18,8 +15,8 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
     styleUrls: ['./main.component.scss'],
     templateUrl: './main.component.html'
 })
+
 export class MainComponent implements OnInit, OnDestroy {
-    private util: Util = new Util();
     private mainStream$;
     private global = global;
     private listTab = 0;
@@ -104,6 +101,14 @@ export class MainComponent implements OnInit, OnDestroy {
     };
     private contactHover = {
         tip: '通讯录',
+        position: {
+            left: 56,
+            top: 4
+        },
+        show: false
+    };
+    private roomHover = {
+        tip: '聊天室',
         position: {
             left: 56,
             top: 4
@@ -622,13 +627,7 @@ export class MainComponent implements OnInit, OnDestroy {
         this.settingMenu.show = false;
     }
     private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
     // 被其他设备登录踢
     private logoutKickEmit(info) {

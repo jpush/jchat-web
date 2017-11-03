@@ -1,0 +1,45 @@
+.room-detail{
+    width: 428px;
+    margin: 20% auto 0;
+    .gray{
+        color: #808080;
+        font-size: 14px;
+    }
+
+    .room-detail-info{
+        margin-bottom: 37px;
+        .room-detail-name{
+            font-size: 18px;
+            color: #2c2c2c;
+            line-height: 25px;
+            margin-bottom: 6px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .gray{
+            line-height: 20px;
+        }
+        .room-detail-avatar{
+            width: 70px;
+            height: 70px;
+            overflow: hidden;
+            img{
+                display: block;
+            }
+        }
+    }
+    .room-detail-member{
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+    .room-detail-description{
+        margin-bottom: 44px;
+    }
+    .room-detail-button{
+        text-align: center;
+        button{
+            width: 200px;
+        }
+    }
+}

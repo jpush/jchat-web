@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { DefaultPanelComponent } from './default-panel.component';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { DefaultPanelComponent } from './default-panel.component';
   ],
   providers: []
 })
+
 export class DefaultPanelModule {}

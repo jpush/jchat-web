@@ -14,6 +14,7 @@ declare function JMessage(obj ?: Object): void;
     styleUrls: ['./login.component.scss'],
     templateUrl: './login.component.html'
 })
+
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private username = '';
     private password = '';
@@ -22,7 +23,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private loginTip = '';
     private loginStream$;
     private isButtonAvailable = false;
-    private util: Util = new Util();
     private emptyPassword = false;
     private loginLoading = false;
     // 为了解决safari下记住密码时placeholder依然存在的bug
@@ -37,8 +37,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     public ngOnInit() {
         // 创建JIM 对象，退出登录后重新创建对象
         global.JIM = new JMessage({
-            debug: true,
-            address: 'ws://183.232.25.91:9091'
+            // debug: true,
+            address: 'ws://183.232.25.91:9092'
         });
         if (this.username !== '' && this.password !== '') {
             this.isButtonAvailableAction();
@@ -97,7 +97,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     private JIMInit() {
         const timestamp = new Date().getTime();
-        const signature = this.util.createSignature(timestamp);
+        const signature = Util.createSignature(timestamp);
         global.JIM.init({
             appkey: authPayload.appKey,
             random_str: authPayload.randomStr,

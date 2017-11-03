@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { SelfInfoComponent } from './self-info.component';
 import { SelectModule } from '../select';
 import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
@@ -26,4 +25,5 @@ import { GroupAvatarModule } from '../group-avatar';
   ],
   providers: []
 })
+
 export class SelfInfoModule {}

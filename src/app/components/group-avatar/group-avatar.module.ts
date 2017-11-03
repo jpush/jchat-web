@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { GroupAvatarComponent } from './group-avatar.component';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { GroupAvatarComponent } from './group-avatar.component';
   ],
   providers: []
 })
+
 export class GroupAvatarModule {}

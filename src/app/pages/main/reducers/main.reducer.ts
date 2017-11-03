@@ -1,5 +1,5 @@
 import { mainAction } from '../actions';
-import { MainStore } from '../stores/main.store';
+import { MainStore } from '../stores';
 import { mainInit } from '../model';
 import { contactAction } from '../../contact/actions';
 import { chatAction } from '../../chat/actions';

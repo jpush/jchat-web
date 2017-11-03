@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
 import { mainAction } from '../../pages/main/actions';
 import { chatAction } from '../../pages/chat/actions';
+import { Util } from '../../services/util';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
@@ -284,13 +285,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         }
     }
     private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
     private emptyTip() {
         this.nameTip = false;

@@ -5,6 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({
     name: 'videoTime'
 })
+
 export class VideoTimePipe implements PipeTransform {
   public transform(time): string {
     let newTime;

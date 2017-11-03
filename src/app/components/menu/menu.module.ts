@@ -17,4 +17,5 @@ import { MenuComponent } from './menu.component';
   ],
   providers: []
 })
+
 export class MenuModule {}

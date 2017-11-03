@@ -8,7 +8,6 @@ import { Util } from '../../services/util';
 
 @Injectable()
 export class MainCanActivate implements CanActivate {
-    private util: Util = new Util();
     private username = '';
     private password = '';
     constructor(
@@ -36,7 +35,7 @@ export class MainCanActivate implements CanActivate {
     }
     private JIMInit(resolve) {
         const timestamp = new Date().getTime();
-        const signature = this.util.createSignature(timestamp);
+        const signature = Util.createSignature(timestamp);
         global.JIM.init({
             appkey: authPayload.appKey,
             random_str: authPayload.randomStr,

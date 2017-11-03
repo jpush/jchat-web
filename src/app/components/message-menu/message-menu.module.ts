@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { MessageMenuComponent } from './message-menu.component';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { MessageMenuComponent } from './message-menu.component';
   ],
   providers: []
 })
+
 export class MessageMenuModule {}

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { FileNamePipe } from './file-name.pipe';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { FileNamePipe } from './file-name.pipe';
   ],
   providers: []
 })
+
 export class FileNamePipeModule {}

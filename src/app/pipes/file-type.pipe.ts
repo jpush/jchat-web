@@ -5,6 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({
     name: 'fileType'
 })
+
 export class FileTypePipe implements PipeTransform {
   public transform(ext) {
     if (ext === '') {

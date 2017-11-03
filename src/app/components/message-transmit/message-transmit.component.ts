@@ -5,9 +5,10 @@ import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
 import { mainAction } from '../../pages/main/actions';
 import { chatAction } from '../../pages/chat/actions';
+import { global } from '../../services/common';
+import { Util } from '../../services/util';
 const singleErrorIcon = '../../../assets/images/single-avatar.svg';
 const groupErrorIcon = '../../../assets/images/group-avatar.svg';
-import { global } from '../../services/common';
 
 @Component({
     selector: 'message-transmit-component',
@@ -36,7 +37,7 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
     constructor(
         private store$: Store<any>
     ) {
-
+        // pass
     }
     public ngOnInit() {
         this.init();
@@ -154,10 +155,6 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
                 member.checked = event.target.checked;
                 return ;
             }
-            // if (Number(member.key) === Number(user.key)) {
-            //     member.checked = event.target.checked;
-            //     return ;
-            // }
         }
     }
     private cancelSelect(user) {
@@ -186,12 +183,6 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
         }
     }
     private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
 }

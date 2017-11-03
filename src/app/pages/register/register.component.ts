@@ -13,8 +13,8 @@ declare function JMessage(obj ?: Object): void;
     styleUrls: ['./register.component.scss'],
     templateUrl: './register.component.html'
 })
+
 export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
-    private util: Util = new Util();
     private info = {
         username: '',
         password: '',
@@ -73,7 +73,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     private JIMInit() {
         const timestamp = new Date().getTime();
-        const signature = this.util.createSignature(timestamp);
+        const signature = Util.createSignature(timestamp);
         global.JIM.init({
             appkey: authPayload.appKey,
             random_str: authPayload.randomStr,

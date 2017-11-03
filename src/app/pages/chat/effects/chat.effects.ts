@@ -14,9 +14,7 @@ import { mainAction } from '../../main/actions';
 import { Util } from '../../../services/util';
 
 @Injectable()
-
 export class ChatEffect {
-    private util: Util = new Util();
     // 同步自己发送的消息
     @Effect()
     private syncReceiveMessage$: Observable<Action> = this.actions$
@@ -347,14 +345,14 @@ export class ChatEffect {
                     if (j + 1 < dataItem.msgs.length || dataItem.msgs.length === 1) {
                         if (j === 0) {
                             dataItem.msgs[j].time_show =
-                                this.util.reducerDate(dataItem.msgs[j].ctime_ms);
+                                Util.reducerDate(dataItem.msgs[j].ctime_ms);
                         }
                         if (j + 1 !== dataItem.msgs.length) {
                             let timeGap =
                             (dataItem.msgs[j + 1].ctime_ms - dataItem.msgs[j].ctime_ms) / 1000 / 60;
                             if (timeGap > 5) {
                                 dataItem.msgs[j + 1].time_show =
-                                    this.util.reducerDate(dataItem.msgs[j + 1].ctime_ms);
+                                    Util.reducerDate(dataItem.msgs[j + 1].ctime_ms);
                             }
                         }
                     }
@@ -1568,7 +1566,7 @@ export class ChatEffect {
         .switchMap((info) => {
             const groupMemberObj = global.JIM.getGroupMembers({gid: info.key})
             .onSuccess((data) => {
-                this.util.getMembersFirstLetter(data.member_list);
+                Util.getMembersFirstLetter(data.member_list);
                 this.store$.dispatch({
                     type: chatAction.groupInfo,
                     payload: {
@@ -2174,7 +2172,7 @@ export class ChatEffect {
                         if (msgs[i].content.msg_body.extras.video) {
                             type = 'video';
                         } else if (msgs[i].content.msg_body.extras.fileType) {
-                            type = this.util.sortByExt(msgs[i].content.msg_body.extras.fileType);
+                            type = Util.sortByExt(msgs[i].content.msg_body.extras.fileType);
                         } else {
                             type = 'other';
                         }

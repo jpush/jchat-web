@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
-
+import { Util } from '../../services/util';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
@@ -41,12 +41,6 @@ export class LinkmanListComponent implements OnInit, DoCheck {
         this.selectLinkmanItemEmit.emit(item);
     }
     private avatarLoad(event) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
 }

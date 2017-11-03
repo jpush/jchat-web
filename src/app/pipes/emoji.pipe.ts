@@ -6,6 +6,7 @@ import { Emoji } from '../services/tools';
 @Pipe({
     name: 'emoji'
 })
+
 export class EmojiPipe implements PipeTransform {
   public transform(text, option) {
     let newText = text.replace(/</g, '&lt;');

@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter,
     OnChanges, ElementRef, AfterViewInit } from '@angular/core';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 import { Util } from '../../services/util';
 import { Store } from '@ngrx/store';
 import { mainAction } from '../../pages/main/actions';
+const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'self-info-component',
@@ -12,7 +12,6 @@ import { mainAction } from '../../pages/main/actions';
 })
 
 export class SelfInfoComponent implements OnChanges, AfterViewInit {
-    private util: Util = new Util();
     @Input()
         private selfInfo;
     // 用来标识更新个人信息成功
@@ -167,7 +166,7 @@ export class SelfInfoComponent implements OnChanges, AfterViewInit {
     }
     // 获取图片对象
     private getImgObj(file) {
-        this.util.getAvatarImgObj(file, () => {
+        Util.getAvatarImgObj(file, () => {
             this.selectIsNotImage.emit();
         }, () => {
             this.store$.dispatch({
@@ -205,12 +204,6 @@ export class SelfInfoComponent implements OnChanges, AfterViewInit {
         this.selfAvatarImg.src = this.selfInfo.info.avatarUrl;
     }
     private avatarLoad(event) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        }else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
 }

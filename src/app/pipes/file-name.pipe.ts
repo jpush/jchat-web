@@ -5,6 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({
     name: 'fileName'
 })
+
 export class FileNamePipe implements PipeTransform {
     public transform(fileName, num): string {
         if (fileName.length <= num) {

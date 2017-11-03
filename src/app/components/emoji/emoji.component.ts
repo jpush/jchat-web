@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter,
     HostListener, ElementRef } from '@angular/core';
-
 import { Util } from '../../services/util';
 import { imgRouter, jpushRouter } from '../../services/common';
 
@@ -15,7 +14,6 @@ export class EmojiComponent implements OnInit {
         private emojiInfo;
     @Output()
         private jpushEmojiSelect: EventEmitter<any> = new EventEmitter();
-    private util = new Util();
     private imgRouter = imgRouter;
     private jpushRouter = jpushRouter;
     private tab = 0;
@@ -39,7 +37,7 @@ export class EmojiComponent implements OnInit {
         let contentId = document.getElementById(this.emojiInfo.contentId);
         let insertHtml = this.elementRef.nativeElement.querySelector('#' + idName).innerHTML;
         insertHtml = insertHtml.replace('width="22', 'width="18');
-        this.util.insertAtCursor(contentId, insertHtml, false);
+        Util.insertAtCursor(contentId, insertHtml, false);
         this.emojiInfo.show = false;
     }
     private changeTab(event, index) {

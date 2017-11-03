@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, trigger, state, style, 
         animate, HostListener, ElementRef, OnChanges, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
+import { Util } from '../../services/util';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
@@ -111,12 +112,6 @@ export class SearchUserComponent implements OnInit, OnChanges {
         event.stopPropagation();
     }
     private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
 }

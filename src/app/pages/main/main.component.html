@@ -17,6 +17,10 @@
                     </div>
                     <hover-tip-component [hidden]="!contactHover.show" [hoverInfo]="contactHover"></hover-tip-component>
                 </div>
+                <div (click)="changeListTab(2)" class="main-chat">
+                    <div class="main-room-icon" [ngClass]="{active: listTab === 2}" [hoverEvent]="roomHover"></div>
+                    <hover-tip-component [hidden]="!roomHover.show" [hoverInfo]="roomHover"></hover-tip-component>
+                </div>
             </div>
             <div class="main-add-container">
                 <div class="main-add-single">
@@ -35,7 +39,8 @@
             <search-user-component [searchUserResult]="searchUserResult" (searchUser)="searchUserEmit($event)" (selectUserResult)="selectUserResultEmit($event)"></search-user-component>
             <div class="display-flex main-center-container flex-1" style="position: relative;">
                 <chat-component [hideAll]="listTab === 0" [ngClass]="{'flex-1': listTab === 0}" style="position: relative;"></chat-component>
-                <contact-component [hidden]="listTab === 0" class="flex-1"></contact-component>
+                <contact-component [hidden]="listTab !== 1" class="flex-1"></contact-component>
+                <room-component [hidden]="listTab !== 2" class="flex-1" style="position: relative;"></room-component>
             </div>
         </div>
     </div>

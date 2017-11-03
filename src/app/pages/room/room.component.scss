@@ -1,0 +1,15 @@
+.room-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .room-list-container{
+        width: 270px;
+        min-height: 100%;
+        background-color: #fff;
+        box-sizing: border-box;
+        position: relative;
+        border-right: 1px solid #d8dfe4;
+    }
+}

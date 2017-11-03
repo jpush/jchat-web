@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter,
     OnChanges, DoCheck, HostListener, ElementRef } from '@angular/core';
-import { authPayload} from '../../services/common';
+import { authPayload } from '../../services/common';
+import { Util } from '../../services/util';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
@@ -161,13 +162,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         }, 0);
     }
     private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
     }
     private verifyBtn(num) {
         this.otherInfo.info.stateType = num;

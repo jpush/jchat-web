@@ -4,7 +4,6 @@ import { contactInit } from '../model';
 import { mainAction } from '../../main/actions';
 import { chatAction } from '../../chat/actions';
 import { Util } from '../../../services/util';
-let util = new Util();
 import { global } from '../../../services/common';
 
 export const contactReducer = (state: ContactStore = contactInit, {type, payload}) => {
@@ -16,7 +15,7 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             break;
             // 传递群列表
         case chatAction.dispatchGroupList:
-            state.groupList = util.sortByLetter(payload);
+            state.groupList = Util.sortByLetter(payload);
             break;
             // 切换联系人或者会话的tab
         case mainAction.changeListTab:
@@ -55,7 +54,7 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             break;
             // 传递好友列表的数据
         case chatAction.dispatchFriendList:
-            state.friendList = util.sortByLetter(payload);
+            state.friendList = Util.sortByLetter(payload);
             break;
             // 添加好友的应答事件
         case chatAction.friendReplyEventSuccess:

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { TipModalComponent } from './tip-modal.component';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { TipModalComponent } from './tip-modal.component';
   ],
   providers: []
 })
+
 export class TipModalModule {}

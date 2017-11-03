@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { ModifyPasswordComponent } from './modify-password.component';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { ModifyPasswordComponent } from './modify-password.component';
   ],
   providers: []
 })
+
 export class ModifyPasswordModule {}

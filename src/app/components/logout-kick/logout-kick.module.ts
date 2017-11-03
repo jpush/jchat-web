@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { LogoutKickComponent } from './logout-kick.component';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { LogoutKickComponent } from './logout-kick.component';
   ],
   providers: []
 })
+
 export class LogoutKickModule {}

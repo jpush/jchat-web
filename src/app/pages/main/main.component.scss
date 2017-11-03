@@ -20,7 +20,7 @@
             position: relative;
             z-index: 1;
             .main-self-avatar{
-                margin: 61px 0 88px 13px;
+                margin: 61px 0 57px 13px;
                 width: 44px;
                 height: 44px;
                 overflow: hidden;
@@ -58,6 +58,16 @@
                         }
                         &.active{
                             background-image: url(../../../assets/images/contact-active.svg);
+                        }
+                    }
+                    .main-room-icon{
+                        background: url(../../../assets/images/room-normal.svg) center center no-repeat;
+                        position: relative;          
+                        &:hover{
+                            background-image: url(../../../assets/images/room-active.svg);
+                        }
+                        &.active{
+                            background-image: url(../../../assets/images/room-active.svg);
                         }
                     }
                 }

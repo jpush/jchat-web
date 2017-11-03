@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { BlackMenuComponent } from './black-menu.component';
 import { SanitizePipeModule } from '../../pipes';
 
@@ -19,4 +18,5 @@ import { SanitizePipeModule } from '../../pipes';
   ],
   providers: []
 })
+
 export class BlackMenuModule {}

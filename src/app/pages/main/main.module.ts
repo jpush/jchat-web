@@ -23,6 +23,7 @@ import { MenuModule } from '../../components/menu';
 import { HoverTipModule } from '../../components/hover-tip';
 import { ChatModule } from '../chat';
 import { ContactModule } from '../contact';
+import { RoomModule } from '../room';
 import { HoverEventModule } from '../../directives';
 import { LogoutKickModule } from '../../components//logout-kick';
 import { SanitizePipeModule } from '../../pipes';
@@ -53,6 +54,7 @@ import { BadgeModule } from 'jpush-ui/badge';
     GroupSettingModule,
     ChatModule,
     ContactModule,
+    RoomModule,
     MenuModule,
     HoverTipModule,
     HoverEventModule,

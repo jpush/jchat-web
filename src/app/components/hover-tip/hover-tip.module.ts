@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { HoverTipComponent } from './hover-tip.component';
 
 @NgModule({
@@ -17,4 +16,5 @@ import { HoverTipComponent } from './hover-tip.component';
   ],
   providers: []
 })
+
 export class HoverTipModule {}

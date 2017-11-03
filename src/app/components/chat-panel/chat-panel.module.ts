@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { JsonpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
-
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import { ChatPanelComponent } from './chat-panel.component';
@@ -19,7 +18,6 @@ import {
   SanitizePipeModule,
   FileNamePipeModule
 } from '../../pipes';
-
 import { MyModelDirective } from '../../directives';
 import { EmojiModule } from '../emoji';
 import { HoverTipModule } from '../hover-tip';
@@ -72,4 +70,5 @@ import { CardModalModule } from '../../components/card-modal';
     StorageService
   ]
 })
+
 export class ChatPanelModule {}

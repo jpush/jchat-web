@@ -5,7 +5,6 @@ import { chatInit } from '../model';
 import { contactAction } from '../../contact/actions';
 import { global, authPayload } from '../../../services/common';
 import { Util } from '../../../services/util';
-let util = new Util();
 
 export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
     state.actionType = type;
@@ -966,7 +965,7 @@ function initGroupInfo(state, payload) {
                     for (let friend of state.friendList) {
                         if (friend.name === member.username) {
                             member.memo_name = friend.memo_name;
-                            util.getMemo_nameFirstLetter(member);
+                            Util.getMemo_nameFirstLetter(member);
                             break;
                         }
                     }
@@ -1020,7 +1019,7 @@ function updateGroupInfoEventSuccess(state, payload) {
     for (let list of state.messageList) {
         if (list.type === 4 && Number(list.key) === Number(payload.eventData.key)) {
             if (list.msgs.length > 0) {
-                if (util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
+                if (Util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
                     payload.eventData.ctime_ms)) {
                     msg.time_show = 'today';
                 }
@@ -1169,7 +1168,7 @@ function filterMsgFileImageViewer(state, type: string) {
                 if (message.content.msg_body.extras.video) {
                     fileType = 'video';
                 } else if (message.content.msg_body.extras.fileType) {
-                    fileType = util.sortByExt(message.content.msg_body.extras.fileType);
+                    fileType = Util.sortByExt(message.content.msg_body.extras.fileType);
                 } else {
                     fileType = 'other';
                 }
@@ -1200,7 +1199,7 @@ function filterMsgFile(state, type: string) {
                 if (message.content.msg_body.extras.video) {
                     fileType = 'video';
                 } else if (message.content.msg_body.extras.fileType) {
-                    fileType = util.sortByExt(message.content.msg_body.extras.fileType);
+                    fileType = Util.sortByExt(message.content.msg_body.extras.fileType);
                 } else {
                     fileType = 'other';
                 }
@@ -1222,7 +1221,7 @@ function filterMsgFile(state, type: string) {
     for (let i = fileArr.length - 1; i >= 0; i--) {
         const time = new Date (fileArr[i].ctime_ms);
         const year = time.getFullYear();
-        const month = util.doubleNumber(time.getMonth() + 1);
+        const month = Util.doubleNumber(time.getMonth() + 1);
         let flag = true;
         const showTime = year + '年' + month + '月';
         for (let item of msgFile) {
@@ -1357,7 +1356,7 @@ function modifyActiveMessageList(state, payload) {
         for (let member of messageList.groupSetting.memberList) {
             if (member.username === payload.name || member.username === payload.username) {
                 member.memo_name = payload.memo_name;
-                util.getMemo_nameFirstLetter(member);
+                Util.getMemo_nameFirstLetter(member);
             }
         }
     }
@@ -1439,7 +1438,7 @@ function addNewFriendToConversation(state, payload, type) {
             msg_type: 'event'
         },
         time_show: '',
-        conversation_time_show: util.reducerDate(payload.ctime_ms)
+        conversation_time_show: Util.reducerDate(payload.ctime_ms)
     };
     for (let i = 0; i < state.conversation.length; i++) {
         if (state.conversation[i].type === 3 && state.conversation[i].name === payload.name) {
@@ -1447,12 +1446,12 @@ function addNewFriendToConversation(state, payload, type) {
                 if (state.conversation[i].name === list.name &&
                     state.conversation[i].appkey === list.appkey) {
                     if (list.msgs.length > 0) {
-                        if (util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
+                        if (Util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
                             payload.ctime_ms)) {
-                            msg.time_show = util.reducerDate(payload.ctime_ms);
+                            msg.time_show = Util.reducerDate(payload.ctime_ms);
                         }
                     } else {
-                        msg.time_show = util.reducerDate(payload.ctime_ms);
+                        msg.time_show = Util.reducerDate(payload.ctime_ms);
                     }
                     list.msgs.push(msg);
                     break;
@@ -1477,7 +1476,7 @@ function addNewFriendToConversation(state, payload, type) {
             name: payload.name,
             type: 3
         });
-        msg.time_show = util.reducerDate(payload.ctime_ms);
+        msg.time_show = Util.reducerDate(payload.ctime_ms);
     }
     item.recentMsg = msg;
     filterTopConversation(state, item);
@@ -1546,7 +1545,7 @@ function msgRetract(state, payload) {
                     },
                     msg_type: 'event'
                 },
-                conversation_time_show: util.reducerDate(payload.ctime_ms),
+                conversation_time_show: Util.reducerDate(payload.ctime_ms),
                 msg_type: msgType
             };
             payload.key = state.conversation[i].key;
@@ -1660,7 +1659,7 @@ function createGroupSuccessEvent(state, payload) {
                 },
                 msg_type: 'event'
             },
-            conversation_time_show: util.reducerDate(payload.ctime_ms),
+            conversation_time_show: Util.reducerDate(payload.ctime_ms),
             msg_type: 4
         }
     };
@@ -1683,7 +1682,7 @@ function createGroupSuccessEvent(state, payload) {
                         text: '创建群聊'
                     }
                 },
-                time_show: util.reducerDate(payload.ctime_ms)
+                time_show: Util.reducerDate(payload.ctime_ms)
             }
         ],
         type: 4
@@ -1709,7 +1708,7 @@ function isRecentmsg(state, payload, addGroupOther, operation, index) {
                         },
                         msg_type: 'event'
                     },
-                    conversation_time_show: util.reducerDate(payload.ctime_ms),
+                    conversation_time_show: Util.reducerDate(payload.ctime_ms),
                     msg_type: 4
                 };
             }
@@ -1725,7 +1724,7 @@ function isRecentmsg(state, payload, addGroupOther, operation, index) {
                 },
                 msg_type: 'event'
             },
-            conversation_time_show: util.reducerDate(payload.ctime_ms),
+            conversation_time_show: Util.reducerDate(payload.ctime_ms),
             msg_type: 4
         };
     }
@@ -1843,7 +1842,7 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
                     },
                     msg_type: 'event'
                 },
-                conversation_time_show: util.reducerDate(payload.ctime_ms),
+                conversation_time_show: Util.reducerDate(payload.ctime_ms),
                 msg_type: 4
             }
         };
@@ -1886,21 +1885,21 @@ function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
             let msgs = messageList.msgs;
             if (payload.isOffline) {
                 if (msgs.length === 0) {
-                    message.time_show = util.reducerDate(payload.ctime_ms);
+                    message.time_show = Util.reducerDate(payload.ctime_ms);
                     msgs.push(message);
                 } else if (msgs[msgs.length - 1].ctime_ms < payload.ctime_ms) {
-                    if (util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.ctime_ms)) {
-                        message.time_show = util.reducerDate(payload.ctime_ms);
+                    if (Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.ctime_ms)) {
+                        message.time_show = Util.reducerDate(payload.ctime_ms);
                     }
                     msgs.push(message);
                 } else {
                     for (let j = 0; j < msgs.length - 1; j++) {
                         if (msgs[j].ctime_ms < payload.ctime_ms &&
                             payload.ctime_ms < msgs[j + 1].ctime_ms) {
-                            if (util.fiveMinutes(msgs[j].ctime_ms, payload.ctime_ms)) {
-                                message.time_show = util.reducerDate(payload.ctime_ms);
+                            if (Util.fiveMinutes(msgs[j].ctime_ms, payload.ctime_ms)) {
+                                message.time_show = Util.reducerDate(payload.ctime_ms);
                             }
-                            if (!util.fiveMinutes(payload.ctime_ms, msgs[j + 1].ctime_ms)) {
+                            if (!Util.fiveMinutes(payload.ctime_ms, msgs[j + 1].ctime_ms)) {
                                 messageList.msgs[j + 1].time_show = '';
                             }
                             messageList.msgs.splice(j + 1, 0, message);
@@ -1910,8 +1909,8 @@ function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
                 }
             } else {
                 if (msgs.length === 0 ||
-                    util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.ctime_ms)) {
-                    message.time_show = util.reducerDate(payload.ctime_ms);
+                    Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.ctime_ms)) {
+                    message.time_show = Util.reducerDate(payload.ctime_ms);
                 }
                 msgs.push(message);
             }
@@ -1919,7 +1918,7 @@ function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
         }
     }
     if (flag2) {
-        message.time_show = util.reducerDate(payload.ctime_ms);
+        message.time_show = Util.reducerDate(payload.ctime_ms);
         state.messageList.push({
             key: payload.gid,
             msgs: [message],
@@ -2131,7 +2130,7 @@ function changeActivePerson(state: ChatStore) {
             for (let friend of state.friendList) {
                 if (friend.name === member.username) {
                     member.memo_name = friend.memo_name;
-                    util.getMemo_nameFirstLetter(member);
+                    Util.getMemo_nameFirstLetter(member);
                     break;
                 }
             }
@@ -2167,7 +2166,7 @@ function filterRecentMsg(state: ChatStore) {
                 let msgs = messageList.msgs;
                 if (msgs.length > 0) {
                     msgs[msgs.length - 1].conversation_time_show =
-                    util.reducerDate(msgs[msgs.length - 1].ctime_ms);
+                    Util.reducerDate(msgs[msgs.length - 1].ctime_ms);
                     conversation.recentMsg = msgs[msgs.length - 1];
                 }
                 break;
@@ -2457,7 +2456,7 @@ function transmitMessage (state, payload) {
             flag2 = false;
             let msgs = messageList.msgs;
             if (msgs.length === 0 ||
-                util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
+                Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
                 payload.msgs.time_show = 'today';
             }
             msgs.push(payload.msgs);
@@ -2592,7 +2591,7 @@ function addMessage(state: ChatStore, payload) {
             if (groupMsg || singleMsg) {
                 let msgs = messageList.msgs;
                 if (msgs.length === 0 ||
-                    util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, message.ctime_ms)) {
+                    Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, message.ctime_ms)) {
                     payload.messages[0].time_show = 'today';
                 }
                 msgs.push(payload.messages[0]);
@@ -2675,7 +2674,7 @@ function addMyselfMesssge(state: ChatStore, payload) {
                 (payload.active.type === 3 && messageList.name === payload.active.name)) {
                 let msgs = messageList.msgs;
                 if (msgs.length === 0 ||
-                    util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
+                    Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
                     payload.msgs.time_show = 'today';
                 }
                 msgs.push(payload.msgs);

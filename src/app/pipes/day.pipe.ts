@@ -1,10 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 /**
- * 将毫秒数转化成星期几
+ * 将数字转化成星期几
  */
 @Pipe({
     name: 'day'
 })
+
 export class DayPipe implements PipeTransform {
   public transform(time): string {
     let day = (new Date(time)).getDay();
