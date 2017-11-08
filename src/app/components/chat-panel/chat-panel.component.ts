@@ -13,7 +13,6 @@ import { Util } from '../../services/util';
 import { Emoji } from '../../services/tools';
 import * as download from 'downloadjs';
 const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-const imageError = '../../../assets/images/image-error.svg';
 
 @Component({
     selector: 'chat-panel-component',
@@ -73,9 +72,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             top: 0
         },
         emojiAlias: emojiConfig,
-        jpushAlias: jpushConfig,
-        content: '',
-        contentId: 'contentDiv'
+        jpushAlias: jpushConfig
     };
     private contentDiv;
     private chatStream$;
@@ -807,7 +804,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         if (this.inputToLast) {
             Util.focusLast(this.contentDiv);
         }
-        this.emojiInfo.content = this.messageList[this.active.activeIndex];
         if (this.emojiInfo.show === true) {
             this.emojiInfo.show = false;
             setTimeout(() => {
@@ -834,11 +830,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             }
         });
     }
-    // 输入框keydown，ctrl + enter换行，enter发送消息，@用户
+    // 输入框keydown，ctrl + enter换行，enter发送消息
     private preKeydown(event) {
         if (event.keyCode === 13 && event.ctrlKey) {
-            const contentId =
-                this.elementRef.nativeElement.querySelector('#' + this.emojiInfo.contentId);
             let insertHtml = '<br>';
             if (window.getSelection) {
                 let next = window.getSelection().focusNode.nextSibling;
@@ -861,7 +855,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                             userAgent.indexOf('Chrome') === -1;
             // safari自身可以换行，不用处理
             if (!isSafari) {
-                Util.insertAtCursor(contentId, insertHtml, false);
+                Util.insertAtCursor(this.contentDiv, insertHtml, false);
             }
         } else if (event.keyCode === 13) {
             this.sendMsgAction();
@@ -1134,6 +1128,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 触发滚动事件，上报已读回执
     private scrollY() {
+        if (this.msg.length === 0) {
+            return ;
+        }
         const domArr = document.getElementsByClassName('msg-dom');
         const offsetHeight = this.elementRef.nativeElement.querySelector('#imgViewer').offsetHeight;
         const scrollTop = this.componentScroll.directiveRef.geometry().y;
@@ -1331,16 +1328,16 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             });
         }
     }
-     private showBusinessCardModal() {
-         this.businessCard.show = true;
-     }
-     private businessCardSendEmit(user) {
+    private showBusinessCardModal() {
+        this.businessCard.show = true;
+    }
+    private businessCardSendEmit(user) {
         this.businessCardSend.emit(user);
-     }
-     private jpushEmojiSelectEmit(jpushEmoji) {
+    }
+    private jpushEmojiSelectEmit(jpushEmoji) {
         this.sendPic.emit({
             jpushEmoji,
             type: 'jpushEmoji'
         });
-     }
+    }
 }

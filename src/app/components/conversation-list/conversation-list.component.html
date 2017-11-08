@@ -1,4 +1,4 @@
-<div class="conversation-no-data" *ngIf="!conversationList || conversationList.length === 0">暂无联系人</div>
+<div class="list-no-data" *ngIf="!conversationList || conversationList.length === 0">暂无联系人</div>
 <perfect-scrollbar class="conversation-container">
     <ul class="conversation-list">
         <li *ngFor="let item of conversationList;let i = index;" (contextmenu)="contextmenu($event, item)" (click)="selectTarget(item)" [ngClass]="{'active': (active.type === 4 && (item.key == active.key || item.gid == active.key)) || (active.type === 3 && (item.name == active.name)), 'isTop': item?.extras?.top_time_ms}" class="display-flex">

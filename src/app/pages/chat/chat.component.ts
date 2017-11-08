@@ -5,6 +5,7 @@ import { global, authPayload, StorageService } from '../../services/common';
 import { AppStore } from '../../app.store';
 import { chatAction } from './actions';
 import { mainAction } from '../main/actions';
+import { roomAction } from '../room/actions';
 import { Util } from '../../services/util';
 import { contactAction } from '../contact/actions';
 import * as Push from 'push.js';
@@ -97,7 +98,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         show: false,
         type: ''
     };
-    private transmitItem = {
+    private transmitAllMsg = {
         content: {
             msg_type: '',
             from_id: '',
@@ -694,6 +695,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                     payload: chatState.groupList
                 });
                 break;
+            case roomAction.transmitAllMsg:
+                this.msgTransmitEmit(chatState.roomTransmitMsg)
+                break;
             default:
         }
     }
@@ -781,7 +785,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 转发消息成功的提示
     private modalTipTransmitSuccess (chatState) {
-        let count = this.transmitItem.totalTransmitNum;
+        let count = this.transmitAllMsg.totalTransmitNum;
         if (count !== 0 && chatState.transmitSuccess === count) {
             this.store$.dispatch({
                 type: mainAction.showModalTip,
@@ -795,7 +799,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     }
                 }
             });
-            this.transmitItem.totalTransmitNum = 0;
+            this.transmitAllMsg.totalTransmitNum = 0;
         }
     }
     // 事件消息
@@ -1237,7 +1241,6 @@ export class ChatComponent implements OnInit, OnDestroy {
          */
         let msgs: any = {
             content: {
-                create_time: new Date().getTime(),
                 msg_type: 'text',
                 from_id: global.user,
                 msg_body: {
@@ -1349,7 +1352,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 发送图片消息
     private sendPicEmit(data) {
-        let msgs;
         const file = this.elementRef.nativeElement.querySelector('#sendPic');
         // repeatSend = true重发消息
         if (data.repeatSend && this.active.type === 3 && data.isTransmitMsg) {
@@ -1405,7 +1407,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
         // 粘贴图片发送
         if (data.type === 'paste') {
-            this.sendPicContent(msgs, data.info, data.img);
+            this.sendPicContent(data.info, data.img);
         // 正常发送图片
         } else if (data.type === 'send') {
             Util.imgReader(file, () => {
@@ -1422,14 +1424,13 @@ export class ChatComponent implements OnInit, OnDestroy {
                     }
                 });
             }, (value) => {
-                this.sendPicContent(msgs, value, data.img);
+                this.sendPicContent(value, data.img);
             });
             // 发送极光熊表情
         } else if (data.type === 'jpushEmoji') {
             let msg = {
                 content: {
                     from_id: global.user,
-                    create_time: new Date().getTime(),
                     msg_type: 'image',
                     msg_body: data.jpushEmoji.body,
                     target_id: this.active.name
@@ -1461,11 +1462,10 @@ export class ChatComponent implements OnInit, OnDestroy {
             });
         }
     }
-    private sendPicContent(msgs, value, data) {
-        msgs = {
+    private sendPicContent(value, data) {
+        let msgs: any = {
             content: {
                 from_id: global.user,
-                create_time: new Date().getTime(),
                 msg_type: 'image',
                 msg_body: {
                     media_url: value.src,
@@ -1498,7 +1498,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
             });
         // 发送群聊图片
-        }else if (this.active.type === 4) {
+        } else if (this.active.type === 4) {
             let groupPicFormData = {
                 target_gid: this.active.key,
                 image: data,
@@ -1552,7 +1552,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             const ext = Util.getExt(data.fileData.name);
             msgs  = {
                 content: {
-                    create_time: (new Date()).getTime(),
                     msg_type: 'file',
                     from_id: global.user,
                     from_name: this.selfInfo.nickname,
@@ -1904,7 +1903,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.messageTransmit.list = this.conversationList;
         this.messageTransmit.show = true;
         this.messageTransmit.type = 'msgTransmit';
-        this.transmitItem = Util.deepCopyObj(item);
+        this.transmitAllMsg = Util.deepCopyObj(item);
     }
     // 转发消息或发送名片弹窗搜索
     private searchMessageTransmitEmit(keywords) {
@@ -1980,33 +1979,33 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 消息转发（包括各种消息的转发）
     private msgTransmitConfirm(info) {
-        delete this.transmitItem.msg_id;
-        this.transmitItem.msgKey = this.msgKey ++;
-        this.transmitItem.totalTransmitNum = info.selectList.length;
-        this.transmitItem.ctime_ms = new Date().getTime();
-        this.transmitItem.conversation_time_show = 'today';
-        this.transmitItem.time_show = '';
-        this.transmitItem.showMoreIcon = false;
-        this.transmitItem.hasLoad = false;
-        this.transmitItem.content.from_id = global.user;
-        this.transmitItem.isTransmitMsg = true;
-        this.transmitItem.unread_count = 0;
-        this.transmitItem.success = 1;
+        delete this.transmitAllMsg.msg_id;
+        this.transmitAllMsg.msgKey = this.msgKey ++;
+        this.transmitAllMsg.totalTransmitNum = info.selectList.length;
+        this.transmitAllMsg.ctime_ms = new Date().getTime();
+        this.transmitAllMsg.conversation_time_show = 'today';
+        this.transmitAllMsg.time_show = '';
+        this.transmitAllMsg.showMoreIcon = false;
+        this.transmitAllMsg.hasLoad = false;
+        this.transmitAllMsg.content.from_id = global.user;
+        this.transmitAllMsg.isTransmitMsg = true;
+        this.transmitAllMsg.unread_count = 0;
+        this.transmitAllMsg.success = 1;
         for (let item of info.selectList) {
-            this.transmitItem.content.target_id = item.name;
-            this.transmitItem.type = item.type;
+            this.transmitAllMsg.content.target_id = item.name;
+            this.transmitAllMsg.type = item.type;
             if (item.type === 3) {
-                this.transmitItem.msg_type = 3;
+                this.transmitAllMsg.msg_type = 3;
             } else {
-                this.transmitItem.msg_type = 4;
+                this.transmitAllMsg.msg_type = 4;
             }
             let data = {
                 select: item,
-                msgs: Object.assign({}, this.transmitItem, {}),
+                msgs: Object.assign({}, this.transmitAllMsg, {}),
                 key: item.key
             };
             let type = '';
-            switch (this.transmitItem.content.msg_type) {
+            switch (this.transmitAllMsg.content.msg_type) {
                 case 'text':
                     if (item.type === 3) {
                         type = chatAction.transmitSingleMessage;
@@ -2266,7 +2265,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             show: false,
             type: ''
         };
-        this.transmitItem = {
+        this.transmitAllMsg = {
             content: {
                 msg_type: '',
                 from_id: '',

@@ -1,13 +1,16 @@
 <div class="room-list">
-    <ul>
-        <li class="display-flex room-list-item">
-            <div class="room-list-avatar">
-                <img src="../../../assets/images/single-avatar.svg" alt="">
-            </div>
-            <div class="flex-1 room-list-info">
-                <p class="room-list-name">冰冰冰冰冰冰冰冰冰冰.. </p>
-                <p class="room-list-description">介绍：周末我们组团去郊游吧！</p>
-            </div>
-        </li>
-    </ul>
+    <div *ngIf="roomList.length === 0" class="list-no-data">暂无聊天室</div>
+    <perfect-scrollbar>
+        <ul>
+            <li *ngFor="let room of roomList" class="display-flex room-list-item" [class.active]="room.id === active.id" (click)="changeRoomAction(room)">
+                <div class="room-list-avatar">
+                    <img src="../../../assets/images/single-avatar.svg" alt="">
+                </div>
+                <div class="flex-1 room-list-info">
+                    <p class="room-list-name">{{room.name}}</p>
+                    <p class="room-list-description">{{room.description}}</p>
+                </div>
+            </li>
+        </ul>
+    </perfect-scrollbar>
 </div>

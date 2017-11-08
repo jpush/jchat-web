@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-import { JsonpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
@@ -41,7 +40,6 @@ import { CardModalModule } from '../../components/card-modal';
     FormsModule,
     PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
     EmojiModule,
-    JsonpModule,
     RouterModule,
     HoverTipModule,
     HoverEventModule,

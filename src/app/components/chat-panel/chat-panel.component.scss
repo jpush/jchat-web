@@ -53,15 +53,19 @@
                 width: 20px;                
                 background: #fff url(../../../assets/images/msg-record.svg) center center no-repeat;
                 background-size: 20px;
+                &:hover{
+                    background-image: url(../../../assets/images/msg-record-active.svg);
+                    background-size: 20px;
+                }
             }
             .chat-panel-setting-btn{
                 width: 20px;                
                 background: #fff url(../../../assets/images/add-group-normal.svg) center center no-repeat;
                 background-size: 20px;
-            }
-            .chat-panel-setting-btn.active{
-                background-image: url(../../../assets/images/add-group-active.svg);
-                background-size: 20px;
+                &:hover{
+                    background-image: url(../../../assets/images/add-group-active.svg);
+                    background-size: 20px;
+                }
             }
             .chat-panel-group-setting{
                 width: 24px;                

@@ -467,9 +467,9 @@ export class ChatEffect {
                     });
                 }).onFail((error) => {
                     this.store$.dispatch({
-                            type: appAction.errorApiTip,
-                            payload: error
-                        });
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
                 });
             }).onFail((error) => {
                 this.store$.dispatch({

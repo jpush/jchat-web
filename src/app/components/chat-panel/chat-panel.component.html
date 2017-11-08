@@ -353,9 +353,9 @@
         <div class="chat-panel-send-file">
             <emoji-component [hidden]="!emojiInfo.show" [emojiInfo]="emojiInfo" (jpushEmojiSelect)="jpushEmojiSelectEmit($event)"></emoji-component>            
             <button title="表情" class="chat-panel-emoji-btn" [ngClass]="{'active': emojiInfo.show }" type="button" (click)="showEmojiPanel($event)"></button>
-            <input type="file" id="sendFile" class="chat-panel-singleFile" (change)="sendFileAction($event)" value="发送图片">
-            <label title="文件" for="sendFile" class="chat-panel-singleFile-label" [ngClass]="{'active': filePanelShow}"></label>
-            <input type="file" id="sendPic" class="chat-panel-singlePic" (change) = "sendPicAction($event)" value="发送图片">
+            <input type="file" id="sendFile" class="chat-panel-singleFile" (change)="sendFileAction($event)">
+            <label title="文件" for="sendFile" class="chat-panel-singleFile-label"></label>
+            <input type="file" id="sendPic" class="chat-panel-singlePic" (change)="sendPicAction($event)">
             <label title="图片" for="sendPic" class="chat-panel-singlePic-label"></label>
             <span (click)="showBusinessCardModal()" title="名片" class="float-left send-business-card"></span>
         </div>
@@ -369,7 +369,7 @@
 </div>
 <message-file-component [msgFile]="msgFile" (changeMsgFile)="changeMsgFileEmit($event)" (msgFileImageViewer)="showMsgFileImageViewerEmit($event)" (fileImageLoad)="fileImageLoadEmit($event)"></message-file-component>
 <image-viewer-component *ngIf="viewer.show" [imageViewer]="viewer"></image-viewer-component>
-<div [hidden]="!moreMenu.show" id="moreMenu" [ngStyle]="{'top': moreMenu.top + 'px', 'left': moreMenu.left + 'px'}" class="chat-panel-operation-board">
+<div [hidden]="!moreMenu.show" [ngStyle]="{'top': moreMenu.top + 'px', 'left': moreMenu.left + 'px'}" class="chat-panel-operation-board">
     <message-menu-component class="chat-panel-operation-component" [menu]="moreMenu" (menuItemEnter)="menuItemEnterEmit()" (menuItemLeave)="menuItemLeaveEmit()" (selectMenuItem)="selectMoreMenuItemEmit($event)"></message-menu-component>
 </div>
 <paste-image-component *ngIf="pasteImage.show" [pasteInfo]="pasteImage" (pasteImage)="pasteImageEmit()"></paste-image-component>

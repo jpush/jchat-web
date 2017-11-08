@@ -1,3 +1,21 @@
 export const roomAction = {
-    
-}
+    getRoomList: '[room] get room list',
+    getRoomListSuccess: '[room] get room list success',
+    changeRoom: '[room] change room',
+    changeRoomSuccess: '[room] change room success',
+    enterRoom: '[room] enter room',
+    enterRoomSuccess: '[room] enter room success',
+    exitRoom: '[room] exit room',
+    showRoomInfomation: '[room] show room infomation',
+    showRoomInfomationSuccess: '[room] show room infomation success',
+    receiveMessage: '[room] receive message',
+    receiveMessageSuccess: '[room] receivemessage success',
+    getSelfChatrooms: '[room] get self chatrooms',
+    exitAllChatroomsSuccess: '[room] get all chatrooms success',
+    sendTextMsg: '[room] send text msg',
+    transmitPicMsg: '[room] transmit pic msg',
+    sendFileMsg: '[room] send file msg',
+    sendPicMsg: '[room] send pic msg',
+    sendMsgComplete: '[room] send msg complete',
+    transmitAllMsg: '[room] transmit all msg'
+};

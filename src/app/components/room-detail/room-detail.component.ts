@@ -7,10 +7,17 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 
 export class RoomDetailComponent implements OnInit {
+    @Input()
+        private roomDetail;
+    @Output()
+        private enterRoom: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
      }
     public ngOnInit() {
         // pass
+    }
+    private enterRoomAction() {
+        this.enterRoom.emit(this.roomDetail);
     }
 }

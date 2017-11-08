@@ -1,6 +1,6 @@
 <perfect-scrollbar class="group-list-container">
     <h2>群组</h2>
-    <div class="group-list-no-data" *ngIf="!isEmpty">暂无群组</div>
+    <div class="list-no-data" *ngIf="!isEmpty">暂无群组</div>
     <div *ngIf="groupList">
         <div *ngFor="let item of groupList">
             <div *ngIf="item.data.length > 0" class="group-list-letter">{{item.letter}}</div>

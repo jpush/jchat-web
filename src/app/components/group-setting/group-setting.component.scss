@@ -42,6 +42,9 @@
         height: 14px;
         background: url(../../../assets/images/modal-close.svg) center center no-repeat;
         background-size: 14px;
+        &:hover{
+            background-image: url(../../../assets/images/modal-close-active2.svg);
+        }
     }
     .group-setting-header{
         padding-left: 20px;

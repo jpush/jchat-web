@@ -32,6 +32,9 @@
         height: 14px;
         background: url(../../../assets/images/modal-close.svg) center center no-repeat;
         background-size: 14px;
+        &:hover{
+            background-image: url(../../../assets/images/modal-close-active2.svg);
+        }
     }
     .message-file-header{
         padding-left: 20px;
@@ -90,14 +93,6 @@
                 z-index: 1;
             }
         }
-    }
-    .message-file-no-data{
-        height: 50px;
-        line-height: 50px;
-        text-align: center;
-        color: #808080;
-        font-size: 14px;
-        opacity: 0.4;
     }
     .message-file-file{
         position: absolute;

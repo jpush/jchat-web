@@ -1,5 +1,6 @@
 import { mainAction } from '../../main/actions';
 import { chatAction } from '../actions';
+import { roomAction } from '../../room/actions';
 import { ChatStore } from '../stores/chat.store';
 import { chatInit } from '../model';
 import { contactAction } from '../../contact/actions';
@@ -571,6 +572,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 创建群聊、多人会话、添加群成员搜索成功
         case chatAction.createGroupSearchComplete:
             state.createGroupSearch = searchSingleUser(state, payload);
+            break;
+        case roomAction.transmitAllMsg:
+            state.roomTransmitMsg = payload;
             break;
         default:
     }

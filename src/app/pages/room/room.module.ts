@@ -5,6 +5,8 @@ import { RoomComponent } from './room.component';
 import { RoomListModule } from '../../components/room-list';
 import { RoomInfomationModule } from '../../components/room-infomation';
 import { RoomDetailModule } from '../../components/room-detail';
+import { DefaultPanelModule } from '../../components/default-panel';
+import { RoomPanelModule } from '../../components/room-panel';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,9 @@ import { RoomDetailModule } from '../../components/room-detail';
     FormsModule,
     RoomListModule,
     RoomInfomationModule,
-    RoomDetailModule
+    RoomDetailModule,
+    DefaultPanelModule,
+    RoomPanelModule
   ],
   exports: [
       RoomComponent

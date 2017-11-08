@@ -81,8 +81,9 @@ export interface ChatStore {
         },
         loading: boolean
     };
-    readObj: Object;
+    readObj: object;
     groupShield: Array<any>;
     createGroupSearch: object;
     unreadCount: object;
+    roomTransmitMsg: object;
 }

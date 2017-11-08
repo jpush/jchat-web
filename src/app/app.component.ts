@@ -24,7 +24,8 @@ export class AppComponent implements OnInit, OnDestroy {
         // 创建JIM 对象
         global.JIM = new JMessage({
             // debug: true,
-            address: 'ws://183.232.25.91:9092'
+            address: 'ws://183.232.25.91:9092',
+            upload_file : 'http://183.232.42.208:8080/resource'
         });
         this.appStream$ = this.store$.select((state) => {
             let appState = state['appReducer'];

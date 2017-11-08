@@ -1,2 +1,2 @@
-// 欢迎页组件
+// 聊天室资料组件
 export * from './room-infomation.module';

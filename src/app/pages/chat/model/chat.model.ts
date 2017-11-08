@@ -80,5 +80,6 @@ export const chatInit = {
     readObj: {},
     groupShield: [],
     createGroupSearch: [],
-    unreadCount: {}
+    unreadCount: {},
+    roomTransmitMsg: {}
 };

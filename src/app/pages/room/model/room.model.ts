@@ -1,3 +1,12 @@
 export const roomInit = {
-    actionType: 'init'
+    actionType: 'init',
+    roomList: [],
+    active: {},
+    roomDetail: {},
+    enter: {},
+    roomInfomation: {
+        show: false,
+        info: {}
+    },
+    messageList: []
 };

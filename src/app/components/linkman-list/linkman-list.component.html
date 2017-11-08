@@ -1,6 +1,6 @@
 <perfect-scrollbar class="linkman-list-container">
     <h2>好友</h2>
-    <div class="linkman-list-no-data" *ngIf="!isEmpty">暂无好友</div>
+    <div class="list-no-data" *ngIf="!isEmpty">暂无好友</div>
     <div *ngIf="friendList">
         <div *ngFor="let item of friendList">
             <div *ngIf="item.data.length > 0" class="linkman-list-letter">{{item.letter}}</div>

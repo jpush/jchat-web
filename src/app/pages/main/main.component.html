@@ -38,7 +38,7 @@
         <div class="main-right-container flex-1 display-flex flex-direction-vertical">
             <search-user-component [searchUserResult]="searchUserResult" (searchUser)="searchUserEmit($event)" (selectUserResult)="selectUserResultEmit($event)"></search-user-component>
             <div class="display-flex main-center-container flex-1" style="position: relative;">
-                <chat-component [hideAll]="listTab === 0" [ngClass]="{'flex-1': listTab === 0}" style="position: relative;"></chat-component>
+                <chat-component [hideAll]="listTab" [ngClass]="{'flex-1': listTab === 0}" style="position: relative;"></chat-component>
                 <contact-component [hidden]="listTab !== 1" class="flex-1"></contact-component>
                 <room-component [hidden]="listTab !== 2" class="flex-1" style="position: relative;"></room-component>
             </div>

@@ -21,7 +21,7 @@
         </div>
     </div>
     <perfect-scrollbar class="message-file-file" *ngIf="msgType !== 'image'" (ps-scroll-y)="scrollY()">
-        <p *ngIf="msgFile[msgType].length === 0" class="message-file-no-data">暂无文件</p>
+        <p *ngIf="msgFile[msgType].length === 0" class="list-no-data">暂无文件</p>
         <div *ngIf="msgFile[msgType].length > 0">
             <div class="message-file-wrap" *ngFor="let item of msgFile[msgType]">
                 <div class="message-file-time">
@@ -39,7 +39,7 @@
         </div>
     </perfect-scrollbar>
     <perfect-scrollbar class="message-file-image" *ngIf="msgType === 'image'" (ps-scroll-y)="scrollY()">
-        <p *ngIf="msgFile.image.length === 0" class="message-file-no-data">暂无文件</p>
+        <p *ngIf="msgFile.image.length === 0" class="list-no-data">暂无文件</p>
         <div *ngIf="msgFile.image.length > 0">
             <div class="message-file-wrap" *ngFor="let item of msgFile.image">
                 <div class="message-file-time">

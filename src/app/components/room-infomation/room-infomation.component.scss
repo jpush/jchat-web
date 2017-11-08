@@ -1,7 +1,85 @@
 .room-infomation{
+    width: 260px;
+    height: 100%;
+    background: #fff;
     position: absolute;
     top: 0;
     right: 0;
-    width: 260px;
-    bottom: 0;
+    z-index: 4;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+    font-size: 12px;
+    color: #2C2C2C;
+    z-index: 4;
+    -webkit-transform: translateX(101%);
+            transform: translateX(101%);
+    &.in{
+        -webkit-transform: translateX(0);
+                transform: translateX(0);
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s;
+    }
+    &.void{
+        -webkit-transform: translateX(101%);
+                transform: translateX(101%);
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s;
+    }
+    .room-infomation-close{
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        cursor: pointer;
+        width: 14px;
+        height: 14px;
+        background: url(../../../assets/images/modal-close.svg) center center no-repeat;
+        background-size: 14px;
+        &:hover{
+            background-image: url(../../../assets/images/modal-close-active2.svg);
+        }
+    }
+    .room-infomation-header{
+        padding-left: 20px;
+        .room-infomation-title{
+            height: 40px;
+            margin-right: 20px;
+            border-bottom: 1px solid  #E3E6EB;
+            line-height: 40px;
+            font-size: 14px;
+        }
+    }
+    .room-infomation-detail{
+        padding: 20px 20px 0 20px;
+        .room-infomation-avatar{
+            height: 60px;
+            width: 60px;
+            overflow: hidden;
+            margin-right: 11px;
+            img{
+                display: block;
+                width: 100%;
+            }
+        }
+        .room-infomation-name{
+            font-size: 14px;
+            color: #2C2C2C;
+            line-height: 20px;
+            margin: 8px 0 7px 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .room-infomation-id{
+            color: #999;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .room-infomation-member{
+            margin: 21px 0 15px 0;
+            line-height: 17px;
+        }
+        .room-infomation-description{
+            line-height: 17px;
+        }
+    }
 }
