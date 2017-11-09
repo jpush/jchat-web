@@ -51,7 +51,11 @@ localhost:3000
 说明：
 * 如果使用的不是本地localhost服务器，则要在task/webpack.dev.js中的publicPath改成自己的ip和端口，在浏览器输入ip和端口去访问项目
 
-* 应用配置：appkey和masterKey在src/services/common/config.ts中配置，同时，将signature和timestamp改为空字符串'';
+* 应用配置：
+前端生成签名：appkey和masterKey在src/services/common/config.ts中配置，同时，将signature和timestamp改为空字符串''；
+服务端生成签名：服务端提供接口，返回签名给前端开发者调用，并配置好appkey、randomStr、timestamp以及调用接口返回的signature，最后将masterKey改为空字符串''；
+* 注意：
+生产环境签名的生成需要在开发者服务端生成，不然存在 masterKey 暴露的风险
 
 * 项目压缩打包并发布(前提：已全局安装gulp (终端输入cnpm install gulp -g))：
 
