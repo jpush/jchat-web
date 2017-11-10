@@ -107,5 +107,6 @@ export const chatAction = {
     updateUnreadCount: '[chat] update unread count',
     dispatchGroupList: '[chat] dispatch group list',
     createGroupSearchComplete: '[chat] create group search complete',
-    emptyUnreadNum: '[chat] empty unread number'
+    emptyUnreadNum: '[chat] empty unread number',
+    changeHideAll: '[chat] change hide all'
 };

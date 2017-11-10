@@ -24,7 +24,11 @@ export const chatInit = {
     },
     blackMenu: [],
     searchUserResult: {
-        result: {},
+        result: {
+            singleArr: [],
+            groupArr: [],
+            roomArr: []
+        },
         isSearch: false
     },
     recentMsg: [],

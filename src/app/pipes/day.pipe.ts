@@ -11,6 +11,9 @@ export class DayPipe implements PipeTransform {
     let day = (new Date(time)).getDay();
     let dayText = '';
     switch (day) {
+        case 0:
+            dayText = '星期日';
+            break;
         case 1:
             dayText = '星期一';
             break;
@@ -28,9 +31,6 @@ export class DayPipe implements PipeTransform {
             break;
         case 6:
             dayText = '星期六';
-            break;
-        case 7:
-            dayText = '星期日';
             break;
         default:
     }

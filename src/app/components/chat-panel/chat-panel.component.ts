@@ -72,7 +72,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             top: 0
         },
         emojiAlias: emojiConfig,
-        jpushAlias: jpushConfig
+        jpushAlias: jpushConfig,
+        contentId: 'contentDiv'
     };
     private contentDiv;
     private chatStream$;
@@ -509,10 +510,10 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         }
     }
     // 图片预览
-    private imageViewerShow(src, item) {
+    private imageViewerShow(item) {
         for (let i = 0; i < this.imageViewer.result.length; i++) {
-            let msgIdFlag = this.imageViewer.result[i].msg_id === item.msg_id && item.msg_id;
-            let msgKeyFlag = this.imageViewer.result[i].msgKey === item.msgKey && item.msgKey;
+            let msgIdFlag = item.msg_id && this.imageViewer.result[i].msg_id === item.msg_id;
+            let msgKeyFlag = item.msgKey && this.imageViewer.result[i].msgKey === item.msgKey;
             if (msgIdFlag || msgKeyFlag) {
                 this.imageViewer.active = Object.assign({}, this.imageViewer.result[i], {});
                 this.imageViewer.active.index = i;
@@ -548,11 +549,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 接收到地图消息渲染地图
     private pointerToMap(chatState) {
         if (chatState.newMessage.content.msg_type === 'location') {
+            let length = this.msg.length;
+            let newMessage = Util.deepCopyObj(chatState.newMessage);
             setTimeout(() => {
                 Util.theLocation({
-                    id: 'allmap' + (this.msg.length - 1).toString(),
-                    longitude: chatState.newMessage.content.msg_body.longitude,
-                    latitude: chatState.newMessage.content.msg_body.latitude
+                    id: 'allmap' + (length - 1).toString(),
+                    longitude: newMessage.content.msg_body.longitude,
+                    latitude: newMessage.content.msg_body.latitude
                 });
             }, 100);
         }
@@ -1169,7 +1172,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 显示聊天文件的侧边栏
     private msgFileAction(event) {
         event.stopPropagation();
-        // this.msgFile.emit();
         this.msgFile.show = true;
         this.store$.dispatch({
             type: chatAction.msgFile,

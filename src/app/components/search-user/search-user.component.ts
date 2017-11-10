@@ -36,6 +36,8 @@ export class SearchUserComponent implements OnInit, OnChanges {
         private searchUser: EventEmitter<any> = new EventEmitter();
     @Output()
         private selectUserResult: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private selectUserRoomResult: EventEmitter<any> = new EventEmitter();
     constructor(
         private elementRef: ElementRef
     ) {
@@ -44,6 +46,7 @@ export class SearchUserComponent implements OnInit, OnChanges {
     public ngOnInit() {
         this.fileDom = this.elementRef.nativeElement.querySelector('#searchInput');
         Observable.fromEvent(this.fileDom, 'keyup')
+            .debounceTime(300)
             .subscribe((event: any) => {
                 this.searchUser.emit(event.target.value);
                 this.singleShowText = '显示全部';
@@ -96,6 +99,9 @@ export class SearchUserComponent implements OnInit, OnChanges {
     }
     private selectSearchItem(item) {
         this.selectUserResult.emit(item);
+    }
+    private selectSearchRoom(item) {
+        this.selectUserRoomResult.emit(item);
     }
     private showSearchInput() {
         this.searchInputIsShow = false;

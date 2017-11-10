@@ -19,6 +19,7 @@ export class MapComponent implements OnInit {
         let arr = pointer.split('&');
         arr[0] = Number(arr[0]);
         arr[1] = Number(arr[1]);
+        arr[2] = Number(arr[2]);
         if (Number.isNaN(arr[0]) || Number.isNaN(arr[1])) {
             this.errorTipShow = true;
         } else {
@@ -26,7 +27,8 @@ export class MapComponent implements OnInit {
                 id: 'mapContainer',
                 longitude: arr[0],
                 latitude: arr[1],
-                scroll: true
+                scroll: true,
+                scale: arr[2]
             });
         }
     }

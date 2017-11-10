@@ -345,7 +345,7 @@ export class Util {
         // 地图API功能
         let point = new BMap.Point(obj.longitude, obj.latitude);
         let map = new BMap.Map(obj.id);
-        map.centerAndZoom(point, 13);
+        map.centerAndZoom(point, obj.scale ? obj.scale : 13);
         if (obj.scroll) {
             map.enableScrollWheelZoom(true);
         }

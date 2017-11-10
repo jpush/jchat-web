@@ -27,8 +27,12 @@ export interface ChatStore {
     };
     blackMenu: Array<any>;
     searchUserResult: {
-        result: object,
-        isSearch: boolean
+        result: {
+            singleArr: Array<any>;
+            groupArr: Array<any>;
+            roomArr: Array<any>;
+        },
+        isSearch: boolean;
     };
     recentMsg: Array<any>;
     msgId: Array<any>;

@@ -782,6 +782,54 @@ export class MainEffect {
                         return {type: '[main] delete friend useless'};
                     });
     });
+    // 搜索聊天室
+    @Effect()
+    private searchUser$: Observable<Action> = this.actions$
+        .ofType(mainAction.searchUser)
+        .map(toPayload)
+        .switchMap((payload) => {
+            if (!Number.isNaN(Number(payload))) {
+                const searchUser = global.JIM.getChatroomInfo({
+                    id: payload
+                }).onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.searchUserSuccess,
+                        payload: {
+                            room: data.info,
+                            keywords: payload
+                        }
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: mainAction.searchUserSuccess,
+                        payload: {
+                            room: null,
+                            keywords: payload
+                        }
+                    });
+                }).onTimeout((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.searchUserSuccess,
+                        payload: {
+                            room: null,
+                            keywords: payload
+                        }
+                    });
+                });
+            } else {
+                this.store$.dispatch({
+                    type: mainAction.searchUserSuccess,
+                    payload: {
+                        room: null,
+                        keywords: payload
+                    }
+                });
+            }
+            return Observable.of('searchUser')
+                    .map(() => {
+                        return {type: '[main] search user useless'};
+                    });
+        });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,

@@ -218,8 +218,11 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             break;
             // 搜索本地用户
-        case mainAction.searchUser:
-            state.searchUserResult = searchUser(state, payload);
+        case mainAction.searchUserSuccess:
+            state.searchUserResult = searchUser(state, payload.keywords);
+            if (payload.room) {
+                state.searchUserResult.result.roomArr.push(payload.room);
+            }
             break;
             // 消息转发的搜索用户
         case chatAction.searchMessageTransmit:
@@ -2876,7 +2879,8 @@ function searchUser(state: ChatStore, payload) {
         return {
             result: {
                 groupArr: [],
-                singleArr: []
+                singleArr: [],
+                roomArr: []
             },
             isSearch: false
         };
@@ -2901,7 +2905,8 @@ function searchUser(state: ChatStore, payload) {
     return {
         result: {
             singleArr,
-            groupArr
+            groupArr,
+            roomArr: []
         },
         isSearch: true
     };

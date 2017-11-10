@@ -1,5 +1,6 @@
 export const roomInit = {
     actionType: 'init',
+    voiceRoomState: [],
     roomList: [],
     active: {},
     roomDetail: {},
@@ -8,5 +9,7 @@ export const roomInit = {
         show: false,
         info: {}
     },
-    messageList: []
+    messageList: [],
+    imageViewer: [],
+    newMessage: {}
 };

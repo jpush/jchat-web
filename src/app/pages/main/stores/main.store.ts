@@ -19,6 +19,7 @@ export interface MainStore {
         result: {
             groupArr: Array<any>;
             singleArr: Array<any>;
+            roomArr: Array<any>;
         },
         isSearch: boolean;
     };

@@ -5,6 +5,7 @@ import { roomAction } from './actions';
 import { mainAction } from '../main/actions';
 import { Util } from '../../services/util';
 import { chatAction } from '../chat/actions';
+const PageSize = 20;
 
 @Component({
     selector: 'room-component',
@@ -24,7 +25,12 @@ export class RoomComponent implements OnInit {
     };
     private messageList = [];
     private msgKey = 0;
-    private selfInfo:any = {};
+    private selfInfo: any = {};
+    private scrollToBottom = false;
+    private otherScrollTobottom = false;
+    private start = 0;
+    private loadMoreRoomsFlag = false;
+    private rememberEnter = null;
     constructor(
         private store$: Store<any>,
         private elementRef: ElementRef
@@ -35,9 +41,13 @@ export class RoomComponent implements OnInit {
         this.store$.dispatch({
             type: roomAction.getRoomList,
             payload: {
-                start: 0,
+                start: this.start,
                 appkey: authPayload.appKey
             }
+        });
+        this.store$.dispatch({
+            type: roomAction.getRoomVoiceState,
+            payload: `voiceRoomState-${authPayload.appKey}-${global.user}`
         });
         this.store$.dispatch({
             type: roomAction.getSelfChatrooms,
@@ -53,6 +63,7 @@ export class RoomComponent implements OnInit {
         });
     }
     private stateChanged(roomState, mainState) {
+        console.log(5555, roomState);
         switch (roomState.actionType) {
             case mainAction.showSelfInfo:
                 if (mainState.selfInfo.info) {
@@ -61,24 +72,33 @@ export class RoomComponent implements OnInit {
                 break;
             case roomAction.exitAllChatroomsSuccess:
                 global.JIM.onRoomMsg((data) => {
-                    console.log(111, data);
                     this.store$.dispatch({
                         type: roomAction.receiveMessage,
-                        payload: data
+                        payload: {
+                            data,
+                            messageList: this.messageList
+                        }
                     });
                 });
                 break;
             case roomAction.getRoomListSuccess:
                 this.roomList = roomState.roomList;
+                this.loadMoreRoomsFlag = !this.loadMoreRoomsFlag;
                 break;
             case roomAction.changeRoomSuccess:
+
+            case mainAction.selectSearchRoomUser:
                 this.active = roomState.active;
                 this.roomDetail = roomState.roomDetail;
                 this.showPanel = 1;
+                this.rememberEnter = null;
                 break;
             case roomAction.enterRoomSuccess:
-                this.showPanel = 2;
-                this.enter = roomState.enter;
+                if (this.active.id === roomState.enter.id) {
+                    this.showPanel = 2;
+                    this.rememberEnter = this.enter = roomState.enter;
+                    this.scrollToBottom = !this.scrollToBottom;
+                }
                 this.messageList = roomState.messageList;
                 break;
             case roomAction.showRoomInfomationSuccess:
@@ -86,10 +106,51 @@ export class RoomComponent implements OnInit {
                 break;
             case roomAction.receiveMessageSuccess:
                 this.messageList = roomState.messageList;
-                console.log(666, this.messageList);
+                this.otherScrollTobottom = !this.otherScrollTobottom;
+                break;
+            case roomAction.sendTextMsg:
+
+            case roomAction.sendFileMsg:
+
+            case roomAction.sendPicMsg:
+
+            case roomAction.transmitPicMsg:
+                this.otherScrollTobottom = !this.otherScrollTobottom;
+                break;
+            case roomAction.exitRoomSuccess:
+                this.enter = roomState.enter;
+                break;
+            case mainAction.changeListTab:
+                if (mainState.listTab === 2 && this.rememberEnter) {
+                    this.store$.dispatch({
+                        type: roomAction.enterRoom,
+                        payload: this.rememberEnter
+                    });
+                }
+            case mainAction.createGroup:
+
+            case mainAction.selectSearchUser:
+
+            case chatAction.createOtherChat:
+                if (mainState.listTab !== 2 && this.enter.id) {
+                    this.store$.dispatch({
+                        type: roomAction.exitRoom,
+                        payload: this.enter
+                    });
+                }
                 break;
             default:
         }
+    }
+    private loadMoreRoomsEmit() {
+        this.start += PageSize;
+        this.store$.dispatch({
+            type: roomAction.getRoomList,
+            payload: {
+                start: this.start,
+                appkey: authPayload.appKey
+            }
+        });
     }
     private changeRoomEmit(room) {
         if (this.active.id !== room.id) {
@@ -102,10 +163,7 @@ export class RoomComponent implements OnInit {
     private enterRoomEmit(room) {
         this.store$.dispatch({
             type: roomAction.enterRoom,
-            payload: {
-                old: this.enter,
-                new: room
-            }
+            payload: room
         });
     }
     private showRoomInfomationEmit() {
@@ -204,7 +262,11 @@ export class RoomComponent implements OnInit {
             };
             let sendMsg = {
                 target_rid: this.enter.id,
-                file: data.file
+                file: data.file,
+                extras: {
+                    fileSize: data.fileData.size,
+                    fileType: ext
+                }
             };
             this.store$.dispatch({
                 type: roomAction.sendFileMsg,
@@ -355,5 +417,15 @@ export class RoomComponent implements OnInit {
             type: 'businessCard'
         };
         this.sendMsgEmit(msg);
+    }
+    // 显示视频模态框
+    private playVideoEmit(url) {
+        this.store$.dispatch({
+            type: chatAction.playVideoShow,
+            payload: {
+                url,
+                show: true
+            }
+        });
     }
 }

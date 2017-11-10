@@ -86,7 +86,7 @@
                             <div *ngIf="!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.kLargeEmoticon)" class="float-left">
                                 <div *ngIf="active.type === 4" class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div [ngClass]="{'img-loading': !i.content.msg_body.loading}" *ngIf="!i.content.msg_body.extras || i.content.msg_body.extras.kLargeEmoticon !== 'kLargeEmoticon'" [ngStyle]="{'width': i.content.msg_body.width > 219 || i.content.msg_body.height > 300 ? (i.content.msg_body.width/i.content.msg_body.height > 219/300 ? 219 + 'px' : i.content.msg_body.width/i.content.msg_body.height * 300 + 'px') : i.content.msg_body.width + 'px', 'height': i.content.msg_body.width > 219 || i.content.msg_body.height > 300 ? (i.content.msg_body.width/i.content.msg_body.height < 219/300 ? 300 + 'px' : i.content.msg_body.height/i.content.msg_body.width * 219 + 'px') : i.content.msg_body.height + 'px'}">
-                                    <img (load)="imgLoaded(i)" title="点击查看大图" (click)="imageViewerShow(i.content.msg_body.media_url, i)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img (load)="imgLoaded(i)" title="点击查看大图" (click)="imageViewerShow(i)" class="chat-panel-message-img" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
                             <!-- 表情 -->
@@ -155,7 +155,7 @@
                             <div class="float-left">
                                 <div *ngIf="active.type === 4" class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                 <div class="chat-panel-map-wrap">
-                                    <a [routerLink]="['/map', i.content.msg_body.longitude + '&' + i.content.msg_body.latitude]" target="_blank">                                
+                                    <a [routerLink]="['/map', i.content.msg_body.longitude + '&' + i.content.msg_body.latitude + '&' + i.content.msg_body.scale]" target="_blank">                                
                                         <div [id]="'allmap' + num" class="float-left chat-panel-allmap" title="点击查看详细地图"></div>
                                     </a>                                    
                                     <p class="chat-panel-address" [title]="i.content.msg_body.label" *ngIf="i.content.msg_body.label">{{i.content.msg_body.label}}</p>
@@ -239,7 +239,7 @@
                             <div *ngIf="!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.kLargeEmoticon)" class="float-right chat-panel-message-img-wrap" [ngClass]="{'chat-panel-message-img-loading': i.success === 1}">
                                 <div *ngIf="i.success === 3" class="chat-panel-send-error" (click)="repeatSendPicAction(i)"></div>
                                 <div [ngClass]="{'img-loading': !i.content.msg_body.loading}" [ngStyle]="{'width': i.content.msg_body.width > 219 || i.content.msg_body.height > 300 ? (i.content.msg_body.width/i.content.msg_body.height > 219/300 ? 219 + 'px' : i.content.msg_body.width/i.content.msg_body.height * 300 + 'px') : i.content.msg_body.width + 'px', 'height': i.content.msg_body.width > 219 || i.content.msg_body.height > 300 ? (i.content.msg_body.width/i.content.msg_body.height < 219/300 ? 300 + 'px' : i.content.msg_body.height/i.content.msg_body.width * 219 + 'px') : i.content.msg_body.height + 'px'}">
-                                    <img (load)="imgLoaded(i)" class="chat-panel-message-img" (click)="imageViewerShow(i.content.msg_body.media_url, i)" title="点击查看大图" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
+                                    <img (load)="imgLoaded(i)" class="chat-panel-message-img" (click)="imageViewerShow(i)" title="点击查看大图" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                 </div>
                             </div>
                             <!-- 表情 -->
@@ -314,7 +314,7 @@
                             <div class="chat-panel-map-wrap float-right">
                                 <div *ngIf="i.success === 1" class="chat-panel-send-loading"></div>
                                 <div *ngIf="i.success === 3" class="chat-panel-send-error" (click)="repeatSendLocationAction(i)"></div>
-                                <a [routerLink]="['/map', i.content.msg_body.longitude + '&' + i.content.msg_body.latitude]" target="_blank">                                
+                                <a [routerLink]="['/map', i.content.msg_body.longitude + '&' + i.content.msg_body.latitude + '&' + i.content.msg_body.scale]" target="_blank">                                
                                     <div [id]="'allmap' + num" class="float-left chat-panel-allmap" title="点击查看详细地图"></div>
                                 </a>                                    
                                 <p class="chat-panel-address" [title]="i.content.msg_body.label" *ngIf="i.content.msg_body.label">{{i.content.msg_body.label}}</p>

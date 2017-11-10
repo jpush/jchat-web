@@ -59,13 +59,26 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case chatAction.searchUserSuccess:
             state.searchUserResult = payload;
             break;
-            // 选择搜索出来的本地用户
+            // 选择搜索出来的联系人或者群组用户
         case mainAction.selectSearchUser:
             state.listTab = 0;
             state.searchUserResult = {
                 result: {
                     groupArr: [],
-                    singleArr: []
+                    singleArr: [],
+                    roomArr: []
+                },
+                isSearch: false
+            };
+            break;
+            // 选择搜索出来的聊天室
+        case mainAction.selectSearchRoomUser:
+            state.listTab = 2;
+            state.searchUserResult = {
+                result: {
+                    groupArr: [],
+                    singleArr: [],
+                    roomArr: []
                 },
                 isSearch: false
             };
@@ -132,6 +145,9 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             // 传递好友列表
         case chatAction.dispatchFriendList:
             state.friendList = payload;
+            break;
+        case chatAction.changeHideAll:
+            state.listTab = payload;
             break;
         default:
     }

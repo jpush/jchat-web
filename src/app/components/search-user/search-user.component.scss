@@ -123,11 +123,17 @@
                 height: 30px;
                 margin: 10px 10px 0 0;
                 overflow: hidden;
+                &.search-user-room-avatar{
+                    img{
+                        width: 100%;
+                    }
+                }
             }
             .search-user-name{
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 overflow: hidden;
+                cursor: default;
             }
             &:hover{
                 background-color: #F2F6FB;

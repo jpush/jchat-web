@@ -1,7 +1,8 @@
 export interface RoomStore {
     actionType: string;
+    voiceRoomState: Array<any>;
     roomList: Array<any>;
-    active: Object;
+    active: any;
     roomDetail: Object;
     enter: {};
     roomInfomation: {
@@ -9,4 +10,6 @@ export interface RoomStore {
         info: Object
     };
     messageList: Array<any>;
+    imageViewer: Array<any>;
+    newMessage: object;
 };

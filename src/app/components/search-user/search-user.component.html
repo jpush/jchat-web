@@ -1,13 +1,13 @@
 <div class="search-user-container">
     <h1 class="float-left search-user-title">JCHAT</h1>
     <div (click)="stopPropagation($event)" [@flyIn]="inputAnimate" class="search-user-input-wrap float-right">
-        <input spellcheck="false" id="searchInput" [(ngModel)]="searchKeyword" spellcheck="false" class="search-user-input input-focus" type="text" placeholder="搜索联系人、群组">
+        <input spellcheck="false" id="searchInput" [(ngModel)]="searchKeyword" spellcheck="false" class="search-user-input input-focus" type="text" placeholder="联系人/群组/聊天室ID">
         <span (click)="clearInput()" *ngIf="searchUserResult.isSearch"></span>
         <p></p>
     </div>
     <div (click)="stopPropagation($event)" *ngIf="searchInputIsShow" class="search-user-btn" (click)="showSearchInput()">搜索</div>
-    <p (click)="stopPropagation($event)" class="search-user-no-result" *ngIf="searchUserResult.isSearch && searchUserResult.result.singleArr.length === 0 && searchUserResult.result.groupArr.length === 0">找不到匹配的结果</p>    
-    <perfect-scrollbar (click)="stopPropagation($event)" class="search-user-result" *ngIf="searchUserResult.isSearch && (searchUserResult.result.singleArr.length > 0 || searchUserResult.result.groupArr.length > 0)">
+    <p (click)="stopPropagation($event)" class="search-user-no-result" *ngIf="searchUserResult.isSearch && searchUserResult.result.singleArr.length === 0 && searchUserResult.result.groupArr.length === 0 && searchUserResult.result.roomArr.length === 0">找不到匹配的结果</p>    
+    <perfect-scrollbar (click)="stopPropagation($event)" class="search-user-result" *ngIf="searchUserResult.isSearch && (searchUserResult.result.singleArr.length > 0 || searchUserResult.result.groupArr.length > 0 || searchUserResult.result.roomArr.length > 0)">
         <div class="search-user-show" *ngIf="searchUserResult.result.singleArr.length > 0">
             联系人
             <span class="float-right" *ngIf="searchUserResult.result.singleArr.length > 4" (click)="singleShowAll()">{{singleShowText}}</span>
@@ -28,6 +28,17 @@
             <li class="display-flex" *ngFor="let item of searchUserResult.result.groupArr" [title]="item.name" (click)="selectSearchItem(item)">
                 <div class="search-user-avatar-container">
                     <img (load)="avatarLoad($event)" (error)="groupAvatarErrorIcon($event)" [src]="item.avatarUrl | sanitize: 'url'" alt="">
+                </div>
+                <span class="search-user-name flex-1">{{item.name}}</span>
+            </li>
+        </ul>
+        <div class="search-user-show" *ngIf="searchUserResult.result.roomArr.length > 0">
+            聊天室
+        </div>
+        <ul class="search-user-group" *ngIf="searchUserResult.result.roomArr.length > 0">
+            <li class="display-flex" *ngFor="let item of searchUserResult.result.roomArr" [title]="item.name" (click)="selectSearchRoom(item)">
+                <div class="search-user-avatar-container search-user-room-avatar">
+                    <img  src="../../../assets/images/room-avatar.svg" alt="">
                 </div>
                 <span class="search-user-name flex-1">{{item.name}}</span>
             </li>

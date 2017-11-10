@@ -427,7 +427,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.messageList = chatState.messageList;
                 this.conversationList = chatState.conversation;
                 break;
-            case mainAction.searchUser:
+            case mainAction.searchUserSuccess:
                 this.store$.dispatch({
                     type: chatAction.searchUserSuccess,
                     payload: chatState.searchUserResult
@@ -1698,6 +1698,13 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.store$.dispatch({
                 type: chatAction.createOtherChat,
                 payload: item
+            });
+        }
+        // 切换到会话列表tab
+        if (item) {
+            this.store$.dispatch({
+                type: chatAction.changeHideAll,
+                payload: 0
             });
         }
         this.store$.dispatch({

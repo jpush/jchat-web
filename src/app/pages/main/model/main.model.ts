@@ -21,7 +21,8 @@ export const mainInit = {
     searchUserResult: {
         result: {
             singleArr: [],
-            groupArr: []
+            groupArr: [],
+            roomArr: []
         },
         isSearch: false
     },

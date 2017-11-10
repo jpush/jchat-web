@@ -5,10 +5,28 @@ import { Store, Action } from '@ngrx/store';
 import { AppStore } from '../../../app.store';
 import { roomAction } from '../actions';
 import { appAction } from '../../../actions';
-import { global } from '../../../services/common/global';
+import { global, StorageService } from '../../../services/common';
 
 @Injectable()
 export class RoomEffect {
+    // 获取storage里的voice状态
+    @Effect()
+    private getVoiceState$: Observable<Action> = this.actions$
+        .ofType(roomAction.getRoomVoiceState)
+        .map(toPayload)
+        .switchMap((key) => {
+            let voiceState = this.storageService.get(key);
+            if (voiceState) {
+                this.store$.dispatch({
+                    type: roomAction.getRoomVoiceStateSuccess,
+                    payload: JSON.parse(voiceState)
+                });
+            }
+            return Observable.of('getRoomVoiceState')
+                    .map(() => {
+                        return {type: '[room] get room voice state useless'};
+                    });
+        });
     // 获取自己已经进入的聊天室列表，并一一退出
     @Effect()
     private getSelfChatrooms$: Observable<Action> = this.actions$
@@ -99,16 +117,23 @@ export class RoomEffect {
                         return {type: '[room] get room list useless'};
                     });
         });
-    // 请求单个聊天室的详情
+    // 切换active聊天室，退出聊天室，请求聊天室详情
     @Effect()
     private changeRoom$: Observable<Action> = this.actions$
         .ofType(roomAction.changeRoom)
         .map(toPayload)
         .switchMap((payload) => {
+            this.store$.dispatch({
+                type: roomAction.changeRoomSuccess,
+                payload: {
+                    active: payload,
+                    info: {}
+                }
+            });
+            this.exitRoom(payload);
             const changeRoom = global.JIM.getChatroomInfo({
                 id: payload.id
             }).onSuccess((data) => {
-                console.log(4444, data);
                 this.store$.dispatch({
                     type: roomAction.changeRoomSuccess,
                     payload: {
@@ -133,46 +158,51 @@ export class RoomEffect {
                         return {type: '[room] change room useless'};
                     });
         });
-    // 退出前一个聊天室进入新的聊天室
+    // 进入新的聊天室
     @Effect()
     private enterRoom$: Observable<Action> = this.actions$
         .ofType(roomAction.enterRoom)
         .map(toPayload)
         .switchMap((payload) => {
-            if (payload.old.id) {
-                global.JIM.exitChatroom({
-                    id: payload.old.id
-                }).onSuccess((data) => {
-                    this.enterRoom(payload.new);
-                }).onFail((data) => {
-                    // pass
-                }).onTimeout(() => {
-                    // pass
+            const enterRoom = global.JIM.enterChatroom({
+                id: payload.id
+            }).onSuccess((data) => {
+                this.store$.dispatch({
+                    type: roomAction.enterRoomSuccess,
+                    payload
                 });
-            } else {
-                this.enterRoom(payload.new);
-            }
+            }).onFail((error) => {
+                if (error.code === 881507) {
+                    this.store$.dispatch({
+                        type: roomAction.enterRoomSuccess,
+                        payload
+                    });
+                } else {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }
+            }).onTimeout((data) => {
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
             return Observable.of('enterRoom')
                     .map(() => {
                         return {type: '[room] enter room useless'};
                     });
         });
-    // 退出前一个聊天室进入新的聊天室
+    // 退出聊天室
     @Effect()
     private exitRoom$: Observable<Action> = this.actions$
         .ofType(roomAction.exitRoom)
         .map(toPayload)
         .switchMap((payload) => {
             if (payload.id) {
-                global.JIM.exitChatroom({
-                    id: payload.id
-                }).onSuccess((data) => {
-                    // pass
-                }).onFail((data) => {
-                    // pass
-                }).onTimeout(() => {
-                    // pass
-                });
+                this.exitRoom(payload);
             }
             return Observable.of('exitRoom')
                     .map(() => {
@@ -220,38 +250,61 @@ export class RoomEffect {
         .switchMap((payload) => {
             this.store$.dispatch({
                 type: roomAction.receiveMessageSuccess,
-                payload
+                payload: {
+                    message: payload.data
+                }
             });
-            if (payload.content.msg_body.media_id) {
-                global.JIM.getResource({media_id: payload.content.msg_body.media_id})
+            if (payload.data.content.msg_body.media_id) {
+                global.JIM.getResource({media_id: payload.data.content.msg_body.media_id})
                 .onSuccess((urlInfo) => {
-                    payload.content.msg_body.media_url = urlInfo.url;
+                    payload.data.content.msg_body.media_url = urlInfo.url;
+                    this.store$.dispatch({
+                        type: roomAction.receiveMessageSuccess,
+                        payload: {
+                            mediaUrl: true,
+                            message: payload.data
+                        }
+                    });
                 }).onFail((error) => {
                     // pass
                 }).onTimeout((errorInfo) => {
                     // pass
                 });
             }
-            let username = payload.content.from_id !== global.user ?
-                payload.content.from_id : payload.content.target_id;
-            global.JIM.getUserInfo({
-                username
-            }).onSuccess((user) => {
-                if (user.user_info.avatar !== '') {
-                    global.JIM.getResource({media_id: user.user_info.avatar})
-                    .onSuccess((urlInfo) => {
-                        payload.content.avatarUrl = urlInfo.url;
-                    }).onFail((error) => {
-                        // pass
-                    }).onTimeout((errorInfo) => {
-                        // pass
-                    });
+            // 判断是否加载过这个用户的头像，加载过就直接使用本地的用户头像
+            let username = payload.data.content.from_id !== global.user ?
+                payload.data.content.from_id : payload.data.content.target_id;
+            let flag = false;
+            for (let message of payload.messageList) {
+                let messageUsername = message.content.from_id !== global.user ?
+                    message.content.from_id : message.content.target_id;
+                if (username === messageUsername &&
+                    (message.content.avatarUrl || message.content.avatarUrl === '')) {
+                    payload.data.content.avatarUrl = message.content.avatarUrl;
+                    flag = true;
+                    break;
                 }
-            }).onFail((error) => {
-                // pass
-            }).onTimeout((errorInfo) => {
-                // pass
-            });
+            }
+            if (!flag) {
+                global.JIM.getUserInfo({
+                    username
+                }).onSuccess((user) => {
+                    if (user.user_info.avatar !== '') {
+                        global.JIM.getResource({media_id: user.user_info.avatar})
+                        .onSuccess((urlInfo) => {
+                            payload.data.content.avatarUrl = urlInfo.url;
+                        }).onFail((error) => {
+                            // pass
+                        }).onTimeout((errorInfo) => {
+                            // pass
+                        });
+                    }
+                }).onFail((error) => {
+                    // pass
+                }).onTimeout((errorInfo) => {
+                    // pass
+                });
+            }
             return Observable.of('receiveMessage')
                     .map(() => {
                         return {type: '[room] receive message useless'};
@@ -463,37 +516,23 @@ export class RoomEffect {
         });
     constructor(
         private actions$: Actions,
-        private store$: Store<AppStore>
+        private store$: Store<AppStore>,
+        private storageService: StorageService
     ) {
         // pass
     }
-    private enterRoom(payload) {
-        const enterRoom = global.JIM.enterChatroom({
+    private exitRoom(payload) {
+        global.JIM.exitChatroom({
             id: payload.id
         }).onSuccess((data) => {
             this.store$.dispatch({
-                type: roomAction.enterRoomSuccess,
-                payload
+                type: roomAction.exitRoomSuccess,
+                payload: null
             });
-        }).onFail((error) => {
-            console.log(error);
-            if (error.code === 881507) {
-                this.store$.dispatch({
-                    type: roomAction.enterRoomSuccess,
-                    payload
-                });
-            } else {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }
-        }).onTimeout((data) => {
-            const error = {code: 910000};
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
+        }).onFail((data) => {
+            // pass
+        }).onTimeout(() => {
+            // pass
         });
     }
 };

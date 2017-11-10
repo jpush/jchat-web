@@ -245,6 +245,10 @@ export class MainComponent implements OnInit, OnDestroy {
                 this.listTab = mainState.listTab;
                 this.searchUserResult = mainState.searchUserResult;
                 break;
+            case mainAction.selectSearchRoomUser:
+                this.listTab = mainState.listTab;
+                this.searchUserResult = mainState.searchUserResult;
+                break;
             case mainAction.hideModalTip:
 
             case mainAction.showModalTip:
@@ -288,6 +292,9 @@ export class MainComponent implements OnInit, OnDestroy {
                 this.badge.contact = mainState.contactUnreadNum;
                 break;
             case chatAction.createOtherChat:
+                this.listTab = mainState.listTab;
+                break;
+            case chatAction.changeHideAll:
                 this.listTab = mainState.listTab;
                 break;
             default:
@@ -400,6 +407,12 @@ export class MainComponent implements OnInit, OnDestroy {
         }
         this.store$.dispatch({
             type: mainAction.selectSearchUser,
+            payload: item
+        });
+    }
+    private selectUserRoomResultEmit(item) {
+        this.store$.dispatch({
+            type: mainAction.selectSearchRoomUser,
             payload: item
         });
     }
