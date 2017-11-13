@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild,
-    HostListener, ElementRef } from '@angular/core';
+    HostListener, ElementRef, DoCheck } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
@@ -15,7 +15,7 @@ const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
     styleUrls: ['./group-setting.component.scss']
 })
 
-export class GroupSettingComponent implements OnInit {
+export class GroupSettingComponent implements OnInit, DoCheck {
     @Input()
         private groupSetting;
     @Output()
@@ -38,6 +38,8 @@ export class GroupSettingComponent implements OnInit {
         private modifyGroupName: EventEmitter<any> = new EventEmitter();
     @Output()
         private updateGroupAvatar: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private keepSilence: EventEmitter<any> = new EventEmitter();
     private global = global;
     private searchResult = {
         result: [],
@@ -55,7 +57,6 @@ export class GroupSettingComponent implements OnInit {
         show: false
     };
     private modifyGroupNameShow = false;
-    private dec = '';
     private listTop = 203;
     constructor(
         private store$: Store<AppStore>,
@@ -65,6 +66,13 @@ export class GroupSettingComponent implements OnInit {
     }
     public ngOnInit() {
         // pass
+    }
+    public ngDoCheck() {
+        // 修改群描述时，调整群成员列表的位置
+        const header = this.elementRef.nativeElement.querySelector('#groupSettingHeader');
+        if (header) {
+            this.listTop = header.offsetHeight;
+        }
     }
     private stopPropagation(event) {
         event.stopPropagation();
@@ -178,5 +186,8 @@ export class GroupSettingComponent implements OnInit {
     }
     private groupAvatarChange(event) {
         this.updateGroupAvatar.emit(event.target);
+    }
+    private keepSilenceAction(item) {
+        this.keepSilence.emit(item);
     }
 }

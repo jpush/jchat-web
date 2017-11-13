@@ -57,12 +57,17 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     // api调用错误提示统一处理
     private errorApiTip(errorMsg) {
-        let name = errorMsg.text ? errorMsg.text + ' : ' : '';
-        let tip = '';
         if (errorMsg.hasOwnProperty('error')) {
             errorMsg = errorMsg.error;
         }
+        let name = errorMsg.text ? errorMsg.text + ' : ' : '';
+        let tip = '';
+        console.log('error', errorMsg);
         switch (errorMsg.code) {
+            // 自定义提示语
+            case 0:
+                tip = `${name}${errorMsg.myText}`;
+                break;
             case 880001:
                 tip = `${name}未知错误码`;
                 break;
@@ -104,6 +109,9 @@ export class AppComponent implements OnInit, OnDestroy {
                 break;
             case 880208:
                 tip = `${name}发送失败，此消息包含敏感词`;
+                break;
+            case 880211:
+                tip = `${name}您被禁言了`;
                 break;
             case 880402:
                 tip = `${name}您没有创建群组的权限`;

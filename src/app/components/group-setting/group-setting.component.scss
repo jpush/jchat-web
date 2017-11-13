@@ -82,15 +82,15 @@
                 display: none;
             }
             .group-setting-name{
-                line-height: 25px;
+                line-height: 20px;
                 font-size: 14px;
+                margin: 0 0 3px 5px;
                 .group-setting-name-text{
                     white-space: nowrap;
                     max-width: 150px;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     cursor: pointer;
-                    margin-left: 5px;
                     float: left;
                     &:hover{
                         color: #2dd0cf;
@@ -106,19 +106,11 @@
                     font-size: 14px;
                 }
             }
-            .group-setting-desc{
+            .group-setting-gray{
                 line-height: 17px;
                 font-size: 12px;
                 color: #999;
-                margin-left: 5px;
-                .group-setting-desc-text{
-                    cursor: pointer;
-                    max-width: 170px;
-                    word-break: break-all;
-                    &:hover{
-                        color: #2dd0cf;
-                    }
-                }
+                margin:  0 0 1px 5px;
             }
         }
         .group-setting-text{
@@ -133,14 +125,26 @@
         .group-setting-search{
             margin: 6px 20px 10px 0;
         }
+        .group-setting-desc{
+            margin-top: 10px;
+            .group-setting-desc-text{
+                cursor: pointer;
+                line-height: 18px;
+                margin-top: 8px;
+                max-width: 170px;
+                color: #999;
+                &:hover{
+                    color: #2dd0cf;
+                }
+            }
+        }
     }
     .group-setting-list{
         position: absolute;
-        top: 203px;
         bottom: 0;
         left: 0;
         right: 0;
-        top: 215px;
+        top: 267px;
         .group-setting-add{
             line-height: 34px;
             height: 34px;
@@ -173,7 +177,18 @@
                     height: 30px;
                     margin: 10px 10px 0 0;
                     overflow: hidden;
+                    position: relative;
                     img{
+                        cursor: pointer;
+                    }
+                    span{
+                        display: block;
+                        width: 12px;
+                        height: 12px;
+                        background: url(../../../assets/images/keep-silence.svg) no-repeat;
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
                         cursor: pointer;
                     }
                 }
@@ -190,6 +205,20 @@
                     margin: 19px 20px 0 0;
                     position: relative;
                     cursor: pointer;
+                }
+                .group-setting-keep-silence{
+                    font-size: 12px;
+                    color: #2DD0CF;
+                    margin-right: 20px;
+                    cursor: pointer;
+                    margin-left: 5px;
+                    display: none;
+                }
+                &:hover .group-setting-keep-silence{
+                    display: block;
+                    &:hover{
+                        color: #02BDBC;
+                    }
                 }
                 .group-setting-delete{
                     font-weight: 700;

@@ -110,5 +110,9 @@ export const chatAction = {
     emptyUnreadNum: '[chat] empty unread number',
     changeHideAll: '[chat] change hide all',
     inputMessage: '[chat] input message',
-    receiveInputMessage: '[chat] receive input message'
+    receiveInputMessage: '[chat] receive input message',
+    deleteGroupMemberSilence: '[chat] delete group member silence',
+    addGroupMemberSilence: '[chat] add group member silence',
+    deleteGroupMemberSilenceEvent: '[chat] delete group member silence event',
+    addGroupMemberSilenceEvent: '[chat] add group member silence event'
 };

@@ -202,6 +202,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 监听在线事件消息
         global.JIM.onEventNotification((data) => {
+            console.log('event', data);
             data.isOffline = false;
             if (!this.isLoaded) {
                 this.eventArr.push(data);
@@ -283,6 +284,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 payload: data
             });
         });
+        // 消息透传（正在输入）
         global.JIM.onTransMsgRec((data) => {
             if (data.from_username === this.active.name) {
                 this.inputMessage = data.cmd;
@@ -961,6 +963,22 @@ export class ChatComponent implements OnInit, OnDestroy {
                     });
                 }
                 break;
+            case 65:
+                if (!data.isOffline) {
+                    // 禁言事件
+                    if (data.extra === 1) {
+                        this.store$.dispatch({
+                            type: chatAction.addGroupMemberSilenceEvent,
+                            payload: data
+                        });
+                    // 取消禁言事件
+                    } else if (data.extra === 2) {
+                        this.store$.dispatch({
+                            type: chatAction.deleteGroupMemberSilenceEvent,
+                            payload: data
+                        });
+                    }
+                }
             case 100:
                 // 好友列表更新同步事件
                 if (!data.isOffline) {
@@ -2234,6 +2252,26 @@ export class ChatComponent implements OnInit, OnDestroy {
                 input
             }
         });
+    }
+    private keepSilenceEmit(item) {
+        console.log(888, item);
+        if (item.keep_silence) {
+            this.store$.dispatch({
+                type: chatAction.deleteGroupMemberSilence,
+                payload: {
+                    active: this.active,
+                    item
+                }
+            });
+        } else {
+            this.store$.dispatch({
+                type: chatAction.addGroupMemberSilence,
+                payload: {
+                    active: this.active,
+                    item
+                }
+            });
+        }
     }
     // 初始化所有数据
     private init() {

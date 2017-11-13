@@ -2575,6 +2575,69 @@ export class ChatEffect {
                         return {type: '[chat] input message useless'};
                     });
     });
+    // 添加群组成员禁言
+    @Effect()
+    private addGroupMemberSilence$: Observable<Action> = this.actions$
+        .ofType(chatAction.addGroupMemberSilence)
+        .map(toPayload)
+        .switchMap((info) => {
+            global.JIM.addGroupMemSilence({
+                gid: info.active.key,
+                // target_appkey: info.item.appkey,
+                target_username: info.item.username
+            }).onSuccess((data) => {
+                //  pass
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of('addGroupMemberSilence')
+                    .map(() => {
+                        return {type: '[chat] add group member silence useless'};
+                    });
+    });
+    // 删除群组成员禁言
+    @Effect()
+    private deleteGroupMemberSilence$: Observable<Action> = this.actions$
+        .ofType(chatAction.deleteGroupMemberSilence)
+        .map(toPayload)
+        .switchMap((info) => {
+            global.JIM.delGroupMemSilence({
+                gid: info.active.key,
+                // target_appkey: info.item.appkey,
+                target_username: info.item.username
+            }).onSuccess((data) => {
+                //  pass
+            }).onFail((error) => {
+                error.code = 0;
+                error.myText = '禁言失败';
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout(() => {
+                const error = {
+                    code: 0,
+                    myText: '禁言失败'
+                };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of('deleteGroupMemberSilence')
+                    .map(() => {
+                        return {type: '[chat] delete group member silence useless'};
+                    });
+    });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,

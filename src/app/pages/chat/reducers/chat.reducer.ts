@@ -582,6 +582,12 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.receiveInputMessage:
             state.isInput = payload;
             break;
+        case chatAction.addGroupMemberSilenceEvent:
+            addGroupMemberSilenceEvent(state, payload);
+            break;
+        case chatAction.deleteGroupMemberSilenceEvent:
+            deleteGroupMemberSilenceEvent(state, payload);
+            break;
         default:
     }
     return state;
@@ -1773,6 +1779,11 @@ function sortConversationByRecentMsg(state) {
 }
 // 被添加进群、移出群、退出群的事件
 function groupMembersEvent(state: ChatStore, payload, operation) {
+    for (let shield of state.groupShield) {
+        if (Number(shield.gid) === Number(payload.gid)) {
+            return ;
+        }
+    }
     let usernames = payload.to_usernames;
     let addGroupOther = '';
     for (let user of usernames) {
@@ -1804,9 +1815,6 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
     for (let i = 0; i < state.conversation.length; i++) {
         if (state.conversation[i].type === 4 &&
             Number(payload.gid) === Number(state.conversation[i].key)) {
-            if (state.conversation[i].shield) {
-                return ;
-            }
             flag1 = false;
             let index = i;
             if (!state.conversation[i].extras || !state.conversation[i].extras.top_time_ms) {
@@ -1820,13 +1828,17 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
     if (flag1) {
         for (let group of state.groupList) {
             if (Number(group.gid) === Number(payload.gid)) {
-                if (group.shield) {
-                    return ;
+                let conversation = Util.deepCopyObj(group);
+                conversation.type = 4;
+                conversation.key = group.gid;
+                conversation.unreadNum = 0;
+                for (let noDisturbGroup of state.noDisturb.groups) {
+                    if (Number(noDisturbGroup.gid) === Number(payload.gid)) {
+                        conversation.noDisturb = true;
+                        break;
+                    }
                 }
-                group.type = 4;
-                group.key = group.gid;
-                group.unreadNum = 0;
-                let index = filterTopConversation(state, group);
+                let index = filterTopConversation(state, conversation);
                 flag1 = false;
                 isRecentmsg(state, payload, addGroupOther, operation, index);
                 break;
@@ -3052,4 +3064,125 @@ function filterTopConversation(state, item) {
         index = state.conversation.length - 1;
     }
     return index;
+}
+// 添加群成员禁言事件
+function addGroupMemberSilenceEvent(state, payload) {
+    changeGroupMemberSilence(state, payload, true, '被禁言');
+}
+// 取消群成员禁言事件
+function deleteGroupMemberSilenceEvent(state, payload) {
+    changeGroupMemberSilence(state, payload, false, '被解除禁言');
+}
+function changeGroupMemberSilence(state, payload, silence: boolean, text: string) {
+    for (let shield of state.groupShield) {
+        if (Number(shield.gid) === Number(payload.gid)) {
+            return ;
+        }
+    }
+    for (let messageList of state.messageList) {
+        if (Number(payload.gid) === Number(messageList.key)) {
+            if (messageList.groupSetting && messageList.groupSetting.memberList) {
+                for (let user of payload.to_usernames) {
+                    for (let member of messageList.groupSetting.memberList) {
+                        if (member.username === user.username) {
+                            member.keep_silence = silence;
+                            break;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+    }
+    for (let user of payload.to_usernames) {
+        let name = user.nickname || user.username;
+        for (let friend of state.friendList) {
+            if (friend.name === user.username) {
+                if (friend.memo_name) {
+                    name = friend.memo_name;
+                }
+                break;
+            }
+        }
+        let msg = {
+            ctime_ms: payload.ctime_ms,
+            msg_type: 5,
+            content: {
+                msg_body: {
+                    text: `${name} ${text}`
+                },
+                msg_type: 'event'
+            },
+            time_show: '',
+            conversation_time_show: Util.reducerDate(payload.ctime_ms)
+        };
+        let flag = false;
+        for (let i = 0; i < state.conversation.length; i++) {
+            if (Number(state.conversation[i].key) === Number(payload.gid)) {
+                state.conversation[i].recentMsg = msg;
+                let item = state.conversation.splice(i, 1)[0];
+                filterTopConversation(state, item);
+                flag = true;
+                for (let messageList of state.messageList) {
+                    if (Number(messageList.key) === Number(payload.gid)) {
+                        let msgs = messageList.msgs;
+                        if (msgs.length > 0) {
+                            if (Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms,
+                                payload.ctime_ms)) {
+                                msg.time_show = Util.reducerDate(payload.ctime_ms);
+                            }
+                        }
+                        msgs.push(msg);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        if (!flag) {
+            for (let group of state.groupList) {
+                if (Number(group.gid) === Number(payload.gid)) {
+                    let conversation = Util.deepCopyObj(group);
+                    for (let noDisturbGroup of state.noDisturb.groups) {
+                        if (Number(noDisturbGroup.gid) === Number(payload.gid)) {
+                            conversation.noDisturb = true;
+                            break;
+                        }
+                    }
+                    conversation.type = 4;
+                    conversation.recentMsg = msg;
+                    if (conversation.gid) {
+                        conversation.key = conversation.gid;
+                    }
+                    filterTopConversation(state, conversation);
+                    let flag2 = false;
+                    for (let messageList of state.messageList) {
+                        if (Number(messageList.key) === Number(payload.gid)) {
+                            let msgs = messageList.msgs;
+                            if (msgs.length > 0) {
+                                if (Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms,
+                                    payload.ctime_ms)) {
+                                    msg.time_show = Util.reducerDate(payload.ctime_ms);
+                                }
+                            }
+                            flag = true;
+                            msgs.push(msg);
+                            break;
+                        }
+                    }
+                    if (!flag) {
+                        msg.time_show = Util.reducerDate(payload.ctime_ms);
+                        state.messageList.push({
+                            key: payload.gid,
+                            msgs: [
+                                msg
+                            ],
+                            type: 4
+                        });
+                    }
+                    break;
+                }
+            }
+        }
+    }
 }
