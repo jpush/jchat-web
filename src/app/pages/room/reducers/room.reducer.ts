@@ -31,12 +31,11 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
             state.roomInfomation = payload;
             break;
         case roomAction.receiveMessageSuccess:
-            if (payload.mediaUrl) {
-                filterImageViewer(state, payload.message);
-            } else if (payload.message) {
-                addMessage(state, payload.message);
-                state.newMessage = payload.message;
-            }
+            addMessage(state, payload);
+            state.newMessage = payload;
+            break;
+        case roomAction.receiveMessageUrlSuccess:
+            filterImageViewer(state, payload);
             break;
         case roomAction.sendTextMsg:
 

@@ -2556,6 +2556,25 @@ export class ChatEffect {
                         return {type: '[chat] update unread count useless'};
                     });
     });
+    // 发送透传正在输入
+    @Effect()
+    private inputMessage$: Observable<Action> = this.actions$
+        .ofType(chatAction.inputMessage)
+        .map(toPayload)
+        .switchMap((message) => {
+            global.JIM.transSingleMsg({
+                target_username: message.active.name,
+                cmd: JSON.stringify(message.input)
+            }).onSuccess((data) => {
+                // pass
+            }).onFail((data) => {
+                // pass
+            });
+            return Observable.of('inputMessage')
+                    .map(() => {
+                        return {type: '[chat] input message useless'};
+                    });
+    });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,

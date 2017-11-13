@@ -11,6 +11,7 @@ export const roomAction = {
     showRoomInfomationSuccess: '[room] show room infomation success',
     receiveMessage: '[room] receive message',
     receiveMessageSuccess: '[room] receive message success',
+    receiveMessageUrlSuccess: '[room] receive message url success',
     getSelfChatrooms: '[room] get self chatrooms',
     exitAllChatroomsSuccess: '[room] get all chatrooms success',
     sendTextMsg: '[room] send text msg',

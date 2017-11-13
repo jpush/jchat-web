@@ -4,6 +4,7 @@
         <div class="chat-panel-setting">
             <span *ngIf="active.type === 3" (click)="watchOtherInfo(active)" class="chat-panel-username chat-panel-name">{{active.memo_name || active.nickName || active.name}}</span>
             <span *ngIf="active.type === 4" class="chat-panel-name">{{active.name}}</span>
+            <span *ngIf="isInput" class="chat-panel-is-input">正在输入...</span>
             <div class="chat-panel-setting-btn" [hoverEvent]="groupConversationHover" *ngIf="active.type === 3" (click)="addGroupAction()">
                 <hover-tip-component [hidden]="!groupConversationHover.show" [hoverInfo]="groupConversationHover"></hover-tip-component>
             </div>

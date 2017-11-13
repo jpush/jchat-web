@@ -319,10 +319,12 @@ export class MainComponent implements OnInit, OnDestroy {
     }
     // 切换聊天面板和联系人面板
     private changeListTab(index) {
-        this.store$.dispatch({
-            type: mainAction.changeListTab,
-            payload: index
-        });
+        if (this.listTab !== index) {
+            this.store$.dispatch({
+                type: mainAction.changeListTab,
+                payload: index
+            });
+        }
     }
     // 获取个人信息
     private getSelfInfo(event) {

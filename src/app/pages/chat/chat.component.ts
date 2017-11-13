@@ -9,6 +9,7 @@ import { roomAction } from '../room/actions';
 import { Util } from '../../services/util';
 import { contactAction } from '../contact/actions';
 import * as Push from 'push.js';
+import { setTimeout, clearTimeout } from 'timers';
 
 @Component({
     selector: 'chat-component',
@@ -148,6 +149,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     };
     private isMySelf = false;
     private noLoadedMessage = [];
+    private inputMessage = '';
+    private inputMessageTimer = null;
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -279,6 +282,23 @@ export class ChatComponent implements OnInit, OnDestroy {
                 type: chatAction.userInfUpdateEvent,
                 payload: data
             });
+        });
+        global.JIM.onTransMsgRec((data) => {
+            if (data.from_username === this.active.name) {
+                this.inputMessage = data.cmd;
+                clearTimeout(this.inputMessageTimer);
+                // 6s内没有新的透传消息，则清除正在输入
+                this.inputMessageTimer = setTimeout(() => {
+                    this.store$.dispatch({
+                        type: chatAction.receiveInputMessage,
+                        payload: false
+                    });
+                }, 6000);
+                this.store$.dispatch({
+                    type: chatAction.receiveInputMessage,
+                    payload: true
+                });
+            }
         });
     }
     public ngOnDestroy() {
@@ -742,6 +762,10 @@ export class ChatComponent implements OnInit, OnDestroy {
         // 单聊消息
         } else {
             this.store$.dispatch({
+                type: chatAction.receiveInputMessage,
+                payload: false
+            });
+            this.store$.dispatch({
                 type: chatAction.receiveSingleMessage,
                 payload: {
                     data,
@@ -1138,6 +1162,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     // }
     // 更新当前对话用户信息
     private changeActivePerson(chatState) {
+        this.inputMessage = '';
+        this.store$.dispatch({
+            type: chatAction.receiveInputMessage,
+            payload: false
+        });
         this.closeGroupSettingEmit();
         this.active = chatState.activePerson;
         this.store$.dispatch({
@@ -2195,6 +2224,15 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.store$.dispatch({
             type: chatAction.watchOtherInfo,
             payload: info
+        });
+    }
+    private inputMessageEmit(input) {
+        this.store$.dispatch({
+            type: chatAction.inputMessage,
+            payload: {
+                active: this.active,
+                input
+            }
         });
     }
     // 初始化所有数据

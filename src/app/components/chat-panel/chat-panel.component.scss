@@ -26,7 +26,7 @@
             -webkit-box-sizing: border-box;
                     box-sizing: border-box;      
             .chat-panel-name{
-                max-width: 80%;
+                max-width: 50%;
                 float: left;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -39,6 +39,11 @@
                 &:hover{
                     color: #2dd0cf;
                 }
+            }
+            .chat-panel-is-input{
+                font-size: 12px;
+                color: #2C2C2C;
+                margin-left: 8px;
             }
             .chat-panel-setting-btn, .chat-panel-group-setting, .chat-panel-record-btn{
                 height: 20px;

@@ -250,20 +250,15 @@ export class RoomEffect {
         .switchMap((payload) => {
             this.store$.dispatch({
                 type: roomAction.receiveMessageSuccess,
-                payload: {
-                    message: payload.data
-                }
+                payload: payload.data
             });
             if (payload.data.content.msg_body.media_id) {
                 global.JIM.getResource({media_id: payload.data.content.msg_body.media_id})
                 .onSuccess((urlInfo) => {
                     payload.data.content.msg_body.media_url = urlInfo.url;
                     this.store$.dispatch({
-                        type: roomAction.receiveMessageSuccess,
-                        payload: {
-                            mediaUrl: true,
-                            message: payload.data
-                        }
+                        type: roomAction.receiveMessageUrlSuccess,
+                        payload: payload.data
                     });
                 }).onFail((error) => {
                     // pass

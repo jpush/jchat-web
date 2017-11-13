@@ -60,6 +60,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         private msgTransmit: EventEmitter<any> = new EventEmitter();
     @Output()
         private businessCardSend: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private inputMessage: EventEmitter<any> = new EventEmitter();
     private global = global;
     private change;
     private flag = false;
@@ -181,6 +183,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         show: false,
         info: []
     };
+    private messageContent = '';
+    private isInput = false;
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -415,6 +419,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 break;
             case chatAction.dispatchFriendList:
                 this.businessCard.info = contactState.friendList;
+                break;
+            case chatAction.receiveInputMessage:
+                this.isInput = chatState.isInput;
                 break;
             default:
         }
@@ -868,6 +875,16 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 输入框keyup
     private preKeyup(event) {
         if (this.active.type === 3) {
+            // 单聊正在输入
+            if (this.messageContent !== event.target.innerHTML) {
+                this.messageContent = event.target.innerHTML;
+                this.inputMessage.emit({
+                    type: 'input',
+                    content: {
+                        message: this.messageContent
+                    }
+                });
+            }
             return ;
         }
         let selection = window.getSelection();

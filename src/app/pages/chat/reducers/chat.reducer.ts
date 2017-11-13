@@ -579,6 +579,9 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case roomAction.transmitAllMsg:
             state.roomTransmitMsg = payload;
             break;
+        case chatAction.receiveInputMessage:
+            state.isInput = payload;
+            break;
         default:
     }
     return state;

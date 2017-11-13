@@ -90,4 +90,5 @@ export interface ChatStore {
     createGroupSearch: object;
     unreadCount: object;
     roomTransmitMsg: object;
+    isInput: boolean;
 }
