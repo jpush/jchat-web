@@ -48,5 +48,16 @@ export const mainInit = {
         }
     },
     contactUnreadNum: 0,
-    friendList: []
+    friendList: [],
+    enterPublicGroup: {
+        show: false,
+        info: {}
+    },
+    groupInfo: {
+        show: false,
+        info: {}
+    },
+    groupVerifyModal: {
+        show: false
+    }
 };

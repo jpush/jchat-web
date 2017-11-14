@@ -1,7 +1,12 @@
 <perfect-scrollbar class="verify-container">
     <h2>验证消息</h2>
-    <div class="list-no-data" *ngIf="verifyMessageList.length === 0">暂无验证消息</div>
-    <div class="display-flex verify-list align-items-center" *ngFor="let message of verifyMessageList">
+    <div class="verify-change-tab">
+        <span [class.active]="tab === 0" (click)="changeVerifyTab(0)">好友验证</span>
+        <span [class.active]="tab === 1" (click)="changeVerifyTab(1)">群组验证</span>
+    </div>
+    <div class="list-no-data" *ngIf="verifyMessageList.length === 0 && tab === 0">暂无验证消息</div>
+    <div class="list-no-data" *ngIf="verifyMessageList.length === 0 && tab === 1">暂无验证消息</div>
+    <div class="display-flex verify-list align-items-center" [hidden]="tab !== 0" *ngFor="let message of verifyMessageList">
         <div class="verify-avatar">
             <img (load)="avatarLoad($event)" (click)="verifyUser(message)" (error)="avatarErrorIcon($event)" [src]="message.avatarUrl | sanitize : 'url'" alt="">
         </div>

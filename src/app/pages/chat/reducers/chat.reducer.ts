@@ -3131,6 +3131,8 @@ function changeGroupMemberSilence(state, payload, silence: boolean, text: string
                                 payload.ctime_ms)) {
                                 msg.time_show = Util.reducerDate(payload.ctime_ms);
                             }
+                        } else {
+                            msg.time_show = Util.reducerDate(payload.ctime_ms);
                         }
                         msgs.push(msg);
                         break;
@@ -3164,6 +3166,8 @@ function changeGroupMemberSilence(state, payload, silence: boolean, text: string
                                     payload.ctime_ms)) {
                                     msg.time_show = Util.reducerDate(payload.ctime_ms);
                                 }
+                            } else {
+                                msg.time_show = Util.reducerDate(payload.ctime_ms);
                             }
                             flag = true;
                             msgs.push(msg);

@@ -26,8 +26,8 @@ export interface MainStore {
     actionType: string;
     tipModal: object;
     createSingleChat: {
-        show: boolean,
-        info: string
+        show: boolean;
+        info: string;
     };
     blackMenu: {
         menu: Array<any>;
@@ -37,10 +37,21 @@ export interface MainStore {
     logoutKick: {
         show: boolean,
         info: {
-            title: string,
-            tip: string
+            title: string;
+            tip: string;
         }
     };
     contactUnreadNum: number;
     friendList: Array<any>;
+    enterPublicGroup: {
+        show: boolean;
+        info: object;
+    };
+    groupInfo: {
+        show: boolean;
+        info: object;
+    };
+    groupVerifyModal: {
+        show: boolean;
+    };
 }

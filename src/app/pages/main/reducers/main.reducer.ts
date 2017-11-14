@@ -46,6 +46,19 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             state.createGroup.show = false;
             state.listTab = 0;
             break;
+        case mainAction.enterPublicGroupShow:
+            state.enterPublicGroup = payload;
+            break;
+        case mainAction.searchPublicGroupSuccess:
+            state.groupInfo = payload;
+            state.enterPublicGroup = {
+                show: false,
+                info: {}
+            };
+            break;
+        case mainAction.groupVerifyModal:
+            state.groupVerifyModal.show = payload.show;
+            break;
             // 添加群成员成功
         case mainAction.addGroupMemberSuccess:
             state.createGroup.show = false;

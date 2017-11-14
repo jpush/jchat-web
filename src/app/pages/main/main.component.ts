@@ -71,6 +71,10 @@ export class MainComponent implements OnInit, OnDestroy {
             {
                 key: 2,
                 name: '添加好友'
+            },
+            {
+                key: 3,
+                name: '加入公开群'
             }
         ]
     };
@@ -146,6 +150,17 @@ export class MainComponent implements OnInit, OnDestroy {
         title: '发起单聊',
         placeholder: '输入用户名查找'
     };
+    private enterPublicGroup = {
+        show: false,
+        info: {}
+    };
+    private groupInfo = {
+        show: false,
+        info: {}
+    };
+    private groupVerifyModal = {
+        show: false
+    };
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -180,7 +195,7 @@ export class MainComponent implements OnInit, OnDestroy {
     }
     // 关闭窗口时存cookie，五分钟之内进入页面还可以免登陆
     @HostListener('window:beforeunload') private onBeforeunloadWindow() {
-        let time = 5 * 60 * 1000;
+        const time = 5 * 60 * 1000;
         this.storageService.set(md5('afterFiveMinutes-username'), global.user, true, time);
         this.storageService.set(md5('afterFiveMinutes-password'), global.password, true, time);
     }
@@ -296,6 +311,16 @@ export class MainComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.changeHideAll:
                 this.listTab = mainState.listTab;
+                break;
+            case mainAction.enterPublicGroupShow:
+                this.enterPublicGroup = mainState.enterPublicGroup;
+                break;
+            case mainAction.searchPublicGroupSuccess:
+                this.enterPublicGroup = mainState.enterPublicGroup;
+                this.groupInfo = mainState.groupInfo;
+                break;
+            case mainAction.groupVerifyModal:
+                this.groupVerifyModal = mainState.groupVerifyModal;
                 break;
             default:
         }
@@ -582,6 +607,9 @@ export class MainComponent implements OnInit, OnDestroy {
                     placeholder: '输入用户名'
                 };
                 break;
+            case 3:
+                type = mainAction.enterPublicGroupShow;
+                break;
             default:
         }
         this.store$.dispatch({
@@ -683,6 +711,29 @@ export class MainComponent implements OnInit, OnDestroy {
             payload: info
         });
     }
+    private enterGroupComfirmEmit(value) {
+        this.store$.dispatch({
+            type: mainAction.searchPublicGroup,
+            payload: value
+        });
+    }
+    private applyEnterGroupEmit(groupInfo) {
+        this.store$.dispatch({
+            type: mainAction.groupVerifyModal,
+            payload: {
+                show: true
+            }
+        });
+    }
+    private groupVerifyModalBtnEmit(verifyText) {
+        this.store$.dispatch({
+            type: mainAction.sendGroupVerifyMessage,
+            payload: {
+                info: this.groupInfo.info,
+                text: verifyText
+            }
+        });
+    }
     private init() {
         this.listTab = 0;
         this.selfInfo = {
@@ -735,6 +786,10 @@ export class MainComponent implements OnInit, OnDestroy {
                 {
                     key: 2,
                     name: '添加好友'
+                },
+                {
+                    key: 3,
+                    name: '加入公开群'
                 }
             ]
         };

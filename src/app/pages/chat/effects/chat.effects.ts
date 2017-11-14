@@ -2587,13 +2587,20 @@ export class ChatEffect {
                 target_username: info.item.username
             }).onSuccess((data) => {
                 //  pass
-            }).onFail((error) => {
+            }).onFail((data) => {
+                const error = {
+                    code: 0,
+                    myText: '禁言失败'
+                };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = {
+                    code: 0,
+                    myText: '禁言失败'
+                };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -2616,9 +2623,11 @@ export class ChatEffect {
                 target_username: info.item.username
             }).onSuccess((data) => {
                 //  pass
-            }).onFail((error) => {
-                error.code = 0;
-                error.myText = '禁言失败';
+            }).onFail((data) => {
+                const error = {
+                    code: 0,
+                    myText: '取消禁言失败'
+                };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -2626,7 +2635,7 @@ export class ChatEffect {
             }).onTimeout(() => {
                 const error = {
                     code: 0,
-                    myText: '禁言失败'
+                    myText: '取消禁言失败'
                 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,

@@ -15,6 +15,7 @@ export class VerifyComponent implements OnInit {
         private isAgreeAddFriend: EventEmitter<any>  = new EventEmitter();
     @Output()
         private watchVerifyUser: EventEmitter<any>  = new EventEmitter();
+    private tab = 0;
     constructor() {
         // pass
     }
@@ -48,5 +49,8 @@ export class VerifyComponent implements OnInit {
     }
     private verifyUser(message) {
         this.watchVerifyUser.emit(message);
+    }
+    private changeVerifyTab(tab) {
+        this.tab = tab;
     }
 }

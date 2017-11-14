@@ -16,6 +16,7 @@ export class MenuComponent implements OnInit {
      }
     public ngOnInit() {
         // pass
+        console.log(222, this.menu);
     }
     private selectMenuItemAction(item) {
         this.selectMenuItem.emit(item);

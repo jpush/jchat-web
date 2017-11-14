@@ -62,7 +62,7 @@ export class ConversationListComponent implements OnInit {
     private conversationToTopAction() {
         this.conversationToTop.emit(this.topPosition.item);
     }
-    private avatarLoad(event, item) {
+    private avatarLoad(event) {
         Util.reduceAvatarSize(event);
     }
 }

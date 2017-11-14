@@ -28,10 +28,12 @@ import { HoverEventModule } from '../../directives';
 import { LogoutKickModule } from '../../components//logout-kick';
 import { SanitizePipeModule } from '../../pipes';
 import { BadgeModule } from 'jpush-ui/badge';
+import { EnterGroupModule } from '../../components/enter-group';
+import { GroupInfoModule } from '../../components/group-info';
+import { VerifyModalModule } from '../../components/verify-modal';
 
 @NgModule({
   declarations: [
-    // Components / Directives/ Pipes
     MainComponent
   ],
   imports: [
@@ -60,7 +62,10 @@ import { BadgeModule } from 'jpush-ui/badge';
     HoverEventModule,
     LogoutKickModule,
     BadgeModule,
-    SanitizePipeModule
+    SanitizePipeModule,
+    EnterGroupModule,
+    GroupInfoModule,
+    VerifyModalModule
   ],
   providers: [
   ]

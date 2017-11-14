@@ -153,7 +153,8 @@ export class MainEffect {
         .switchMap((groupInfo) => {
             const createGroupObj = global.JIM.createGroup({
                 group_name:  groupInfo.groupName,
-                group_description: groupInfo.groupDescription
+                group_description: groupInfo.groupDescription,
+                is_limit: true
             }).onSuccess((data) => {
                 let groupObj = {
                     appkey: authPayload.appKey,
@@ -830,6 +831,180 @@ export class MainEffect {
                         return {type: '[main] search user useless'};
                     });
         });
+    // 搜索群组资料
+    @Effect()
+    private searchPublicGroup$: Observable<Action> = this.actions$
+        .ofType(mainAction.searchPublicGroup)
+        .map(toPayload)
+        .switchMap((gid) => {
+            const searchPublicGroupObj = global.JIM.getGroupInfo({
+                gid
+            }).onSuccess((data) => {
+                if (data.group_info.flag === 2) {
+                    let count = 0;
+                    if (data.group_info.avatar && data.group_info.avatar !== '') {
+                        count ++;
+                        global.JIM.getResource({media_id: data.group_info.avatar})
+                        .onSuccess((urlInfo) => {
+                            data.group_info.avatarUrl = urlInfo.url;
+                            if (-- count <= 0) {
+                                this.store$.dispatch({
+                                    type: mainAction.searchPublicGroupSuccess,
+                                    payload: {
+                                        show: true,
+                                        info: data.group_info
+                                    }
+                                });
+                            }
+                        }).onFail((error) => {
+                            if (-- count <= 0) {
+                                this.store$.dispatch({
+                                    type: mainAction.searchPublicGroupSuccess,
+                                    payload: {
+                                        show: true,
+                                        info: data.group_info
+                                    }
+                                });
+                            }
+                        }).onTimeout(() => {
+                            if (-- count <= 0) {
+                                this.store$.dispatch({
+                                    type: mainAction.searchPublicGroupSuccess,
+                                    payload: {
+                                        show: true,
+                                        info: data.group_info
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    count ++;
+                    global.JIM.getGroupMembers({
+                        gid
+                    }).onSuccess((groupList) => {
+                        data.group_info.member_list_count = groupList.member_list.length;
+                        for (let member of groupList.member_list) {
+                            if (member.flag === 1) {
+                                data.group_info.host = member;
+                                break;
+                            }
+                        }
+                        if (-- count <= 0) {
+                            this.store$.dispatch({
+                                type: mainAction.searchPublicGroupSuccess,
+                                payload: {
+                                    show: true,
+                                    info: data.group_info
+                                }
+                            });
+                        }
+                    }).onFail((info) => {
+                        this.store$.dispatch({
+                            type: mainAction.enterPublicGroupShow,
+                            payload: {
+                                show: true,
+                                info: {
+                                    text: '查找公开群失败'
+                                }
+                            }
+                        });
+                    }).onTimeout((timeout) => {
+                        const error = {code: 910000};
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
+                    });
+                } else {
+                    this.store$.dispatch({
+                        type: mainAction.enterPublicGroupShow,
+                        payload: {
+                            show: true,
+                            info: {
+                                text: '未搜索到公开群'
+                            }
+                        }
+                    });
+                }
+            }).onFail((error) => {
+                if (error.code === 882002) {
+                    this.store$.dispatch({
+                        type: mainAction.enterPublicGroupShow,
+                        payload: {
+                            show: true,
+                            info: {
+                                text: '未搜索到公开群'
+                            }
+                        }
+                    });
+                } else {
+                    this.store$.dispatch({
+                        type: mainAction.enterPublicGroupShow,
+                        payload: {
+                            show: true,
+                            info: {
+                                text: '查找公开群失败'
+                            }
+                        }
+                    });
+                }
+            }).onTimeout((data) => {
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(searchPublicGroupObj)
+                    .map(() => {
+                        return {type: '[main] search public group useless'};
+                    });
+    });
+    // 发送申请入群
+    @Effect()
+    private sendGroupVerifyMessage$: Observable<Action> = this.actions$
+        .ofType(mainAction.sendGroupVerifyMessage)
+        .map(toPayload)
+        .switchMap((payload) => {
+            const sendGroupVerifyMessageObj = global.JIM.joinGroup({
+                gid: payload.info.gid,
+                reason: payload.text
+            }).onSuccess((data) => {
+                this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '发送成功',
+                            tip: '入群申请已发送，请等待审核',
+                            actionType: '[main] send verify group success',
+                            success: 1
+                        }
+                    }
+                });
+                this.store$.dispatch({
+                    type: mainAction.groupVerifyModal,
+                    payload: {
+                        show: false
+                    }
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(sendGroupVerifyMessageObj)
+                    .map(() => {
+                        return {type: '[main] send group verify message useless'};
+                    });
+    });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,

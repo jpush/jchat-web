@@ -10,8 +10,21 @@
         color: #2C2C2C;
         font-weight: 900;
         line-height: 40px;
-        margin-bottom: 10px;
         padding-left: 18px;
+    }
+    .verify-change-tab{
+        height: 27px;
+        line-height: 25px;
+        padding-left: 20px;
+        span{
+            font-size: 14px;
+            color: #2C2C2C;
+            margin-right: 24px;
+            cursor: pointer;
+            &.active{
+                color: #2DD0CF;
+            }
+        }
     }
     .verify-list{
         min-height: 70px;        

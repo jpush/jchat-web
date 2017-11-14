@@ -42,5 +42,10 @@ export const mainAction = {
     addSingleNoDisturbSuccess: '[main] add single no disturb success',
     deleteFriend: '[main] delete friend',
     deleteFriendSuccess: '[main] delete friend success',
-    dispatchSendSelfCard: '[main] dispatch send self card'
+    dispatchSendSelfCard: '[main] dispatch send self card',
+    enterPublicGroupShow: '[main] enter public group show',
+    searchPublicGroup: '[main] search public group',
+    searchPublicGroupSuccess: '[main] search public group success',
+    groupVerifyModal: '[main] group verify modal',
+    sendGroupVerifyMessage: '[main] send group verify message'
 };
