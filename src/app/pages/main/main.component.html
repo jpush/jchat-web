@@ -45,7 +45,8 @@
         </div>
     </div>
     <self-info-component *ngIf="selfInfo.show" [selfInfo]="selfInfo" [updateSelfInfoFlag]="updateSelfInfoFlag" (isShow)="selfInfoEmit($event)" (selectIsNotImage)="selectIsNotImageEmit()" (sendCard)="sendCardEmit($event)"></self-info-component>    
-    <create-group-component *ngIf="createGroup.show" [createGroup]="createGroup" (isCreateGroup)="createGroupEmit($event)"></create-group-component>
+    <create-group-component *ngIf="createGroup.show" [hidden]="!createGroup.display" [createGroup]="createGroup" (isCreateGroup)="createGroupEmit($event)" (nextCreateGroup)="nextCreateGroupEmit($event)"></create-group-component>
+    <create-group-next-component *ngIf="createGroupNext.show" [hidden]="!createGroupNext.display" [groupAvatarInfo]="groupAvatarInfo" [createGroupNext]="createGroupNext" (createGroupPrev)="createGroupPrevEmit()" (closeCreateGroupNext)="closeCreateGroupNextEmit()" (completeCreateGroup)="completeCreateGroupEmit($event)" (changeCreateGroupAvatar)="changeCreateGroupAvatarEmit($event)"></create-group-next-component>
     <modify-password-component [hidden]="!isModifyPasswordShow" (modifyPassword)="modifyPasswordEmit($event)"></modify-password-component>
     <tip-modal-component *ngIf="tipModal.show" [info]="tipModal.info" (modalTipEmit)="modalTipEmit($event)"></tip-modal-component>
     <create-single-chat-component *ngIf="createSingleChat.show" [createSingleOption]="createSingleOption" [info]="createSingleChat.info" (emptySingleChatTip)="emptySingleChatTipEmit()" (createSingleChat)="createSingleChatEmit($event)"></create-single-chat-component>
@@ -54,6 +55,7 @@
     <enter-group-component [enterPublicGroup]="enterPublicGroup" *ngIf="enterPublicGroup.show" (enterGroupComfirm)="enterGroupComfirmEmit($event)"></enter-group-component>
     <group-info-component *ngIf="groupInfo.show" [groupInfo]="groupInfo" (applyEnterGroup)="applyEnterGroupEmit($event)"></group-info-component>
     <verify-modal-component *ngIf="groupVerifyModal.show" [verifyModal]="groupVerifyModal" (verifyModalBtn)="groupVerifyModalBtnEmit($event)"></verify-modal-component>
+    <group-avatar-component *ngIf="groupAvatarInfo.show" [groupAvatarInfo]="groupAvatarInfo" (groupAvatar)="groupAvatarEmit($event)"></group-avatar-component>
 </div>
 <div class="copyright-container">
     <img src="../../../assets/images/copyright.svg" alt="">

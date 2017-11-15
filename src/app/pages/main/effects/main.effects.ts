@@ -151,18 +151,41 @@ export class MainEffect {
         .ofType(mainAction.createGroup)
         .map(toPayload)
         .switchMap((groupInfo) => {
-            const createGroupObj = global.JIM.createGroup({
-                group_name:  groupInfo.groupName,
-                group_description: groupInfo.groupDescription,
-                is_limit: true
-            }).onSuccess((data) => {
+            let param: any = {
+                group_name: groupInfo.groupName
+            };
+            if (groupInfo.isLimit) {
+                param.is_limit = groupInfo.isLimit;
+            }
+            if (groupInfo.avatar) {
+                param.avatar = groupInfo.avatar;
+            }
+            const createGroupObj = global.JIM.createGroup(param)
+            .onSuccess((data) => {
+                this.store$.dispatch({
+                    type: mainAction.createGroupNextShow,
+                    payload: {
+                        show: false,
+                        display: false,
+                        info: {}
+                    }
+                });
+                this.store$.dispatch({
+                    type: mainAction.createGroupShow,
+                    payload: {
+                        show: false,
+                        display: false,
+                        info: {}
+                    }
+                });
                 let groupObj = {
                     appkey: authPayload.appKey,
                     desc: data.group_description,
                     gid: data.gid,
                     mtime: data.ctime,
                     name: data.group_name,
-                    type: 4
+                    type: 4,
+                    avatarUrl: groupInfo.avatarUrl ? groupInfo.avatarUrl : ''
                 };
                 // 如果有其他成员
                 if (groupInfo.memberUsernames.length > 0) {
@@ -837,6 +860,21 @@ export class MainEffect {
         .ofType(mainAction.searchPublicGroup)
         .map(toPayload)
         .switchMap((gid) => {
+            if (Number.isNaN(Number(gid))) {
+                this.store$.dispatch({
+                    type: mainAction.enterPublicGroupShow,
+                    payload: {
+                        show: true,
+                        info: {
+                            text: '群组ID是数字，请输入正确的格式'
+                        }
+                    }
+                });
+                return Observable.of('searchPublicGroupObj')
+                        .map(() => {
+                            return {type: '[main] search public group useless'};
+                        });
+            }
             const searchPublicGroupObj = global.JIM.getGroupInfo({
                 gid
             }).onSuccess((data) => {

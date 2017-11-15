@@ -31,7 +31,13 @@ export class MainComponent implements OnInit, OnDestroy {
     private updateSelfInfoFlag = false;
     private createGroup = {
         show: false,
+        display: false,
         list: []
+    };
+    private createGroupNext = {
+        show: false,
+        display: false,
+        info: {}
     };
     private islogoutShow = false;
     private isModifyPasswordShow = false;
@@ -161,6 +167,12 @@ export class MainComponent implements OnInit, OnDestroy {
     private groupVerifyModal = {
         show: false
     };
+    private groupAvatarInfo = {
+        show: false,
+        info: {},
+        src: '',
+        filename: ''
+    };
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -246,6 +258,17 @@ export class MainComponent implements OnInit, OnDestroy {
             case mainAction.createGroupSuccess:
                 this.listTab = mainState.listTab;
                 this.createGroup = mainState.createGroup;
+                break;
+            case mainAction.createGroupNextShow:
+                this.createGroupNext = mainState.createGroupNext;
+                if (!this.createGroupNext.show) {
+                    this.groupAvatarInfo = {
+                        show: false,
+                        info: {},
+                        src: '',
+                        filename: ''
+                    };
+                }
                 break;
             case mainAction.modifyPasswordShow:
                 this.isModifyPasswordShow = mainState.modifyPasswordShow.show;
@@ -396,10 +419,78 @@ export class MainComponent implements OnInit, OnDestroy {
                 type: mainAction.createGroupShow,
                 payload: {
                     show: false,
+                    display: false,
+                    info: {}
+                }
+            });
+            this.store$.dispatch({
+                type: mainAction.createGroupNextShow,
+                payload: {
+                    show: false,
+                    display: false,
                     info: {}
                 }
             });
         }
+    }
+    private nextCreateGroupEmit(groupInfo) {
+        this.store$.dispatch({
+            type: mainAction.createGroupShow,
+            payload: {
+                show: true,
+                display: false,
+                info: {}
+            }
+        });
+        this.store$.dispatch({
+            type: mainAction.createGroupNextShow,
+            payload: {
+                show: true,
+                display: true,
+                info: groupInfo
+            }
+        });
+    }
+    private createGroupPrevEmit() {
+        this.store$.dispatch({
+            type: mainAction.createGroupShow,
+            payload: {
+                show: true,
+                display: true,
+                info: {}
+            }
+        });
+        this.store$.dispatch({
+            type: mainAction.createGroupNextShow,
+            payload: {
+                show: true,
+                display: false
+            }
+        });
+    }
+    private closeCreateGroupNextEmit() {
+        this.store$.dispatch({
+            type: mainAction.createGroupNextShow,
+            payload: {
+                show: false,
+                display: false,
+                info: {}
+            }
+        });
+        this.store$.dispatch({
+            type: mainAction.createGroupShow,
+            payload: {
+                show: false,
+                display: false,
+                info: {}
+            }
+        });
+    }
+    private completeCreateGroupEmit(groupInfo) {
+        this.store$.dispatch({
+            type: mainAction.createGroup,
+            payload: groupInfo
+        });
     }
     // 修改密码
     private modifyPasswordEmit(info) {
@@ -591,34 +682,52 @@ export class MainComponent implements OnInit, OnDestroy {
         let type = '';
         switch (item.key) {
             case 0:
-                type = mainAction.createSingleChatShow;
                 this.createSingleOption = {
                     title: '发起单聊',
                     placeholder: '输入用户名查找'
                 };
+                this.store$.dispatch({
+                    type: mainAction.createSingleChatShow,
+                    payload: {
+                        show: true,
+                        info: ''
+                    }
+                });
                 break;
             case 1:
-                type = mainAction.createGroupShow;
+                this.store$.dispatch({
+                    type: mainAction.createGroupShow,
+                    payload: {
+                        show: true,
+                        display: true,
+                        info: {}
+                    }
+                });
                 break;
             case 2:
-                type = mainAction.createSingleChatShow;
                 this.createSingleOption = {
                     title: '添加好友',
                     placeholder: '输入用户名'
                 };
+                this.store$.dispatch({
+                    type: mainAction.createSingleChatShow,
+                    payload: {
+                        show: true,
+                        info: ''
+                    }
+                });
                 break;
             case 3:
-                type = mainAction.enterPublicGroupShow;
+                this.store$.dispatch({
+                    type: mainAction.enterPublicGroupShow,
+                    payload: {
+                        show: true,
+                        info: ''
+                    }
+                });
                 break;
             default:
         }
-        this.store$.dispatch({
-            type,
-            payload: {
-                show: true,
-                info: item.key !== 1 ? '' : {}
-            }
-        });
         this.chatMenu.show = false;
     }
     // 点击左下角设置按钮
@@ -734,6 +843,41 @@ export class MainComponent implements OnInit, OnDestroy {
             }
         });
     }
+    private changeCreateGroupAvatarEmit(file) {
+        this.getImgObj(file.files[0]);
+    }
+    // 获取图片对象
+    private getImgObj(file) {
+        Util.getAvatarImgObj(file, () => {
+            this.selectIsNotImageEmit();
+        }, () => {
+            this.store$.dispatch({
+                type: mainAction.showModalTip,
+                payload: {
+                    show: true,
+                    info: {
+                        title: '提示',
+                        tip: '选择的图片宽或高的尺寸太小，请重新选择图片',
+                        actionType: '[chat] must be image',
+                        cancel: true
+                    }
+                }
+            });
+        }, (that, pasteFile, img) => {
+            this.groupAvatarInfo.info = {
+                src: that.result,
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+                pasteFile
+            };
+            this.groupAvatarInfo.src =  that.result;
+            this.groupAvatarInfo.show = true;
+            this.groupAvatarInfo.filename = file.name;
+        });
+    }
+    private groupAvatarEmit(groupInfo) {
+        this.groupAvatarInfo = groupInfo;
+    }
     private init() {
         this.listTab = 0;
         this.selfInfo = {
@@ -746,6 +890,7 @@ export class MainComponent implements OnInit, OnDestroy {
         this.updateSelfInfoFlag = false;
         this.createGroup = {
             show: false,
+            display: false,
             list: []
         };
         this.islogoutShow = false;

@@ -47,10 +47,11 @@
             </div>
         </div>
         <p class="modal-btn modal-input create-group-name">
-            <span class="float-left" *ngIf="!createGroup.info.action">群名称：</span>
+            <!-- <span class="float-left" *ngIf="!createGroup.info.action">群名称：</span>
             <input [ngClass]="{'input-error': nameTip}" spellcheck="false" *ngIf="!createGroup.info.action" (keyup)="emptyTip()" type="text" maxlength="20" class="input-focus float-left" [(ngModel)]="groupName" placeholder="请输入群组名称">
-            <span *ngIf="nameTip" class="float-left error">群名称不能为空</span>
-            <button type="button" (click)="confirmCreateGroup()" class="btn-confirm btn-active float-right">确定</button>                     
+            <span *ngIf="nameTip" class="float-left error">群名称不能为空</span> -->
+            <button type="button" *ngIf="!createGroup.info.action" (click)="nextCreateGroupAction()" class="btn-confirm btn-active float-right">下一步</button>  
+            <button type="button" *ngIf="createGroup.info.action" (click)="confirmCreateGroup()" class="btn-confirm btn-active float-right">确定</button>                     
             <button type="button" (click)="cancelCreateGroup($event)" class="btn-cancel btn-white float-right">取消</button>         
         </p>
     </div>

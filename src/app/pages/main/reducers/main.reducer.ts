@@ -46,6 +46,13 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             state.createGroup.show = false;
             state.listTab = 0;
             break;
+        case mainAction.createGroupNextShow:
+            state.createGroupNext.show = payload.show;
+            state.createGroupNext.display = payload.display;
+            if (payload.info) {
+                state.createGroupNext.info = payload.info;
+            }
+            break;
         case mainAction.enterPublicGroupShow:
             state.enterPublicGroup = payload;
             break;

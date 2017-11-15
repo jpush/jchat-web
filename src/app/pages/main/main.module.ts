@@ -31,6 +31,8 @@ import { BadgeModule } from 'jpush-ui/badge';
 import { EnterGroupModule } from '../../components/enter-group';
 import { GroupInfoModule } from '../../components/group-info';
 import { VerifyModalModule } from '../../components/verify-modal';
+import { CreateGroupNextModule } from '../../components/create-group-next';
+import { GroupAvatarModule } from '../../components/group-avatar';
 
 @NgModule({
   declarations: [
@@ -65,7 +67,9 @@ import { VerifyModalModule } from '../../components/verify-modal';
     SanitizePipeModule,
     EnterGroupModule,
     GroupInfoModule,
-    VerifyModalModule
+    VerifyModalModule,
+    CreateGroupNextModule,
+    GroupAvatarModule
   ],
   providers: [
   ]

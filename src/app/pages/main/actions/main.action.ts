@@ -47,5 +47,6 @@ export const mainAction = {
     searchPublicGroup: '[main] search public group',
     searchPublicGroupSuccess: '[main] search public group success',
     groupVerifyModal: '[main] group verify modal',
-    sendGroupVerifyMessage: '[main] send group verify message'
+    sendGroupVerifyMessage: '[main] send group verify message',
+    createGroupNextShow: '[main] create group next show'
 };

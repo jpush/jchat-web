@@ -11,6 +11,7 @@ export const mainInit = {
     listTab: 0,
     createGroup: {
         show: false,
+        display: false,
         info: {}
     },
     logoutShow: false,
@@ -59,5 +60,10 @@ export const mainInit = {
     },
     groupVerifyModal: {
         show: false
+    },
+    createGroupNext: {
+        show: false,
+        display: false,
+        info: {}
     }
 };

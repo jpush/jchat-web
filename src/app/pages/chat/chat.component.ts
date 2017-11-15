@@ -1894,6 +1894,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             type: mainAction.createGroupShow,
             payload: {
                 show: true,
+                display: true,
                 info: {
                     activeSingle: this.active,
                     action: 'many',
@@ -1908,6 +1909,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             type: mainAction.createGroupShow,
             payload: {
                 show: true,
+                display: true,
                 info: {
                     filter: this.groupSetting.memberList,
                     action: 'add',

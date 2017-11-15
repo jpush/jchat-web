@@ -15,13 +15,15 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 })
 
 export class CreateGroupComponent implements OnInit, OnDestroy {
-    private groupName = '';
+    // private groupName = '';
     private global = global;
     private createGroupStream$;
     @Input()
         private createGroup;
     @Output()
         private isCreateGroup: EventEmitter<any> = new EventEmitter();
+    @Output()
+        private nextCreateGroup: EventEmitter<any> = new EventEmitter();
     private selectList = [];
     private searchResult = {
         result: [],
@@ -34,7 +36,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         keywords: '',
         placeholder: '搜索'
     };
-    private nameTip = false;
+    // private nameTip = false;
     constructor(
         private store$: Store<any>
     ) {
@@ -198,12 +200,12 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         event.target.src = avatarErrorIcon;
     }
     private confirmCreateGroup() {
-        if (!this.createGroup.info.action && this.groupName.length === 0) {
-            this.nameTip = true;
-            return ;
-        } else {
-            this.nameTip = false;
-        }
+        // if (!this.createGroup.info.action && this.groupName.length === 0) {
+        //     this.nameTip = true;
+        //     return ;
+        // } else {
+        //     this.nameTip = false;
+        // }
         let memberUsernames = [];
         for (let item of this.selectList) {
             memberUsernames.push({
@@ -212,8 +214,8 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             });
         }
         let groupInfo: any = {
-            groupName: this.groupName,
-            groupDescription: '',
+            // groupName: this.groupName,
+            // groupDescription: '',
             memberUsernames,
             detailMember: this.selectList,
             add: false
@@ -240,6 +242,23 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             groupInfo.groupName = groupInfo.groupName.substr(0, 20);
         }
         this.isCreateGroup.emit(groupInfo);
+    }
+    private nextCreateGroupAction() {
+        let memberUsernames = [];
+        for (let item of this.selectList) {
+            memberUsernames.push({
+                username: item.name,
+                appkey: authPayload.appKey
+            });
+        }
+        let groupInfo: any = {
+            // groupName: this.groupName,
+            // groupDescription: '',
+            memberUsernames,
+            detailMember: this.selectList,
+            // add: false
+        };
+        this.nextCreateGroup.emit(groupInfo);
     }
     private cancelCreateGroup(event) {
         event.stopPropagation();
@@ -287,7 +306,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     private avatarLoad(event) {
         Util.reduceAvatarSize(event);
     }
-    private emptyTip() {
-        this.nameTip = false;
-    }
+    // private emptyTip() {
+    //     this.nameTip = false;
+    // }
 }

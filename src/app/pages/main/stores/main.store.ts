@@ -12,6 +12,7 @@ export interface MainStore {
     createGroup: {
         show: boolean;
         info: object;
+        display: boolean;
     };
     logoutShow: boolean;
     modifyPasswordShow: object;
@@ -53,5 +54,10 @@ export interface MainStore {
     };
     groupVerifyModal: {
         show: boolean;
+    };
+    createGroupNext: {
+        show: boolean;
+        display: boolean;
+        info: object;
     };
 }
