@@ -50,13 +50,16 @@
                     <li class="clearfix display-flex" *ngFor="let item of groupSetting.memberList">
                         <div class="group-setting-avatar" (click)="watchInfoAction(item)">
                             <img [src]="item.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
-                            <span *ngIf="item.keep_silence"></span>
                         </div>
                         <span class="flex-1" [title]="item.memo_name || item.nickName || item.username">{{item.memo_name || item.nickName || item.username}}</span>
                         <div class="group-setting-host" *ngIf="item.flag === 1" [hoverEvent]="hostHover">
                             <hover-tip-component [hidden]="!hostHover.show" [hoverInfo]="hostHover"></hover-tip-component>
                         </div>
-                        <div class="group-setting-keep-silence" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user" (click)="keepSilenceAction(item)">{{item.keep_silence ? '解除禁言' : '禁言'}}</div>
+                        <div class="group-setting-keep-silence" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user && !item.keep_silence" (click)="keepSilenceAction(item)">禁言</div>
+                        <div class="group-setting-delete-silence" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user && item.keep_silence" (click)="keepSilenceAction(item)">
+                            <img src="../../../assets/images/keep-silence.svg" alt="">
+                            <span>解除禁言</span>
+                        </div>
                         <span (click)="deleteMemberAction(item)" class="group-setting-delete" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user">×</span>
                     </li>
                 </ul>

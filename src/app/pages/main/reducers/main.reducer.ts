@@ -162,6 +162,9 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case contactAction.dispatchContactUnreadNum:
             state.contactUnreadNum = payload;
             break;
+        case chatAction.dispatchConversationUnreadNum:
+            state.conversationUnreadNum = payload;
+            break;
             // 传递好友列表
         case chatAction.dispatchFriendList:
             state.friendList = payload;

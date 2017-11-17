@@ -2285,11 +2285,17 @@ export class ChatEffect {
     private watchUnreadList$: Observable<Action> = this.actions$
         .ofType(chatAction.watchUnreadList)
         .map(toPayload)
-        .switchMap((message) => {
-            global.JIM.msgUnreadList({msg_id: message.msg_id})
+        .switchMap((info) => {
+            if (!info.message) {
+                return Observable.of('watchUnreadList')
+                        .map(() => {
+                            return {type: '[chat] watch unread list useless'};
+                        });
+            }
+            global.JIM.msgUnreadList({msg_id: info.message.msg_id})
             .onSuccess((list) => {
-                if (message.unread_count !== list.msg_unread_list.unread_list.length) {
-                    message.unread_count = list.msg_unread_list.unread_list.length;
+                if (info.message.unread_count !== list.msg_unread_list.unread_list.length) {
+                    info.message.unread_count = list.msg_unread_list.unread_list.length;
                 }
                 for (let unread of list.msg_unread_list.unread_list) {
                     this.getUnreadListInfo(list, unread);
@@ -2297,6 +2303,29 @@ export class ChatEffect {
                 for (let unread of list.msg_unread_list.read_list) {
                     this.getUnreadListInfo(list, unread);
                 }
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: chatAction.watchUnreadList,
+                    payload: {
+                        show: false
+                    }
+                });
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout(() => {
+                this.store$.dispatch({
+                    type: chatAction.watchUnreadList,
+                    payload: {
+                        show: false
+                    }
+                });
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
             });
             return Observable.of('watchUnreadList')
                     .map(() => {
@@ -2473,7 +2502,7 @@ export class ChatEffect {
                         return {type: '[chat] update group info event useless'};
                     });
     });
-    // 验证消息请求头像
+    // 更新用户的信息事件
     @Effect()
     private userInfUpdateEvent$: Observable<Action> = this.actions$
         .ofType(chatAction.userInfUpdateEvent)
@@ -2556,7 +2585,7 @@ export class ChatEffect {
                         return {type: '[chat] update unread count useless'};
                     });
     });
-    // 发送透传正在输入
+    // 发送透传消息正在输入
     @Effect()
     private inputMessage$: Observable<Action> = this.actions$
         .ofType(chatAction.inputMessage)
@@ -2645,6 +2674,77 @@ export class ChatEffect {
             return Observable.of('deleteGroupMemberSilence')
                     .map(() => {
                         return {type: '[chat] delete group member silence useless'};
+                    });
+    });
+    // 群主或者管理员，收到用户申请入群事件请求头像
+    @Effect()
+    private receiveGroupInvitationEvent$: Observable<Action> = this.actions$
+        .ofType(chatAction.receiveGroupInvitationEvent)
+        .map(toPayload)
+        .switchMap((info) => {
+            let count = 0;
+            for (let user of info.to_usernames) {
+                global.JIM.getResource({media_id: user.avatar})
+                .onSuccess((urlInfo) => {
+                    user.avatarUrl = urlInfo.url;
+                    if (++ count === info.to_usernames.length) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveGroupInvitationEventSuccess,
+                            payload: info
+                        });
+                    }
+                }).onFail((error) => {
+                    user.avatarUrl = '';
+                    if (++ count === info.to_usernames.length) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveGroupInvitationEventSuccess,
+                            payload: info
+                        });
+                    }
+                }).onTimeout((data) => {
+                    user.avatarUrl = '';
+                    if (++ count === info.to_usernames.length) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveGroupInvitationEventSuccess,
+                            payload: info
+                        });
+                    }
+                });
+            }
+            return Observable.of('receiveGroupInvitationEvent')
+                    .map(() => {
+                        return {type: '[chat] receive group invitation event useless'};
+                    });
+    });
+    // 被拒绝入群事件
+    @Effect()
+    private receiveGroupRefuseEvent$: Observable<Action> = this.actions$
+        .ofType(chatAction.receiveGroupRefuseEvent)
+        .map(toPayload)
+        .switchMap((info) => {
+            global.JIM.getResource({media_id: info.media_id})
+            .onSuccess((urlInfo) => {
+                info.avatarUrl = urlInfo.url;
+                this.store$.dispatch({
+                    type: chatAction.receiveGroupRefuseEventSuccess,
+                    payload: info
+                });
+            }).onFail((error) => {
+                info.avatarUrl = '';
+                this.store$.dispatch({
+                    type: chatAction.receiveGroupRefuseEventSuccess,
+                    payload: info
+                });
+            }).onTimeout((data) => {
+                info.avatarUrl = '';
+                this.store$.dispatch({
+                    type: chatAction.receiveGroupRefuseEventSuccess,
+                    payload: info
+                });
+            });
+            return Observable.of('receiveGroupRefuseEvent')
+                    .map(() => {
+                        return {type: '[chat] receive group refuse event useless'};
                     });
     });
     constructor(
@@ -2800,62 +2900,35 @@ export class ChatEffect {
     }
     // 获取未读列表
     private getUnreadListInfo(list, unread) {
-        global.JIM.getUserInfo({
-            username: unread.username
-        }).onSuccess((data) => {
-            if (!data.user_info.avatar || data.user_info.avatar === '') {
-                unread.avatarUrl = '';
-                this.store$.dispatch({
-                    type: chatAction.watchUnreadListSuccess,
-                    payload: {
-                        info: list.msg_unread_list,
-                        loading: false
-                    }
-                });
-                return;
-            }
-            global.JIM.getResource({media_id: data.user_info.avatar})
-            .onSuccess((urlInfo) => {
-                unread.avatarUrl = urlInfo.url;
-                this.store$.dispatch({
-                    type: chatAction.watchUnreadListSuccess,
-                    payload: {
-                        info: list.msg_unread_list,
-                        loading: false
-                    }
-                });
-            }).onFail((error) => {
-                unread.avatarUrl = '';
-                this.store$.dispatch({
-                    type: chatAction.watchUnreadListSuccess,
-                    payload: {
-                        info: list.msg_unread_list,
-                        loading: false
-                    }
-                });
+        if (!unread.avatar || unread.avatar === '') {
+            unread.avatarUrl = '';
+            this.store$.dispatch({
+                type: chatAction.watchUnreadListSuccess,
+                payload: {
+                    info: list.msg_unread_list,
+                    loading: false
+                }
+            });
+            return;
+        }
+        global.JIM.getResource({media_id: unread.avatar})
+        .onSuccess((urlInfo) => {
+            unread.avatarUrl = urlInfo.url;
+            this.store$.dispatch({
+                type: chatAction.watchUnreadListSuccess,
+                payload: {
+                    info: list.msg_unread_list,
+                    loading: false
+                }
             });
         }).onFail((error) => {
+            unread.avatarUrl = '';
             this.store$.dispatch({
                 type: chatAction.watchUnreadListSuccess,
                 payload: {
+                    info: list.msg_unread_list,
                     loading: false
                 }
-            });
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        }).onTimeout((data) => {
-            this.store$.dispatch({
-                type: chatAction.watchUnreadListSuccess,
-                payload: {
-                    loading: false
-                }
-            });
-            const error = {code: 910000};
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
             });
         });
     }

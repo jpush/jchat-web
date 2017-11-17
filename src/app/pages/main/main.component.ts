@@ -245,11 +245,6 @@ export class MainComponent implements OnInit, OnDestroy {
                 break;
             case mainAction.changeListTab:
                 this.listTab = mainState.listTab;
-                if (this.listTab === 0) {
-                    this.badge.conversation = 0;
-                } else {
-                    this.badge.contact = 0;
-                }
                 break;
             case mainAction.createGroupShow:
                 this.createGroup = mainState.createGroup;
@@ -321,13 +316,16 @@ export class MainComponent implements OnInit, OnDestroy {
             case mainAction.logoutKickShow:
                 this.logoutKick = mainState.logoutKick;
                 break;
-            case chatAction.dispatchMessageUnread:
-                if (this.listTab === 1) {
-                    this.badge.conversation ++;
-                }
-                break;
+            // case chatAction.dispatchMessageUnread:
+            //     if (this.listTab === 1) {
+            //         this.badge.conversation ++;
+            //     }
+            //     break;
             case contactAction.dispatchContactUnreadNum:
                 this.badge.contact = mainState.contactUnreadNum;
+                break;
+            case chatAction.dispatchConversationUnreadNum:
+                this.badge.conversation = mainState.conversationUnreadNum;
                 break;
             case chatAction.createOtherChat:
                 this.listTab = mainState.listTab;
@@ -877,6 +875,12 @@ export class MainComponent implements OnInit, OnDestroy {
     }
     private groupAvatarEmit(groupInfo) {
         this.groupAvatarInfo = groupInfo;
+    }
+    private changeGroupConversationEmit(group) {
+        this.store$.dispatch({
+            type: contactAction.selectContactItem,
+            payload: group
+        });
     }
     private init() {
         this.listTab = 0;

@@ -924,7 +924,9 @@ export class MainEffect {
                         for (let member of groupList.member_list) {
                             if (member.flag === 1) {
                                 data.group_info.host = member;
-                                break;
+                            }
+                            if (member.username === global.user) {
+                                data.group_info.isMember = true;
                             }
                         }
                         if (-- count <= 0) {

@@ -76,7 +76,7 @@ export const chatAction = {
     getGroupMembers: '[chat] get group members',
     msgFile: '[chat] msg file',
     msgFileSuccess: '[chat] msg file success',
-    dispatchMessageUnread: '[chat] dispatch message unread',
+    // dispatchMessageUnread: '[chat] dispatch message unread',
     fileImageLoad: '[chat] file image load',
     groupAvatar: '[chat] group avatar',
     conversationToTop: '[chat] conversation to top',
@@ -114,5 +114,10 @@ export const chatAction = {
     deleteGroupMemberSilence: '[chat] delete group member silence',
     addGroupMemberSilence: '[chat] add group member silence',
     deleteGroupMemberSilenceEvent: '[chat] delete group member silence event',
-    addGroupMemberSilenceEvent: '[chat] add group member silence event'
+    addGroupMemberSilenceEvent: '[chat] add group member silence event',
+    receiveGroupInvitationEvent: '[chat] receive group invitation event',
+    receiveGroupInvitationEventSuccess: '[chat] receive group invitation event success',
+    receiveGroupRefuseEvent: '[chat] receive group refuse event',
+    receiveGroupRefuseEventSuccess: '[chat] receive group refuse event success',
+    dispatchConversationUnreadNum: '[chat] dispatch conversation unread number'
 };

@@ -91,4 +91,5 @@ export interface ChatStore {
     unreadCount: object;
     roomTransmitMsg: object;
     isInput: boolean;
+    conversationUnreadNum: number;
 }

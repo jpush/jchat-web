@@ -6,6 +6,10 @@ export interface ContactStore {
     verifyMessageList: Array<any>;
     verifyUnreadNum: number;
     contactUnreadNum: number;
+    groupVerifyUnreadNum: number;
+    singleVerifyUnreadNum: number;
     tab: number;
     listTab: number;
+    verifyTab: number;
+    verifyGroupList: Array<any>;
 }

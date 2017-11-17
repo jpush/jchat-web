@@ -18,7 +18,11 @@ export class ContactComponent implements OnInit, OnDestroy {
     private tab = 1;
     private friendList = [];
     private verifyMessageList = [];
+    private verifyGroupList = [];
     private verifyUnreadNum = 0;
+    private verifyTab = 0;
+    private groupVerifyUnreadNum = 0;
+    private singleVerifyUnreadNum = 0;
     constructor(
         private store$: Store<AppStore>
     ) {
@@ -51,6 +55,7 @@ export class ContactComponent implements OnInit, OnDestroy {
         this.verifyUnreadNum = 0;
     }
     private stateChanged(contactState) {
+        console.log('contactState', contactState);
         switch (contactState.actionType) {
             case contactAction.init:
                 this.init();
@@ -60,14 +65,24 @@ export class ContactComponent implements OnInit, OnDestroy {
                 break;
             case mainAction.changeListTab:
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
+                this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
+                this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
                 break;
             case contactAction.changeTab:
                 this.tab = contactState.tab;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
+                this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
+                this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
+                this.store$.dispatch({
+                    type: contactAction.dispatchContactUnreadNum,
+                    payload: contactState.contactUnreadNum
+                });
                 break;
             case chatAction.friendInvitationEventSuccess:
                 this.verifyMessageList = contactState.verifyMessageList;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
+                this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
+                this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
                 this.store$.dispatch({
                     type: contactAction.dispatchContactUnreadNum,
                     payload: contactState.contactUnreadNum
@@ -81,20 +96,53 @@ export class ContactComponent implements OnInit, OnDestroy {
                     payload: contactState.contactUnreadNum
                 });
                 break;
-            case contactAction.refuseAddFriendSuccess:
-                this.verifyMessageList = contactState.verifyMessageList;
-                break;
             case chatAction.dispatchFriendList:
                 this.friendList = contactState.friendList;
                 break;
+            case contactAction.refuseAddFriendSuccess:
+
             case chatAction.addFriendConfirm:
-                this.verifyMessageList = contactState.verifyMessageList;
-                break;
+
             case contactAction.addFriendError:
-                this.verifyMessageList = contactState.verifyMessageList;
-                break;
+
             case chatAction.addFriendSyncEvent:
                 this.verifyMessageList = contactState.verifyMessageList;
+                break;
+            case chatAction.receiveGroupInvitationEventSuccess:
+                this.store$.dispatch({
+                    type: contactAction.dispatchContactUnreadNum,
+                    payload: contactState.contactUnreadNum
+                });
+                this.verifyGroupList = contactState.verifyGroupList;
+                this.verifyUnreadNum = contactState.verifyUnreadNum;
+                this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
+                this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
+                break;
+            case contactAction.isAgreeEnterGroupSuccess:
+                this.verifyGroupList = contactState.verifyGroupList;
+                break;
+            case contactAction.isAgreeEnterGroupError:
+                this.verifyGroupList = contactState.verifyGroupList;
+                break;
+            case chatAction.receiveGroupRefuseEventSuccess:
+                this.store$.dispatch({
+                    type: contactAction.dispatchContactUnreadNum,
+                    payload: contactState.contactUnreadNum
+                });
+                this.verifyGroupList = contactState.verifyGroupList;
+                this.verifyUnreadNum = contactState.verifyUnreadNum;
+                this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
+                this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
+                break;
+            case contactAction.changeVerifyTab:
+                this.verifyTab = contactState.verifyTab;
+                this.verifyUnreadNum = contactState.verifyUnreadNum;
+                this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
+                this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
+                this.store$.dispatch({
+                    type: contactAction.dispatchContactUnreadNum,
+                    payload: contactState.contactUnreadNum
+                });
                 break;
             default:
         }
@@ -104,6 +152,10 @@ export class ContactComponent implements OnInit, OnDestroy {
         this.store$.dispatch({
             type: contactAction.selectContactItem,
             payload: item
+        });
+        this.store$.dispatch({
+            type: mainAction.changeListTab,
+            payload: 0
         });
     }
     // 切换联系人中的tab
@@ -125,6 +177,24 @@ export class ContactComponent implements OnInit, OnDestroy {
         this.store$.dispatch({
             type: contactAction.watchVerifyUser,
             payload: message
+        });
+    }
+    private isAgreeEnterGroupEmit(groupVerify) {
+        this.store$.dispatch({
+            type: contactAction.isAgreeEnterGroup,
+            payload: groupVerify
+        });
+    }
+    private watchGroupInfoEmit(verifyGroup) {
+        this.store$.dispatch({
+            type: contactAction.watchGroupInfo,
+            payload: verifyGroup
+        });
+    }
+    private changeVerifyTabEmit(tab) {
+        this.store$.dispatch({
+            type: contactAction.changeVerifyTab,
+            payload: tab
         });
     }
 }

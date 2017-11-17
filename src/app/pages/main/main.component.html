@@ -53,7 +53,7 @@
     <black-menu-component [hidden]="!blackMenu.show" [menuInfo]="blackMenu.menu" (blockMenuConfirm)="blackMenuConfirmEmit()" (delSingleBlack)="delSingleBlackEmit($event)"></black-menu-component>
     <logout-kick-component *ngIf="logoutKick.show" [info]="logoutKick.info" (modalTipEmit)="logoutKickEmit($event)"></logout-kick-component>
     <enter-group-component [enterPublicGroup]="enterPublicGroup" *ngIf="enterPublicGroup.show" (enterGroupComfirm)="enterGroupComfirmEmit($event)"></enter-group-component>
-    <group-info-component *ngIf="groupInfo.show" [groupInfo]="groupInfo" (applyEnterGroup)="applyEnterGroupEmit($event)"></group-info-component>
+    <group-info-component *ngIf="groupInfo.show" [groupInfo]="groupInfo" (changeGroupConversation)="changeGroupConversationEmit($event)" (applyEnterGroup)="applyEnterGroupEmit($event)"></group-info-component>
     <verify-modal-component *ngIf="groupVerifyModal.show" [verifyModal]="groupVerifyModal" (verifyModalBtn)="groupVerifyModalBtnEmit($event)"></verify-modal-component>
     <group-avatar-component *ngIf="groupAvatarInfo.show" [groupAvatarInfo]="groupAvatarInfo" (groupAvatar)="groupAvatarEmit($event)"></group-avatar-component>
 </div>

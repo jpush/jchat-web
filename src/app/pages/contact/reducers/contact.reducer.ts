@@ -21,36 +21,41 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
         case mainAction.changeListTab:
             state.listTab = payload;
             if (payload === 1) {
-                state.contactUnreadNum = 0;
                 if (state.tab === 0) {
-                    state.verifyUnreadNum = 0;
+                    if (state.verifyTab === 0) {
+                        state.singleVerifyUnreadNum = 0;
+                    } else if (state.verifyTab === 1) {
+                        state.groupVerifyUnreadNum = 0;
+                    }
+                    state.verifyUnreadNum =
+                        state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
+                    state.contactUnreadNum = state.verifyUnreadNum;
                 }
             }
-            changeFirstOne(state, 'isContactFirstOne');
             break;
             // 切换联系人中的tab
         case contactAction.changeTab:
             state.tab = payload;
             if (payload === 0) {
-                state.verifyUnreadNum = 0;
+                updateUnreadNum(state);
             }
             changeFirstOne(state, 'isVerifyFirstOne');
             break;
-            // 添好友邀请事件
+            // 添加好友邀请事件
         case chatAction.friendInvitationEventSuccess:
             friendVerify(state, payload);
             break;
             // 自己拒绝添加好友
         case contactAction.refuseAddFriendSuccess:
-            isAgreeAddFriend(state, payload, 3);
+            isAgreeAddFriend(state, payload);
             break;
             // 自己同意添加好友
         case contactAction.agreeAddFriendSuccess:
-            isAgreeAddFriend(state, payload, 4);
+            isAgreeAddFriend(state, payload);
             break;
             // 自己同意添加好友失败
         case contactAction.addFriendError:
-            addFriendError(state, payload);
+            isAgreeAddFriend(state, payload);
             break;
             // 传递好友列表的数据
         case chatAction.dispatchFriendList:
@@ -68,10 +73,38 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
         case chatAction.addFriendSyncEvent:
             addFriendSyncEvent(state, payload);
             break;
+        case chatAction.receiveGroupInvitationEventSuccess:
+            filterVerifyGroupList(state, payload);
+            break;
+        case contactAction.isAgreeEnterGroupSuccess:
+            updateVerifyGroupList(state, payload);
+            break;
+        case contactAction.isAgreeEnterGroupError:
+            updateVerifyGroupList(state, payload);
+            break;
+        case chatAction.receiveGroupRefuseEventSuccess:
+            filterReceiveGroupRefuse(state, payload);
+            break;
+        case contactAction.changeVerifyTab:
+            state.verifyTab = payload;
+            updateUnreadNum(state);
+            break;
         default:
     }
     return state;
 };
+// 更新验证信息未读数
+function updateUnreadNum(state) {
+    if (state.verifyTab === 0) {
+        state.singleVerifyUnreadNum = 0;
+        state.verifyUnreadNum = state.groupVerifyUnreadNum;
+        state.contactUnreadNum = state.verifyUnreadNum;
+    } else if (state.verifyTab === 1) {
+        state.groupVerifyUnreadNum = 0;
+        state.verifyUnreadNum = state.singleVerifyUnreadNum;
+        state.contactUnreadNum = state.verifyUnreadNum;
+    }
+}
 // 多端在线同意好友请求事件
 function addFriendSyncEvent(state, payload) {
     for (let user of payload.to_usernames) {
@@ -84,14 +117,14 @@ function addFriendSyncEvent(state, payload) {
     }
 }
 // 同意或拒绝好友请求失败
-function addFriendError(state, payload) {
-    for (let verifyMessage of state.verifyMessageList) {
-        if (verifyMessage.eventId === payload.eventId) {
-            verifyMessage.stateType = 0;
-            break;
-        }
-    }
-}
+// function addFriendError(state, payload) {
+//     for (let verifyMessage of state.verifyMessageList) {
+//         if (verifyMessage.eventId === payload.eventId) {
+//             verifyMessage.stateType = 0;
+//             break;
+//         }
+//     }
+// }
 // 等待好友验证
 function waitReply(state, payload) {
     let verifyMessage = {
@@ -143,11 +176,11 @@ function friendReply(state, payload) {
             break;
         }
     }
-    if (state.tab !== 0 || state.listTab !== 1) {
-        state.verifyUnreadNum ++;
-    }
-    if (state.listTab !== 1) {
-        state.contactUnreadNum ++;
+    if (state.tab !== 0 || state.listTab !== 1 ||
+        (state.tab === 0 && state.verifyTab !== 0)) {
+        state.singleVerifyUnreadNum ++;
+        state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
+        state.contactUnreadNum = state.verifyUnreadNum;
     }
     state.verifyMessageList.unshift(verifyMessage);
 }
@@ -157,10 +190,10 @@ function changeFirstOne(state, type) {
     }
 }
 // 同意或者拒绝好友请求
-function isAgreeAddFriend(state, payload, stateType) {
+function isAgreeAddFriend(state, payload) {
     for (let verifyMessage of state.verifyMessageList) {
         if (verifyMessage.eventId === payload.eventId) {
-            verifyMessage.stateType = stateType;
+            verifyMessage.stateType = payload.stateType;
             break;
         }
     }
@@ -177,26 +210,21 @@ function friendVerify(state, payload) {
         stateType: 0,
         type: 3,
         ctime_ms: payload.ctime_ms,
-        isVerifyFirstOne: false,
-        isContactFirstOne: false
+        isVerifyFirstOne: false
     };
     /**
      * verifyUnreadNum 用来标识验证信息的的未读数量
      * contactUnreadNum 用来标识联系人的未读数量
      * isVerifyFirstOne 用来标识是否是同一用户的好友邀请的第一条消息（在未读状态），因为未读状态的第一条会显示数量，此后就不再增加未读数量
-     * isContactFirstOne 同理，标识联系人
      */
-    if (state.tab !== 0 || state.listTab !== 1) {
-        state.verifyUnreadNum ++;
+    if (state.tab !== 0 || state.listTab !== 1 ||
+        (state.tab === 0 && state.verifyTab !== 0)) {
+        state.singleVerifyUnreadNum ++;
+        state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
+        state.contactUnreadNum = state.verifyUnreadNum;
         verifyMessage.isVerifyFirstOne = true;
     } else {
         changeFirstOne(state, 'isVerifyFirstOne');
-    }
-    if (state.listTab !== 1) {
-        state.contactUnreadNum ++;
-        verifyMessage.isContactFirstOne = true;
-    } else {
-        changeFirstOne(state, 'isContactFirstOne');
     }
     for (let i = 0; i < state.verifyMessageList.length; i++) {
         let message = state.verifyMessageList[i];
@@ -204,17 +232,15 @@ function friendVerify(state, payload) {
         const canBeCover = stateType !== 3 && stateType !== 4 && stateType !== 5 && stateType !== 7;
         if (message.name === verifyMessage.name && canBeCover) {
             if (message.stateType === 0) {
-                if (state.tab !== 0 || state.listTab !== 1) {
+                if (state.tab !== 0 || state.listTab !== 1 ||
+                    (state.tab === 0 && state.verifyTab !== 0)) {
                     verifyMessage.isVerifyFirstOne = true;
                 }
-                if (message.isVerifyFirstOne && (state.tab !== 0 || state.listTab !== 1)) {
-                    state.verifyUnreadNum --;
-                }
-                if (state.listTab !== 1) {
-                    verifyMessage.isContactFirstOne = true;
-                }
-                if (message.isContactFirstOne && state.listTab !== 1) {
-                    state.contactUnreadNum --;
+                if (message.isVerifyFirstOne) {
+                    state.singleVerifyUnreadNum --;
+                    state.verifyUnreadNum =
+                            state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
+                    state.contactUnreadNum = state.verifyUnreadNum;
                 }
             }
             state.verifyMessageList.splice(i, 1);
@@ -222,4 +248,50 @@ function friendVerify(state, payload) {
         }
     }
     state.verifyMessageList.unshift(verifyMessage);
+}
+function filterVerifyGroupList(state, payload) {
+    payload.stateType = 0;
+    for (let user of payload.to_usernames) {
+        let newPayload = Util.deepCopyObj(payload);
+        newPayload.to_usernames = [user];
+        for (let i = 0; i < state.verifyGroupList.length; i ++) {
+            let type = state.verifyGroupList[i].stateType;
+            if ((type === 0 || type === 1 || type === 2) &&
+                state.verifyGroupList[i].from_gid === payload.from_gid &&
+                state.verifyGroupList[i].to_usernames[0].username === user.username) {
+                state.verifyGroupList.splice(i, 1);
+                break;
+            }
+        }
+        if (state.tab !== 0 || state.listTab !== 1 ||
+            (state.tab === 0 && state.verifyTab !== 1)) {
+            state.groupVerifyUnreadNum ++;
+            state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
+            state.contactUnreadNum = state.verifyUnreadNum;
+        }
+        state.verifyGroupList.unshift(newPayload);
+    }
+}
+function updateVerifyGroupList(state, payload) {
+    for (let verifyGroup of state.verifyGroupList) {
+        if (verifyGroup.event_id === payload.event_id &&
+            verifyGroup.to_usernames[0].username === payload.to_usernames[0].username) {
+            verifyGroup.stateType = payload.stateType;
+            break;
+        }
+    }
+}
+function filterReceiveGroupRefuse(state, payload) {
+    if (payload.to_usernames[0].username === global.user) {
+        payload.stateType = 5;
+    } else {
+        payload.stateType = 6;
+    }
+    if (state.tab !== 0 || state.listTab !== 1 ||
+        (state.tab === 0 && state.verifyTab !== 1)) {
+        state.groupVerifyUnreadNum ++;
+        state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
+        state.contactUnreadNum = state.verifyUnreadNum;
+    }
+    state.verifyGroupList.unshift(payload);
 }

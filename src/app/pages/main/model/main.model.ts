@@ -49,6 +49,7 @@ export const mainInit = {
         }
     },
     contactUnreadNum: 0,
+    conversationUnreadNum: 0,
     friendList: [],
     enterPublicGroup: {
         show: false,

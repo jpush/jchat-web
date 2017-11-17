@@ -43,6 +43,7 @@ export interface MainStore {
         }
     };
     contactUnreadNum: number;
+    conversationUnreadNum: number;
     friendList: Array<any>;
     enterPublicGroup: {
         show: boolean;

@@ -4,6 +4,7 @@ import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appAction } from '../../../actions';
+import { mainAction } from '../../main/actions';
 import { global, authPayload } from '../../../services/common';
 import { AppStore } from '../../../app.store';
 import { contactAction } from '../actions';
@@ -93,11 +94,13 @@ export class ContactEffect {
                     target_name: message.name,
                     appkey: message.appkey,
                 }).onSuccess((data) => {
+                    message.stateType = 3;
                     this.store$.dispatch({
                         type: contactAction.refuseAddFriendSuccess,
                         payload: message
                     });
                 }).onFail((error) => {
+                    message.stateType = 0;
                     this.store$.dispatch({
                         type: contactAction.addFriendError,
                         payload: message
@@ -107,6 +110,7 @@ export class ContactEffect {
                         payload: error
                     });
                 }).onTimeout(() => {
+                    message.stateType = 0;
                     this.store$.dispatch({
                         type: contactAction.addFriendError,
                         payload: message
@@ -122,11 +126,13 @@ export class ContactEffect {
                     target_name: message.name,
                     appkey: message.appkey
                 }).onSuccess((data) => {
+                    message.stateType = 4;
                     this.store$.dispatch({
                         type: contactAction.agreeAddFriendSuccess,
                         payload: message
                     });
                 }).onFail((error) => {
+                    message.stateType = 0;
                     this.store$.dispatch({
                         type: contactAction.addFriendError,
                         payload: message
@@ -136,6 +142,7 @@ export class ContactEffect {
                         payload: error
                     });
                 }).onTimeout(() => {
+                    message.stateType = 0;
                     this.store$.dispatch({
                         type: contactAction.addFriendError,
                         payload: message
@@ -150,6 +157,44 @@ export class ContactEffect {
             return Observable.of('friendObj')
                     .map(() => {
                         return {type: '[contact] is agree add friend useless'};
+                    });
+        });
+    // 同意或拒绝入群请求
+    @Effect()
+    private isAgreeEnterGroup$: Observable<Action> = this.actions$
+        .ofType(contactAction.isAgreeEnterGroup)
+        .map(toPayload)
+        .switchMap((verifyGroup) => {
+            const verifyGroupObj = global.JIM.addGroupMemberResp({
+                gid: verifyGroup.from_gid,
+                event_id: verifyGroup.event_id,
+                target_appkey: verifyGroup.to_usernames[0].appkey,
+                target_username: verifyGroup.to_usernames[0].username,
+                result: verifyGroup.stateType === 1 ? 1 : 0,
+                from_appkey: verifyGroup.from_appkey,
+                from_username: verifyGroup.from_username
+             }).onSuccess((data) => {
+                verifyGroup.stateType = verifyGroup.stateType === 1 ? 3 : 4;
+                this.store$.dispatch({
+                    type: contactAction.isAgreeEnterGroupSuccess,
+                    payload: verifyGroup
+                });
+             }).onFail((data) => {
+                verifyGroup.stateType = 0;
+                this.store$.dispatch({
+                    type: contactAction.isAgreeEnterGroupError,
+                    payload: verifyGroup
+                });
+             }).onTimeout(() => {
+                verifyGroup.stateType = 0;
+                this.store$.dispatch({
+                    type: contactAction.isAgreeEnterGroupError,
+                    payload: verifyGroup
+                });
+             });
+            return Observable.of(verifyGroupObj)
+                    .map(() => {
+                        return {type: '[contact] is agree enter group useless'};
                     });
         });
     // 验证消息查看资料
@@ -216,6 +261,55 @@ export class ContactEffect {
                         return {type: '[contact] watch verify user useless'};
                     });
     });
+    // 查看群资料
+    @Effect()
+    private watchGroupInfo$: Observable<Action> = this.actions$
+        .ofType(contactAction.watchGroupInfo)
+        .map(toPayload)
+        .switchMap((verifyGroup) => {
+            let watchGroupInfo = global.JIM.getGroupMembers({
+                gid: verifyGroup.from_gid
+            }).onSuccess((groupList) => {
+                let groupInfo: any = {
+                    gid: verifyGroup.from_gid,
+                    name: verifyGroup.group_name,
+                    desc: verifyGroup.description,
+                    avatarUrl: verifyGroup.avatarUrl,
+                    avatar: verifyGroup.avatar
+                };
+                groupInfo.member_list_count = groupList.member_list.length;
+                for (let member of groupList.member_list) {
+                    if (member.flag === 1) {
+                        groupInfo.host = member;
+                    }
+                    if (member.username === global.user) {
+                        groupInfo.isMember = true;
+                    }
+                }
+                this.store$.dispatch({
+                    type: mainAction.searchPublicGroupSuccess,
+                    payload: {
+                        show: true,
+                        info: groupInfo
+                    }
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((timeout) => {
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(watchGroupInfo)
+                    .map(() => {
+                        return {type: '[contact] watch group info useless'};
+                    });
+        });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,

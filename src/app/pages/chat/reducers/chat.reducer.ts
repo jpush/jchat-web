@@ -38,6 +38,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             if (state.friendList.length > 0) {
                 filteConversationMemoName(state);
             }
+            conversationUnreadNum(state);
             break;
             // 获取好友列表
         case chatAction.getFriendListSuccess:
@@ -61,6 +62,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.receiveMessageSuccess:
             addMessage(state, payload);
             newMessageIsActive(state, payload);
+            conversationUnreadNum(state);
             break;
             // 发送单聊文本消息
         case chatAction.sendSingleMessage:
@@ -180,6 +182,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             //     type: state.activePerson.type
             // }]);
             changeActivePerson(state);
+            conversationUnreadNum(state);
             break;
             // 选择联系人
         case contactAction.selectContactItem:
@@ -195,6 +198,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 name: state.activePerson.name,
                 type: state.activePerson.type
             };
+            conversationUnreadNum(state);
             // state.msgId = updateFilterMsgId(state, [{
             //     key: state.activePerson.key,
             //     name: state.activePerson.name,
@@ -205,6 +209,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.deleteConversationItem:
             showGroupSetting(state, false);
             deleteConversationItem(state, payload);
+            conversationUnreadNum(state);
             break;
             // 保存草稿
         case chatAction.saveDraft:
@@ -314,6 +319,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 name: state.activePerson.name,
                 type: state.activePerson.type
             };
+            conversationUnreadNum(state);
             // state.msgId = updateFilterMsgId(state, [{
             //     key: state.activePerson.key,
             //     name: state.activePerson.name,
@@ -336,6 +342,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             exitGroup(state, payload.item);
             deleteConversationItem(state, payload);
+            conversationUnreadNum(state);
             break;
             // 加入黑名单成功
         case mainAction.addBlackListSuccess:
@@ -507,7 +514,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 显示未读列表
         case chatAction.watchUnreadList:
             state.unreadList = {
-                show: true,
+                show: payload.show,
                 info: {
                     read: [],
                     unread: []
@@ -2007,7 +2014,7 @@ function changeSingleNoDisturb(state, payload) {
 function initNoDisturb(state, noDisturb) {
     for (let user of noDisturb.users) {
         for (let conversation of state.conversation) {
-            if (user.username === conversation.name) {
+            if (conversation.type === 3 && user.username === conversation.name) {
                 conversation.noDisturb = true;
                 break;
             }
@@ -2016,7 +2023,7 @@ function initNoDisturb(state, noDisturb) {
     for (let group of noDisturb.groups) {
         group.key = group.gid;
         for (let conversation of state.conversation) {
-            if (Number(group.key) === Number(conversation.key)) {
+            if (conversation.type === 4 && Number(group.key) === Number(conversation.key)) {
                 conversation.noDisturb = true;
                 break;
             }
@@ -3190,3 +3197,12 @@ function changeGroupMemberSilence(state, payload, silence: boolean, text: string
         }
     }
 }
+ function conversationUnreadNum(state) {
+     let count = 0;
+     for (let conversation of state.conversation) {
+         if (!conversation.noDisturb && conversation.unreadNum) {
+            count += conversation.unreadNum;
+         }
+     }
+     state.conversationUnreadNum = count;
+ }

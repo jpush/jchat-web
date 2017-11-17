@@ -86,5 +86,6 @@ export const chatInit = {
     createGroupSearch: [],
     unreadCount: {},
     roomTransmitMsg: {},
-    isInput: false
+    isInput: false,
+    conversationUnreadNum: 0
 };

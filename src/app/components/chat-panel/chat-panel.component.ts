@@ -1343,7 +1343,10 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         if (message.unread_count > 0 && this.active.type === 4) {
             this.store$.dispatch({
                 type: chatAction.watchUnreadList,
-                payload: message
+                payload: {
+                    show: true,
+                    message
+                }
             });
         }
     }

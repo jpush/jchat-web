@@ -5,7 +5,7 @@ import { Store, Action } from '@ngrx/store';
 import { AppStore } from '../../../app.store';
 import { roomAction } from '../actions';
 import { appAction } from '../../../actions';
-import { global, StorageService } from '../../../services/common';
+import { global, StorageService, authPayload } from '../../../services/common';
 
 @Injectable()
 export class RoomEffect {
@@ -266,6 +266,11 @@ export class RoomEffect {
                     // pass
                 });
             }
+            // 如果接收的是名片
+            if (payload.data.content.msg_type === 'text' && payload.data.content.msg_body.extras &&
+                payload.data.content.msg_body.extras.businessCard) {
+                this.requestCardInfo(payload.data);
+            }
             // 判断是否加载过这个用户的头像，加载过就直接使用本地的用户头像
             let username = payload.data.content.from_id !== global.user ?
                 payload.data.content.from_id : payload.data.content.target_id;
@@ -318,7 +323,8 @@ export class RoomEffect {
                     type: roomAction.sendMsgComplete,
                     payload: {
                         localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
+                        repeatSend: payload.repeatSend,
+                        msg
                     }
                 });
             }).onFail((error) => {
@@ -369,7 +375,8 @@ export class RoomEffect {
                     type: roomAction.sendMsgComplete,
                     payload: {
                         localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
+                        repeatSend: payload.repeatSend,
+                        msg
                     }
                 });
             }).onFail((error) => {
@@ -420,7 +427,8 @@ export class RoomEffect {
                     type: roomAction.sendMsgComplete,
                     payload: {
                         localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
+                        repeatSend: payload.repeatSend,
+                        msg
                     }
                 });
             }).onFail((error) => {
@@ -471,7 +479,8 @@ export class RoomEffect {
                     type: roomAction.sendMsgComplete,
                     payload: {
                         localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
+                        repeatSend: payload.repeatSend,
+                        msg
                     }
                 });
             }).onFail((error) => {
@@ -525,6 +534,29 @@ export class RoomEffect {
                 payload: null
             });
         }).onFail((data) => {
+            // pass
+        }).onTimeout(() => {
+            // pass
+        });
+    }
+    // 发送名片获取对方的信息
+    private requestCardInfo(data) {
+        global.JIM.getUserInfo({
+            username: data.content.msg_body.extras.userName,
+            appkey: authPayload.appKey
+        }).onSuccess((otherInfo) => {
+            data.content.msg_body.extras.nickName = otherInfo.user_info.nickname;
+            if (otherInfo.user_info.avatar !== '') {
+                global.JIM.getResource({media_id: otherInfo.user_info.avatar})
+                .onSuccess((urlInfo) => {
+                    data.content.msg_body.extras.media_url = urlInfo.url;
+                }).onFail((error) => {
+                    // pass
+                }).onTimeout((errorInfo) => {
+                    // pass
+                });
+            }
+        }).onFail((error) => {
             // pass
         }).onTimeout(() => {
             // pass

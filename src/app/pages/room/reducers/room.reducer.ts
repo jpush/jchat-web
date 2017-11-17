@@ -108,6 +108,26 @@ function sendMsgComplete(state, payload) {
     for (let i = state.messageList.length - 1; i >= 0; i--) {
         if (payload.localMsg.msgKey === state.messageList[i].msgKey) {
             state.messageList[i].success = payload.localMsg.success;
+            if (payload.msg) {
+                let url;
+                let loading;
+                let extras;
+                if (state.messageList[i].content.msg_body.media_url) {
+                    url = state.messageList[i].content.msg_body.media_url;
+                    loading = state.messageList[i].content.msg_body.loading;
+                }
+                if (state.messageList[i].content.msg_body.extras) {
+                    extras = state.messageList[i].content.msg_body.extras;
+                }
+                state.messageList[i].content.msg_body = payload.msg.content.msg_body;
+                if (url) {
+                    state.messageList[i].content.msg_body.media_url = url;
+                    state.messageList[i].content.msg_body.loading = loading;
+                }
+                if (extras) {
+                    state.messageList[i].content.msg_body.extras = extras;
+                }
+            }
             break;
         }
     }

@@ -357,6 +357,10 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.getConversationSuccess:
                 this.conversationList = chatState.conversation;
                 this.messageList = chatState.messageList;
+                this.store$.dispatch({
+                    type: chatAction.dispatchConversationUnreadNum,
+                    payload: chatState.conversationUnreadNum
+                });
                 // 如果是第一次登陆且有离线消息则存储当前msgId
                 // this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
                 // if (chatState.msgId.length > 0 && !this.storageService.get(this.storageKey)) {
@@ -382,9 +386,13 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.messageList = chatState.messageList;
                 if (!chatState.newMessageIsDisturb && !this.isMySelf) {
                     this.notification(chatState.newMessage);
+                    // this.store$.dispatch({
+                    //     type: chatAction.dispatchMessageUnread,
+                    //     payload: null
+                    // });
                     this.store$.dispatch({
-                        type: chatAction.dispatchMessageUnread,
-                        payload: null
+                        type: chatAction.dispatchConversationUnreadNum,
+                        payload: chatState.conversationUnreadNum
                     });
                 }
                 break;
@@ -436,6 +444,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 //     this.storageMsgId(chatState.msgId);
                 // }
                 this.emptyUnreadCount(chatState.unreadCount);
+                this.store$.dispatch({
+                    type: chatAction.dispatchConversationUnreadNum,
+                    payload: chatState.conversationUnreadNum
+                });
                 break;
             case chatAction.addReceiptReportAction:
                 if (chatState.readObj && chatState.readObj.msg_id.length > 0) {
@@ -463,6 +475,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                     payload: chatState.friendList
                 });
                 this.active = chatState.activePerson;
+                this.store$.dispatch({
+                    type: chatAction.dispatchConversationUnreadNum,
+                    payload: chatState.conversationUnreadNum
+                });
                 break;
             case chatAction.watchOtherInfoSuccess:
 
@@ -503,6 +519,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.emptyUnreadCount(chatState.unreadCount);
                 this.unreadList.show = false;
                 this.closeGroupSettingEmit();
+                this.store$.dispatch({
+                    type: chatAction.dispatchConversationUnreadNum,
+                    payload: chatState.conversationUnreadNum
+                });
                 break;
             case mainAction.exitGroupSuccess:
                 this.conversationList = chatState.conversation;
@@ -512,6 +532,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.store$.dispatch({
                     type: chatAction.dispatchGroupList,
                     payload: chatState.groupList
+                });
+                this.store$.dispatch({
+                    type: chatAction.dispatchConversationUnreadNum,
+                    payload: chatState.conversationUnreadNum
                 });
                 break;
             case mainAction.addBlackListSuccess:
@@ -919,7 +943,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case 10:
                 // 添加群成员事件
-                if (data.extra === 0) {
+                if (data.extra === 0 || data.extra === 1) {
                     this.store$.dispatch({
                         type: chatAction.addGroupMembersEvent,
                         payload: data
@@ -962,6 +986,22 @@ export class ChatComponent implements OnInit, OnDestroy {
                         payload: data
                     });
                 }
+                break;
+                // 群主或者管理员收到用户申请入群事件
+            case 56:
+                this.notification(data);
+                this.store$.dispatch({
+                    type: chatAction.receiveGroupInvitationEvent,
+                    payload: data
+                });
+                break;
+                // 被拒绝入群
+            case 57:
+                this.notification(data);
+                this.store$.dispatch({
+                    type: chatAction.receiveGroupRefuseEvent,
+                    payload: data
+                });
                 break;
             case 65:
                 if (!data.isOffline) {
@@ -1101,7 +1141,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             let title = '';
             let body = '';
             // 验证消息
-            if (newMessage.hasOwnProperty('isOffline')) {
+            if (newMessage.event_type === 5) {
                 if (newMessage.extra === 1) {
                     title = '好友邀请';
                     body = `${newMessage.from_nickname || newMessage.from_username}申请添加您为好友`;
@@ -1114,7 +1154,32 @@ export class ChatComponent implements OnInit, OnDestroy {
                         body = `${newMessage.from_nickname || newMessage.from_username}拒绝了您的好友申请`;
                     }
                 }
+            }else if (newMessage.event_type === 56) {
+                title = '入群申请';
+                if (newMessage.by_self) {
+                    body = `${newMessage.from_nickname ||
+                        newMessage.from_username} 申请入群 ${newMessage.group_name}`;
+                } else {
+                    let name = '';
+                    for (let i = 0 ; i < newMessage.to_usernames.length; i++) {
+                        name += newMessage.to_usernames[i].nickname ||
+                                newMessage.to_usernames[i].username;
+                        if (i >= 5) {
+                            name += '等人';
+                            break;
+                        } else if (i !== newMessage.to_usernames.length - 1) {
+                            name += '、';
+                        }
+                    }
+                    body = `${newMessage.from_nickname ||
+                        newMessage.from_username} 邀请 ${name} 入群 ${newMessage.group_name}`;
+                }
             // 普通消息
+            } else if (newMessage.event_type === 57) {
+                let name = newMessage.to_usernames[0].username === global.user ?
+                            '您' : newMessage.to_usernames[0].username;
+                title = '拒绝入群申请';
+                body = `群组 ${newMessage.group_name} 拒绝了 ${name} 的入群申请`;
             } else {
                 if (newMessage.msg_type === 4) {
                     title = newMessage.content.target_name || '群';
@@ -2256,7 +2321,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
     }
     private keepSilenceEmit(item) {
-        console.log(888, item);
         if (item.keep_silence) {
             this.store$.dispatch({
                 type: chatAction.deleteGroupMemberSilence,

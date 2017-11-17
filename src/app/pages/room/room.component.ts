@@ -63,7 +63,7 @@ export class RoomComponent implements OnInit {
         });
     }
     private stateChanged(roomState, mainState) {
-        console.log(5555, roomState);
+        console.log('roomState', roomState);
         switch (roomState.actionType) {
             case mainAction.showSelfInfo:
                 if (mainState.selfInfo.info) {
