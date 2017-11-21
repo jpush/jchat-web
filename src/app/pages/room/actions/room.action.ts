@@ -5,6 +5,7 @@ export const roomAction = {
     changeRoomSuccess: '[room] change room success',
     enterRoom: '[room] enter room',
     enterRoomSuccess: '[room] enter room success',
+    enterRoomError: '[room] enter room success error',
     exitRoom: '[room] exit room',
     exitRoomSuccess: '[room] exit room success',
     showRoomInfomation: '[room] show room infomation',
@@ -21,5 +22,6 @@ export const roomAction = {
     sendMsgComplete: '[room] send msg complete',
     transmitAllMsg: '[room] transmit all msg',
     getRoomVoiceState: '[room] get room voice state',
-    getRoomVoiceStateSuccess: '[room] get room voice state success'
+    getRoomVoiceStateSuccess: '[room] get room voice state success',
+    showPanel: '[room] show panel'
 };

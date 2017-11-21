@@ -262,7 +262,6 @@
                 overflow: hidden;
             }
             .chat-panel-business-card{
-                cursor: pointer;
                 position: relative;
             }
             .chat-panel-video{
@@ -513,6 +512,7 @@
                 background: #F2F6FB;
                 border: 1px solid #E2E9F0;
                 position: relative;
+                cursor: pointer;
                 &.chat-panel-card-you{
                     border-radius: 0 5px 5px 5px;                
                     &:after{

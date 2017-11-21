@@ -3,37 +3,55 @@ import { mainAction } from '../../main/actions';
 import { RoomStore } from '../stores';
 import { roomInit } from '../model';
 import { Util } from '../../../services/util';
+import { chatAction } from '../../chat/actions';
 
 export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
     state.actionType = type;
     switch (type) {
+        // 成功获取语音已读状态
         case roomAction.getRoomVoiceStateSuccess:
             state.voiceRoomState = payload;
             break;
+        // 成功获取聊天室列表
         case roomAction.getRoomListSuccess:
             filterRepeatRoom(state, payload);
             break;
+        // 切换聊天室
         case roomAction.changeRoomSuccess:
             state.active = payload.active;
             state.roomDetail = payload.info;
             break;
+        // 进入聊天室
+        case roomAction.enterRoom:
+            state.enterRoomLoading = true;
+            break;
+        // 成功进入聊天室
         case roomAction.enterRoomSuccess:
             if (state.active.id === payload.id) {
                 state.enter = payload;
             }
+            state.enterRoomLoading = false;
             state.messageList = [];
             break;
+        // 进入聊天室失败
+        case roomAction.enterRoomError:
+            state.enterRoomLoading = false;
+            break;
+        // 成功退出聊天室
         case roomAction.exitRoomSuccess:
             state.enter = {};
             state.imageViewer = [];
             break;
+        // 显示聊天室信息
         case roomAction.showRoomInfomationSuccess:
             state.roomInfomation = payload;
             break;
+        // 成功收到聊天室信息
         case roomAction.receiveMessageSuccess:
             addMessage(state, payload);
             state.newMessage = payload;
             break;
+        // 收到聊天室信息加载信息的media_url成功
         case roomAction.receiveMessageUrlSuccess:
             filterImageViewer(state, payload);
             break;
@@ -52,13 +70,21 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
         case roomAction.sendMsgComplete:
             sendMsgComplete(state, payload);
             break;
+        // 搜索聊天室ID，点击进入某聊天室
         case mainAction.selectSearchRoomUser:
             addRoomToList(state, payload);
+            break;
+        case chatAction.dispatchFriendList:
+            state.friendList = payload;
+            break;
+        case roomAction.showPanel:
+            state.showPanel = payload;
             break;
         default:
     }
     return state;
 };
+// 过滤重复的聊天室
 function filterRepeatRoom(state, payload) {
     if (payload.length > 0) {
         let newPayload = [];
@@ -100,6 +126,15 @@ function addMessage(state, payload) {
         payload.content.msg_body.extras.video) {
         payload.content.load = 0;
         payload.content.range = 0;
+    }
+    for (let friend of state.friendList) {
+        if (friend.username === payload.content.from_id &&
+            friend.appkey === payload.content.from_appkey) {
+            if (friend.memo_name) {
+                payload.content.memo_name = friend.memo_name;
+            }
+            break;
+        }
     }
     state.messageList.push(payload);
 }
@@ -152,7 +187,12 @@ function filterImageViewer(state: RoomStore, payload) {
         state.imageViewer.push(view);
     }
 }
+// 搜索聊天室查看资料
 function addRoomToList(state, payload) {
+    if (payload.id === state.enter.id) {
+        return ;
+    }
+    state.showPanel = 1;
     let flag = false;
     for (let i = 0; i < state.roomList.length; i ++) {
         if (state.roomList[i].id === payload.id) {

@@ -16,7 +16,7 @@ module.exports = function (config) {
         },
         output: {
             path: path.resolve(__dirname, '../dist'),
-            publicPath: 'http://localhost:3000/',
+            publicPath: 'http://192.168.20.107:3000/',
             filename: 'index.js'
         },
         resolve: {

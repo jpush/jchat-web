@@ -38,9 +38,25 @@
         margin-bottom: 44px;
     }
     .room-detail-button{
-        text-align: center;
+        width: 200px;
+        height: 35px;
+        overflow: hidden;
+        position: relative;
+        margin: 0 auto;
+        &.loading:after{
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url(../../../assets/images/app-loading.gif) center center no-repeat;
+            background-size: 20px;
+        }
         button{
             width: 200px;
+            height: 35px;
         }
     }
 }

@@ -4,7 +4,7 @@
     </div>
     <div class="flex-1" style="position: relative;">
         <default-panel-component [hidden]="showPanel !== 0"></default-panel-component>
-        <room-detail-component [roomDetail]="roomDetail" (enterRoom)="enterRoomEmit($event)" [hidden]="showPanel !== 1"></room-detail-component>
+        <room-detail-component [roomDetail]="roomDetail" [enterRoomLoading]="enterRoomLoading" (enterRoom)="enterRoomEmit($event)" [hidden]="showPanel !== 1"></room-detail-component>
         <room-panel-component [enter]="enter" [messageList]="messageList" [scrollToBottom]="scrollToBottom" [otherScrollTobottom]="otherScrollTobottom" [selfInfo]="selfInfo" (showRoomInfomation)="showRoomInfomationEmit()" (sendMsg)="sendMsgEmit($event)" (sendFile)="sendFileEmit($event)" (sendPic)="sendPicEmit($event)" (msgTransmit)="msgTransmitEmit($event)" (selfInfoEmit)="watchSelfInfoEmit()" (otherInfo)="watchOtherInfoEmit($event)" (businessCardSend)="businessCardSendEmit($event)" [hidden]="showPanel !== 2" (videoPlay)="playVideoEmit($event)"></room-panel-component>
     </div>
 </div>

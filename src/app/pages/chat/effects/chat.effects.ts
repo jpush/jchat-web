@@ -2800,13 +2800,10 @@ export class ChatEffect {
     // 获取会话列表
     private dispatchConversation(count, info, data) {
         if (count <= 0) {
-            // let key = `msgId-${authPayload.appKey}-${global.user}`;
-            // let msgId = JSON.parse(this.storageService.get(key));
             this.store$.dispatch({
                 type: chatAction.getConversationSuccess,
                 payload: {
                     conversation: info.conversations,
-                    // msgId,
                     storage: true,
                     messageList: data
                 }

@@ -316,11 +316,6 @@ export class MainComponent implements OnInit, OnDestroy {
             case mainAction.logoutKickShow:
                 this.logoutKick = mainState.logoutKick;
                 break;
-            // case chatAction.dispatchMessageUnread:
-            //     if (this.listTab === 1) {
-            //         this.badge.conversation ++;
-            //     }
-            //     break;
             case contactAction.dispatchContactUnreadNum:
                 this.badge.contact = mainState.contactUnreadNum;
                 break;
@@ -400,7 +395,7 @@ export class MainComponent implements OnInit, OnDestroy {
             });
         }
     }
-    // 创建群聊
+    // 显示创建群聊第一步
     private createGroupEmit(info) {
         if (info && info.add) {
             this.store$.dispatch({
@@ -431,6 +426,7 @@ export class MainComponent implements OnInit, OnDestroy {
             });
         }
     }
+    // 创建群聊第一步点击下一步
     private nextCreateGroupEmit(groupInfo) {
         this.store$.dispatch({
             type: mainAction.createGroupShow,
@@ -449,6 +445,7 @@ export class MainComponent implements OnInit, OnDestroy {
             }
         });
     }
+    // 创建群聊第二步点击上一步
     private createGroupPrevEmit() {
         this.store$.dispatch({
             type: mainAction.createGroupShow,
@@ -466,6 +463,7 @@ export class MainComponent implements OnInit, OnDestroy {
             }
         });
     }
+    // 关闭创建群聊第二步的模态框
     private closeCreateGroupNextEmit() {
         this.store$.dispatch({
             type: mainAction.createGroupNextShow,
@@ -484,10 +482,15 @@ export class MainComponent implements OnInit, OnDestroy {
             }
         });
     }
+    // 创建群聊点击完成
     private completeCreateGroupEmit(groupInfo) {
         this.store$.dispatch({
             type: mainAction.createGroup,
             payload: groupInfo
+        });
+        this.store$.dispatch({
+            type: mainAction.changeListTab,
+            payload: 0
         });
     }
     // 修改密码
@@ -824,6 +827,7 @@ export class MainComponent implements OnInit, OnDestroy {
             payload: value
         });
     }
+    // 显示群组验证模态框
     private applyEnterGroupEmit(groupInfo) {
         this.store$.dispatch({
             type: mainAction.groupVerifyModal,
@@ -832,6 +836,7 @@ export class MainComponent implements OnInit, OnDestroy {
             }
         });
     }
+    // 发送群组验证信息
     private groupVerifyModalBtnEmit(verifyText) {
         this.store$.dispatch({
             type: mainAction.sendGroupVerifyMessage,
@@ -841,6 +846,7 @@ export class MainComponent implements OnInit, OnDestroy {
             }
         });
     }
+    // 创建群聊选择头像
     private changeCreateGroupAvatarEmit(file) {
         this.getImgObj(file.files[0]);
     }
@@ -876,10 +882,27 @@ export class MainComponent implements OnInit, OnDestroy {
     private groupAvatarEmit(groupInfo) {
         this.groupAvatarInfo = groupInfo;
     }
+    // 搜索到已经在群里的群聊，点击发消息进入会话
     private changeGroupConversationEmit(group) {
         this.store$.dispatch({
             type: contactAction.selectContactItem,
             payload: group
+        });
+        this.store$.dispatch({
+            type: mainAction.changeListTab,
+            payload: 0
+        });
+    }
+    // 清空加入公开群的错误提示
+    private emptyEnterGroupTipEmit() {
+        this.store$.dispatch({
+            type: mainAction.enterPublicGroupShow,
+            payload: {
+                show: true,
+                info: {
+                    text: ''
+                }
+            }
         });
     }
     private init() {

@@ -117,7 +117,9 @@ export const chatAction = {
     addGroupMemberSilenceEvent: '[chat] add group member silence event',
     receiveGroupInvitationEvent: '[chat] receive group invitation event',
     receiveGroupInvitationEventSuccess: '[chat] receive group invitation event success',
+    dispatchReceiveGroupInvitationEvent: '[chat] dispatch receive group invitation event',
     receiveGroupRefuseEvent: '[chat] receive group refuse event',
     receiveGroupRefuseEventSuccess: '[chat] receive group refuse event success',
+    dispatchReceiveGroupRefuseEvent: '[chat] dispatch receive group refuse event',
     dispatchConversationUnreadNum: '[chat] dispatch conversation unread number'
 };

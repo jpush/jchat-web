@@ -12,4 +12,7 @@ export interface RoomStore {
     messageList: Array<any>;
     imageViewer: Array<any>;
     newMessage: object;
+    friendList: Array<any>;
+    enterRoomLoading: boolean;
+    showPanel: number;
 };

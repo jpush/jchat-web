@@ -39,7 +39,6 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             if (payload === 0) {
                 updateUnreadNum(state);
             }
-            changeFirstOne(state, 'isVerifyFirstOne');
             break;
             // 添加好友邀请事件
         case chatAction.friendInvitationEventSuccess:
@@ -73,18 +72,23 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
         case chatAction.addFriendSyncEvent:
             addFriendSyncEvent(state, payload);
             break;
-        case chatAction.receiveGroupInvitationEventSuccess:
+            // 传递收到进入邀请的事件
+        case chatAction.dispatchReceiveGroupInvitationEvent:
             filterVerifyGroupList(state, payload);
             break;
+            // 同意或者拒绝入群成功
         case contactAction.isAgreeEnterGroupSuccess:
             updateVerifyGroupList(state, payload);
             break;
+            // 同意或者拒绝入群失败
         case contactAction.isAgreeEnterGroupError:
             updateVerifyGroupList(state, payload);
             break;
-        case chatAction.receiveGroupRefuseEventSuccess:
+            // 传递被拒绝入群的事件
+        case chatAction.dispatchReceiveGroupRefuseEvent:
             filterReceiveGroupRefuse(state, payload);
             break;
+            // 切换验证信息的tab
         case contactAction.changeVerifyTab:
             state.verifyTab = payload;
             updateUnreadNum(state);
@@ -99,10 +103,12 @@ function updateUnreadNum(state) {
         state.singleVerifyUnreadNum = 0;
         state.verifyUnreadNum = state.groupVerifyUnreadNum;
         state.contactUnreadNum = state.verifyUnreadNum;
+        changeFriendFirstOne(state);
     } else if (state.verifyTab === 1) {
         state.groupVerifyUnreadNum = 0;
         state.verifyUnreadNum = state.singleVerifyUnreadNum;
         state.contactUnreadNum = state.verifyUnreadNum;
+        changeGroupFirstOne(state);
     }
 }
 // 多端在线同意好友请求事件
@@ -116,15 +122,6 @@ function addFriendSyncEvent(state, payload) {
         }
     }
 }
-// 同意或拒绝好友请求失败
-// function addFriendError(state, payload) {
-//     for (let verifyMessage of state.verifyMessageList) {
-//         if (verifyMessage.eventId === payload.eventId) {
-//             verifyMessage.stateType = 0;
-//             break;
-//         }
-//     }
-// }
 // 等待好友验证
 function waitReply(state, payload) {
     let verifyMessage = {
@@ -184,9 +181,16 @@ function friendReply(state, payload) {
     }
     state.verifyMessageList.unshift(verifyMessage);
 }
-function changeFirstOne(state, type) {
+// 标识好友验证消息已读
+function changeFriendFirstOne(state) {
     for (let verifyMessage of state.verifyMessageList) {
-        verifyMessage[type] = false;
+        verifyMessage.isFriendFirstOne = false;
+    }
+}
+// 标识群组验证信息已读
+function changeGroupFirstOne(state) {
+    for (let verifyMessage of state.verifyGroupList) {
+        verifyMessage.isGroupFirstOne = false;
     }
 }
 // 同意或者拒绝好友请求
@@ -210,68 +214,72 @@ function friendVerify(state, payload) {
         stateType: 0,
         type: 3,
         ctime_ms: payload.ctime_ms,
-        isVerifyFirstOne: false
+        isFriendFirstOne: false
     };
     /**
      * verifyUnreadNum 用来标识验证信息的的未读数量
      * contactUnreadNum 用来标识联系人的未读数量
-     * isVerifyFirstOne 用来标识是否是同一用户的好友邀请的第一条消息（在未读状态），因为未读状态的第一条会显示数量，此后就不再增加未读数量
+     * isFriendFirstOne 用来标识是否是同一用户的好友邀请的第一条消息（在未读状态），因为未读状态的第一条会显示数量，此后就不再增加未读数量
      */
-    if (state.tab !== 0 || state.listTab !== 1 ||
-        (state.tab === 0 && state.verifyTab !== 0)) {
-        state.singleVerifyUnreadNum ++;
-        state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
-        state.contactUnreadNum = state.verifyUnreadNum;
-        verifyMessage.isVerifyFirstOne = true;
-    } else {
-        changeFirstOne(state, 'isVerifyFirstOne');
-    }
+    let flag = false;
     for (let i = 0; i < state.verifyMessageList.length; i++) {
         let message = state.verifyMessageList[i];
         let stateType = message.stateType;
         const canBeCover = stateType !== 3 && stateType !== 4 && stateType !== 5 && stateType !== 7;
         if (message.name === verifyMessage.name && canBeCover) {
             if (message.stateType === 0) {
-                if (state.tab !== 0 || state.listTab !== 1 ||
-                    (state.tab === 0 && state.verifyTab !== 0)) {
-                    verifyMessage.isVerifyFirstOne = true;
-                }
-                if (message.isVerifyFirstOne) {
-                    state.singleVerifyUnreadNum --;
-                    state.verifyUnreadNum =
-                            state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
-                    state.contactUnreadNum = state.verifyUnreadNum;
+                if (message.isFriendFirstOne) {
+                    flag = true;
                 }
             }
             state.verifyMessageList.splice(i, 1);
             break;
         }
     }
+    if ((state.tab !== 0 || state.listTab !== 1 ||
+        (state.tab === 0 && state.verifyTab !== 0))) {
+        if (!flag) {
+            state.singleVerifyUnreadNum ++;
+            state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
+            state.contactUnreadNum = state.verifyUnreadNum;
+        }
+        verifyMessage.isFriendFirstOne = true;
+    }
     state.verifyMessageList.unshift(verifyMessage);
 }
+// 收到群组验证信息
 function filterVerifyGroupList(state, payload) {
     payload.stateType = 0;
+    payload.isGroupFirstOne = false;
     for (let user of payload.to_usernames) {
         let newPayload = Util.deepCopyObj(payload);
         newPayload.to_usernames = [user];
+        let flag = false;
         for (let i = 0; i < state.verifyGroupList.length; i ++) {
-            let type = state.verifyGroupList[i].stateType;
-            if ((type === 0 || type === 1 || type === 2) &&
-                state.verifyGroupList[i].from_gid === payload.from_gid &&
-                state.verifyGroupList[i].to_usernames[0].username === user.username) {
+            let verifyGroupList = state.verifyGroupList[i];
+            if ((verifyGroupList.stateType === 0 || verifyGroupList.stateType === 1 ||
+                verifyGroupList.stateType === 2) && verifyGroupList.from_gid === payload.from_gid &&
+                verifyGroupList.to_usernames[0].username === user.username) {
+                if (verifyGroupList.isGroupFirstOne) {
+                    flag = true;
+                }
                 state.verifyGroupList.splice(i, 1);
                 break;
             }
         }
         if (state.tab !== 0 || state.listTab !== 1 ||
             (state.tab === 0 && state.verifyTab !== 1)) {
-            state.groupVerifyUnreadNum ++;
-            state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
-            state.contactUnreadNum = state.verifyUnreadNum;
+            if (!flag) {
+                state.groupVerifyUnreadNum ++;
+                state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
+                state.contactUnreadNum = state.verifyUnreadNum;
+            }
+            newPayload.isGroupFirstOne = true;
         }
         state.verifyGroupList.unshift(newPayload);
     }
 }
+// 更新群组验证信息
 function updateVerifyGroupList(state, payload) {
     for (let verifyGroup of state.verifyGroupList) {
         if (verifyGroup.event_id === payload.event_id &&
@@ -281,6 +289,7 @@ function updateVerifyGroupList(state, payload) {
         }
     }
 }
+// 收到入群被拒绝的事件
 function filterReceiveGroupRefuse(state, payload) {
     if (payload.to_usernames[0].username === global.user) {
         payload.stateType = 5;

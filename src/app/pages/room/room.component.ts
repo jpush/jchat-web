@@ -17,6 +17,7 @@ export class RoomComponent implements OnInit {
     private roomList = [];
     private active: any = {};
     private roomDetail = {};
+    private enterRoomLoading = false;
     private showPanel = 0;
     private enter: any = {};
     private roomInfomation = {
@@ -38,6 +39,7 @@ export class RoomComponent implements OnInit {
         // pass
     }
     public ngOnInit() {
+        // 获取聊天室第一页的列表
         this.store$.dispatch({
             type: roomAction.getRoomList,
             payload: {
@@ -45,10 +47,12 @@ export class RoomComponent implements OnInit {
                 appkey: authPayload.appKey
             }
         });
+        // 获取本地存储的语音已读状态
         this.store$.dispatch({
             type: roomAction.getRoomVoiceState,
             payload: `voiceRoomState-${authPayload.appKey}-${global.user}`
         });
+        // 获取自己目前所在的群聊列表
         this.store$.dispatch({
             type: roomAction.getSelfChatrooms,
             payload: null
@@ -86,20 +90,38 @@ export class RoomComponent implements OnInit {
                 this.loadMoreRoomsFlag = !this.loadMoreRoomsFlag;
                 break;
             case roomAction.changeRoomSuccess:
-
+                this.active = roomState.active;
+                this.roomDetail = roomState.roomDetail;
+                this.rememberEnter = null;
+                this.store$.dispatch({
+                    type: roomAction.showPanel,
+                    payload: 1
+                });
+                break;
             case mainAction.selectSearchRoomUser:
                 this.active = roomState.active;
                 this.roomDetail = roomState.roomDetail;
-                this.showPanel = 1;
                 this.rememberEnter = null;
+                this.showPanel = roomState.showPanel;
+                break;
+            case roomAction.enterRoom:
+                this.enterRoomLoading = roomState.enterRoomLoading;
+                break;
+            case roomAction.enterRoomError:
+                this.enterRoomLoading = roomState.enterRoomLoading;
                 break;
             case roomAction.enterRoomSuccess:
                 if (this.active.id === roomState.enter.id) {
-                    this.showPanel = 2;
+                    // this.showPanel = 2;
+                    this.store$.dispatch({
+                        type: roomAction.showPanel,
+                        payload: 2
+                    });
                     this.rememberEnter = this.enter = roomState.enter;
                     this.scrollToBottom = !this.scrollToBottom;
                 }
                 this.messageList = roomState.messageList;
+                this.enterRoomLoading = roomState.enterRoomLoading;
                 break;
             case roomAction.showRoomInfomationSuccess:
                 this.roomInfomation = roomState.roomInfomation;
@@ -139,9 +161,13 @@ export class RoomComponent implements OnInit {
                     });
                 }
                 break;
+            case roomAction.showPanel:
+                this.showPanel = roomState.showPanel;
+                break;
             default:
         }
     }
+    // 加载更多聊天室
     private loadMoreRoomsEmit() {
         this.start += PageSize;
         this.store$.dispatch({
@@ -152,6 +178,7 @@ export class RoomComponent implements OnInit {
             }
         });
     }
+    // 切换聊天室
     private changeRoomEmit(room) {
         if (this.active.id !== room.id) {
             this.store$.dispatch({
@@ -160,18 +187,21 @@ export class RoomComponent implements OnInit {
             });
         }
     }
+    // 进入聊天室
     private enterRoomEmit(room) {
         this.store$.dispatch({
             type: roomAction.enterRoom,
             payload: room
         });
     }
+    // 显示聊天室信息
     private showRoomInfomationEmit() {
         this.store$.dispatch({
             type: roomAction.showRoomInfomation,
             payload: this.enter
         });
     }
+    // 隐藏聊天室信息
     private hideRoomInfomationEmit() {
         this.store$.dispatch({
             type: roomAction.showRoomInfomationSuccess,
@@ -181,6 +211,7 @@ export class RoomComponent implements OnInit {
             }
         });
     }
+    // 发送文本
     private sendMsgEmit(data) {
         /**
          * success
@@ -230,6 +261,7 @@ export class RoomComponent implements OnInit {
             });
         }
     }
+    // 发送文件
     private sendFileEmit(data) {
         if (data.repeatSend) {
             this.store$.dispatch({
@@ -278,6 +310,7 @@ export class RoomComponent implements OnInit {
             });
         }
     }
+    // 发送图片
     private sendPicEmit(data) {
         if (data.repeatSend) {
             this.store$.dispatch({
@@ -376,6 +409,7 @@ export class RoomComponent implements OnInit {
             }
         });
     }
+    // 消息转发
     private msgTransmitEmit(item) {
         this.store$.dispatch({
             type: roomAction.transmitAllMsg,

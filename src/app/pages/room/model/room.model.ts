@@ -11,5 +11,8 @@ export const roomInit = {
     },
     messageList: [],
     imageViewer: [],
-    newMessage: {}
+    newMessage: {},
+    friendList: [],
+    enterRoomLoading: false,
+    showPanel: 0
 };

@@ -44,8 +44,10 @@ export class CreateSingleChatComponent implements OnInit, AfterViewInit {
             this.createSingleChat.emit();
         }
     }
-    private emptyTip() {
-        if (this.info !== '') {
+    private inputKeyup(event) {
+        if (event.keyCode === 13) {
+            this.createSingleChatEmit(this.singleName);
+        } else if (this.info !== '') {
             this.emptySingleChatTip.emit();
         }
     }

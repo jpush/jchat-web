@@ -46,6 +46,7 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
             state.createGroup.show = false;
             state.listTab = 0;
             break;
+            // 显示创建群聊第二步
         case mainAction.createGroupNextShow:
             state.createGroupNext.show = payload.show;
             state.createGroupNext.display = payload.display;
@@ -53,9 +54,11 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
                 state.createGroupNext.info = payload.info;
             }
             break;
+            // 显示加入公开群的模态框
         case mainAction.enterPublicGroupShow:
             state.enterPublicGroup = payload;
             break;
+            // 搜索公开群成功
         case mainAction.searchPublicGroupSuccess:
             state.groupInfo = payload;
             state.enterPublicGroup = {
@@ -63,6 +66,7 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
                 info: {}
             };
             break;
+            // 显示发送群组验证信息模态框
         case mainAction.groupVerifyModal:
             state.groupVerifyModal.show = payload.show;
             break;
@@ -162,6 +166,7 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
         case contactAction.dispatchContactUnreadNum:
             state.contactUnreadNum = payload;
             break;
+            // 传递通讯录未读数
         case chatAction.dispatchConversationUnreadNum:
             state.conversationUnreadNum = payload;
             break;

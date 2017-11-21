@@ -20,11 +20,15 @@ export class ContactEffect {
             const groupListObj = global.JIM.getGroups()
             .onSuccess((data) => {
                 let groupList = data.group_list;
-                let flag = false;
+                let count = 0;
+                this.store$.dispatch({
+                    type: contactAction.getGroupListSuccess,
+                    payload: groupList
+                });
                 // 解决移动端有些群聊没有用户名的问题
                 for (let group of groupList) {
                     if (!group.name || group.name === '') {
-                        flag = true;
+                        count ++;
                         global.JIM.getGroupMembers({gid: group.gid})
                         .onSuccess((member) => {
                             let memberList = member.member_list;
@@ -37,40 +41,40 @@ export class ContactEffect {
                                 }
                             }
                             group.name = name.substr(0, 20);
-                            this.store$.dispatch({
-                                type: contactAction.getGroupListSuccess,
-                                payload: groupList
-                            });
+                            if (-- count <= 0) {
+                                this.store$.dispatch({
+                                    type: contactAction.getGroupListSuccess,
+                                    payload: groupList
+                                });
+                            }
                         }).onFail((error) => {
-                            this.store$.dispatch({
-                                type: appAction.errorApiTip,
-                                payload: error
-                            });
                             group.name = '#群名获取失败？？';
-                            this.store$.dispatch({
-                                type: contactAction.getGroupListSuccess,
-                                payload: groupList
-                            });
+                            if (-- count <= 0) {
+                                this.store$.dispatch({
+                                    type: contactAction.getGroupListSuccess,
+                                    payload: groupList
+                                });
+                            }
+                        }).onTimeout(() => {
+                            group.name = '#群名获取失败？？';
+                            if (-- count <= 0) {
+                                this.store$.dispatch({
+                                    type: contactAction.getGroupListSuccess,
+                                    payload: groupList
+                                });
+                            }
                         });
                     }
                     if (group.avatar && group.avatar !== '') {
                         global.JIM.getResource({media_id: group.avatar})
                         .onSuccess((urlInfo) => {
                             group.avatarUrl = urlInfo.url;
-                            this.store$.dispatch({
-                                type: contactAction.getGroupListSuccess,
-                                payload: groupList
-                            });
                         }).onFail((error) => {
-                            //
+                            group.avatarUrl = '';
+                        }).onTimeout(() => {
+                            group.avatarUrl = '';
                         });
                     }
-                }
-                if (!flag) {
-                    this.store$.dispatch({
-                        type: contactAction.getGroupListSuccess,
-                        payload: groupList
-                    });
                 }
             }).onFail((error) => {
                 this.store$.dispatch({
@@ -197,7 +201,7 @@ export class ContactEffect {
                         return {type: '[contact] is agree enter group useless'};
                     });
         });
-    // 验证消息查看资料
+    // 好友验证消息查看用户资料
     @Effect()
     private watchVerifyUser$: Observable<Action> = this.actions$
         .ofType(contactAction.watchVerifyUser)
@@ -209,7 +213,7 @@ export class ContactEffect {
                 if (info.stateType === 4 || info.stateType === 5) {
                     infoType = 'watchOtherInfo';
                 } else {
-                    infoType = 'verifyUser';
+                    infoType = 'verifyFriend';
                 }
                 let user = data.user_info;
                 let item = {
@@ -229,13 +233,9 @@ export class ContactEffect {
                     stateType: info.stateType
                 };
                 if (item.avatar !== '') {
-                    global.JIM.getResource({media_id: data.user_info.avatar})
+                    global.JIM.getResource({media_id: user.avatar})
                     .onSuccess((urlInfo) => {
                         item.avatarUrl = urlInfo.url;
-                        this.store$.dispatch({
-                            type: contactAction.watchVerifyUserSuccess,
-                            payload: item
-                        });
                     }).onFail((error) => {
                         // pass
                     });
@@ -259,6 +259,58 @@ export class ContactEffect {
             return Observable.of(watchVerifyUser)
                     .map(() => {
                         return {type: '[contact] watch verify user useless'};
+                    });
+    });
+    // 群组验证消息查看用户资料
+    @Effect()
+    private watchGroupVerifyUser$: Observable<Action> = this.actions$
+        .ofType(contactAction.watchGroupVerifyUser)
+        .map(toPayload)
+        .switchMap((info) => {
+            const watchGroupVerifyUser = global.JIM.getUserInfo({username: info.name})
+            .onSuccess((data) => {
+                let user = data.user_info;
+                let item = {
+                    avatar: user.avatar,
+                    mtime: user.mtime,
+                    name: user.username,
+                    nickName: user.nickname,
+                    username: user.username,
+                    nickname: user.nickname,
+                    type: 3,
+                    signature: user.signature,
+                    gender: user.gender,
+                    region: user.region,
+                    avatarUrl: info.avatarUrl ? info.avatarUrl : '',
+                    infoType: info.infoType
+                };
+                if (item.avatar !== '' && !info.avatarUrl) {
+                    global.JIM.getResource({media_id: user.avatar})
+                    .onSuccess((urlInfo) => {
+                        item.avatarUrl = urlInfo.url;
+                    }).onFail((error) => {
+                        // pass
+                    });
+                }
+                this.store$.dispatch({
+                    type: contactAction.watchVerifyUserSuccess,
+                    payload: item
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = {code: 910000};
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
+            return Observable.of(watchGroupVerifyUser)
+                    .map(() => {
+                        return {type: '[contact] watch group verify user useless'};
                     });
     });
     // 查看群资料

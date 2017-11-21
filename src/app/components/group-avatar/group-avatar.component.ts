@@ -8,8 +8,7 @@ import { Observable } from 'rxjs';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
-let Cropper =  require('../../../assets/static/js/cropper.min.js');
-import '../../../assets/static//js/canvas-to-blob.js';
+const Cropper =  require('../../../assets/static/js/cropper.min.js');
 
 @Component({
     selector: 'group-avatar-component',

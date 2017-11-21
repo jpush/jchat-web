@@ -164,6 +164,7 @@ export class RoomEffect {
         .ofType(roomAction.enterRoom)
         .map(toPayload)
         .switchMap((payload) => {
+            let time = new Date().getTime();
             const enterRoom = global.JIM.enterChatroom({
                 id: payload.id
             }).onSuccess((data) => {
@@ -182,12 +183,20 @@ export class RoomEffect {
                         type: appAction.errorApiTip,
                         payload: error
                     });
+                    this.store$.dispatch({
+                        type: roomAction.enterRoomError,
+                        payload
+                    });
                 }
             }).onTimeout((data) => {
                 const error = {code: 910000};
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
+                });
+                this.store$.dispatch({
+                    type: roomAction.enterRoomError,
+                    payload
                 });
             });
             return Observable.of('enterRoom')

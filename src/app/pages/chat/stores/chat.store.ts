@@ -92,4 +92,6 @@ export interface ChatStore {
     roomTransmitMsg: object;
     isInput: boolean;
     conversationUnreadNum: number;
+    receiveGroupInvitationEventObj: object;
+    receiveGroupRefuseEventObj: object;
 }

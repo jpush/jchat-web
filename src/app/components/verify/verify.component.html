@@ -33,20 +33,20 @@
         </div>
         <div [hidden]="verifyTab !== 1">
             <div class="display-flex verify-list align-items-center" *ngFor="let verifyGroup of verifyGroupList">
-                <div *ngIf="verifyGroup.stateType === 0 || verifyGroup.stateType === 1 || verifyGroup.stateType === 2 || verifyGroup.stateType === 3 || verifyGroup.stateType === 4" class="verify-avatar">
+                <div (click)="watchApplyUserAction(verifyGroup)" *ngIf="verifyGroup.stateType === 0 || verifyGroup.stateType === 1 || verifyGroup.stateType === 2 || verifyGroup.stateType === 3 || verifyGroup.stateType === 4" class="verify-avatar">
                     <img (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" [src]="verifyGroup.to_usernames[0].avatarUrl | sanitize : 'url'" alt="">
                 </div>
                 <div *ngIf="verifyGroup.stateType === 5 || verifyGroup.stateType === 6" class="verify-avatar" (click)="watchGroupInfoAction(verifyGroup)">
                     <img (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" [src]="verifyGroup.avatarUrl | sanitize : 'url'" alt="">                    
                 </div>
                 <div *ngIf="verifyGroup.stateType === 0 || verifyGroup.stateType === 1 || verifyGroup.stateType === 2 || verifyGroup.stateType === 3 || verifyGroup.stateType === 4" class="flex-1 verify-text">
-                    <div><span class="green">{{verifyGroup.to_usernames[0].nickname || verifyGroup.to_usernames[0].username}}</span> 申请入群 {{verifyGroup.group_name}}</div>
+                    <div><span (click)="watchApplyUserAction(verifyGroup)" class="green">{{verifyGroup.to_usernames[0].memo_name || verifyGroup.to_usernames[0].nickname || verifyGroup.to_usernames[0].username}}</span> 申请入群 {{verifyGroup.group_name}}</div>
                     <p *ngIf="verifyGroup.by_self">附加消息：{{verifyGroup.description && verifyGroup.description !== '' ? verifyGroup.description : '无'}}</p>
-                    <p *ngIf="!verifyGroup.by_self">邀请人：<span class="green">{{verifyGroup.from_nickname || verifyGroup.from_username}}</span></p>                
+                    <p *ngIf="!verifyGroup.by_self">邀请人：<span (click)="watchInvitateUserAction(verifyGroup)" class="green">{{verifyGroup.from_memo_name || verifyGroup.from_nickname || verifyGroup.from_username}}</span></p>                
                 </div>
                 <div *ngIf="verifyGroup.stateType === 5 || verifyGroup.stateType === 6" class="flex-1 verify-text">
                     <div><span class="green" (click)="watchGroupInfoAction(verifyGroup)">{{verifyGroup.group_name}}</span></div>
-                    <p *ngIf="verifyGroup.stateType === 6">群主拒绝 <span class="green">{{verifyGroup.to_usernames[0].nickname || verifyGroup.to_usernames[0].username}}</span> 入群</p>
+                    <p *ngIf="verifyGroup.stateType === 6">群主拒绝 <span (click)="watchApplyUserAction(verifyGroup)" class="green">{{verifyGroup.to_usernames[0].memo_name || verifyGroup.to_usernames[0].nickname || verifyGroup.to_usernames[0].username}}</span> 入群</p>
                     <p *ngIf="verifyGroup.stateType === 5">拒绝了您的入群申请</p>
                 </div>
                 <div *ngIf="verifyGroup.stateType === 0 || verifyGroup.stateType === 1 || verifyGroup.stateType === 2 || verifyGroup.stateType === 3 || verifyGroup.stateType === 4" class="verify-operation">

@@ -14,7 +14,7 @@
     <div class="room-detail-description gray">
         聊天室介绍：{{roomDetail.description}}
     </div>
-    <div class="room-detail-button">
+    <div class="room-detail-button" [class.loading]="enterRoomLoading">
         <button type=" button" class="btn-active" (click)="enterRoomAction()">进入聊天室</button>
     </div>
 </div>

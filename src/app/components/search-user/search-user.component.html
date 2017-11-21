@@ -1,7 +1,7 @@
 <div class="search-user-container">
     <h1 class="float-left search-user-title">JCHAT</h1>
-    <div (click)="stopPropagation($event)" [@flyIn]="inputAnimate" class="search-user-input-wrap float-right">
-        <input spellcheck="false" id="searchInput" [(ngModel)]="searchKeyword" spellcheck="false" class="search-user-input input-focus" type="text" placeholder="联系人/群组/聊天室ID">
+    <div (click)="stopPropagation($event)" [@flyIn]="inputAnimate" class="search-user-input-wrap">
+        <input spellcheck="false" id="searchInput" [(ngModel)]="searchKeyword" class="search-user-input input-focus" type="text" placeholder="联系人/群组/聊天室ID">
         <span (click)="clearInput()" *ngIf="searchUserResult.isSearch"></span>
         <p></p>
     </div>

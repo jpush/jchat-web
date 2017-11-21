@@ -15,5 +15,6 @@ export const contactAction = {
     isAgreeEnterGroupSuccess: '[contact] is ggree enter group success',
     isAgreeEnterGroupError: '[contact] is ggree enter group error',
     watchGroupInfo: '[contact] watch group info',
-    changeVerifyTab: '[contact] change verify tab'
+    changeVerifyTab: '[contact] change verify tab',
+    watchGroupVerifyUser: '[contact] watch group verify user'
 };

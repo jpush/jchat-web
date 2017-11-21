@@ -67,6 +67,10 @@ export class ContactComponent implements OnInit, OnDestroy {
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
                 this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
+                this.store$.dispatch({
+                    type: contactAction.dispatchContactUnreadNum,
+                    payload: contactState.contactUnreadNum
+                });
                 break;
             case contactAction.changeTab:
                 this.tab = contactState.tab;
@@ -108,7 +112,7 @@ export class ContactComponent implements OnInit, OnDestroy {
             case chatAction.addFriendSyncEvent:
                 this.verifyMessageList = contactState.verifyMessageList;
                 break;
-            case chatAction.receiveGroupInvitationEventSuccess:
+            case chatAction.dispatchReceiveGroupInvitationEvent:
                 this.store$.dispatch({
                     type: contactAction.dispatchContactUnreadNum,
                     payload: contactState.contactUnreadNum
@@ -124,7 +128,7 @@ export class ContactComponent implements OnInit, OnDestroy {
             case contactAction.isAgreeEnterGroupError:
                 this.verifyGroupList = contactState.verifyGroupList;
                 break;
-            case chatAction.receiveGroupRefuseEventSuccess:
+            case chatAction.dispatchReceiveGroupRefuseEvent:
                 this.store$.dispatch({
                     type: contactAction.dispatchContactUnreadNum,
                     payload: contactState.contactUnreadNum
@@ -179,22 +183,55 @@ export class ContactComponent implements OnInit, OnDestroy {
             payload: message
         });
     }
+    // 同意或者拒绝用户入群
     private isAgreeEnterGroupEmit(groupVerify) {
         this.store$.dispatch({
             type: contactAction.isAgreeEnterGroup,
             payload: groupVerify
         });
     }
+    // 查看验证信息的群组资料
     private watchGroupInfoEmit(verifyGroup) {
         this.store$.dispatch({
             type: contactAction.watchGroupInfo,
             payload: verifyGroup
         });
     }
+    // 切换验证信息的tab
     private changeVerifyTabEmit(tab) {
         this.store$.dispatch({
             type: contactAction.changeVerifyTab,
             payload: tab
+        });
+    }
+    // 查看申请者的用户资料
+    private watchApplyUserEmit(verifyGroup) {
+        let user = verifyGroup.to_usernames[0];
+        let item = {
+            avatar: user.avatar,
+            name: user.username,
+            username: user.username,
+            avatarUrl: user.avatarUrl ? user.avatarUrl : '',
+            infoType: 'watchOtherInfo',
+            appkey: user.appkey
+        };
+        this.store$.dispatch({
+            type: contactAction.watchGroupVerifyUser,
+            payload: item
+        });
+    }
+    // 查看邀请者的用户资料
+    private watchInvitateUserEmit(verifyGroup) {
+        let item = {
+            avatar: verifyGroup.media_id,
+            name: verifyGroup.from_username,
+            username: verifyGroup.from_username,
+            infoType: 'watchOtherInfo',
+            appkey: verifyGroup.from_appkey
+        };
+        this.store$.dispatch({
+            type: contactAction.watchGroupVerifyUser,
+            payload: item
         });
     }
 }

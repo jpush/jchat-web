@@ -29,6 +29,10 @@ export class VerifyComponent implements OnInit {
         private watchGroupInfo: EventEmitter<any>  = new EventEmitter();
     @Output()
         private changeVerifyTab: EventEmitter<any>  = new EventEmitter();
+    @Output()
+        private watchApplyUser: EventEmitter<any>  = new EventEmitter();
+    @Output()
+        private watchInvitateUser: EventEmitter<any>  = new EventEmitter();
     constructor() {
         // pass
     }
@@ -43,7 +47,7 @@ export class VerifyComponent implements OnInit {
     }
     private agreeAddFriend(message, type) {
         /**
-         * 加好友 stateType
+         * 加好友验证信息 stateType
          * 0    收到好友邀请时，同意或者拒绝按钮显示
          * 1    点击拒绝按钮的loading状态
          * 2    点击同意时的loading状态
@@ -68,7 +72,7 @@ export class VerifyComponent implements OnInit {
     }
     private agreeEnterGroup(verifyGroup, type) {
         /**
-         * 加群 stateType
+         * 入群验证信息 stateType
          * 0    管理员或者群主收到入群邀请时，显示同意或者拒绝按钮
          * 1    点击拒绝按钮的loading状态
          * 2    点击同意时的loading状态
@@ -86,5 +90,11 @@ export class VerifyComponent implements OnInit {
     }
     private watchGroupInfoAction(verifyGroup) {
         this.watchGroupInfo.emit(verifyGroup);
+    }
+    private watchApplyUserAction(verifyGroup) {
+        this.watchApplyUser.emit(verifyGroup);
+    }
+    private watchInvitateUserAction(verifyGroup) {
+        this.watchInvitateUser.emit(verifyGroup);
     }
 }

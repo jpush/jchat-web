@@ -317,7 +317,6 @@ export class MainEffect {
                 let user = data.user_info;
                 let item = {
                     avatar: user.avatar,
-                    // key: user.key || user.uid,
                     mtime: user.mtime,
                     name: user.username,
                     nickName: user.nickname,
@@ -866,7 +865,7 @@ export class MainEffect {
                     payload: {
                         show: true,
                         info: {
-                            text: '群组ID是数字，请输入正确的格式'
+                            text: '群组ID由数字组成'
                         }
                     }
                 });

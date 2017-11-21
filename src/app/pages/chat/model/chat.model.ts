@@ -87,5 +87,7 @@ export const chatInit = {
     unreadCount: {},
     roomTransmitMsg: {},
     isInput: false,
-    conversationUnreadNum: 0
+    conversationUnreadNum: 0,
+    receiveGroupInvitationEventObj: {},
+    receiveGroupRefuseEventObj: {}
 };

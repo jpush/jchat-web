@@ -3,7 +3,7 @@
         <contact-list-component (changeTab)="changeTabEmit($event)" [verifyUnreadNum]="verifyUnreadNum"></contact-list-component>        
     </div>
     <div class="contact-conversation flex-1">
-        <verify-component [hidden]="tab !== 0" [singleVerifyUnreadNum]="singleVerifyUnreadNum" [groupVerifyUnreadNum]="groupVerifyUnreadNum" [verifyMessageList]="verifyMessageList" [verifyGroupList]="verifyGroupList" [verifyTab]="verifyTab" (changeVerifyTab)="changeVerifyTabEmit($event)" (isAgreeAddFriend)="isAgreeAddFriendEmit($event)" (watchGroupInfo)="watchGroupInfoEmit($event)" (isAgreeEnterGroup)="isAgreeEnterGroupEmit($event)" (watchVerifyUser)="watchVerifyUserEmit($event)"></verify-component>
+        <verify-component [hidden]="tab !== 0" [singleVerifyUnreadNum]="singleVerifyUnreadNum" [groupVerifyUnreadNum]="groupVerifyUnreadNum" [verifyMessageList]="verifyMessageList" [verifyGroupList]="verifyGroupList" [verifyTab]="verifyTab" (changeVerifyTab)="changeVerifyTabEmit($event)" (isAgreeAddFriend)="isAgreeAddFriendEmit($event)" (watchGroupInfo)="watchGroupInfoEmit($event)" (isAgreeEnterGroup)="isAgreeEnterGroupEmit($event)" (watchVerifyUser)="watchVerifyUserEmit($event)" (watchApplyUser)="watchApplyUserEmit($event)" (watchInvitateUser)="watchInvitateUserEmit($event)"></verify-component>
         <linkman-list-component [hidden]="tab !== 1" [friendList]="friendList" (selectLinkmanItemEmit)="selectContactItemEmit($event)"></linkman-list-component>           
         <group-list-component [hidden]="tab !== 2" [groupList]="groupList" (selectGroupItemEmit)="selectContactItemEmit($event)"></group-list-component>
     </div>
