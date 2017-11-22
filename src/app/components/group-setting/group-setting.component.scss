@@ -210,17 +210,19 @@
                         color: #02BDBC;
                     }
                 }
-                .group-setting-delete-silence{
+                .group-setting-silence-icon{
                     font-size: 12px;
-                    color: #2DD0CF;
                     margin-right: 20px;
-                    cursor: pointer;
                     margin-left: 5px;
                     img{
                         display: block;
                         position: relative;
                         top: 17px;
                     }
+                }
+                .group-setting-delete-silence{
+                    color: #2DD0CF;                    
+                    cursor: pointer;
                     span{
                         display: none;
                     }

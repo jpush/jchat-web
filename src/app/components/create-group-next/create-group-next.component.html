@@ -1,0 +1,39 @@
+<div class="modal-shadow create-group-next-wrap">
+    <div class="modal-content">
+        <h2 class="modal-title">
+            发起群聊
+            <span class="modal-close" (click)="closeCreateGroupNextAction()"></span>
+        </h2>
+        <label for="createGroupAvatar" class="create-group-next-avatar">
+            <img [src]="groupAvatarInfo.src" (error)="groupAvatarErrorIcon($event)" (load)="avatarLoad($event)" alt="">
+            <input id="createGroupAvatar" type="file" (change)="changeCreateGroupAvatarAction($event)">
+        </label>
+        <div class="create-group-next-container">
+            <div class="create-group-next-name clearfix">
+                <span class="create-group-next-text float-left">群名称：</span>
+                <input type="text" class="input-focus float-left" [class.error]="nameTip.length > 0" (keyup)="groupNameKeyup()" maxlength="20" #groupName placeholder="请输入群组名称">
+                <span class="create-group-next-number float-left">{{20 - groupName.value.length}}</span>
+                <span class="create-group-next-tip">{{nameTip}}</span>
+            </div>
+            <div class="create-group-next-type clearfix">
+                <span class="create-group-next-type-text float-left">群组类型：</span>
+                <label class="float-left create-group-next-private-input" for="privateGroupInput">
+                    <input type="radio" #privateGroupInput id="privateGroupInput" value="0" checked name="chooseGroupType">
+                    <span></span>
+                    私有群
+                </label>
+                <label class="float-left" for="publicGroupInput">
+                    <input type="radio" #publicGroupInput id="publicGroupInput" value="1" name="chooseGroupType">
+                    <span></span>
+                    公开群
+                </label>
+            </div>
+            <div class="gray" *ngIf="privateGroupInput.checked">私有群：只能通过群成员邀请入群，无需审核</div>
+            <div class="gray" *ngIf="publicGroupInput.checked">公开群：用户可主动申请入群，需群主审核</div>
+        </div>
+        <div class="modal-btn">
+            <button type="button" class="btn-white" (click)="createGroupPrevAction()">上一步</button>
+            <button type="button" class="btn-active" (click)="completeCreateGroupAction(groupName, privateGroupInput.checked ? false : true)">完成</button>
+        </div>
+    </div>
+</div>

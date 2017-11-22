@@ -77,7 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 tip = `${name}非法内容格式`;
                 break;
             case 880101:
-                tip = `${name}appkey 不存在`;
+                tip = `${name}appkey不存在`;
                 break;
             case 880102:
                 tip = `${name}签名错误`;
@@ -109,7 +109,7 @@ export class AppComponent implements OnInit, OnDestroy {
             case 880208:
                 tip = `${name}发送失败，此消息包含敏感词`;
                 break;
-            case 880211:
+            case 880212:
                 tip = `${name}您被禁言了`;
                 break;
             case 880402:

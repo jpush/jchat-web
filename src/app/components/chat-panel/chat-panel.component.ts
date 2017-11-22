@@ -409,6 +409,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.exitGroupEvent:
 
             case chatAction.createGroupSuccessEvent:
+
+            // 添加群成员禁言事件
+            case chatAction.addGroupMemberSilenceEvent:
+
+            // 移除群成员禁言事件
+            case chatAction.deleteGroupMemberSilenceEvent:
                 this.updateMsg(chatState);
                 break;
             case chatAction.msgFile:

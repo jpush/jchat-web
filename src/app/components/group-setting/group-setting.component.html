@@ -56,9 +56,12 @@
                             <hover-tip-component [hidden]="!hostHover.show" [hoverInfo]="hostHover"></hover-tip-component>
                         </div>
                         <div class="group-setting-keep-silence" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user && !item.keep_silence" (click)="keepSilenceAction(item)">禁言</div>
-                        <div class="group-setting-delete-silence" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user && item.keep_silence" (click)="keepSilenceAction(item)">
+                        <div class="group-setting-silence-icon group-setting-delete-silence" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user && item.keep_silence" (click)="keepSilenceAction(item)">
                             <img src="../../../assets/images/keep-silence.svg" alt="">
                             <span>解除禁言</span>
+                        </div>
+                        <div class="group-setting-silence-icon" *ngIf="item.flag === 0 && groupSetting.memberList[0].username !== global.user && item.keep_silence">
+                            <img src="../../../assets/images/keep-silence.svg" alt="">
                         </div>
                         <span (click)="deleteMemberAction(item)" class="group-setting-delete" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user">×</span>
                     </li>

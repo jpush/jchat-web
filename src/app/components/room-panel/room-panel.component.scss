@@ -1,0 +1,921 @@
+.room-panel-shadow{
+    position: absolute;
+    left: 0;
+    bottom: 172px;
+    top: 40px;
+    right: 0;
+    background: #fff;
+    z-index: 3;
+}
+.room-panel{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .room-panel-container{
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        .room-panel-board{
+            border-bottom: 1px solid #D9DEE4;
+            .room-panel-setting{
+                height: 40px;
+                line-height: 40px;
+                padding-left: 20px;
+                -webkit-box-sizing: border-box;
+                        box-sizing: border-box;      
+                .room-panel-name{
+                    max-width: 80%;
+                    float: left;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+                .room-panel-group-setting{
+                    height: 20px;
+                    float: right;
+                    margin-right: 20px;
+                    cursor: pointer;
+                    margin-top: 10px;
+                    position: relative;
+                    width: 24px;                
+                    background: #fff url(../../../assets/images/group-setting-normal.svg) center center no-repeat;
+                    background-size: 24px;
+                    &:hover{
+                        background-image: url(../../../assets/images/group-setting-active.svg);
+                        background-size: 24px;
+                    }
+                }
+            }
+            .room-panel-message-borad{
+                height: 100%;
+                overflow: hidden;
+                -webkit-box-sizing: border-box;
+                        box-sizing: border-box;
+                position: relative;
+                .room-panel-scroll{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                }
+                .group-username{
+                    line-height: 20px;
+                    height: 20px;
+                    font-size: 12px;
+                    color: #999;
+                    max-width: 400px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .room-panel-see-more{
+                    text-align: center;
+                    line-height: 18px;
+                    color: #808080;
+                    font-size: 12px;
+                    opacity: 0.4;
+                    cursor: pointer;
+                    &.no-more{
+                        cursor: default;
+                    }
+                }
+                .room-panel-see-more-loading{
+                    line-height: 20px;
+                    >div{
+                        width: 18px;
+                        height: 18px;
+                        background: url(../../../assets/images/message-loading.gif) center center no-repeat;
+                        background-size: 18px;
+                        margin: 0 auto;
+                    }
+                }
+                .room-panel-file-container{
+                    height: 112px;
+                }
+                .room-panel-video-container{
+                    height: 140px;
+                }
+                .room-panel-location-container{
+                    height: 150px;
+                }
+                .room-panel-add-members{
+                    text-align: center;
+                    margin: 10px 0;
+                    span{
+                        font-size: 12px;
+                        color: #999;
+                        margin-bottom: 5px;
+                        text-align: center;
+                        line-height: 17px;
+                        padding: 2px 9px;
+                        background: #F2F6FB;
+                        border-radius: 5px;
+                        display: inline-block;
+                    }
+                }
+                .room-panel-msg{
+                    margin: 19px 0;
+                    .room-panel-message-img{
+                        max-width: 219px;
+                        max-height: 300px;
+                        cursor: -webkit-zoom-in;
+                        cursor: zoom-in;
+                        border-radius: 5px;
+                        display: block;
+                    }
+                    .img-loading{
+                        position: relative;
+                        &:after{
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            bottom: 0;
+                            right: 0;
+                            content: '';
+                            display: block;
+                            background: #ccc url(../../../assets/images/app-loading.gif) center center no-repeat;
+                            background-size: 20px;
+                            border-radius: 5px;
+                        }
+                    }
+                    .room-panel-message-jpush{
+                        width: 140px;
+                        height: 140px;
+                        cursor: default;
+                        border-radius: 5px;
+                        display: block;
+                    }
+                    .room-panel-more{
+                        height: 100%;                
+                        margin: 0 8px;
+                        position: relative;
+                        min-width: 24px;  
+                        &.room-panel-more-you{
+                            position: absolute;
+                            right: -8px;
+                            bottom: 0;
+                            margin: 0;
+                            -webkit-transform: translateX(100%);
+                                    transform: translateX(100%);
+                        }                  
+                        &.room-panel-more-text{
+                            position: absolute;
+                            left: -8px;
+                            bottom: 0;
+                            margin: 0;
+                            -webkit-transform: translateX(-100%);
+                                    transform: translateX(-100%);
+                        }
+                        .room-panel-operation{
+                            cursor: pointer;
+                            height: 20px;
+                            background: center center no-repeat;
+                            width: 24px;
+                            margin-bottom: 18px;
+                        }
+                        &.show-more-icon .room-panel-operation{
+                            background-image: url(../../../assets/images/more-normal.svg);
+                        }
+                    }
+                    &:hover .room-panel-more .room-panel-operation{
+                        background-image: url(../../../assets/images/more-normal.svg);
+                    }
+                }
+                .room-panel-time{
+                    text-align: center;
+                    margin: 30px 0 20px 0;
+                    height: 20px;
+                    line-height: 20px;           
+                    time{
+                        font-size: 12px;
+                        color: #999;
+                        text-align: center;
+                        line-height: 17px;
+                        padding: 2px 9px;
+                        background: #F2F6FB;
+                        border-radius: 5px;
+                    }
+                    &.first{
+                        margin-top: 10px;
+                    }
+                }
+                .room-panel-avatar{
+                    width: 40px;
+                    height: 40px;
+                    cursor: pointer;
+                    overflow: hidden;
+                }
+                .room-panel-business-card{
+                    position: relative;
+                }
+                .room-panel-video{
+                    height: 140px;
+                    width: 110px;
+                    position: relative;
+                    cursor: pointer;
+                    border-radius: 5px;
+                    background: rgba(0, 0, 0, 0.2);
+                    video{
+                        height: 100%;
+                        width: 100%;
+                        border-radius: 5px;
+                    }
+                    .room-panel-video-play{
+                        border-radius: 5px;
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        top: 0;
+                        background: url(../../../assets/images/video-normal.svg) center center no-repeat;
+                        background-size: 42px;
+                        z-index: 2;
+                        overflow: hidden;
+                        &:hover{
+                            background-image: url(../../../assets/images/video-active.svg);
+                        }
+                        span{
+                            position: absolute;
+                            bottom: 5px;
+                            right: 8px;
+                            line-height: 14px;
+                            color: #fff;
+                            font-size: 14px;
+                        }
+                    }
+                    .room-panel-video-shadow{
+                        position: absolute;
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(0,0,0,0.6);
+                        border-radius: 5px;
+                        line-height: 140px;
+                        text-align: center;
+                        font-size: 12px;
+                        color: #fff;
+                        &:after{
+                            content: '';
+                            width: 42px;
+                            height: 42px;
+                            display: block;
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            margin: -21px 0 0 -21px;
+                            border: 1px solid #fff;
+                            border-radius: 21px;
+                            background-color: rgba(0, 0, 0, 0.4);
+                        }
+                        &:before{
+                            content: '';
+                            width: 10px;
+                            height: 42px;
+                            display: block;
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            margin: -21px 0 0 -5px;
+                            border-radius: 3px 3px 0 0;
+                            border-top: 1px solid #2ECFCF;
+                            -webkit-animation: loadVideo 1s infinite forwards;
+                                    animation: loadVideo 1s infinite forwards;
+                            -moz-animation: loadVideo 1s infinite forwards;
+                            z-index: 1;
+                        }
+                    }
+                }
+                .room-panel-location{
+                    .room-panel-map-wrap{
+                        position: relative;                        
+                        width: 230px;
+                        height: 150px;
+                        border-radius: 5px;
+                        overflow: hidden;
+                        .room-panel-allmap{
+                            width: 100%;
+                            height: 100%;
+                            cursor: pointer;
+                        }
+                        .room-panel-address{
+                            position: absolute;
+                            line-height: 40px;
+                            opacity: 0.6;
+                            background: #000;
+                            bottom: 0;
+                            left: 0;
+                            width: 100%;
+                            padding: 0 8px;
+                            -webkit-box-sizing: border-box;
+                                    box-sizing: border-box;
+                            text-overflow: ellipsis;
+                            overflow: hidden;
+                            white-space: nowrap;
+                            color: #fff;
+                            font-size: 14px;
+                        }   
+                    }
+                }
+                .room-panel-img{
+                    min-height: 40px;
+                    line-height: 20px;
+                }
+                .room-panel-voice{
+                    &.room-panel-voice-you{
+                        line-height: 0;
+                    }
+                    .room-panel-voice-sound{
+                        max-width: 150px;
+                        height: 38px;
+                        position: relative;
+                        display: inline-block;
+                        &.loading:before{
+                            content: '';
+                            position: absolute;
+                            display: block;
+                            top: 0;
+                            left: 0;
+                            bottom: 0;
+                            right: 0;
+                            z-index: 1;
+                            background: url(../../../assets/images/message-loading.gif) center center no-repeat;
+                            background-size: 18px;
+                        }
+                        >div{
+                            height: 100%;
+                            max-width: 150px;
+                            min-width: 60px;
+                            cursor: pointer;
+                            position: relative;
+                            .room-panel-voice-animate{
+                                width: 20px;
+                                height: 100%;
+                            }
+                        }
+                        b{
+                            position: absolute;
+                            top: 16px;
+                            right: -19px;
+                            height: 8px;
+                            width: 8px;
+                            display: block;
+                            background-color: #EA424A;
+                            border-radius: 4px;
+                        }
+                        &:after{
+                            content: '';
+                            position: absolute;
+                            top: -1px;
+                            width: 6px;
+                            height: 10px;
+                            display: block;
+                        }
+                    }
+                    .room-panel-voice-sound-you{
+                        border: 1px solid #E2E9F0;                    
+                        border-radius: 0 5px 5px 5px;
+                        background-color: #F2F6FB;
+                        color: #999;
+                        line-height: 40px;                
+                        &:after{
+                            left: -6px;                        
+                            background: url(../../../assets/images/pao-you.svg) left top no-repeat;
+                        }
+                        .room-panel-voice-duration{
+                            margin-right: 5px;
+                        }
+                        .room-panel-voice-animate{
+                            margin-left: 10px;                        
+                            background: url(../../../assets/images/voice-normal-you.png) left center no-repeat;
+                            &.active{
+                                background-image: url(../../../assets/images/voice-active-you.gif);
+                            }
+                        }
+                    }
+                    .room-panel-voice-sound-me{
+                        border: 1px solid #67D6D0; 
+                        border-radius: 5px 0 5px 5px;
+                        background-color: #71E1DB; 
+                        color: #0B1816;
+                        &:after{
+                            right: -6px;
+                            background: url(../../../assets/images/pao-me.svg) right top no-repeat;
+                        }
+                        .room-panel-voice-duration{
+                            margin-left: 10px;
+                        }
+                        .room-panel-voice-animate{
+                            float: right;
+                            margin-right: 10px;                        
+                            background: url(../../../assets/images/voice-normal-me.png) right center no-repeat;
+                            &.active{
+                                background-image: url(../../../assets/images/voice-active-me.gif);
+                            }
+                        }
+                    }
+                }
+                .room-panel-file-icon{
+                    padding: 18px 18px 14px 18px;
+                    -webkit-box-sizing: border-box;
+                            box-sizing: border-box;
+                    div{
+                        width: 50px;
+                        height: 50px;
+                        margin-right: 18px;
+                        background: url(../../../assets/images/file-other.svg) center center no-repeat;
+                        background-size: 50px;
+                        &.document{
+                            background-image: url(../../../assets/images/file-send.svg);
+                        }
+                        &.audio{
+                            background-image: url(../../../assets/images/file-music.svg);
+                        }
+                        &.video{
+                            background-image: url(../../../assets/images/file-video.svg);
+                        }
+                        &.image{
+                            background-image: url(../../../assets/images/file-image.svg);
+                        }
+                    }
+                    p{
+                        line-height: 25px;
+                        text-align: left;
+                        font-size: 18px;
+                        color: #5A5A5A;
+                        overflow : hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                        word-break: break-all;
+                        word-break: break-word;
+                    }
+                }
+                .room-panel-card{
+                    width: 236px;
+                    height: 103px;
+                    background: #F2F6FB;
+                    border: 1px solid #E2E9F0;
+                    position: relative;
+                    cursor: pointer;                    
+                    &.room-panel-card-you{
+                        border-radius: 0 5px 5px 5px;                
+                        &:after{
+                            content: '';
+                            position: absolute;
+                            top: -1px;
+                            left: -6px;
+                            width: 6px;
+                            height: 10px;
+                            display: block;
+                            background: url(../../../assets/images/pao-you.svg) left top no-repeat;
+                        }
+                    }
+                    &.room-panel-card-me{
+                        border-radius: 5px 0 5px 5px;                
+                        &:after{
+                            content: '';
+                            position: absolute;
+                            top: -1px;
+                            right: -6px;
+                            width: 6px;
+                            height: 10px;
+                            display: block;
+                            background: url(../../../assets/images/pao-me-file.svg) right top no-repeat;
+                        }
+                    }
+                }
+                .room-panel-card-icon{
+                    height: 75px;
+                    padding: 20px 20px 15px 20px;
+                    -webkit-box-sizing: border-box;
+                            box-sizing: border-box;
+                    .room-panel-card-icon-avatar{
+                        width: 40px;
+                        height: 40px;
+                        overflow: hidden;
+                        margin-right: 9px;
+                    }
+                    .room-panel-card-name{
+                        font-size: 14px;
+                        color: #2C2C2C;
+                        line-height: 20px;
+                        text-align: left;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                    .room-panel-card-username{
+                        line-height: 17px;
+                        font-size: 12px;
+                        color: #999999;
+                        text-align: left;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+                .room-panel-card-range{
+                    height: 29px;
+                    line-height: 29px;
+                    padding-left: 20px;
+                    -webkit-box-sizing: border-box;
+                            box-sizing: border-box;
+                    font-size: 12px;
+                    color: #999999;
+                    border-top: 1px solid #DCDCDC;
+                    text-align: left;
+                }
+                .room-panel-you-msg{
+                    text-align: left;
+                    line-height: 40px;               
+                    .room-panel-msgText-you{
+                        padding: 9px 11px;
+                        background: #F2F6FB;
+                        border: 1px solid #E2E9F0;
+                        border-radius: 0 5px 5px 5px;
+                        font-size: 14px;
+                        color: #0B1816;
+                        text-align: left;
+                        position: relative;
+                        display: inline-block;
+                        &.jpush-emoji-container{
+                            background: none;
+                            border: none;
+                            padding: 0;
+                            &:after{
+                                display: none;
+                            }
+                            .room-panel-text-msg{
+                                height: 95px;
+                                width: 95px;
+                            }
+                        }
+                        .room-panel-jpush-emoji{
+                            width: 95px;
+                            img{
+                                width: 100%;
+                            }
+                        }
+                        .room-panel-text-msg{
+                            line-height: 20px;
+                            min-height: 18px;
+                            max-width: 400px;
+                            word-break: break-all;
+                            word-break: break-word;
+                        }
+                        &:after{
+                            content: '';
+                            position: absolute;
+                            top: -1px;
+                            left: -6px;
+                            width: 6px;
+                            height: 10px;
+                            display: block;
+                            background: url(../../../assets/images/pao-you.svg) left top no-repeat;
+                        }
+                    }
+                    .room-panel-fromId-you{
+                        margin-right: 12px;
+                    }
+                    .room-panel-file-you{
+                        width: 236px;
+                        height: 110px;
+                        background: #F2F6FB;
+                        border: 1px solid #E2E9F0;
+                        border-radius: 0 5px 5px 5px;
+                        position: relative;
+                        &:after{
+                            content: '';
+                            position: absolute;
+                            top: -1px;
+                            left: -6px;
+                            width: 6px;
+                            height: 10px;
+                            display: block;
+                            background: url(../../../assets/images/pao-you.svg) left top no-repeat;
+                        }
+                    }
+                    .room-panel-download-file{
+                        cursor: pointer;
+                        color: #2DD0CF;
+                        &:hover{
+                            color: #02BDBC;
+                        }
+                    }
+                }
+                .room-panel-send-error{
+                    width: 22px;
+                    height: 22px;
+                    cursor: pointer;
+                    background: url(../../../assets/images/send-message-error.svg) center center no-repeat;
+                    background-size: 24px;
+                    position: absolute;
+                    left: -34px;
+                    top: 50%;
+                    margin-top: -11px;
+                }
+                .room-panel-send-loading{
+                    width: 18px;
+                    height: 18px;
+                    background: url(../../../assets/images/message-loading.gif) center center no-repeat;
+                    background-size: 18px;
+                    left: -34px;
+                    top: 50%;
+                    margin-top: -9px;
+                    position: absolute;
+                }
+                .room-panel-me-msg{
+                    text-align: right;
+                    line-height: 40px;
+                    .room-panel-address{
+                        text-align: left;
+                    }
+                    .room-panel-msgText-me{
+                        background: #71E1DB;
+                        border: 1px solid #67D6D0;
+                        border-radius: 5px 0 5px 5px;
+                        font-size: 14px;
+                        color: #0B1816;
+                        padding: 9px 11px;
+                        text-align: left;
+                        position: relative;
+                        &:after{
+                            content: '';
+                            position: absolute;
+                            top: -1px;
+                            right: -6px;
+                            width: 6px;
+                            height: 10px;
+                            display: block;
+                            background: url(../../../assets/images/pao-me.svg) right top no-repeat;
+                        }
+                        &.jpush-emoji-container{
+                            background: none;
+                            border: none;
+                            padding: 0;
+                            &:after{
+                                display: none;
+                            }
+                            .room-panel-text-msg{
+                                height: 95px;
+                                width: 95px;
+                            }
+                        }
+                        .room-panel-jpush-emoji{
+                            width: 95px;
+                            img{
+                                width: 100%;
+                            }
+                        }
+                        .room-panel-text-msg{
+                            line-height: 20px;
+                            max-width: 400px;
+                            min-height: 20px;
+                            word-break: break-all;
+                            word-break: break-word;
+                        }
+                    }
+                    .room-panel-fromId-me{
+                        margin-left: 12px;
+                        width: 40px;
+                        height: 40px;
+                    }
+                    .room-panel-file-me{
+                        width: 236px;
+                        height: 110px;
+                        background: #F2F6FB;
+                        border: 1px solid #E2E9F0;
+                        border-radius: 5px 0 5px 5px;
+                        position: relative;
+                        &:after{
+                            content: '';
+                            position: absolute;
+                            top: -1px;
+                            right: -6px;
+                            width: 6px;
+                            height: 10px;
+                            display: block;
+                            background: url(../../../assets/images/pao-me-file.svg) right top no-repeat;
+                        }
+                    }
+                    .room-panel-img-me{
+                        .room-panel-jpush-emoji{
+                            position: relative;
+                        }
+                        .room-panel-message-img-wrap{
+                            border-radius: 5px;
+                            position: relative;
+                            .room-panel-message-img{
+                                vertical-align: middle;
+                            }
+                        }
+                        .room-panel-message-img-loading:after{
+                            border-radius: 5px;
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            bottom: 0;
+                            right: 0;
+                            content: '';
+                            display: block;
+                            background: rgba(0,0,0,0.6) url(../../../assets/images/message-loading.gif) center center no-repeat;
+                            background-size: 18px;
+                        }
+                    }
+                }
+                .room-panel-range{
+                    width: 100%;
+                    height: 28px;
+                    position: relative;
+                    border-radius: 0 0 5px 5px;
+                    overflow: hidden;
+                    >p{
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 1px;
+                        background: #2DD0CF;
+                        -webkit-animation: range 5s ease-out;
+                        -webkit-animation-fill-mode: forwards;
+                        -moz-animation: range 5s ease-out;
+                        -moz-animation-fill-mode: forwards;
+                                animation: range 5s ease-out;
+                                animation-fill-mode: forwards;
+                        z-index: 1;
+                    }
+                    &:after{
+                        background: #DCDCDC;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        content: '';
+                        display: block;
+                        width: 100%;
+                        height: 1px;
+                    }
+                    div{
+                        width: 100%;
+                        height: 27px;
+                        margin-top: 1px;
+                        line-height: 27px;
+                        font-size: 12px;
+                        color: #989898;
+                        padding: 0 7px;
+                        -webkit-box-sizing: border-box;
+                                box-sizing: border-box;
+                    }
+                }
+            }
+        }
+        .room-panel-message-input{
+            position: relative;
+            height: 171px;
+            .room-panel-send-file{
+                height: 24px;
+                margin: 12px 0 8px 0;
+                position: relative;
+                .room-panel-emoji-btn{
+                    width: 24px;
+                    height: 24px;
+                    float: left;
+                    background: #fff url(../../../assets/images/emoji-normal.svg) center center no-repeat;
+                    background-size: 24px;
+                    margin-left: 18px;
+                    cursor: pointer;
+                    &:hover{
+                        background-image: url(../../../assets/images/emoji-active.svg);
+                    }        
+                }
+                .room-panel-emoji-btn.active{
+                    background-image: url(../../../assets/images/emoji-active.svg);
+                }
+                .room-panel-singleFile{
+                    display: none;
+                }
+                .room-panel-singleFile-label{
+                    cursor: pointer;
+                    float: left;
+                    background: #fff url(../../../assets/images/file-normal.svg) center center no-repeat;
+                    background-size: 24px;
+                    width: 24px;
+                    height: 24px;
+                    margin-left: 16px;
+                    &:hover{
+                        background-image: url(../../../assets/images/file-active.svg);
+                    }
+                }
+                .room-panel-singleFile-label.active{
+                    background-image: url(../../../assets/images/file-active.svg);
+                }
+                .room-panel-singlePic{
+                    display: none;
+                }
+                .room-panel-singlePic-label{
+                    cursor: pointer;
+                    float: left;
+                    background: #fff url(../../../assets/images/img-normal.svg) center center no-repeat;
+                    background-size: 24px;
+                    width: 24px;
+                    height: 24px;
+                    margin-left: 16px;
+                    &:hover{
+                        background-image: url(../../../assets/images/img-active.svg);
+                    }
+                }
+                .room-panel-singlePic-label.active{
+                    background-image: url(../../../assets/images/img-active.svg);
+                }
+                .send-business-card{
+                    cursor: pointer;
+                    width: 24px;
+                    height: 24px;
+                    background: url(../../../assets/images/businessCard-normal.svg) center center no-repeat;
+                    &:hover{
+                        background-image: url(../../../assets/images/businessCard-active.svg);
+                    }
+                    margin-left: 16px;
+                }
+            }
+            .room-panel-text-container{
+                 height: 127px;
+                 width:100%;
+                 cursor: text;
+                 .room-panel-content-scroll{
+                     max-height: 60px;
+                     width: 100%;
+                    .room-panel-content-text{
+                        margin: 0;
+                        outline: none;
+                        padding: 0 16px;
+                        -webkit-box-sizing: border-box;
+                                box-sizing: border-box;
+                        word-break: break-all;
+                                word-break: break-word;
+                        white-space: normal;
+                        font-size: 14px;
+                        color: #0B1816;
+                        line-height: 20px;
+                        height: 60px;
+                    }
+                 }
+            }
+            .room-panel-send-btn{
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                width: 90px;
+            }
+        }
+    }    
+}
+@-webkit-keyframes range{
+    0%{
+        width: 0;
+    }
+    100%{
+        width: 95%;
+    }
+}
+@keyframes range{
+    0%{
+        width: 0;
+    }
+    100%{
+        width: 95%;
+    }
+}
+@-webkit-keyframes loadVideo{
+    0%{
+        -webkit-transform: rotate(0);
+                transform: rotate(0);
+    }
+    100%{
+        -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}
+@keyframes loadVideo{
+    0%{
+        -webkit-transform: rotate(0);
+                transform: rotate(0);
+    }
+    100%{
+        -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}
+@media (max-width: 900px){
+    .room-panel-text-msg{
+        max-width: 300px !important;
+    }
+}
+.room-panel-operation-board{
+    position: fixed;
+    z-index: 9;
+}

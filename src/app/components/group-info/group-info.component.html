@@ -1,0 +1,30 @@
+<div class="modal-shadow group-info-wrap">
+    <div class="modal-content">
+        <span class="modal-close" (click)="groupInfoClose()"></span>
+        <div class="group-info-top">
+            <div class="group-info-avatar">
+                <img (error)="groupAvatarErrorIcon($event)" (load)="avatarLoad($event)" [src]="groupInfo.info.avatarUrl" alt="">                    
+            </div>
+            <p class="group-info-name">{{groupInfo.info.name}}</p>
+            <p class="group-info-id gray">群ID：{{groupInfo.info.gid}}</p>
+        </div>
+        <div class="group-info-detail">
+            <div class="group-info-row clearfix">
+                <span class="gray group-info-word">群&nbsp;&nbsp;&nbsp;主：</span>
+                <span class="group-info-text">{{groupInfo.info?.host?.nickName || groupInfo.info?.host?.username}}</span>
+            </div>
+            <div class="group-info-row clearfix">
+                <span class="gray group-info-word">群成员：</span>
+                <span class="group-info-text">{{groupInfo.info.member_list_count}}人</span>
+            </div>
+            <div class="group-info-row clearfix">
+                <span class="gray group-info-word">群描述：</span>
+                <span class="gray" [title]="groupInfo.info.desc">{{groupInfo.info.desc | ellipsis: 60}}</span>
+            </div>
+        </div>
+        <div class="group-info-btn">
+            <button *ngIf="!groupInfo.info.isMember" type="button" class="btn-active" (click)="applyEnterGroupAction()">申请入群</button>
+            <button *ngIf="groupInfo.info.isMember" type="button" class="btn-active" (click)="changeGroupConversationAction()">发消息</button>            
+        </div>
+    </div>
+</div>
