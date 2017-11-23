@@ -365,14 +365,11 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
 
                 // 转发群聊位置
             case chatAction.transmitGroupLocation:
-                if (this.active.type === 3 &&
-                    chatState.newMessage.content.target_id === this.active.name) {
-                    this.updateMsg(chatState);
-                    this.pointerToMap(chatState);
-                    this.scrollBottom(0);
-                    this.imageViewer.result = chatState.imageViewer;
-                } else if (this.active.type === 4 &&
-                    Number(chatState.newMessage.key) === Number(this.active.key)) {
+                const single = this.active.type === 3 &&
+                    chatState.newMessage.content.target_id === this.active.name;
+                const group = this.active.type === 4 &&
+                    Number(chatState.newMessage.key) === Number(this.active.key);
+                if (single || group) {
                     this.updateMsg(chatState);
                     this.pointerToMap(chatState);
                     this.scrollBottom(0);
@@ -436,7 +433,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         if (chatState.activePerson.activeIndex < 0) {
             return ;
         }
-        let list = chatState.messageList[chatState.activePerson.activeIndex];
+        const list = chatState.messageList[chatState.activePerson.activeIndex];
         if (list.msgs.length > pageNumber) {
             this.msg = list.msgs.slice(list.msgs.length - this.msg.length);
         } else {
@@ -528,7 +525,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             let msgIdFlag = item.msg_id && this.imageViewer.result[i].msg_id === item.msg_id;
             let msgKeyFlag = item.msgKey && this.imageViewer.result[i].msgKey === item.msgKey;
             if (msgIdFlag || msgKeyFlag) {
-                this.imageViewer.active = Object.assign({}, this.imageViewer.result[i], {});
+                this.imageViewer.active = Util.deepCopyObj(this.imageViewer.result[i]);
                 this.imageViewer.active.index = i;
                 break;
             }
@@ -539,20 +536,22 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 切换会话人渲染地图
     private allPointerToMap(index ?: number) {
         const num = index ? index : this.msg.length;
-        for (let i = 0 ; i < num; i++) {
+        for (let i = 0; i < num; i++) {
             if (this.msg[i].content.msg_type === 'location') {
                 const that = this;
                 ((indexNum) => {
                     setTimeout(function () {
                         if (!that.msg[indexNum] || !that.msg[indexNum].content ||
                             !that.msg[indexNum].content.msg_body.longitude) {
-                                clearInterval(this);
+                                clearTimeout(this);
                                 return ;
                         }
+                        const msgBody = that.msg[indexNum].content.msg_body;
                         Util.theLocation({
                             id: 'allmap' + indexNum,
-                            longitude: that.msg[indexNum].content.msg_body.longitude,
-                            latitude: that.msg[indexNum].content.msg_body.latitude
+                            longitude: msgBody.longitude,
+                            latitude: msgBody.latitude,
+                            scale: msgBody.scale
                         });
                     }, 0);
                 })(i);
@@ -562,22 +561,24 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 接收到地图消息渲染地图
     private pointerToMap(chatState) {
         if (chatState.newMessage.content.msg_type === 'location') {
-            let length = this.msg.length;
-            let newMessage = Util.deepCopyObj(chatState.newMessage);
+            const length = this.msg.length;
+            const newMessage = Util.deepCopyObj(chatState.newMessage);
+            const msgBody = newMessage.content.msg_body;
             setTimeout(() => {
                 Util.theLocation({
                     id: 'allmap' + (length - 1).toString(),
-                    longitude: newMessage.content.msg_body.longitude,
-                    latitude: newMessage.content.msg_body.latitude
+                    longitude: msgBody.longitude,
+                    latitude: msgBody.latitude,
+                    scale: msgBody.scale
                 });
             }, 100);
         }
     }
     // 粘贴文本，将文本多余的样式代码去掉/粘贴图片
     private pasteMessage(event) {
-        let clipboardData = event.clipboardData || (<any> window).clipboardData;
-        let items = clipboardData.items;
-        let files = clipboardData.files;
+        const clipboardData = event.clipboardData || (<any> window).clipboardData;
+        const items = clipboardData.items;
+        const files = clipboardData.files;
         let item;
         // 粘贴图片不兼容safari
         const userAgent = navigator.userAgent;
@@ -752,7 +753,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         event.target.value = '';
     }
     private msgContentChange(event) {
-        let active = Object.assign({}, this.active, {});
+        const active = Util.deepCopyObj(this.active);
         let value = event.target.innerHTML;
         const atInputReg = new RegExp(`<input.+?class="chat-panel-at-input".+?>`, 'g');
         if (value.match(atInputReg)) {
@@ -780,7 +781,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 查看对方用户资料
     private watchOtherInfo(content) {
-        let username = content.from_id ? content.from_id : content.name;
+        const username = content.from_id ? content.from_id : content.name;
         let info: any = {
             username
         };
@@ -820,14 +821,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         if (this.inputToLast) {
             Util.focusLast(this.contentDiv);
         }
-        if (this.emojiInfo.show === true) {
-            this.emojiInfo.show = false;
+        if (this.emojiInfo.show) {
             setTimeout(() => {
                 this.inputNoBlur = true;
             }, 200);
-        } else {
-            this.emojiInfo.show = true;
         }
+        this.emojiInfo.show = !this.emojiInfo.show;
     }
     private msgContentClick(event) {
         this.inputToLast = false;
@@ -866,9 +865,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     insertHtml += insertHtml;
                 }
             }
-            let userAgent = navigator.userAgent;
-            let isSafari = userAgent.indexOf('Safari') > -1 &&
-                            userAgent.indexOf('Chrome') === -1;
+            const userAgent = navigator.userAgent;
+            const isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
             // safari自身可以换行，不用处理
             if (!isSafari) {
                 Util.insertAtCursor(this.contentDiv, insertHtml, false);
@@ -893,8 +891,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             }
             return ;
         }
-        let selection = window.getSelection();
-        let range = selection.getRangeAt(0);
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
         let groupSetting = this.messageList[this.active.activeIndex].groupSetting;
         let memberList;
         if (groupSetting) {
@@ -1129,12 +1127,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                         this.msg = msgs;
                         setTimeout(() => {
                             this.loadingFlag = 3;
-                        }, 0);
+                        });
                     } else {
                         this.msg = msgs.slice(msgs.length - pageNumber * this.loadingCount);
                         setTimeout(() => {
                             this.loadingFlag = 1;
-                        }, 0);
+                        });
                     }
                     const newLength = this.msg.length;
                     this.allPointerToMap(newLength - oldLength);
@@ -1144,7 +1142,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                             const gap = newContentHeight - oldContentHeight;
                             this.componentScroll.directiveRef.scrollTo(0, gap);
                             resolve();
-                        }, 0);
+                        });
                     }).catch(() => {
                         console.log('Promise Rejected');
                     });
@@ -1251,12 +1249,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 清除语音播放
     private clearVoicePlay(index) {
         for (let i = 0; i < this.msg.length; i++) {
-            if (this.msg[i].content.msg_type === 'voice' &&
-                this.msg[i].content.playing && i !== index) {
+            let content = this.msg[i].content;
+            if (content.msg_type === 'voice' && content.playing && i !== index) {
                 const otherAudio = this.elementRef.nativeElement.querySelector('#audio' + i);
                 otherAudio.pause();
                 otherAudio.currentTime = 0;
-                this.msg[i].content.playing = false;
+                content.playing = false;
             }
         }
     }
@@ -1324,12 +1322,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 预览聊天文件中的图片
     private showMsgFileImageViewerEmit(item) {
         for (let i = 0; i < this.msgFileImageViewer.result.length; i++) {
-            let msgIdFlag = this.msgFileImageViewer.result[i].msg_id === item.msg_id && item.msg_id;
-            let msgKeyFlag = this.msgFileImageViewer.result[i].msgKey === item.msgKey &&
+            const msgIdFlag = this.msgFileImageViewer.result[i].msg_id === item.msg_id &&
+                            item.msg_id;
+            const msgKeyFlag = this.msgFileImageViewer.result[i].msgKey === item.msgKey &&
                             item.msgKey;
             if (msgIdFlag || msgKeyFlag) {
                 this.msgFileImageViewer.active =
-                    Object.assign({}, this.msgFileImageViewer.result[i], {});
+                    Util.deepCopyObj(this.msgFileImageViewer.result[i]);
                 this.msgFileImageViewer.active.index = i;
                 break;
             }

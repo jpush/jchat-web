@@ -15,7 +15,6 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 })
 
 export class CreateGroupComponent implements OnInit, OnDestroy {
-    // private groupName = '';
     private global = global;
     private createGroupStream$;
     @Input()
@@ -36,16 +35,13 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         keywords: '',
         placeholder: '搜索'
     };
-    // private nameTip = false;
     constructor(
         private store$: Store<any>
-    ) {
-
-    }
+    ) {}
     public ngOnInit() {
         this.initData();
         this.createGroupStream$ = this.store$.select((state) => {
-            let chatState = state['chatReducer'];
+            const chatState = state['chatReducer'];
             this.stateChanged(chatState);
             return state;
         }).subscribe((state) => {
@@ -59,8 +55,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         switch (chatState.actionType) {
             case  chatAction.createGroupSearchComplete:
                 this.searchResult.show = true;
-                // 深度拷贝
-                let result = JSON.parse(JSON.stringify(chatState.createGroupSearch));
+                let result = Util.deepCopyObj(chatState.createGroupSearch);
                 if (result.length > 0) {
                     this.reducerSearchResult(result);
                 }
@@ -149,11 +144,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
                     break;
                 }
             }
-            if (!flag) {
-                list.allFilter = true;
-            } else {
-                list.allFilter = false;
-            }
+            list.allFilter = flag ? false : true;
         }
     }
     private searchKeyupEmit() {
@@ -200,12 +191,6 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         event.target.src = avatarErrorIcon;
     }
     private confirmCreateGroup() {
-        // if (!this.createGroup.info.action && this.groupName.length === 0) {
-        //     this.nameTip = true;
-        //     return ;
-        // } else {
-        //     this.nameTip = false;
-        // }
         let memberUsernames = [];
         for (let item of this.selectList) {
             memberUsernames.push({
@@ -214,8 +199,6 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             });
         }
         let groupInfo: any = {
-            // groupName: this.groupName,
-            // groupDescription: '',
             memberUsernames,
             detailMember: this.selectList,
             add: false
@@ -252,11 +235,8 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             });
         }
         let groupInfo: any = {
-            // groupName: this.groupName,
-            // groupDescription: '',
             memberUsernames,
-            detailMember: this.selectList,
-            // add: false
+            detailMember: this.selectList
         };
         this.nextCreateGroup.emit(groupInfo);
     }
@@ -306,7 +286,4 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     private avatarLoad(event) {
         Util.reduceAvatarSize(event);
     }
-    // private emptyTip() {
-    //     this.nameTip = false;
-    // }
 }

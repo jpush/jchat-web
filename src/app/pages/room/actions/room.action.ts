@@ -1,4 +1,5 @@
 export const roomAction = {
+    init: '[roo] state init',
     getRoomList: '[room] get room list',
     getRoomListSuccess: '[room] get room list success',
     changeRoom: '[room] change room',

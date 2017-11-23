@@ -1,5 +1,6 @@
 import { registerAction } from '../actions';
 import { RegisterStore } from '../stores';
+import { Util } from '../../../services/util';
 const registerInit = {
     actionType: '',
     isRegisterSuccess: false,
@@ -17,7 +18,7 @@ export const registerReducer = (state: RegisterStore = registerInit, {type, payl
     state.actionType = type;
     switch (type) {
         case registerAction.init:
-            state = Object.assign({}, registerInit, {});
+            state = Util.deepCopyObj(registerInit);
             break;
         case registerAction.register:
             break;

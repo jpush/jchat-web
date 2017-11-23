@@ -95,12 +95,9 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
             item.type = 4;
         }
         for (let i = 0; i < this.selectList.length; i++) {
-            if (item.type === 4 && Number(item.key) === Number(this.selectList[i].key)) {
-                flag = false;
-                this.selectList.splice(i, 1);
-                item.checked = false;
-                break;
-            } else if (item.type === 3 && item.username === this.selectList[i].name) {
+            const group = item.type === 4 && Number(item.key) === Number(this.selectList[i].key);
+            const single = item.type === 3 && item.username === this.selectList[i].name;
+            if (group || single) {
                 flag = false;
                 this.selectList.splice(i, 1);
                 item.checked = false;
@@ -148,10 +145,9 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
             this.selectList.push(user);
         }
         for (let member of this.messageTransmit.list) {
-            if (member.type === 4 && Number(member.key) === Number(user.key)) {
-                member.checked = event.target.checked;
-                return ;
-            } else if (member.type === 3 && member.name === user.name) {
+            const group = member.type === 4 && Number(member.key) === Number(user.key);
+            const single = member.type === 3 && member.name === user.name;
+            if (group || single) {
                 member.checked = event.target.checked;
                 return ;
             }
@@ -160,10 +156,9 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
     private cancelSelect(user) {
         this.deleteItem(user);
         for (let member of this.messageTransmit.list) {
-            if (member.type === 4 && Number(member.key) === Number(user.key)) {
-                member.checked = false;
-                return ;
-            } else if (member.type === 3 && member.name === user.name) {
+            const group = member.type === 4 && Number(member.key) === Number(user.key);
+            const single = member.type === 3 && member.name === user.name;
+            if (group || single) {
                 member.checked = false;
                 return ;
             }
@@ -172,11 +167,10 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
     // 删除已选元素操作
     private deleteItem(user) {
         for (let i = 0; i < this.selectList.length; i++) {
-            if (this.selectList[i].type === 4 &&
-                Number(this.selectList[i].key) === Number(user.key)) {
-                this.selectList.splice(i, 1);
-                break;
-            } else if (this.selectList[i].type === 3 && this.selectList[i].name === user.name) {
+            const group = this.selectList[i].type === 4 &&
+                        Number(this.selectList[i].key) === Number(user.key);
+            const single = this.selectList[i].type === 3 && this.selectList[i].name === user.name;
+            if (group || single) {
                 this.selectList.splice(i, 1);
                 break;
             }

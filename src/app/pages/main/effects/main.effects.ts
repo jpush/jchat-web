@@ -877,7 +877,7 @@ export class MainEffect {
             const searchPublicGroupObj = global.JIM.getGroupInfo({
                 gid
             }).onSuccess((data) => {
-                if (data.group_info.flag === 2) {
+                if (data.group_info.group_type === 2) {
                     let count = 0;
                     if (data.group_info.avatar && data.group_info.avatar !== '') {
                         count ++;

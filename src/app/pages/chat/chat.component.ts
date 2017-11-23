@@ -78,7 +78,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     };
     private selfInfo: any = {};
     private isCacheArr = [];
-    private storageKey;
     private playVideoShow = {
         show: false,
         url: ''
@@ -254,7 +253,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 });
             }
         });
-        // 如果3秒内没有加载离线消息则手动触发
+        // 如果4秒内没有加载离线消息则手动触发
         setTimeout(() => {
             if (this.hasOffline === 0) {
                 this.store$.dispatch({
@@ -523,8 +522,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.groupDescription:
                 this.groupDescription.show = chatState.groupDeacriptionShow;
-                this.groupDescription.description = Object.assign({},
-                    messageListActive.groupSetting.groupInfo, {});
+                this.groupDescription.description =
+                    Util.deepCopyObj(messageListActive.groupSetting.groupInfo);
                 break;
             case mainAction.showSelfInfo:
                 if (mainState.selfInfo.info) {
@@ -2144,7 +2143,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
             let data = {
                 select: item,
-                msgs: Object.assign({}, this.transmitAllMsg, {}),
+                msgs: Util.deepCopyObj(this.transmitAllMsg),
                 key: item.key
             };
             let type = '';
@@ -2375,7 +2374,9 @@ export class ChatComponent implements OnInit, OnDestroy {
                 }
             }
         ];
+        this.global = global;
         this.active = {
+            // 当前active的用户
             name: '',
             nickName: '',
             key: '',
@@ -2486,5 +2487,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         };
         this.isMySelf = false;
         this.noLoadedMessage = [];
+        this.inputMessage = '';
+        this.inputMessageTimer = null;
     }
 }

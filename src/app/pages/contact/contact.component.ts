@@ -52,7 +52,11 @@ export class ContactComponent implements OnInit, OnDestroy {
         this.tab = 1;
         this.friendList = [];
         this.verifyMessageList = [];
+        this.verifyGroupList = [];
         this.verifyUnreadNum = 0;
+        this.verifyTab = 0;
+        this.groupVerifyUnreadNum = 0;
+        this.singleVerifyUnreadNum = 0;
     }
     private stateChanged(contactState) {
         console.log('contactState', contactState);

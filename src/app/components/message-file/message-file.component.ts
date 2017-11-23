@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter,
     HostListener, ViewChild } from '@angular/core';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 import * as download from 'downloadjs';
+import { Util } from '../../services/util';
 
 @Component({
     selector: 'message-file-component',
@@ -41,13 +42,7 @@ export class MessageFileComponent implements OnInit {
         this.changeMsgFile.emit(type);
     }
     private avatarLoad(event, message) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        Util.reduceAvatarSize(event);
         if (message.content.msg_type === 'file') {
             message.content.msg_body.width = event.target.naturalWidth;
             message.content.msg_body.height = event.target.naturalHeight;

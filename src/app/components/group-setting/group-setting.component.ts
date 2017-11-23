@@ -96,11 +96,11 @@ export class GroupSettingComponent implements OnInit, DoCheck {
             this.searchResult.show = true;
             let result = [];
             for (let member of this.groupSetting.memberList) {
-                let memoNameExist = member.memo_name &&
+                const memoNameExist = member.memo_name &&
                         member.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-                let usernameExist = member.username &&
+                const usernameExist = member.username &&
                         member.username.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-                let nickNameExist = member.nickName &&
+                const nickNameExist = member.nickName &&
                         member.nickName.toLowerCase().indexOf(value.toLowerCase()) !== -1;
                 if (memoNameExist || nickNameExist || usernameExist) {
                     result.push(member);
@@ -128,7 +128,7 @@ export class GroupSettingComponent implements OnInit, DoCheck {
         this.modifyGroupNameShow = true;
         setTimeout(() => {
             this.elementRef.nativeElement.querySelector('#groupSettingNameInput').focus();
-        }, 0);
+        });
     }
     private modifyGroupNameBlur(event) {
         if (this.groupSetting.groupInfo.name !== event.target.value) {

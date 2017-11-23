@@ -14,5 +14,6 @@ export const roomInit = {
     newMessage: {},
     friendList: [],
     enterRoomLoading: false,
-    showPanel: 0
+    showPanel: 0,
+    noMoreRooms: false
 };

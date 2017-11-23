@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
-const Cropper =  require('../../../assets/static/js/cropper.min.js');
+const Cropper = require('../../../assets/static/js/cropper.min.js');
 
 @Component({
     selector: 'group-avatar-component',
@@ -30,7 +30,7 @@ export class GroupAvatarComponent implements OnInit {
     private maxHeight;
     constructor(private store$: Store<any>) {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }

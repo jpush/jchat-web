@@ -32,6 +32,7 @@ export class RoomComponent implements OnInit {
     private start = 0;
     private loadMoreRoomsFlag = false;
     private rememberEnter = null;
+    private noMoreRooms = false;
     constructor(
         private store$: Store<any>,
         private elementRef: ElementRef
@@ -39,6 +40,10 @@ export class RoomComponent implements OnInit {
         // pass
     }
     public ngOnInit() {
+        this.store$.dispatch({
+            type: roomAction.init,
+            payload: null
+        });
         // 获取聊天室第一页的列表
         this.store$.dispatch({
             type: roomAction.getRoomList,
@@ -69,6 +74,9 @@ export class RoomComponent implements OnInit {
     private stateChanged(roomState, mainState) {
         console.log('roomState', roomState);
         switch (roomState.actionType) {
+            case roomAction.init:
+                this.init();
+                break;
             case mainAction.showSelfInfo:
                 if (mainState.selfInfo.info) {
                     this.selfInfo = mainState.selfInfo.info;
@@ -88,6 +96,7 @@ export class RoomComponent implements OnInit {
             case roomAction.getRoomListSuccess:
                 this.roomList = roomState.roomList;
                 this.loadMoreRoomsFlag = !this.loadMoreRoomsFlag;
+                this.noMoreRooms = roomState.noMoreRooms;
                 break;
             case roomAction.changeRoomSuccess:
                 this.active = roomState.active;
@@ -112,7 +121,6 @@ export class RoomComponent implements OnInit {
                 break;
             case roomAction.enterRoomSuccess:
                 if (this.active.id === roomState.enter.id) {
-                    // this.showPanel = 2;
                     this.store$.dispatch({
                         type: roomAction.showPanel,
                         payload: 2
@@ -167,16 +175,38 @@ export class RoomComponent implements OnInit {
             default:
         }
     }
+    private init() {
+        this.roomList = [];
+        this.active = {};
+        this.roomDetail = {};
+        this.enterRoomLoading = false;
+        this.showPanel = 0;
+        this.enter = {};
+        this.roomInfomation = {
+            show: false,
+            info: {}
+        };
+        this.messageList = [];
+        this.msgKey = 0;
+        this.selfInfo = {};
+        this.scrollToBottom = false;
+        this.otherScrollTobottom = false;
+        this.start = 0;
+        this.loadMoreRoomsFlag = false;
+        this.rememberEnter = null;
+    }
     // 加载更多聊天室
     private loadMoreRoomsEmit() {
-        this.start += PageSize;
-        this.store$.dispatch({
-            type: roomAction.getRoomList,
-            payload: {
-                start: this.start,
-                appkey: authPayload.appKey
-            }
-        });
+        if (!this.noMoreRooms) {
+            this.start += PageSize;
+            this.store$.dispatch({
+                type: roomAction.getRoomList,
+                payload: {
+                    start: this.start,
+                    appkey: authPayload.appKey
+                }
+            });
+        }
     }
     // 切换聊天室
     private changeRoomEmit(room) {

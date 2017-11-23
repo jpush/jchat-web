@@ -8,6 +8,9 @@ import { chatAction } from '../../chat/actions';
 export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
     state.actionType = type;
     switch (type) {
+        case mainAction.init:
+            state = Util.deepCopyObj(roomInit);
+            break;
         // 成功获取语音已读状态
         case roomAction.getRoomVoiceStateSuccess:
             state.voiceRoomState = payload;
@@ -84,7 +87,7 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
     }
     return state;
 };
-// 过滤重复的聊天室
+// 过滤重复的聊天室，并添加到聊天室列表中
 function filterRepeatRoom(state, payload) {
     if (payload.length > 0) {
         let newPayload = [];
@@ -101,6 +104,8 @@ function filterRepeatRoom(state, payload) {
             }
         }
         state.roomList = state.roomList.concat(newPayload);
+    } else {
+        state.noMoreRooms = true;
     }
 }
 // 添加消息到消息列表
@@ -109,7 +114,8 @@ function addMessage(state, payload) {
     if (state.messageList.length === 0) {
         payload.time_show = Util.reducerDate(payload.ctime_ms);
     } else {
-        let fiveMinutes = Util.fiveMinutes(state.messageList[state.messageList.length - 1].ctime_ms,
+        const fiveMinutes =
+                Util.fiveMinutes(state.messageList[state.messageList.length - 1].ctime_ms,
             payload.ctime_ms);
         if (fiveMinutes) {
             payload.time_show = Util.reducerDate(payload.ctime_ms);
@@ -170,7 +176,7 @@ function sendMsgComplete(state, payload) {
 // 过滤出当前图片预览的数组
 function filterImageViewer(state: RoomStore, payload) {
     let content = payload.content;
-    let jpushEmoji = (!content.msg_body.extras || !content.msg_body.extras.kLargeEmoticon
+    const jpushEmoji = (!content.msg_body.extras || !content.msg_body.extras.kLargeEmoticon
         || content.msg_body.extras.kLargeEmoticon !== 'kLargeEmoticon');
     if (content.msg_type === 'image' && jpushEmoji) {
         let view: any = {
@@ -196,7 +202,7 @@ function addRoomToList(state, payload) {
     let flag = false;
     for (let i = 0; i < state.roomList.length; i ++) {
         if (state.roomList[i].id === payload.id) {
-            let item = state.roomList.splice(i , 1)[0];
+            let item = state.roomList.splice(i, 1)[0];
             state.roomList.unshift(item);
             flag = true;
             break;

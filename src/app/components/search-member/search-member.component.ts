@@ -26,9 +26,7 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
     private fileDom;
     constructor(
         private elementRef: ElementRef
-    ) {
-
-     }
+    ) {}
     public ngOnInit() {
         // pass
     }

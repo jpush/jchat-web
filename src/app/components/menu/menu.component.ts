@@ -13,7 +13,7 @@ export class MenuComponent implements OnInit {
         private selectMenuItem: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }

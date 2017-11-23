@@ -22,7 +22,7 @@
                     <div></div>
                 </div>
                 <div class="chat-panel-see-more no-more" *ngIf="loadingFlag === 3 && this.msg.length >= 20">没有更多消息了</div>
-                <div *ngFor="let i of msg; let num = index;">
+                <div class="chat-panel-wrap" *ngFor="let i of msg; let num = index;">
                     <!-- 时间 -->
                     <p class="chat-panel-time" [ngClass]="{'first': num === 0}" *ngIf="i.time_show" [ngSwitch]="i.time_show">
                         <time *ngSwitchCase="'year'">{{i.ctime_ms | time:"yy-MM-dd HH:mm"}}</time>

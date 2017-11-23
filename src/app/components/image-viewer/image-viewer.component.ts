@@ -3,6 +3,7 @@ import { Component, OnInit, Input, Output, EventEmitter,
 import { Store, Action } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
 import * as download from 'downloadjs';
+import { Util } from '../../services/util';
 
 @Component({
     selector: 'image-viewer-component',
@@ -72,8 +73,7 @@ export class ImageViewerComponent implements OnInit {
         for (let img of this.imageViewer.result) {
             if (img.index === viewerImageUrl.index && img.src === viewerImageUrl.src) {
                 img.src = viewerImageUrl.src;
-                this.imageViewer.active = Object.assign({},
-                    this.imageViewer.result[this.index], {});
+                this.imageViewer.active = Util.deepCopyObj(this.imageViewer.result[this.index]);
                 this.imageViewer.active.index = this.index;
                 break;
             }
@@ -160,8 +160,8 @@ export class ImageViewerComponent implements OnInit {
         this.zoomTo(this.ratio - 0.2);
     }
     private prev() {
-        let activeIndex = this.imageViewer.active.index;
-        let index = activeIndex > 0 ? activeIndex - 1 : activeIndex;
+        const activeIndex = this.imageViewer.active.index;
+        const index = activeIndex > 0 ? activeIndex - 1 : activeIndex;
         this.index = index;
         if (index !== activeIndex) {
             // 如果该图片的url尚未加载，则去请求url
@@ -186,8 +186,8 @@ export class ImageViewerComponent implements OnInit {
         }
     }
     private next() {
-        let activeIndex = this.imageViewer.active.index;
-        let index = activeIndex < this.imageViewer.result.length - 1 ?
+        const activeIndex = this.imageViewer.active.index;
+        const index = activeIndex < this.imageViewer.result.length - 1 ?
                     activeIndex + 1 : activeIndex;
         if (index !== activeIndex) {
             // 为了解决相邻两张相同的base64图片不触发onload事件

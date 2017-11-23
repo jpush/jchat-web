@@ -26,7 +26,7 @@ export class EmojiComponent implements OnInit {
         // pass
     }
     @HostListener('window:click') private onClick() {
-        if (this.emojiInfo.show === true) {
+        if (this.emojiInfo.show) {
             this.emojiInfo.show = false;
         }
     }
@@ -34,7 +34,7 @@ export class EmojiComponent implements OnInit {
         event.stopPropagation();
     }
     private emojiSelectAction(idName) {
-        let contentId = document.getElementById(this.emojiInfo.contentId);
+        const contentId = document.getElementById(this.emojiInfo.contentId);
         let insertHtml = this.elementRef.nativeElement.querySelector('#' + idName).innerHTML;
         insertHtml = insertHtml.replace('width="22', 'width="18');
         Util.insertAtCursor(contentId, insertHtml, false);

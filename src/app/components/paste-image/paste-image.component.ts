@@ -17,7 +17,7 @@ export class PasteImageComponent implements OnInit {
     public ngOnInit() {
         // pass
     }
-    private pasteModalAction(type ?) {
+    private pasteModalAction(type ?: string) {
         this.pasteInfo.show = false;
         if (type) {
             this.pasteImage.emit();

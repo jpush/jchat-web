@@ -209,10 +209,10 @@ export class Util {
      * @param obj: Object  输入框dom对象
      */
     public static focusLast(obj) {
-        if (window.getSelection) { // ie11 10 ff safari
-            let range = window.getSelection(); // 创建range
-            range.selectAllChildren(obj); // range 选择obj下所有子内容
-            range.collapse(obj, obj.childNodes.length); // 光标移至最后
+        if (window.getSelection) {
+            let range = window.getSelection();
+            range.selectAllChildren(obj);
+            range.collapse(obj, obj.childNodes.length);
         }
     }
     /**
@@ -233,7 +233,7 @@ export class Util {
      * @return array 排好序的数组array
      */
     public static sortByLetter(payload) {
-        let letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+        const letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
             'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '#'];
         let result = [];
         for (let item of letter) {
@@ -342,15 +342,24 @@ export class Util {
      * @param obj: Object 坐标对象
      */
     public static theLocation(obj) {
-        // 地图API功能
         let point = new BMap.Point(obj.longitude, obj.latitude);
         let map = new BMap.Map(obj.id);
-        map.centerAndZoom(point, obj.scale ? obj.scale : 13);
+        // 默认缩放比例是13
+        let scale = 13;
+        if (obj.scale && !Number.isNaN(Number(obj.scale))) {
+            // 百度地图的缩放比例为1到19的整数
+            if (scale >= 1 && scale < 20) {
+                scale = Math.floor(Number(obj.scale));
+            }
+        }
+        map.centerAndZoom(point, scale);
+        map.disableDragging();
         if (obj.scroll) {
             map.enableScrollWheelZoom(true);
+            map.enableDragging();
         }
-        let marker = new BMap.Marker(point);  // 创建标注
-        map.addOverlay(marker);              // 将标注添加到地图中
+        let marker = new BMap.Marker(point);
+        map.addOverlay(marker);
         map.panTo(point);
     }
     /**
@@ -387,8 +396,6 @@ export class Util {
             showTime = 'yesterday';
         } else if (gapDate <= 0) {
             showTime = 'today';
-        } else {
-            showTime = '';
         }
         return showTime;
     }
@@ -400,10 +407,7 @@ export class Util {
      */
     public static fiveMinutes(oldTime, newTime) {
         const gap = newTime - oldTime;
-        if (gap / 1000 / 60 > 5) {
-            return true;
-        }
-        return false;
+        return gap / 1000 / 60 > 5 ? true : false;
     }
     /**
      * 获取当前光标的在页面中的位置
@@ -411,16 +415,16 @@ export class Util {
      * @return object 光标的位置
      */
     public static getOffset(input) {
-        let userAgent = navigator.userAgent;
-        let sel = window.getSelection();
-        let range = sel.getRangeAt(0);
+        const userAgent = navigator.userAgent;
+        const sel = window.getSelection();
+        const range = sel.getRangeAt(0);
         let offset;
-        let isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
+        const isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
         if (!isSafari) {
             offset = range.getBoundingClientRect();
         } else {
-            let  clonedRange;
-            let  rect;
+            let clonedRange;
+            let rect;
             let shadowCaret;
             clonedRange = range.cloneRange();
             clonedRange.setStart(range.endContainer, range.endOffset - 1);

@@ -49,7 +49,6 @@ export class CreateGroupNextComponent implements OnInit {
     private completeCreateGroupAction(groupName, groupType) {
         if (groupName.value.length === 0) {
             this.nameTip = '群名称不能为空';
-            return ;
         } else {
             let groupInfo = {
                 avatar: this.groupAvatarInfo.formData,

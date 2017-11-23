@@ -15,4 +15,5 @@ export interface RoomStore {
     friendList: Array<any>;
     enterRoomLoading: boolean;
     showPanel: number;
+    noMoreRooms: boolean;
 };

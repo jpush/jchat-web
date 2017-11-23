@@ -23,11 +23,16 @@ export class GroupListComponent implements OnInit, DoCheck {
         }
     }
     public ngDoCheck() {
+        let flag = true;
         for (let item of this.groupList) {
             if (item.data.length > 0) {
                 this.isEmpty = true;
+                flag = false;
                 break;
             }
+        }
+        if (flag) {
+            this.isEmpty = false;
         }
     }
     private selectGroupItem(item) {

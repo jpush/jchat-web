@@ -101,7 +101,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         event.target.src = avatarErrorIcon;
     }
     private sendMsgBtn() {
-        let user = {
+        const user = {
             avatar: this.otherInfo.info.avatar,
             avatarUrl: this.otherInfo.info.avatarUrl,
             mtime: this.otherInfo.info.mtime,
@@ -147,7 +147,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         this.isEdit = true;
         setTimeout(() => {
             this.elementRef.nativeElement.querySelector('#editMemoName').focus();
-        }, 0);
+        });
     }
     private avatarLoad(event) {
         Util.reduceAvatarSize(event);

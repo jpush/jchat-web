@@ -40,9 +40,7 @@ export class SearchUserComponent implements OnInit, OnChanges {
         private selectUserRoomResult: EventEmitter<any> = new EventEmitter();
     constructor(
         private elementRef: ElementRef
-    ) {
-
-    }
+    ) {}
     public ngOnInit() {
         this.fileDom = this.elementRef.nativeElement.querySelector('#searchInput');
         Observable.fromEvent(this.fileDom, 'keyup')
@@ -65,26 +63,22 @@ export class SearchUserComponent implements OnInit, OnChanges {
         this.searchInputIsShow = true;
     }
     private singleShowAll() {
-        if (this.singleShowText === '显示全部') {
-            this.singleShowText = '收起';
-            this.singleHeight = 'none';
-            this.componentScroll.directiveRef.update();
-        } else {
-            this.singleShowText = '显示全部';
-            this.singleHeight = '200px';
-            this.componentScroll.directiveRef.update();
-        }
+        this.showAll('single');
     }
     private groupShowAll() {
-        if (this.groupShowText === '显示全部') {
-            this.groupShowText = '收起';
-            this.groupHeight = 'none';
-            this.componentScroll.directiveRef.update();
+        this.showAll('group');
+    }
+    private showAll(type: string) {
+        if (this[`${type}ShowText`] === '显示全部') {
+            this[`${type}ShowText`] = '收起';
+            this[`${type}Height`] = 'none';
         } else {
-            this.groupShowText = '显示全部';
-            this.groupHeight = '200px';
-            this.componentScroll.directiveRef.update();
+            this[`${type}ShowText`] = '显示全部';
+            this[`${type}Height`] = '200px';
         }
+        setTimeout(() => {
+            this.componentScroll.directiveRef.update();
+        });
     }
     private avatarErrorIcon(event) {
         event.target.src = avatarErrorIcon;

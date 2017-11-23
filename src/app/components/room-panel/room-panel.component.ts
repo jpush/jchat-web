@@ -127,8 +127,8 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
      }
     public ngOnInit() {
         this.store$.select((state) => {
-            let roomState = state['roomReducer'];
-            let contactState = state['contactReducer'];
+            const roomState = state['roomReducer'];
+            const contactState = state['contactReducer'];
             this.stateChanged(roomState, contactState);
             return state;
         }).subscribe((state) => {
@@ -190,7 +190,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
             };
         }
     }
-    private scrollBottom(timeout, isLoad ?: boolean, callback ?: () => void) {
+    private scrollBottom(time, isLoad ?: boolean, callback ?: () => void) {
         if (!isLoad) {
             this.loadFlag = false;
         }
@@ -203,7 +203,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
             if (callback) {
                 callback();
             }
-        }, timeout);
+        }, time);
     }
     private stateChanged(roomState, contactState) {
         switch (roomState.actionType) {
@@ -230,14 +230,15 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
     // 接收到地图消息渲染地图
     private pointerToMap(roomState) {
         if (roomState.newMessage.content.msg_type === 'location') {
-            let length = roomState.messageList.length;
-            let newMessage = Util.deepCopyObj(roomState.newMessage);
+            const length = roomState.messageList.length;
+            const newMessage = Util.deepCopyObj(roomState.newMessage);
+            const msgBody = newMessage.content.msg_body;
             setTimeout(() => {
                 Util.theLocation({
                     id: 'allmap2' + (length - 1).toString(),
-                    longitude: newMessage.content.msg_body.longitude,
-                    latitude: newMessage.content.msg_body.latitude,
-                    scale: newMessage.content.msg_body.scale
+                    longitude: msgBody.longitude,
+                    latitude: msgBody.latitude,
+                    scale: msgBody.scale
                 });
             }, 100);
         }
@@ -265,10 +266,10 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
     }
     private imageViewerShow(item) {
         for (let i = 0; i < this.imageViewer.result.length; i++) {
-            let msgIdFlag = item.msg_id && this.imageViewer.result[i].msg_id === item.msg_id;
-            let msgKeyFlag = item.msgKey && this.imageViewer.result[i].msgKey === item.msgKey;
+            const msgIdFlag = item.msg_id && this.imageViewer.result[i].msg_id === item.msg_id;
+            const msgKeyFlag = item.msgKey && this.imageViewer.result[i].msgKey === item.msgKey;
             if (msgIdFlag || msgKeyFlag) {
-                this.imageViewer.active = Object.assign({}, this.imageViewer.result[i], {});
+                this.imageViewer.active = Util.deepCopyObj(this.imageViewer.result[i]);
                 this.imageViewer.active.index = i;
                 break;
             }
@@ -336,14 +337,12 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
         if (this.inputToLast) {
             Util.focusLast(this.contentDiv);
         }
-        if (this.emojiInfo.show === true) {
-            this.emojiInfo.show = false;
+        if (this.emojiInfo.show) {
             setTimeout(() => {
                 this.inputNoBlur = true;
             }, 200);
-        } else {
-            this.emojiInfo.show = true;
         }
+        this.emojiInfo.show = !this.emojiInfo.show;
     }
     private showBusinessCardModal() {
         this.businessCard.show = true;
@@ -363,9 +362,9 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
     }
     // 粘贴文本，将文本多余的样式代码去掉/粘贴图片
     private pasteMessage(event) {
-        let clipboardData = event.clipboardData || (<any> window).clipboardData;
-        let items = clipboardData.items;
-        let files = clipboardData.files;
+        const clipboardData = event.clipboardData || (<any> window).clipboardData;
+        const items = clipboardData.items;
+        const files = clipboardData.files;
         let item;
         // 粘贴图片不兼容safari
         const userAgent = navigator.userAgent;
@@ -580,9 +579,8 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
                     insertHtml += insertHtml;
                 }
             }
-            let userAgent = navigator.userAgent;
-            let isSafari = userAgent.indexOf('Safari') > -1 &&
-                            userAgent.indexOf('Chrome') === -1;
+            const userAgent = navigator.userAgent;
+            const isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
             // safari自身可以换行，不用处理
             if (!isSafari) {
                 Util.insertAtCursor(this.contentDiv, insertHtml, false);
@@ -647,12 +645,12 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
     // 清除语音播放
     private clearVoicePlay(index) {
         for (let i = 0; i < this.messageList.length; i++) {
-            if (this.messageList[i].content.msg_type === 'voice' &&
-                this.messageList[i].content.playing && i !== index) {
+            let content = this.messageList[i].content;
+            if (content.msg_type === 'voice' && content.playing && i !== index) {
                 const otherAudio = this.elementRef.nativeElement.querySelector('#audio2' + i);
                 otherAudio.pause();
                 otherAudio.currentTime = 0;
-                this.messageList[i].content.playing = false;
+                content.playing = false;
             }
         }
     }

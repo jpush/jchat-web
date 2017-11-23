@@ -1,527 +1,527 @@
 export const emojiConfig = [
     {
         imgNum: 1,
-        // text: '微笑',
+        text: '哈哈',
         unicode: '😄'
     },
     {
         imgNum: 2,
-        // text: '撇嘴',
+        text: '大笑',
         unicode: '😃'
     },
     {
         imgNum: 3,
-        // text: '发呆',
+        text: '开心',
         unicode: '😊'
     },
     {
         imgNum: 4,
-        // text: '流泪',
+        text: '你懂的',
         unicode: '😉'
     },
     {
         imgNum: 5,
-        // text: '害羞',
+        text: '好喜欢',
         unicode: '😍'
     },
     {
         imgNum: 6,
-        // text: '闭嘴',
+        text: '爱你',
         unicode: '😘'
     },
     {
         imgNum: 7,
-        // text: '睡',
+        text: '亲亲',
         unicode: '😚'
     },
     {
         imgNum: 8,
-        // text: '发怒',
+        text: '扮鬼脸',
         unicode: '😜'
     },
     {
         imgNum: 9,
-        // text: '调皮',
+        text: '气死你',
         unicode: '😝'
     },
     {
         imgNum: 10,
-        // text: '惊讶',
+        text: '啥意思',
         unicode: '😳'
     },
     {
         imgNum: 11,
-        // text: '难过',
+        text: '嘿嘿',
         unicode: '😁'
     },
     {
         imgNum: 12,
-        // text: '酷',
+        text: '对不起',
         unicode: '😔'
     },
     {
         imgNum: 13,
-        // text: '冷汗',
+        text: '好吧',
         unicode: '😌'
     },
     {
         imgNum: 14,
-        // text: '抓狂',
+        text: '嫌弃',
         unicode: '😒'
     },
     {
         imgNum: 15,
-        // text: '吐',
+        text: '失望',
         unicode: '😞'
     },
     {
         imgNum: 16,
-        // text: '偷笑',
+        text: '难受',
         unicode: '😣'
     },
     {
         imgNum: 17,
-        // text: '愉快',
+        text: '想哭',
         unicode: '😢'
     },
     {
         imgNum: 18,
-        // text: '白眼',
+        text: '笑哭',
         unicode: '😂'
     },
     {
         imgNum: 19,
-        // text: '傲慢',
+        text: '大哭',
         unicode: '😭'
     },
     {
         imgNum: 20,
-        // text: '饥饿',
+        text: '好困',
         unicode: '😪'
     },
     {
         imgNum: 21,
-        // text: '困',
+        text: '担心',
         unicode: '😥'
     },
     {
         imgNum: 22,
-        // text: '惊恐',
+        text: '害怕',
         unicode: '😰'
     },
     {
         imgNum: 23,
-        // text: '',
+        text: '汗',
         unicode: '😓'
     },
     {
         imgNum: 24,
-        // text: '咒骂',
+        text: '不会吧',
         unicode: '😨'
     },
     {
         imgNum: 25,
-        // text: '疑问',
+        text: '天啊',
         unicode: '😱'
     },
     {
         imgNum: 26,
-        // text: '嘘',
+        text: '生气',
         unicode: '😠'
     },
     {
         imgNum: 27,
-        // text: '晕',
+        text: '气死我了',
         unicode: '😡'
     },
     {
         imgNum: 28,
-        // text: '疯了',
+        text: '纠结',
         unicode: '😖'
     },
     {
         imgNum: 29,
-        // text: '衰',
+        text: '生病了',
         unicode: '😷'
     },
     {
         imgNum: 30,
-        // text: '骷髅',
+        text: '晕',
         unicode: '😲'
     },
     {
         imgNum: 31,
-        // text: '敲打',
+        text: '恶魔',
         unicode: '👿'
     },
     {
         imgNum: 32,
-        // text: '再见',
+        text: '哼哼',
         unicode: '😏'
     },
     {
         imgNum: 33,
-        // text: '擦汗',
+        text: '男孩',
         unicode: '👦'
     },
     {
         imgNum: 34,
-        // text: '抠鼻',
+        text: '女孩',
         unicode: '👧'
     },
     {
         imgNum: 35,
-        // text: '鼓掌',
+        text: '男人',
         unicode: '👨'
     },
     {
         imgNum: 36,
-        // text: '糗大了',
+        text: '女人',
         unicode: '👩'
     },
     {
         imgNum: 37,
-        // text: '坏笑',
+        text: '星星',
         unicode: '🌟'
     },
     {
         imgNum: 38,
-        // text: '左哼哼',
+        text: '红唇',
         unicode: '👄'
     },
     {
         imgNum: 39,
-        // text: '右哼哼',
+        text: '强',
         unicode: '👍'
     },
     {
         imgNum: 40,
-        // text: '哈欠',
+        text: '垃圾',
         unicode: '👎'
     },
     {
         imgNum: 41,
-        // text: '鄙视',
+        text: 'ok',
         unicode: '👌'
     },
     {
         imgNum: 42,
-        // text: '委屈',
+        text: '揍你',
         unicode: '👊'
     },
     {
         imgNum: 43,
-        // text: '快哭了',
+        text: '宣誓',
         unicode: '✊'
     },
     {
         imgNum: 44,
-        // text: '阴险',
+        text: '胜利',
         unicode: '✌️'
     },
     {
         imgNum: 45,
-        // text: '亲亲',
+        text: '向上',
         unicode: '👆'
     },
     {
         imgNum: 46,
-        // text: '吓',
+        text: '向下',
         unicode: '👇'
     },
     {
         imgNum: 47,
-        // text: '可怜',
+        text: '向右',
         unicode: '👉'
     },
     {
         imgNum: 48,
-        // text: '菜刀',
+        text: '向左',
         unicode: '👈'
     },
     {
         imgNum: 49,
-        // text: '西瓜',
+        text: '拜托',
         unicode: '🙏'
     },
     {
         imgNum: 50,
-        // text: '啤酒',
+        text: '鼓掌',
         unicode: '👏'
     },
     {
         imgNum: 51,
-        // text: '篮球',
+        text: '加油',
         unicode: '💪'
     },
     {
         imgNum: 52,
-        // text: '乒乓',
+        text: '连衣裙',
         unicode: '👗'
     },
     {
         imgNum: 53,
-        // text: '咖啡',
+        text: '丝带',
         unicode: '🎀'
     },
     {
         imgNum: 54,
-        // text: '饭',
+        text: '爱心',
         unicode: '❤️'
     },
     {
         imgNum: 55,
-        // text: '猪头',
+        text: '心碎',
         unicode: '💔'
     },
     {
         imgNum: 56,
-        // text: '玫瑰',
+        text: '钻石',
         unicode: '💎'
     },
     {
         imgNum: 57,
-        // text: '凋谢',
+        text: '狗狗',
         unicode: '🐶'
     },
     {
         imgNum: 58,
-        // text: '嘴唇',
+        text: '马',
         unicode: '🐺'
     },
     {
         imgNum: 59,
-        // text: '爱心',
+        text: '玫瑰',
         unicode: '🌹'
     },
     {
         imgNum: 60,
-        // text: '心碎',
+        text: '向日葵',
         unicode: '🌻'
     },
     {
         imgNum: 61,
-        // text: '蛋糕',
+        text: '枫叶',
         unicode: '🍁'
     },
     {
         imgNum: 62,
-        // text: '闪电',
+        text: '叶子',
         unicode: '🍃'
     },
     {
         imgNum: 63,
-        // text: '炸弹',
+        text: '月亮',
         unicode: '🌙'
     },
     {
         imgNum: 64,
-        // text: '刀',
+        text: '太阳',
         unicode: '☀️'
     },
     {
         imgNum: 65,
-        // text: '足球',
+        text: '云朵',
         unicode: '☁️'
     },
     {
         imgNum: 66,
-        // text: '瓢虫',
+        text: '闪电',
         unicode: '⚡️'
     },
     {
         imgNum: 67,
-        // text: '便便',
+        text: '下雨',
         unicode: '☔️'
     },
     {
         imgNum: 68,
-        // text: '月亮',
+        text: '幽灵',
         unicode: '👻'
     },
     {
         imgNum: 69,
-        // text: '太阳',
+        text: '圣诞老人',
         unicode: '🎅'
     },
     {
         imgNum: 70,
-        // text: '礼物',
+        text: '礼物',
         unicode: '🎁'
     },
     {
         imgNum: 71,
-        // text: '拥抱',
+        text: '手机',
         unicode: '📱'
     },
     {
         imgNum: 72,
-        // text: '强',
+        text: '放大镜',
         unicode: '🔍'
     },
     {
         imgNum: 73,
-        // text: '弱',
+        text: '炸弹',
         unicode: '💣'
     },
     {
         imgNum: 74,
-        // text: '握手',
+        text: '足球',
         unicode: '⚽️'
     },
     {
         imgNum: 75,
-        // text: '胜利',
+        text: '咖啡',
         unicode: '☕️'
     },
     {
         imgNum: 76,
-        // text: '抱拳',
+        text: '啤酒',
         unicode: '🍺'
     },
     {
         imgNum: 77,
-        // text: '勾引',
+        text: '蛋糕',
         unicode: '🎂'
     },
     {
         imgNum: 78,
-        // text: '拳头',
+        text: '家',
         unicode: '🏠'
     },
     {
         imgNum: 79,
-        // text: '差劲',
+        text: '汽车',
         unicode: '🚗'
     },
     {
         imgNum: 80,
-        // text: '爱你',
+        text: '时钟',
         unicode: '🕚'
     },
     {
         imgNum: 81,
-        // text: 'NO',
+        text: '乘',
         unicode: '✖️'
     },
     {
         imgNum: 82,
-        // text: 'OK',
+        text: '加',
         unicode: '➕'
     },
     {
         imgNum: 83,
-        // text: '爱情',
+        text: '减',
         unicode: '➖'
     },
     {
         imgNum: 84,
-        // text: '飞吻',
+        text: '除',
         unicode: '➗'
     },
     {
         imgNum: 85,
-        // text: '跳跳',
+        text: '黑桃',
         unicode: '♠️'
     },
     {
         imgNum: 86,
-        // text: '发抖',
+        text: '红心',
         unicode: '♥️'
     },
     {
         imgNum: 87,
-        // text: '怄火',
+        text: '梅花',
         unicode: '♣️'
     },
     {
         imgNum: 88,
-        // text: '转圈',
+        text: '方块',
         unicode: '♦️'
     },
     {
         imgNum: 89,
-        // text: '磕头',
+        text: '100分',
         unicode: '💯'
     },
     {
         imgNum: 90,
-        // text: '回头',
+        text: '正确',
         unicode: '✔️'
     },
     {
         imgNum: 91,
-        // text: '跳绳',
+        text: '1',
         unicode: '1️⃣ '
     },
     {
         imgNum: 92,
-        // text: '投降',
+        text: '2',
         unicode: '2️⃣ '
     },
     {
         imgNum: 93,
-        // text: '激动',
+        text: '3',
         unicode: '3️⃣ '
     },
     {
         imgNum: 94,
-        // text: '乱舞',
+        text: '4',
         unicode: '4️⃣ '
     },
     {
         imgNum: 95,
-        // text: '献吻',
+        text: '5',
         unicode: '5️⃣ '
     },
     {
         imgNum: 96,
-        // text: '左太极',
+        text: '6',
         unicode: '6️⃣ '
     },
     {
         imgNum: 97,
-        // text: '右太极',
+        text: '7',
         unicode: '7️⃣ '
     },
     {
         imgNum: 98,
-        // text: '激动',
+        text: '8',
         unicode: '8️⃣ '
     },
     {
         imgNum: 99,
-        // text: '乱舞',
+        text: '9',
         unicode: '9️⃣ '
     },
     {
         imgNum: 100,
-        // text: '献吻',
+        text: '0',
         unicode: '0️⃣ '
     },
     {
         imgNum: 101,
-        // text: '左太极',
+        text: '10',
         unicode: '🔟'
     },
     {
         imgNum: 102,
-        // text: '激动',
+        text: '向上箭头',
         unicode: '⬆️'
     },
     {
         imgNum: 103,
-        // text: '乱舞',
+        text: '向下箭头',
         unicode: '⬇️'
     },
     {
         imgNum: 104,
-        // text: '献吻',
+        text: '向左箭头',
         unicode: '⬅️'
     },
     {
         imgNum: 105,
-        // text: '左太极',
+        text: '向右箭头',
         unicode: '➡️'
     }
 ];

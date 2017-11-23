@@ -3,13 +3,13 @@ import { MainStore } from '../stores';
 import { mainInit } from '../model';
 import { contactAction } from '../../contact/actions';
 import { chatAction } from '../../chat/actions';
-
+import { Util } from '../../../services/util';
 export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
     state.actionType = type;
     switch (type) {
             // 初始化state
         case mainAction.init:
-            state = Object.assign({}, mainInit, {});
+            state = Util.deepCopyObj(mainInit);
             break;
             // 成功获取个人信息
         case mainAction.showSelfInfo:

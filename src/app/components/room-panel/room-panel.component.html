@@ -10,7 +10,7 @@
             </div>
             <div class="room-panel-message-borad flex-1" id="imgViewer2">
                 <perfect-scrollbar class="room-panel-scroll">
-                    <div *ngFor="let i of messageList; let num = index;">
+                    <div class="chat-panel-wrap" *ngFor="let i of messageList; let num = index;">
                         <!-- 时间 -->
                         <p class="room-panel-time" [ngClass]="{'first': num === 0}" *ngIf="i.time_show" [ngSwitch]="i.time_show">
                             <time *ngSwitchCase="'year'">{{i.ctime_ms | time:"yy-MM-dd HH:mm"}}</time>

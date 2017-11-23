@@ -1,5 +1,5 @@
 # JChat-web
-![Release](https://img.shields.io/badge/release-1.1.0-blue.svg?style=flat)
+![Release](https://img.shields.io/badge/release-1.2.0-blue.svg?style=flat)
 ![Support](https://img.shields.io/badge/support-IE11+-blue.svg?style=flat)
 ![Language](http://img.shields.io/badge/language-Angular2-brightgreen.svg?style=flat)
 

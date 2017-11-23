@@ -531,9 +531,7 @@ export class RoomEffect {
         private actions$: Actions,
         private store$: Store<AppStore>,
         private storageService: StorageService
-    ) {
-        // pass
-    }
+    ) {}
     private exitRoom(payload) {
         global.JIM.exitChatroom({
             id: payload.id

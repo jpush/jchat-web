@@ -73,19 +73,6 @@
     .create-group-name{
         line-height: 30px;
         margin-top: 20px;
-        span{
-            font-size: 14px;
-            color: #808080;
-            &.error{
-                font-size: 12px;
-                color: #EB424C;
-                margin-left: 10px;
-            }
-        }
-        input{
-            height: 30px;
-            width: 224px;
-        }
         .btn-cancel{
             margin-right: 24px;
         }

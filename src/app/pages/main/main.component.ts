@@ -914,11 +914,17 @@ export class MainComponent implements OnInit, OnDestroy {
             },
             loading: false
         };
+        // 用来标识更新信息成功
         this.updateSelfInfoFlag = false;
         this.createGroup = {
             show: false,
             display: false,
             list: []
+        };
+        this.createGroupNext = {
+            show: false,
+            display: false,
+            info: {}
         };
         this.islogoutShow = false;
         this.isModifyPasswordShow = false;
@@ -998,6 +1004,14 @@ export class MainComponent implements OnInit, OnDestroy {
             },
             show: false
         };
+        this.roomHover = {
+            tip: '聊天室',
+            position: {
+                left: 56,
+                top: 4
+            },
+            show: false
+        };
         this.createHover = {
             tip: '创建',
             position: {
@@ -1028,6 +1042,23 @@ export class MainComponent implements OnInit, OnDestroy {
         this.createSingleOption = {
             title: '发起单聊',
             placeholder: '输入用户名查找'
+        };
+        this.enterPublicGroup = {
+            show: false,
+            info: {}
+        };
+        this.groupInfo = {
+            show: false,
+            info: {}
+        };
+        this.groupVerifyModal = {
+            show: false
+        };
+        this.groupAvatarInfo = {
+            show: false,
+            info: {},
+            src: '',
+            filename: ''
         };
     }
 }

@@ -17,8 +17,6 @@ export const loginReducer = (state: LoginStore = loginInit, {type, payload}) => 
         state.actionType = type;
     }
     switch (type) {
-        case loginAction.login:
-            break;
         case loginAction.loginSuccess:
             state.isLoginSuccess = true;
             state.loginTip = '';

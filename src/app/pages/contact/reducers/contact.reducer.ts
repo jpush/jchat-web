@@ -11,7 +11,7 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
     switch (type) {
             // 初始化state
         case contactAction.init:
-            state = Object.assign({}, contactInit, {});
+            state = Util.deepCopyObj(contactInit);
             break;
             // 传递群列表
         case chatAction.dispatchGroupList:

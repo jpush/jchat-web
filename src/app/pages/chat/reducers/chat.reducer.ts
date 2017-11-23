@@ -12,7 +12,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
     switch (type) {
             // 初始化satate
         case chatAction.init:
-            state = Object.assign({}, chatInit, {});
+            state = Util.deepCopyObj(chatInit);
             break;
             // 初始化会话
         case chatAction.getConversationSuccess:
@@ -140,7 +140,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 切换当前会话用户
         case chatAction.changeActivePerson:
             clearVoiceTimer(state);
-            state.activePerson = Object.assign({}, payload.item, {});
+            state.activePerson = Util.deepCopyObj(payload.item);
             state.defaultPanelIsShow = payload.defaultPanelIsShow;
             emptyUnreadNum(state, payload.item);
             state.unreadCount = {
@@ -254,7 +254,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             // 创建群组成功
         case mainAction.createGroupSuccess:
             clearVoiceTimer(state);
-            state.activePerson = Object.assign({}, payload, {});
+            state.activePerson = Util.deepCopyObj(payload);
             state.defaultPanelIsShow = false;
             selectUserResult(state, payload);
             changeActivePerson(state);
@@ -273,7 +273,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.defaultPanelIsShow = false;
             filterFriend(state, payload);
             selectUserResult(state, payload);
-            state.activePerson = Object.assign({}, payload, {});
+            state.activePerson = Util.deepCopyObj(payload);
             changeActivePerson(state);
             emptyUnreadNum(state, payload);
             state.unreadCount = {
@@ -289,7 +289,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 退群成功
         case mainAction.exitGroupSuccess:
-            let isActive = (payload.item.name === state.activePerson.name &&
+            const isActive = (payload.item.name === state.activePerson.name &&
                 payload.item.type === 3 && state.activePerson.type === 3) ||
                 (payload.item.type === 4 &&
                 Number(payload.item.key) === Number(state.activePerson.key));
@@ -612,8 +612,8 @@ function filterReceiptReport(state, payload) {
         return payload;
     }
     for (let messageList of state.messageList) {
-        let group = messageList.type === 4 && Number(messageList.key) === Number(payload.gid);
-        let single = messageList.type === 3 && messageList.name === payload.username;
+        const group = messageList.type === 4 && Number(messageList.key) === Number(payload.gid);
+        const single = messageList.type === 3 && messageList.name === payload.username;
         if (group || single) {
             for (let msgId of payload.msg_id) {
                 for (let message of messageList.msgs) {
@@ -660,7 +660,7 @@ function filterFriendList(state, payload) {
 // 客户端修改好友关系，对比删除了哪个好友，将整个应用中该好友的备注名换成昵称或者用户名
 function compareFriendList(state, payload) {
     for (let friend of state.friendList) {
-        let result = payload.filter((newFriend) => {
+        const result = payload.filter((newFriend) => {
             return newFriend.username === friend.username && newFriend.appkey === friend.appkey;
         });
         if (result.length === 0 && friend.memo_name) {
@@ -687,9 +687,9 @@ function addToGroupList(state, payload) {
 }
 // 收到新消息，如果是当前会话，需要更新用来计算未读数的msgId
 function newMessageIsActive(state, payload) {
-    let singleFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
+    const singleFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
         && state.newMessage.msg_type === 3;
-    let groupFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
+    const groupFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
         && state.newMessage.msg_type === 4;
     state.newMessageIsActive = (singleFlag || groupFlag) ? true : false;
 }
@@ -904,9 +904,9 @@ function addSingleNoDisturbSyncEvent(state, payload) {
 // 清空未读数同步事件
 function emptyUnreadNumSyncEvent(state, payload) {
     for (let conversation of state.conversation) {
-        let group = conversation.type === 4 && payload.type === 4 &&
+        const group = conversation.type === 4 && payload.type === 4 &&
                 (Number(conversation.key) === Number(payload.gid));
-        let single = conversation.type === 3 && payload.type === 3 &&
+        const single = conversation.type === 3 && payload.type === 3 &&
                 conversation.name === payload.name;
         if (group || single) {
             conversation.unreadNum = 0;
@@ -1131,8 +1131,8 @@ function conversationToTop(state, payload) {
 // 聊天文件中的文件中的图片加载成功
 function fileImageLoad(state, payload) {
     for (let message of state.msgFileImageViewer) {
-        let msgIdFlag = payload.msg_id && message.msg_id === payload.msg_id;
-        let msgKeyFlag = payload.msgKey && message.msgKey === payload.msgKey;
+        const msgIdFlag = payload.msg_id && message.msg_id === payload.msg_id;
+        const msgKeyFlag = payload.msgKey && message.msgKey === payload.msgKey;
         if (msgIdFlag || msgKeyFlag) {
             message.width = payload.content.msg_body.width;
             message.height = payload.content.msg_body.height;
@@ -1403,7 +1403,7 @@ function addNewFriendToConversation(state, payload, type) {
     if (state.activePerson.type === 3 && payload.from_username === state.activePerson.name) {
         state.newMessageIsActive = true;
     }
-    let result = state.friendList.filter((friend) => {
+    const result = state.friendList.filter((friend) => {
         return friend.name === payload.name;
     });
     if (result.length === 0) {
@@ -1733,8 +1733,8 @@ function sortConversationByRecentMsg(state) {
                 maxIndex = j;
             }
         }
-        temp = Object.assign({}, state.conversation[i], {});
-        state.conversation[i] = Object.assign({}, state.conversation[maxIndex], {});
+        temp = Util.deepCopyObj(state.conversation[i]);
+        state.conversation[i] = Util.deepCopyObj(state.conversation[maxIndex]);
         state.conversation[maxIndex] = temp;
     }
 }
@@ -1799,7 +1799,7 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
                         break;
                     }
                 }
-                let index = filterTopConversation(state, conversation);
+                const index = filterTopConversation(state, conversation);
                 flag1 = false;
                 isRecentmsg(state, payload, addGroupOther, operation, index);
                 break;
@@ -1862,7 +1862,7 @@ function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
         time_show: ''
     };
     let flag2 = true;
-    for (let messageList of state.messageList){
+    for (let messageList of state.messageList) {
         if (Number(payload.gid) === Number(messageList.key)) {
             flag2 = false;
             let msgs = messageList.msgs;
@@ -2332,9 +2332,9 @@ function transmitMessage (state, payload) {
     }
     // 更新imageViewer的数组
     if (payload.msgs.content.msg_type === 'image') {
-        let isSingleMessage = payload.select.type === 3 && state.activePerson.type === 3 &&
+        const isSingleMessage = payload.select.type === 3 && state.activePerson.type === 3 &&
                 payload.select.name === state.activePerson.name;
-        let isGroupMessage = payload.select.type === 4 &&
+        const isGroupMessage = payload.select.type === 4 &&
                 Number(payload.select.key) === Number(state.activePerson.key);
         if (isSingleMessage || isGroupMessage) {
             state.imageViewer.push({
@@ -2368,18 +2368,18 @@ function addMessage(state: ChatStore, payload) {
         let flag = false;
         // 如果发送人在会话列表里
         for (let a = 0; a < state.conversation.length; a ++) {
-            let groupMsg = message.msg_type === 4 &&
+            const groupMsg = message.msg_type === 4 &&
                     Number(state.conversation[a].key) === Number(message.key);
-            let singleMsg = message.msg_type === 3 && state.conversation[a].type &&
+            const singleMsg = message.msg_type === 3 && state.conversation[a].type &&
                     state.conversation[a].type === 3 &&
                     state.conversation[a].name === message.content.name;
             if (groupMsg || singleMsg) {
                 if (groupMsg && message.content.target_name === '') {
                     message.content.target_name = state.conversation[a].name;
                 }
-                let groupNoActive = message.msg_type === 4 &&
+                const groupNoActive = message.msg_type === 4 &&
                         Number(state.activePerson.key) !== Number(message.key);
-                let singleNoActive = message.msg_type === 3 &&
+                const singleNoActive = message.msg_type === 3 &&
                         state.activePerson.name !== message.content.name;
                 if (groupNoActive || singleNoActive) {
                     if (message.content.from_id !== global.user) {
@@ -2420,9 +2420,9 @@ function addMessage(state: ChatStore, payload) {
             }
         }
         for (let messageList of state.messageList) {
-            let groupMsg = message.msg_type === 4 &&
+            const groupMsg = message.msg_type === 4 &&
                     Number(messageList.key) === Number(message.key);
-            let singleMsg = message.msg_type === 3 && messageList.type === 3 &&
+            const singleMsg = message.msg_type === 3 && messageList.type === 3 &&
                     messageList.name === message.content.name;
             if (groupMsg || singleMsg) {
                 let msgs = messageList.msgs;
@@ -2455,7 +2455,7 @@ function addMessage(state: ChatStore, payload) {
 }
 // 添加自己发的消息到消息面板
 function addMyselfMesssge(state: ChatStore, payload) {
-    let result = state.conversation.filter((item) => {
+    const result = state.conversation.filter((item) => {
         return (item.type === 3 && payload.active.type === 3 &&
                 item.name === payload.active.name) ||
                 (item.type === 4 && Number(item.key) === Number(payload.active.key));
@@ -2542,11 +2542,11 @@ function addMyselfMesssge(state: ChatStore, payload) {
 // 处理新消息
 function filterNewMessage(state, payload, message) {
     // 更新imageViewer的数组
-    let isGroupMessage = message.msg_type === 4 &&
+    const isGroupMessage = message.msg_type === 4 &&
             Number(message.key) === Number(state.activePerson.key);
-    let isSingleMessage = message.msg_type === 3 && state.activePerson.type === 3 &&
+    const isSingleMessage = message.msg_type === 3 && state.activePerson.type === 3 &&
             message.content.from_id === state.activePerson.name;
-    let isImage = message.content.msg_type === 'image';
+    const isImage = message.content.msg_type === 'image';
 
     if ((isGroupMessage || isSingleMessage) && isImage) {
         state.imageViewer.push({
@@ -2557,14 +2557,14 @@ function filterNewMessage(state, payload, message) {
         });
     }
     // 接收到语音初始化播放动画
-    let isVoice = message.content.msg_type === 'voice';
+    const isVoice = message.content.msg_type === 'voice';
     if (isVoice) {
         payload.messages[0].content.playing = false;
         payload.messages[0].content.havePlay = false;
         payload.messages[0].content.load = 0;
     }
     // 接收到小视频初始化loading
-    let isVideo = message.content.msg_type === 'file' &&
+    const isVideo = message.content.msg_type === 'file' &&
         message.content.msg_body.extras &&
         message.content.msg_body.extras.video;
     if (isVideo) {
@@ -2659,7 +2659,7 @@ function addMessageUserNoConversation(state, payload, message) {
     payload.messages[0].time_show = 'today';
     state.newMessage = msg;
     state.messageList.push(msg);
-    let index = filterTopConversation(state, conversationItem);
+    const index = filterTopConversation(state, conversationItem);
     state.conversation[index].recentMsg = payload.messages[0];
     const atList = messageHasAtList(payload.messages[0].content.at_list);
     if (atList !== '') {
@@ -2693,7 +2693,7 @@ function searchSingleUser(state, payload) {
         searchSingle(payload.keywords, singleArr, item);
     }
     if (payload.result) {
-        let item = singleArr.filter((single) => {
+        const item = singleArr.filter((single) => {
             return single.name === payload.result.name;
         });
         if (item.length === 0) {
@@ -2726,7 +2726,7 @@ function searchUser(state: ChatStore, payload) {
     }
     // 查找群组
     for (let item of state.groupList) {
-        let existGroup = (item.name.toLowerCase().indexOf(payload.toLowerCase()) !== -1);
+        const existGroup = (item.name.toLowerCase().indexOf(payload.toLowerCase()) !== -1);
         if (existGroup) {
             groupArr.push(item);
         }
@@ -2742,14 +2742,14 @@ function searchUser(state: ChatStore, payload) {
 }
 // 搜索单聊用户或好友
 function searchSingle(payload, singleArr, item) {
-    let existMemoName = item.memo_name &&
+    const existMemoName = item.memo_name &&
         item.memo_name.toLowerCase().indexOf(payload.toLowerCase()) !== -1;
-    let existNickName = item.nickName &&
+    const existNickName = item.nickName &&
         item.nickName.toLowerCase().indexOf(payload.toLowerCase()) !== -1;
-    let existName = item.name &&
+    const existName = item.name &&
         item.name.toLowerCase().indexOf(payload.toLowerCase()) !== -1;
-    let existSingle = item.type === 3;
-    let isExist = singleArr.filter((single) => {
+    const existSingle = item.type === 3;
+    const isExist = singleArr.filter((single) => {
         return single.name === item.name;
     });
     if (isExist.length > 0) {
@@ -2768,9 +2768,9 @@ function selectUserResult(state, payload, type?: string) {
     let flag = false;
     let index;
     for (let i = 0; i < conversation.length; i ++) {
-        let group = payload.key && payload.type === 4 &&
+        const group = payload.key && payload.type === 4 &&
                 Number(conversation[i].key) === Number(payload.key);
-        let single = payload.type === 3 && conversation[i].type === 3 &&
+        const single = payload.type === 3 && conversation[i].type === 3 &&
                 conversation[i].name === payload.name;
         if (group || single) {
             index = i;
@@ -2787,7 +2787,7 @@ function selectUserResult(state, payload, type?: string) {
             break;
         }
     }
-    let result = state.messageList.filter((item) => {
+    const result = state.messageList.filter((item) => {
         return (item.key && payload.type === 4 && Number(item.key) === Number(payload.key)) ||
                 (payload.type === 3 && item.type === 3 && payload.name === item.name);
     });
@@ -2816,29 +2816,29 @@ function selectUserResult(state, payload, type?: string) {
         filterTopConversation(state, payload);
     }
     if (type === 'search' && index) {
-        state.activePerson = Object.assign({}, state.conversation[index], {});
+        state.activePerson = Util.deepCopyObj(state.conversation[index]);
     } else if (type === 'search') {
-        state.activePerson = Object.assign({}, payload, {});
+        state.activePerson = Util.deepCopyObj(payload);
     }
 }
 // 创建会话时初始化会话
 function initConversation(state, payload) {
     payload.extras = {};
     if (payload.type === 3) {
-        let single = state.noDisturb.users.filter((item) => {
+        const single = state.noDisturb.users.filter((item) => {
             return payload.name === item.username;
         });
         if (single.length !== 0) {
             payload.noDisturb = true;
         }
     } else if (payload.type === 4) {
-        let group = state.noDisturb.groups.filter((item) => {
+        const group = state.noDisturb.groups.filter((item) => {
             return Number(payload.key) === Number(item.gid);
         });
         if (group.length !== 0) {
             payload.noDisturb = true;
         }
-        let shield = state.groupShield.filter((item) => {
+        const shield = state.groupShield.filter((item) => {
             return Number(item.gid) === Number(payload.key);
         });
         if (shield.length !== 0) {
@@ -2850,8 +2850,8 @@ function initConversation(state, payload) {
 function emptyUnreadNum(state: ChatStore, payload) {
     state.readObj = [];
     for (let item of state.conversation) {
-        let group = payload.type === 4 && Number(item.key) === Number(payload.key);
-        let single = payload.type === 3 && item.type === 3 && item.name === payload.name;
+        const group = payload.type === 4 && Number(item.key) === Number(payload.key);
+        const single = payload.type === 3 && item.type === 3 && item.name === payload.name;
         if (group || single) {
             item.atUser = '';
             if (item.unreadNum) {

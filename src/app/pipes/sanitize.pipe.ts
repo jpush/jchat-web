@@ -9,17 +9,17 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 
 export class SanitizePipe implements PipeTransform {
-  constructor(
-    private sanitizer: DomSanitizer
-  ) { }
-  public transform(value: string, type: string) {
-    if (!value) {
-      return '';
+    constructor(
+       private sanitizer: DomSanitizer
+    ) { }
+    public transform(value: string, type: string) {
+        if (!value) {
+            return '';
+        }
+        if (type === 'html') {
+            return this.sanitizer.bypassSecurityTrustHtml(value);
+        } else if (type === 'url') {
+            return this.sanitizer.bypassSecurityTrustUrl(value);
+        }
     }
-    if (type === 'html') {
-      return this.sanitizer.bypassSecurityTrustHtml(value);
-    } else if (type === 'url') {
-      return this.sanitizer.bypassSecurityTrustUrl(value);
-    }
-  }
 }

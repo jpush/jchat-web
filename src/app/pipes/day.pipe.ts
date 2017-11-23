@@ -8,7 +8,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 export class DayPipe implements PipeTransform {
   public transform(time): string {
-    let day = (new Date(time)).getDay();
+    const day = (new Date(time)).getDay();
     let dayText = '';
     switch (day) {
         case 0:
