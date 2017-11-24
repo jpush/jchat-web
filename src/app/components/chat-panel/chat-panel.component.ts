@@ -553,7 +553,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                             latitude: msgBody.latitude,
                             scale: msgBody.scale
                         });
-                    }, 0);
+                    });
                 })(i);
             }
         }

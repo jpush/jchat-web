@@ -58,7 +58,8 @@
             width: 100%;
             height: 30px;
             padding-left: 12px;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             font-size: 12px;
             color: #2C2C2C;
             border-radius: 4px;
@@ -77,7 +78,8 @@
         width: 240px;
         top: 46px;
         right: 20px;
-        box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+        -webkit-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+                box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
         border-radius: 4px;
         font-size: 14px;
         color: #2C2C2C;
@@ -91,7 +93,8 @@
         line-height: 50px;
         background-color: #fff;
         width: 240px;
-        box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+        -webkit-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+                box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
         border-radius: 4px;
         max-height: 452px;
         .search-user-single{
@@ -105,7 +108,8 @@
             line-height: 26px;
             margin: 0 8px;
             border-bottom: 1px solid #D9DEE4;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             font-size: 12px;
             color: #808080;
             span{
@@ -116,7 +120,8 @@
         }
         li{
             padding: 0 8px;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             .search-user-avatar-container{
                 width: 30px;
                 height: 30px;

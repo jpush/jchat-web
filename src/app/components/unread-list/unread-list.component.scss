@@ -34,7 +34,8 @@
             line-height: 47px;
             height: 47px;
             padding-left: 20px;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
         }
         .scroll{
             position: absolute;

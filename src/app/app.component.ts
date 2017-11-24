@@ -59,7 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (errorMsg.hasOwnProperty('error')) {
             errorMsg = errorMsg.error;
         }
-        let name = errorMsg.text ? errorMsg.text + ' : ' : '';
+        const name = errorMsg.text ? errorMsg.text + ' : ' : '';
         let tip = '';
         console.log('error', errorMsg);
         switch (errorMsg.code) {

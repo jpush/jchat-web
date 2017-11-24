@@ -4,7 +4,7 @@ interface AppStore {
     errorApiTip: object;
     tipModal: object;
 }
-let appInit = {
+const appInit = {
     actionType: '',
     errorApiTip: {},
     tipModal: {}

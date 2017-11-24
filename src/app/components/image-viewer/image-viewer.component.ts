@@ -81,10 +81,10 @@ export class ImageViewerComponent implements OnInit {
     }
     private initImgviewer() {
         const viewerWrap = this.elementRef.nativeElement.querySelector('#viewerWrap');
-        let activeWidth = this.imageViewer.active.width;
-        let activeHeight = this.imageViewer.active.height;
-        let offsetWidth = viewerWrap.offsetWidth;
-        let offsetHeight = viewerWrap.offsetHeight;
+        const activeWidth = this.imageViewer.active.width;
+        const activeHeight = this.imageViewer.active.height;
+        const offsetWidth = viewerWrap.offsetWidth;
+        const offsetHeight = viewerWrap.offsetHeight;
         if (activeWidth / offsetWidth > activeHeight / offsetHeight &&
             activeWidth > offsetWidth * 0.6) {
             this.position.width = this.initPosition.width = offsetWidth * 0.6;

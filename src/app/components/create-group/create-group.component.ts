@@ -79,7 +79,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
                 }
             }
             // 如果搜索的是已经在群里的，disabled
-            let filter = this.createGroup.info.filter;
+            const filter = this.createGroup.info.filter;
             if (filter) {
                 for (let item of filter) {
                     if (item.username === user.name) {
@@ -109,7 +109,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
                 member.disabled = false;
                 member.show = true;
                 let activeSingle = this.createGroup.info.activeSingle;
-                let nameFlag = activeSingle && activeSingle.name === member.name;
+                const nameFlag = activeSingle && activeSingle.name === member.name;
                 if (nameFlag) {
                     member.checked = true;
                     member.disabled = true;
@@ -126,7 +126,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             for (let list of this.createGroup.list) {
                 for (let data of list.data) {
                     for (let filter of this.createGroup.info.filter) {
-                        let nameFlag = filter.username === data.name;
+                        const nameFlag = filter.username === data.name;
                         if (nameFlag) {
                             data.show = false;
                             break;
@@ -234,7 +234,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
                 appkey: authPayload.appKey
             });
         }
-        let groupInfo: any = {
+        const groupInfo = {
             memberUsernames,
             detailMember: this.selectList
         };

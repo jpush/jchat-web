@@ -15,7 +15,7 @@ export class RoomEffect {
         .ofType(roomAction.getRoomVoiceState)
         .map(toPayload)
         .switchMap((key) => {
-            let voiceState = this.storageService.get(key);
+            const voiceState = this.storageService.get(key);
             if (voiceState) {
                 this.store$.dispatch({
                     type: roomAction.getRoomVoiceStateSuccess,
@@ -83,7 +83,7 @@ export class RoomEffect {
             });
             return Observable.of(getSelfChatrooms)
                     .map(() => {
-                        return {type: '[room] show room infomation useless'};
+                        return {type: '[room] get self chatrooms useless'};
                     });
         });
     // 请求聊天室列表
@@ -164,7 +164,6 @@ export class RoomEffect {
         .ofType(roomAction.enterRoom)
         .map(toPayload)
         .switchMap((payload) => {
-            let time = new Date().getTime();
             const enterRoom = global.JIM.enterChatroom({
                 id: payload.id
             }).onSuccess((data) => {
@@ -281,7 +280,7 @@ export class RoomEffect {
                 this.requestCardInfo(payload.data);
             }
             // 判断是否加载过这个用户的头像，加载过就直接使用本地的用户头像
-            let username = payload.data.content.from_id !== global.user ?
+            const username = payload.data.content.from_id !== global.user ?
                 payload.data.content.from_id : payload.data.content.target_id;
             let flag = false;
             for (let message of payload.messageList) {
@@ -532,6 +531,7 @@ export class RoomEffect {
         private store$: Store<AppStore>,
         private storageService: StorageService
     ) {}
+    // 退出聊天室
     private exitRoom(payload) {
         global.JIM.exitChatroom({
             id: payload.id

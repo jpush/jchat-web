@@ -34,7 +34,7 @@ export class GroupInfoComponent implements OnInit {
         this.applyEnterGroup.emit(this.groupInfo.info);
     }
     private changeGroupConversationAction() {
-        let group = {
+        const group = {
             appkey: this.groupInfo.info.appkey,
             avatar: this.groupInfo.info.avatar,
             avatarUrl: this.groupInfo.info.avatarUrl,
@@ -42,6 +42,7 @@ export class GroupInfoComponent implements OnInit {
             desc: this.groupInfo.info.desc,
             flag: this.groupInfo.info.flag,
             gid: this.groupInfo.info.gid,
+            key: this.groupInfo.info.gid,
             max_member_count: this.groupInfo.info.max_member_count,
             mtime: this.groupInfo.info.mtime,
             name: this.groupInfo.info.name,

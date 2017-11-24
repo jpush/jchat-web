@@ -1,7 +1,8 @@
 .other-info-container{
     width: 320px;
     overflow: hidden;
-    box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+    -webkit-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+            box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
     border-radius: 0;
     padding: 0 30px;
     color: #808080;
@@ -85,7 +86,8 @@
                 border: 1px solid #E3E6EB;
                 border-radius: 2px;
                 padding-left: 10px;
-                box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                        box-sizing: border-box;
             }
             .other-info-memo_name{
                 color: rgb(0, 12, 10);

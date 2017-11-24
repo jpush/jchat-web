@@ -38,7 +38,7 @@ export class ChatEffect {
             }
             return Observable.of('syncReceiveMessage')
                     .map(() => {
-                        return {type: '[chat] receive single message useless'};
+                        return {type: '[chat] sync receive message useless'};
                     });
         });
     // 接收到单聊新消息
@@ -53,7 +53,7 @@ export class ChatEffect {
                 count ++;
                 this.requestMediaUrl(info.data, count);
             }
-            let result = info.conversation.filter((conversation) => {
+            const result = info.conversation.filter((conversation) => {
                 return info.data.messages[0].content.from_id === conversation.name;
             });
             if (result.length === 0) {
@@ -87,10 +87,10 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((obj) => {
             let count = 0;
-            let messages = obj.data.messages[0];
-            let messageList = obj.messageList;
+            const messages = obj.data.messages[0];
+            const messageList = obj.messageList;
             let flag = false;
-            let content = obj.data.messages[0].content;
+            const content = obj.data.messages[0].content;
             if (messages.content.msg_body.media_id) {
                 count ++;
                 this.requestMediaUrl(obj.data, count);
@@ -106,7 +106,7 @@ export class ChatEffect {
                 if (list.type === 4 && Number(list.key) === Number(messages.key)
                     && list.msgs.length > 0) {
                     for (let i = list.msgs.length - 1; i >= 0; i--) {
-                        let hasLoadAvatar = list.msgs[i].content.hasOwnProperty('avatarUrl');
+                        const hasLoadAvatar = list.msgs[i].content.hasOwnProperty('avatarUrl');
                         if (list.msgs[i].content.from_id === messages.content.from_id
                             && hasLoadAvatar) {
                             messages.content.avatarUrl = list.msgs[i].content.avatarUrl;
@@ -139,7 +139,7 @@ export class ChatEffect {
         .ofType(chatAction.getVoiceState)
         .map(toPayload)
         .switchMap((key) => {
-            let voiceState = this.storageService.get(key);
+            const voiceState = this.storageService.get(key);
             if (voiceState) {
                 this.store$.dispatch({
                     type: chatAction.getVoiceStateSuccess,
@@ -205,8 +205,8 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((info) => {
             let resourceArray = [];
-            let msgs = info.messageList[info.active.activeIndex].msgs;
-            let end = msgs.length - (info.loadingCount - 1) * pageNumber;
+            const msgs = info.messageList[info.active.activeIndex].msgs;
+            const end = msgs.length - (info.loadingCount - 1) * pageNumber;
             // 滚动加载资源路径
             if (end >= 1) {
                 for (let i = end - 1; i >= end - pageNumber && i >= 0; i--) {
@@ -214,7 +214,7 @@ export class ChatEffect {
                         continue;
                     }
                     msgs[i].hasLoad = true;
-                    let msgBody = msgs[i].content.msg_body;
+                    const msgBody = msgs[i].content.msg_body;
                     if (msgBody.media_id && !msgBody.media_url) {
                         global.JIM.getResource({media_id: msgBody.media_id})
                         .onSuccess((urlInfo) => {
@@ -276,8 +276,8 @@ export class ChatEffect {
         .ofType(chatAction.getMemberAvatarUrl)
         .map(toPayload)
         .switchMap((info) => {
-            let msgs = info.messageList[info.active.activeIndex].msgs;
-            let end = msgs.length - (info.loadingCount - 1) * pageNumber;
+            const msgs = info.messageList[info.active.activeIndex].msgs;
+            const end = msgs.length - (info.loadingCount - 1) * pageNumber;
             for (let i = end - 1; i >= end - pageNumber && i >= 0 && end >= 1; i--) {
                 // 如果是已经加载过头像的用户
                 if (info.loadingCount !== 1) {
@@ -1024,7 +1024,7 @@ export class ChatEffect {
         .ofType(chatAction.sendSingleFile)
         .map(toPayload)
         .switchMap((file) => {
-            let sendSingleFileObj = global.JIM.sendSingleFile(file.singleFile)
+            const sendSingleFileObj = global.JIM.sendSingleFile(file.singleFile)
             .onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = 1;
@@ -1092,12 +1092,11 @@ export class ChatEffect {
                 fsize: body.fsize,
                 extras : body.extras
             };
-            let sendSingleFileObj = global.JIM.sendSingleFile({
+            const sendSingleFileObj = global.JIM.sendSingleFile({
                 target_username: file.select.name,
                 msg_body: msgBody,
                 need_receipt: true
-            })
-            .onSuccess((data, msgs) => {
+            }).onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = 1;
                 msgs.msg_type = 3;
@@ -1555,7 +1554,7 @@ export class ChatEffect {
             });
             return Observable.of(groupInfoObj)
                     .map(() => {
-                        return {type: '[chat] group info useless'};
+                        return {type: '[chat] group setting useless'};
                     });
     });
     // 获取群成员信息
@@ -1775,7 +1774,7 @@ export class ChatEffect {
         .ofType(chatAction.addGroupMembersEvent)
         .map(toPayload)
         .switchMap((eventData) => {
-            let groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
+            const groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
             .onSuccess((obj) => {
                 if (obj.group_info.name && obj.group_info.name !== '') {
                     eventData.name = obj.group_info.name;
@@ -1960,7 +1959,7 @@ export class ChatEffect {
                 });
             return Observable.of(msgRetract)
                     .map(() => {
-                        return {type: '[chat] create group event useless'};
+                        return {type: '[chat] msg eetract useless'};
                     });
     });
     // 添加好友
@@ -2000,7 +1999,7 @@ export class ChatEffect {
                 });
             return Observable.of(addFriendConfirm)
                     .map(() => {
-                        return {type: '[chat] create group event useless'};
+                        return {type: '[chat] add friend confirm useless'};
                     });
     });
     // 个人资料中取消黑名单
@@ -2084,7 +2083,7 @@ export class ChatEffect {
                 });
             return Observable.of(deleteSingleNoDisturb)
                     .map(() => {
-                        return {type: '[chat] delete single black useless'};
+                        return {type: '[chat] delete single no disturb useless'};
                     });
     });
     // 修改备注名
@@ -2148,7 +2147,7 @@ export class ChatEffect {
                 });
             return Observable.of(loadViewerImage)
                     .map(() => {
-                        return {type: '[chat] save memo name useless'};
+                        return {type: '[chat] load viewer image useless'};
                     });
     });
     // 加载聊天文件的url
@@ -2163,7 +2162,7 @@ export class ChatEffect {
                             return {type: '[chat] msg file useless'};
                         });
             }
-            let msgs = info.messageList[info.active.activeIndex].msgs;
+            const msgs = info.messageList[info.active.activeIndex].msgs;
             let count = 0;
             for (let i = msgs.length - 1; i >= 0; i--) {
                 let type = '';
@@ -2341,7 +2340,6 @@ export class ChatEffect {
             if (readObj && readObj.msg_id.length === 0) {
                 return ;
             }
-            // 调用超时或者失败重新调用一次
             if (readObj.type === 3) {
                 global.JIM.addSingleReceiptReport({
                     username: readObj.username,
@@ -2410,7 +2408,7 @@ export class ChatEffect {
             });
             return Observable.of(friendEvent)
                     .map(() => {
-                        return {type: '[chat] friend invitation event useless'};
+                        return {type: '[chat] friend event useless'};
                     });
     });
     // 清空会话未读数
@@ -2582,7 +2580,7 @@ export class ChatEffect {
             }
             return Observable.of('emptyUnreadNum')
                     .map(() => {
-                        return {type: '[chat] update unread count useless'};
+                        return {type: '[chat] empty unread count useless'};
                     });
     });
     // 发送透传消息正在输入
@@ -2755,7 +2753,7 @@ export class ChatEffect {
     ) {}
     // 获取消息的发送方的头像
     private requestMsgAvatarUrl(messages, obj, count) {
-        let username = messages.content.from_id !== global.user ?
+        const username = messages.content.from_id !== global.user ?
                     messages.content.from_id : messages.content.target_id;
         global.JIM.getUserInfo({
             username

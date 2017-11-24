@@ -18,7 +18,8 @@
     .group-info-top{
         height: 194px;
         padding-top: 52px;
-        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
         margin-bottom: 12px;
         .group-info-avatar{
             width: 60px;

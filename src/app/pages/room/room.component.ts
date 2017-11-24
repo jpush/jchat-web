@@ -36,9 +36,7 @@ export class RoomComponent implements OnInit {
     constructor(
         private store$: Store<any>,
         private elementRef: ElementRef
-    ) {
-        // pass
-    }
+    ) {}
     public ngOnInit() {
         this.store$.dispatch({
             type: roomAction.init,
@@ -83,15 +81,7 @@ export class RoomComponent implements OnInit {
                 }
                 break;
             case roomAction.exitAllChatroomsSuccess:
-                global.JIM.onRoomMsg((data) => {
-                    this.store$.dispatch({
-                        type: roomAction.receiveMessage,
-                        payload: {
-                            data,
-                            messageList: this.messageList
-                        }
-                    });
-                });
+                this.watchRoomMsg();
                 break;
             case roomAction.getRoomListSuccess:
                 this.roomList = roomState.roomList;
@@ -194,6 +184,18 @@ export class RoomComponent implements OnInit {
         this.start = 0;
         this.loadMoreRoomsFlag = false;
         this.rememberEnter = null;
+    }
+    // 监听聊天室消息
+    private watchRoomMsg() {
+        global.JIM.onRoomMsg((data) => {
+            this.store$.dispatch({
+                type: roomAction.receiveMessage,
+                payload: {
+                    data,
+                    messageList: this.messageList
+                }
+            });
+        });
     }
     // 加载更多聊天室
     private loadMoreRoomsEmit() {
@@ -304,7 +306,7 @@ export class RoomComponent implements OnInit {
             });
         } else {
             const ext = Util.getExt(data.fileData.name);
-            let localMsg  = {
+            const localMsg  = {
                 content: {
                     msg_type: 'file',
                     from_id: global.user,
@@ -322,7 +324,7 @@ export class RoomComponent implements OnInit {
                 success: 1,
                 msgKey: this.msgKey ++
             };
-            let sendMsg = {
+            const sendMsg = {
                 target_rid: this.enter.id,
                 file: data.file,
                 extras: {
@@ -355,7 +357,7 @@ export class RoomComponent implements OnInit {
             if (data.type === 'paste') {
                 this.sendPicContent(data.info, data);
             } else if (data.type === 'jpushEmoji') {
-                let localMsg = {
+                const localMsg = {
                     content: {
                         from_id: global.user,
                         from_name: this.selfInfo.nickname,
@@ -366,7 +368,7 @@ export class RoomComponent implements OnInit {
                     success: 1,
                     msgKey: this.msgKey ++
                 };
-                let sendMsg = {
+                const sendMsg = {
                     target_rid: this.enter.id,
                     msg_body: {
                         format: data.jpushEmoji.body.format,
@@ -410,7 +412,7 @@ export class RoomComponent implements OnInit {
         }
     }
     private sendPicContent(value, data) {
-        let localMsg: any = {
+        const localMsg = {
             content: {
                 from_id: global.user,
                 from_name: this.selfInfo.nickname,
@@ -425,7 +427,7 @@ export class RoomComponent implements OnInit {
             success: 1,
             msgKey: this.msgKey ++
         };
-        let sendMsg = {
+        const sendMsg = {
             target_rid: this.enter.id,
             image: data.img,
             repeatSend: false
@@ -464,7 +466,7 @@ export class RoomComponent implements OnInit {
     }
     // 消息面板发送名片
     private businessCardSendEmit(user) {
-        let msg = {
+        const msg = {
             content: '推荐了一张名片',
             extras: {
                 userName: user.name,

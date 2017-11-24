@@ -154,7 +154,7 @@ export class SelfInfoComponent implements OnChanges, AfterViewInit {
         this.newInfo.region = event.target.value;
     }
     private selfConfirm() {
-        let newInfo = {
+        const newInfo = {
             info: Object.assign({}, this.newInfo, {gender: this.sexList.active.key}),
             avatar: this.newAvatar
         };

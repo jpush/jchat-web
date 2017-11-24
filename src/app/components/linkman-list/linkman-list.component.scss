@@ -4,7 +4,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
     h2{
         font-size: 16px;
         color: #2C2C2C;
@@ -20,7 +21,8 @@
        color: #808080;
        font-size: 12px;
        position: relative;
-       box-sizing: border-box;
+       -webkit-box-sizing: border-box;
+               box-sizing: border-box;
        cursor: default;
        &:after{
            content: '';

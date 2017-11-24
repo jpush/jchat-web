@@ -85,7 +85,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         }
     }
     private saveMemoNameAction(event) {
-        let value = event.target.value;
+        const value = event.target.value;
         this.saveMemoName.emit({
             name: this.otherInfo.info.name,
             memo_name: value,

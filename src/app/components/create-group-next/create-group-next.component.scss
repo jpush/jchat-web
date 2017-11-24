@@ -44,7 +44,8 @@
                 border-radius: 2px;
                 padding-left: 12px;
                 font-size: 12px;
-                box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                        box-sizing: border-box;
                 margin-right: 8px;
                 &.error{
                     border-color: #EB424C;

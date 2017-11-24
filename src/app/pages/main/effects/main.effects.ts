@@ -178,7 +178,7 @@ export class MainEffect {
                         info: {}
                     }
                 });
-                let groupObj = {
+                const groupObj = {
                     appkey: authPayload.appKey,
                     desc: data.group_description,
                     gid: data.gid,
@@ -576,11 +576,7 @@ export class MainEffect {
         .ofType(mainAction.exitGroupAction)
         .map(toPayload)
         .filter((data) => {
-            if (!data) {
-                return false;
-            }else {
-                return data;
-            }
+            return data ? data : false;
         })
         .switchMap((gid) => {
             const exitGroupObj = global.JIM.exitGroup({gid})
@@ -853,7 +849,7 @@ export class MainEffect {
                         return {type: '[main] search user useless'};
                     });
         });
-    // 搜索群组资料
+    // 搜索公开群群组资料
     @Effect()
     private searchPublicGroup$: Observable<Action> = this.actions$
         .ofType(mainAction.searchPublicGroup)

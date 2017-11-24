@@ -19,8 +19,7 @@ export class LoginEffect {
                 username: val.username,
                 password: val.password,
                 is_md5: val.md5
-            })
-            .onSuccess((data) => {
+            }).onSuccess((data) => {
                 global.user = data.username;
                 this.store$.dispatch({
                     type: loginAction.loginSuccess,

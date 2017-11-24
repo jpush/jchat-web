@@ -7,7 +7,8 @@
         right: 0;
         .room-list-item{
             padding: 14px 20px;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             cursor: pointer;
             &:hover{
                 background-color: #f1f1f2;

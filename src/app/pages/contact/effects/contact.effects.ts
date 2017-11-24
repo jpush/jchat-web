@@ -319,7 +319,7 @@ export class ContactEffect {
         .ofType(contactAction.watchGroupInfo)
         .map(toPayload)
         .switchMap((verifyGroup) => {
-            let watchGroupInfo = global.JIM.getGroupMembers({
+            const watchGroupInfo = global.JIM.getGroupMembers({
                 gid: verifyGroup.from_gid
             }).onSuccess((groupList) => {
                 let groupInfo: any = {

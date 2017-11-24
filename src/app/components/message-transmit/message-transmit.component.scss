@@ -13,7 +13,8 @@
             float: left;
             position: relative;
             border-right: 1px solid #D9DEE4;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             .create-group-search{
                 margin: 16px auto 0;
                 width: 260px !important;

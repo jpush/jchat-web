@@ -6,7 +6,8 @@
         height: 30px;
         background: #F2F6FB;
         border-radius: 3px;
-        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
         padding-left: 10px;
         border: 1px solid transparent;
     }
@@ -41,7 +42,8 @@
         width: 100%;
         top: 36px;
         right: 0;
-        box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+        -webkit-box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+                box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
         border-radius: 4px;
         font-size: 14px;
         color: #2C2C2C;
@@ -56,7 +58,8 @@
         z-index: 1;
         background: #fff;
         line-height: 50px;
-        box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+        -webkit-box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+                box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
         border-radius: 4px;
         max-height: 275px;
         ul{

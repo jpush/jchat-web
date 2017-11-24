@@ -336,8 +336,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
     }
     private stateChanged(chatState, mainState) {
-        let activeIndex = chatState.activePerson.activeIndex;
-        let messageListActive = chatState.messageList[activeIndex];
+        const activeIndex = chatState.activePerson.activeIndex;
+        const messageListActive = chatState.messageList[activeIndex];
         console.log('chatState', chatState);
         switch (chatState.actionType) {
             case chatAction.init:
@@ -778,7 +778,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     // 收到新消息
     private receiveNewMessage(data) {
         // 与用户名是feedback_开头的消息不做处理
-        let feedbackReg = /^feedback_/g;
+        const feedbackReg = /^feedback_/g;
         if (data.messages[0].content.target_id.match(feedbackReg)) {
             return ;
         }
@@ -821,7 +821,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 发送名片成功的提示
     private modalTipSendCardSuccess (chatState) {
-        let count = this.sendBusinessCardCount;
+        const count = this.sendBusinessCardCount;
         if (count !== 0 && count === chatState.sendBusinessCardSuccess) {
             this.store$.dispatch({
                 type: mainAction.showModalTip,
@@ -854,7 +854,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 转发消息成功的提示
     private modalTipTransmitSuccess (chatState) {
-        let count = this.transmitAllMsg.totalTransmitNum;
+        const count = this.transmitAllMsg.totalTransmitNum;
         if (count !== 0 && chatState.transmitSuccess === count) {
             this.store$.dispatch({
                 type: mainAction.showModalTip,
@@ -1277,12 +1277,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         // 判断是否已经缓存
         if (this.isCacheArr.indexOf(this.active.key) === -1) {
             this.isCacheArr.push(this.active.key);
-            if (this.active.type === 4) {
-                this.store$.dispatch({
-                    type: chatAction.getGroupMembers,
-                    payload: this.active
-                });
-            }
             this.store$.dispatch({
                 type: chatAction.getSourceUrl,
                 payload: {
@@ -1291,8 +1285,12 @@ export class ChatComponent implements OnInit, OnDestroy {
                     loadingCount: 1 // 加载的页数
                 }
             });
-            // 获取messageList avatar url
             if (this.active.type === 4) {
+                this.store$.dispatch({
+                    type: chatAction.getGroupMembers,
+                    payload: this.active
+                });
+                // 获取messageList avatar url
                 this.store$.dispatch({
                     type: chatAction.getMemberAvatarUrl,
                     payload: {
@@ -1557,7 +1555,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             });
             // 发送极光熊表情
         } else if (data.type === 'jpushEmoji') {
-            let msg = {
+            const msg = {
                 content: {
                     from_id: global.user,
                     msg_type: 'image',
@@ -1573,7 +1571,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 conversation_time_show: 'today',
                 isTransmitMsg: true
             };
-            let message = {
+            const message = {
                 select: this.active,
                 msgs: msg,
                 key: this.active.key,
@@ -1609,7 +1607,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         };
         // 发送单聊图片
         if (this.active.type === 3) {
-            let singlePicFormData = {
+            const singlePicFormData = {
                 target_username: this.active.name,
                 appkey: authPayload.appKey,
                 image: data,
@@ -1628,7 +1626,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             });
         // 发送群聊图片
         } else if (this.active.type === 4) {
-            let groupPicFormData = {
+            const groupPicFormData = {
                 target_gid: this.active.key,
                 image: data,
                 need_receipt: true
@@ -1702,7 +1700,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         // 发送单聊文件
         if (this.active.type === 3 && !data.repeatSend) {
             const ext = Util.getExt(data.fileData.name);
-            let singleFile = {
+            const singleFile = {
                 file: data.file,
                 target_username: this.active.name,
                 appkey: authPayload.appKey,
@@ -1726,7 +1724,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         // 发送群组文件
         }else if (this.active.type === 4 && !data.repeatSend) {
             const ext = Util.getExt(data.fileData.name);
-            let groupFile = {
+            const groupFile = {
                 file : data.file,
                 target_gid: this.active.key,
                 extras: {
@@ -1850,7 +1848,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 查看群设置
     private groupSettingEmit() {
-        let groupSetting = this.messageList[this.active.activeIndex].groupSetting;
+        const groupSetting = this.messageList[this.active.activeIndex].groupSetting;
         this.store$.dispatch({
             type: chatAction.groupSetting,
             payload: {
@@ -2006,7 +2004,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 修改群名
     private modifyGroupNameEmit(newGroupName) {
-        let groupSetting = Object.assign({}, this.groupSetting.groupInfo,
+        const groupSetting = Object.assign({}, this.groupSetting.groupInfo,
             {name: newGroupName, actionType: 'modifyName'});
         this.store$.dispatch({
             type: chatAction.updateGroupInfo,
@@ -2058,11 +2056,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     private confirmTransmitEmit(info) {
         if (info.type === 'sendCard') {
             this.sendCardConfirm(info);
-            return;
-        }
-        if (info.type === 'msgTransmit') {
+        } else if (info.type === 'msgTransmit') {
             this.msgTransmitConfirm(info);
-            return;
         }
     }
     // 发送名片发送模态框点击确定发送名片
@@ -2081,7 +2076,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             newInfo = this.selfInfo;
         }
         for (let select of info.selectList) {
-            let msg = {
+            const msg = {
                 content: '推荐了一张名片',
                 extras: {
                     userName: newInfo.name,
@@ -2102,7 +2097,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 消息面板发送名片
     private businessCardSendEmit(user) {
-        let msg = {
+        const msg = {
             content: '推荐了一张名片',
             extras: {
                 userName: user.name,
@@ -2141,7 +2136,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             } else {
                 this.transmitAllMsg.msg_type = 4;
             }
-            let data = {
+            const data = {
                 select: item,
                 msgs: Util.deepCopyObj(this.transmitAllMsg),
                 key: item.key
@@ -2196,7 +2191,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 验证消息模态框的按钮
     private verifyModalBtnEmit(verifyModalText) {
-        let userInfo = Object.assign({}, this.verifyModal.info, {verifyModalText});
+        const userInfo = Object.assign({}, this.verifyModal.info, {verifyModalText});
         this.store$.dispatch({
             type: chatAction.addFriendConfirm,
             payload: userInfo
@@ -2300,7 +2295,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 修改群头像
     private groupAvatarEmit(groupAvatarInfo) {
-        let groupSetting = {
+        const groupSetting = {
             gid: this.groupSetting.groupInfo.gid,
             avatar: groupAvatarInfo.formData,
             actionType: 'modifyGroupAvatar',

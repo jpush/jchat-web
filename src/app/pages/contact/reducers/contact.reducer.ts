@@ -20,18 +20,7 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
             // 切换联系人或者会话的tab
         case mainAction.changeListTab:
             state.listTab = payload;
-            if (payload === 1) {
-                if (state.tab === 0) {
-                    if (state.verifyTab === 0) {
-                        state.singleVerifyUnreadNum = 0;
-                    } else if (state.verifyTab === 1) {
-                        state.groupVerifyUnreadNum = 0;
-                    }
-                    state.verifyUnreadNum =
-                        state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
-                    state.contactUnreadNum = state.verifyUnreadNum;
-                }
-            }
+            changeListTab(state, payload);
             break;
             // 切换联系人中的tab
         case contactAction.changeTab:
@@ -97,6 +86,19 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
     }
     return state;
 };
+function changeListTab(state, payload) {
+    if (payload === 1) {
+        if (state.tab === 0) {
+            if (state.verifyTab === 0) {
+                state.singleVerifyUnreadNum = 0;
+            } else if (state.verifyTab === 1) {
+                state.groupVerifyUnreadNum = 0;
+            }
+            state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
+            state.contactUnreadNum = state.verifyUnreadNum;
+        }
+    }
+}
 // 更新验证信息未读数
 function updateUnreadNum(state) {
     if (state.verifyTab === 0) {
@@ -137,7 +139,7 @@ function waitReply(state, payload) {
      * 这些验证消息在消息列表中是永远不会被覆盖的
      */
     for (let i = 0; i < state.verifyMessageList.length; i++) {
-        let stateType = state.verifyMessageList[i].stateType;
+        const stateType = state.verifyMessageList[i].stateType;
         const canBeCover = stateType !== 3 && stateType !== 4 && stateType !== 5 && stateType !== 7;
         if (payload.name === state.verifyMessageList[i].name && canBeCover) {
             state.verifyMessageList.splice(i, 1);
@@ -166,7 +168,7 @@ function friendReply(state, payload) {
         verifyMessage.stateType = 7;
     }
     for (let i = 0; i < state.verifyMessageList.length; i++) {
-        let stateType = state.verifyMessageList[i].stateType;
+        const stateType = state.verifyMessageList[i].stateType;
         const canBeCover = stateType !== 3 && stateType !== 4 && stateType !== 5 && stateType !== 7;
         if (state.verifyMessageList[i].name === payload.from_username && canBeCover) {
             state.verifyMessageList.splice(i, 1);
@@ -224,7 +226,7 @@ function friendVerify(state, payload) {
     let flag = false;
     for (let i = 0; i < state.verifyMessageList.length; i++) {
         let message = state.verifyMessageList[i];
-        let stateType = message.stateType;
+        const stateType = message.stateType;
         const canBeCover = stateType !== 3 && stateType !== 4 && stateType !== 5 && stateType !== 7;
         if (message.name === verifyMessage.name && canBeCover) {
             if (message.stateType === 0) {

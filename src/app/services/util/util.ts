@@ -58,13 +58,12 @@ export class Util {
         return newType;
     }
     /**
-     * fileReader预览图片返回img url
-     * @param file: Object, input file 对象
-     * @param callback: function 回调函数
-     * @param callback2: function 回调函数
+     * doubleNumber 将数字9转化成09
+     * @param num: 一位或者两位整数
+     * @return string 两位的字符串
      */
     public static doubleNumber(num) {
-        return num < 10 ? '0' + num : num;
+        return num < 10 ? '0' + num : num.toString();
     }
     /**
      * fileReader预览图片返回img url
@@ -171,7 +170,7 @@ export class Util {
      * @param value: string 需要插入的内容
      * @param selectPastedContent: boolean 选中内容还是开始点和结束点一致
      */
-    public static insertAtCursor (field, value, selectPastedContent) {
+    public static insertAtCursor(field, value, selectPastedContent) {
         let sel;
         let range;
         field.focus();
@@ -210,7 +209,7 @@ export class Util {
      */
     public static focusLast(obj) {
         if (window.getSelection) {
-            let range = window.getSelection();
+            const range = window.getSelection();
             range.selectAllChildren(obj);
             range.collapse(obj, obj.childNodes.length);
         }
@@ -221,11 +220,11 @@ export class Util {
      * @return boolean
      */
     public static firstLetterIsChinese(str: string) {
-      const re = /^[\\u4e00-\\u9fa5]/;
-      if (re.test(str)) {
-          return false ;
-      }
-      return true ;
+        const re = /^[\\u4e00-\\u9fa5]/;
+        if (re.test(str)) {
+            return false ;
+        }
+        return true ;
     }
     /**
      * 将数组中的字符串按照首字母及中文拼音首字母排序
@@ -285,8 +284,9 @@ export class Util {
      * @return array 插入元素之后的数组
      */
     public static insertSortByLetter(arr, payload) {
-        let name = (payload.nickName && payload.nickName !== '') ? payload.nickName : payload.name;
-        let firstLetter = this.getFirstLetter(name);
+        const name =
+                (payload.nickName && payload.nickName !== '') ? payload.nickName : payload.name;
+        const firstLetter = this.getFirstLetter(name);
         for (let item of arr) {
             if (item.letter === firstLetter) {
                 let result = item.data.filter((friend) => {
@@ -302,6 +302,8 @@ export class Util {
     }
     /**
      * 获取首字母
+     * @param name: 要获取首字母的字符串
+     * @return string 首字母
      */
     public static getFirstLetter(name) {
         let firstLetter = name.charAt(0);
@@ -319,6 +321,10 @@ export class Util {
         }
         return firstLetter;
     }
+    /**
+     * 获取成员备注名、昵称、用户名首字母
+     * @param arr: 成员列表
+     */
     public static getMembersFirstLetter(arr) {
         for (let item of arr) {
             if (item.nickName && item.nickName !== '') {
@@ -332,6 +338,10 @@ export class Util {
             }
         }
     }
+    /**
+     * 获取备注名首字母
+     * @param member: 用户对象
+     */
     public static getMemo_nameFirstLetter(member) {
         if (member.memo_name && member.memo_name !== '') {
             member.memo_nameFirstLetter = this.getFirstLetter(member.memo_name);
@@ -473,7 +483,6 @@ export class Util {
     /**
      * 处理头像的大小
      * @param event: object 头像dom的事件对象
-     * @return null
      */
     public static reduceAvatarSize(event) {
         if (event.target.naturalHeight >= event.target.naturalWidth) {

@@ -83,7 +83,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             if (!payload.msgs.repeatSend) {
                 addMessage(state, payload);
             }
-            let extras = payload.msgs.content.msg_body.extras;
+            const extras = payload.msgs.content.msg_body.extras;
             if (extras && extras.businessCard) {
                 state.sendBusinessCardSuccess = 0;
             }
@@ -92,7 +92,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
         case chatAction.sendMsgComplete:
             sendMsgComplete(state, payload);
             if (payload.msgs) {
-                let bussinessExtras = payload.msgs.content.msg_body.extras;
+                const bussinessExtras = payload.msgs.content.msg_body.extras;
                 if (bussinessExtras && bussinessExtras.businessCard && payload.success !== 2) {
                     state.sendBusinessCardSuccess = 0;
                 } else {
@@ -213,7 +213,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 显示隐藏群组设置
         case chatAction.groupSetting:
-            let msg = state.messageList[state.activePerson.activeIndex];
+            const msg = state.messageList[state.activePerson.activeIndex];
             if (msg && !msg.groupSetting) {
                 state.messageList[state.activePerson.activeIndex] = Object.assign({}, msg,
                     {groupSetting: {}});
@@ -321,7 +321,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             break;
             // 获取用户信息头像url
         case chatAction.getSingleAvatarUrl:
-            let msgs = state.messageList[state.activePerson.activeIndex].msgs;
+            const msgs = state.messageList[state.activePerson.activeIndex].msgs;
             for (let item of msgs) {
                 if (item.content.from_id !== global.user) {
                     item.content.avatarUrl = state.activePerson.avatarUrl;
@@ -2052,7 +2052,7 @@ function filterImageViewer(state: ChatStore) {
     let msgs = messageList.msgs;
     for (let message of msgs) {
         let content = message.content;
-        let jpushEmoji = (!content.msg_body.extras || !content.msg_body.extras.kLargeEmoticon
+        const jpushEmoji = (!content.msg_body.extras || !content.msg_body.extras.kLargeEmoticon
             || content.msg_body.extras.kLargeEmoticon !== 'kLargeEmoticon');
         if (content.msg_type === 'image' && jpushEmoji) {
             imgResult.push({
@@ -2072,9 +2072,9 @@ function changeActivePerson(state: ChatStore) {
         state.activePerson.key = state.activePerson.gid;
     }
     for (let i = 0; i < state.messageList.length; i++) {
-        let group = state.activePerson.type === 4 &&
+        const group = state.activePerson.type === 4 &&
                 Number(state.messageList[i].key) === Number(state.activePerson.key);
-        let single = state.activePerson.type === 3 && state.messageList[i].type === 3 &&
+        const single = state.activePerson.type === 3 && state.messageList[i].type === 3 &&
                     state.messageList[i].name === state.activePerson.name;
         if (group || single) {
             state.activePerson.activeIndex = i;
@@ -2083,7 +2083,7 @@ function changeActivePerson(state: ChatStore) {
     }
     let list = state.messageList[state.activePerson.activeIndex];
     for (let msg of list.msgs) {
-        let video = (msg.content.msg_body.extras && msg.content.msg_body.extras.video);
+        const video = (msg.content.msg_body.extras && msg.content.msg_body.extras.video);
         if (msg.content.msg_type === 'file' && video) {
             // audio 0 正在加载  1 加载完成  2 正在播放
             msg.content.load = 0;
@@ -2141,9 +2141,9 @@ function changeActivePerson(state: ChatStore) {
 function filterRecentMsg(state: ChatStore) {
     for (let conversation of state.conversation) {
         for (let messageList of state.messageList) {
-            let group = conversation.type === 4 &&
+            const group = conversation.type === 4 &&
                         Number(conversation.key) === Number(messageList.key);
-            let single = conversation.type === 3 && messageList.type === 3 &&
+            const single = conversation.type === 3 && messageList.type === 3 &&
                         conversation.name === messageList.name;
             if ( group || single) {
                 let msgs = messageList.msgs;
@@ -2197,8 +2197,8 @@ function sendMsgComplete(state: ChatStore, payload) {
         }
     }
     for (let messageList of state.messageList) {
-        let group = payload.type === 4 && Number(messageList.key) === Number(payload.key);
-        let single = payload.type === 3 && messageList.type === 3 &&
+        const group = payload.type === 4 && Number(messageList.key) === Number(payload.key);
+        const single = payload.type === 3 && messageList.type === 3 &&
                     messageList.name === payload.name;
         if (group || single) {
             if (Number(payload.key) < 0 && payload.success === 2) {
@@ -2247,8 +2247,8 @@ function deleteConversationItem(state: ChatStore, payload) {
             break;
         }
     }
-    let group = state.activePerson.type === 4 && itemKey === Number(state.activePerson.key);
-    let single = state.activePerson.type === 3 && payload.item.name === state.activePerson.name;
+    const group = state.activePerson.type === 4 && itemKey === Number(state.activePerson.key);
+    const single = state.activePerson.type === 3 && payload.item.name === state.activePerson.name;
     if (group || single) {
         state.defaultPanelIsShow = true;
         state.activePerson = {
@@ -2268,9 +2268,9 @@ function transmitMessage (state, payload) {
     let flag1 = true;
     let flag2 = true;
     for (let a = 0; a < state.conversation.length; a++) {
-        let groupExist = Number(state.conversation[a].key) === Number(payload.select.key) &&
+        const groupExist = Number(state.conversation[a].key) === Number(payload.select.key) &&
                         payload.select.type === 4;
-        let singleExist = payload.select.type === 3 && state.conversation[a].type === 3 &&
+        const singleExist = payload.select.type === 3 && state.conversation[a].type === 3 &&
                         state.conversation[a].name === payload.select.name;
         if (groupExist || singleExist) {
             flag1 = false;
@@ -2284,9 +2284,9 @@ function transmitMessage (state, payload) {
         }
     }
     for (let messageList of state.messageList) {
-        let group = messageList.key && payload.select.type === 4 &&
+        const group = messageList.key && payload.select.type === 4 &&
                     Number(messageList.key) === Number(payload.select.key);
-        let single = payload.select.type === 3 && messageList.type === 3 &&
+        const single = payload.select.type === 3 && messageList.type === 3 &&
                     messageList.name === payload.select.name;
         if (group || single) {
             flag2 = false;
@@ -2352,12 +2352,12 @@ function addMessage(state: ChatStore, payload) {
     if (payload.messages && payload.messages[0]) {
         let message = payload.messages[0];
         if (message.msg_type === 3) {
-            message.content.name = message.content.from_id !== global.user ?
-                        message.content.from_id : message.content.target_id;
-            message.content.nickName = message.content.from_id !== global.user ?
-                        message.content.from_name : message.content.target_name;
-            message.content.appkey = message.content.from_id !== global.user ?
-                        message.content.from_appkey : message.content.target_appkey;
+            const isMySelf = message.content.from_id !== global.user;
+            message.content.name = isMySelf ? message.content.from_id : message.content.target_id;
+            message.content.nickName =
+                isMySelf ? message.content.from_name : message.content.target_name;
+            message.content.appkey =
+                isMySelf ? message.content.from_appkey : message.content.target_appkey;
         } else {
             message.content.name = message.content.from_id;
             message.content.nickName = message.content.from_name;
@@ -2396,7 +2396,7 @@ function addMessage(state: ChatStore, payload) {
                 }
                 flag = true;
                 if (state.conversation[a].key < 0) {
-                    let oldKey = Number(state.conversation[a].key);
+                    const oldKey = Number(state.conversation[a].key);
                     if (oldKey === Number(state.activePerson.key)) {
                         state.activePerson.key = message.key;
                     }
@@ -2466,9 +2466,9 @@ function addMyselfMesssge(state: ChatStore, payload) {
         payload.active.recentMsg = payload.msgs;
         let flag = true;
         for (let message of state.messageList) {
-            let group = payload.active.type === 4 &&
+            const group = payload.active.type === 4 &&
                         Number(payload.active.key) === Number(message.key);
-            let single = payload.active.type === 3 && message.type === 3 &&
+            const single = payload.active.type === 3 && message.type === 3 &&
                         payload.active.name === message.name;
             if (group || single) {
                 message.msgs.push(payload.msgs);
@@ -2520,9 +2520,9 @@ function addMyselfMesssge(state: ChatStore, payload) {
         }
         // 将当前会话放在第一位
         for (let a = 0; a < state.conversation.length; a++) {
-            let group = payload.active.type === 4 &&
+            const group = payload.active.type === 4 &&
                     Number(state.conversation[a].key) === Number(payload.key);
-            let single = payload.active.type === 3 && state.conversation[a].type === 3 &&
+            const single = payload.active.type === 3 && state.conversation[a].type === 3 &&
                     state.conversation[a].name === payload.active.name;
             if (group || single) {
                 payload.msgs.conversation_time_show = 'today';

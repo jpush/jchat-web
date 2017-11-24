@@ -58,6 +58,7 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
         case roomAction.receiveMessageUrlSuccess:
             filterImageViewer(state, payload);
             break;
+        // 发送聊天室消息
         case roomAction.sendTextMsg:
 
         case roomAction.sendFileMsg:
@@ -70,6 +71,7 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
                 filterImageViewer(state, payload.localMsg);
             }
             break;
+        // 完成聊天室消息的发送
         case roomAction.sendMsgComplete:
             sendMsgComplete(state, payload);
             break;
@@ -77,9 +79,11 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
         case mainAction.selectSearchRoomUser:
             addRoomToList(state, payload);
             break;
+        // 传递好友列表
         case chatAction.dispatchFriendList:
             state.friendList = payload;
             break;
+        // 显示聊天室状态
         case roomAction.showPanel:
             state.showPanel = payload;
             break;

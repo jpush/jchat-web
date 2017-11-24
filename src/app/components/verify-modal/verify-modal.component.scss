@@ -1,14 +1,16 @@
 .verify-modal-textarea{
     width: 320px;
     height: 116px;
-    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
     margin: 32px auto 29px;
     textarea{
         width: 100%;
         height: 100%;
         resize: none;
         padding: 12px;
-        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
         border: 1px solid #D9DEE4;
         border-radius: 4px;
         outline: none;

@@ -15,7 +15,7 @@ export class RoomDetailComponent implements OnInit {
         private enterRoom: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }

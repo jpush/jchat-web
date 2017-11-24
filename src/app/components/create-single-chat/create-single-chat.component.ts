@@ -19,9 +19,7 @@ export class CreateSingleChatComponent implements OnInit, AfterViewInit {
         private emptySingleChatTip: EventEmitter<any> = new EventEmitter();
     constructor(
         private elementRef: ElementRef
-    ) {
-
-    }
+    ) {}
     public ngOnInit() {
         // pass
     }

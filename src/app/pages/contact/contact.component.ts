@@ -210,8 +210,8 @@ export class ContactComponent implements OnInit, OnDestroy {
     }
     // 查看申请者的用户资料
     private watchApplyUserEmit(verifyGroup) {
-        let user = verifyGroup.to_usernames[0];
-        let item = {
+        const user = verifyGroup.to_usernames[0];
+        const item = {
             avatar: user.avatar,
             name: user.username,
             username: user.username,
@@ -226,7 +226,7 @@ export class ContactComponent implements OnInit, OnDestroy {
     }
     // 查看邀请者的用户资料
     private watchInvitateUserEmit(verifyGroup) {
-        let item = {
+        const item = {
             avatar: verifyGroup.media_id,
             name: verifyGroup.from_username,
             username: verifyGroup.from_username,

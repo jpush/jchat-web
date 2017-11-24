@@ -11,7 +11,7 @@ export const Emoji = {
     emoji(text, fontSize) {
 		// 在第一次调用的时候检查浏览器是否支持emoji符号
         let isSupportEmoji = false;
-        let UA = navigator.userAgent;
+        const UA = navigator.userAgent;
 
         if (UA.match(/Mac\s+OS/i) && !UA.match(/(Chrome|Firefox)/i)) {
             isSupportEmoji = true;

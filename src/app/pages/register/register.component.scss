@@ -12,7 +12,8 @@
     -webkit-transform: translate(-50%, -50%);
             transform: translate(-50%, -50%);
     padding-bottom: 42px;
-    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
     h1{
         height: 143px;
         line-height: 143px;
@@ -37,7 +38,8 @@
             width: 320px;
             border: 1px solid #D9DEE4;
             padding-left: 45px;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             background-size: 18px;
             border-radius: 2px;
             font-size: 12px;
