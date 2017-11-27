@@ -221,10 +221,7 @@ export class Util {
      */
     public static firstLetterIsChinese(str: string) {
         const re = /^[\\u4e00-\\u9fa5]/;
-        if (re.test(str)) {
-            return false ;
-        }
-        return true ;
+        return re.test(str) ? false : true ;
     }
     /**
      * 将数组中的字符串按照首字母及中文拼音首字母排序

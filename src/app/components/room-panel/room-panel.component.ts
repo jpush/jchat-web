@@ -264,6 +264,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
             }
         }
     }
+    // 显示图片预览
     private imageViewerShow(item) {
         for (let i = 0; i < this.imageViewer.result.length; i++) {
             const msgIdFlag = item.msg_id && this.imageViewer.result[i].msg_id === item.msg_id;

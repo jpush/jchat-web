@@ -1,4 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output,
+    EventEmitter, AfterViewInit, ElementRef } from '@angular/core';
 import { Util } from '../../services/util';
 const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
@@ -8,7 +9,7 @@ const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
     styleUrls: ['./create-group-next.component.scss']
 })
 
-export class CreateGroupNextComponent implements OnInit {
+export class CreateGroupNextComponent implements OnInit, AfterViewInit {
     @Input()
         private groupAvatarInfo;
     @Input()
@@ -22,11 +23,16 @@ export class CreateGroupNextComponent implements OnInit {
     @Output()
         private completeCreateGroup: EventEmitter<any> = new EventEmitter();
     private nameTip = '';
-    constructor() {
+    constructor(
+        private elementRef: ElementRef
+    ) {
         // pass
     }
     public ngOnInit() {
         // pass
+    }
+    public ngAfterViewInit() {
+        this.elementRef.nativeElement.querySelector('#createGroupNextInput').focus();
     }
     private groupAvatarErrorIcon(event) {
         event.target.src = groupAvatarErrorIcon;

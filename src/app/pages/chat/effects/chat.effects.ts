@@ -179,10 +179,6 @@ export class ChatEffect {
                         global.JIM.getResource({media_id: friend.avatar})
                         .onSuccess((urlInfo) => {
                             friend.avatarUrl = urlInfo.url;
-                            this.store$.dispatch({
-                                type: chatAction.getFriendListSuccess,
-                                payload: data.friend_list
-                            });
                         }).onFail((error) => {
                             // pass
                         });
@@ -423,6 +419,9 @@ export class ChatEffect {
                         }).onFail((error) => {
                             count --;
                             this.dispatchConversation(count, info, data);
+                        }).onTimeout(() => {
+                            count --;
+                            this.dispatchConversation(count, info, data);
                         });
                     }
                     if (conversation.type === 4 && conversation.name === '') {
@@ -456,6 +455,12 @@ export class ChatEffect {
                         type: appAction.errorApiTip,
                         payload: error
                     });
+                }).onTimeout(() => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
                 });
                 global.JIM.getNoDisturb()
                 .onSuccess((noDisturbList) => {
@@ -470,8 +475,20 @@ export class ChatEffect {
                         type: appAction.errorApiTip,
                         payload: error
                     });
+                }).onTimeout(() => {
+                    const error = {code: 910000};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
                 });
             }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout(() => {
+                const error = {code: 910000};
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -562,8 +579,7 @@ export class ChatEffect {
                 target_nickname: text.select.nickName,
                 msg_body: msgBody,
                 need_receipt: true
-            })
-            .onSuccess((data, msgs) => {
+            }).onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = 1;
                 msgs.msg_type = 3;
@@ -828,8 +844,7 @@ export class ChatEffect {
                 target_username: img.select.name,
                 msg_body: msgBody,
                 need_receipt: true
-            })
-            .onSuccess((data, msgs) => {
+            }).onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = 1;
                 msgs.msg_type = 3;
@@ -1227,8 +1242,7 @@ export class ChatEffect {
                 target_gid: file.select.key,
                 msg_body: msgBody,
                 need_receipt: true
-            })
-            .onSuccess((data, msgs) => {
+            }).onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = data.unread_count;
                 msgs.msg_type = 4;
@@ -1300,8 +1314,7 @@ export class ChatEffect {
                 target_username: location.select.name,
                 msg_body: msgBody,
                 need_receipt: true
-            })
-            .onSuccess((data, msgs) => {
+            }).onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = 1;
                 msgs.msg_type = 3;
@@ -1372,8 +1385,7 @@ export class ChatEffect {
                 target_gid: location.select.key,
                 msg_body: msgBody,
                 need_receipt: true
-            })
-            .onSuccess((data, msgs) => {
+            }).onSuccess((data, msgs) => {
                 msgs.key = data.key;
                 msgs.unread_count = data.unread_count;
                 msgs.msg_type = 4;
@@ -1491,8 +1503,7 @@ export class ChatEffect {
                 return false;
             }
             return data;
-        })
-        .switchMap((info) => {
+        }).switchMap((info) => {
             const groupInfoObj = global.JIM.getGroupInfo({gid: info.active.key})
             .onSuccess((data) => {
                 if (data.group_info.avatar && data.group_info.avatar !== '') {

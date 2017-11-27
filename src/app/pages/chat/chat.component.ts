@@ -2327,6 +2327,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             payload: info
         });
     }
+    // 透传消息-正在输入
     private inputMessageEmit(input) {
         this.store$.dispatch({
             type: chatAction.inputMessage,
@@ -2336,6 +2337,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
         });
     }
+    // 群成员禁言/取消禁言
     private keepSilenceEmit(item) {
         if (item.keep_silence) {
             this.store$.dispatch({
@@ -2371,7 +2373,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         ];
         this.global = global;
         this.active = {
-            // 当前active的用户
             name: '',
             nickName: '',
             key: '',
@@ -2418,9 +2419,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         };
         this.eventArr = [];
         this.hasOffline = 0;
-        // 其他操作触发滚动条到底部
         this.otherOptionScrollBottom = false;
-        // 切换用户触发滚动条到底部
         this.changeActiveScrollBottom = false;
         this.windowIsFocus = true;
         this.newMessageNotice = {

@@ -86,6 +86,7 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
     }
     return state;
 };
+// 切换左侧tab
 function changeListTab(state, payload) {
     if (payload === 1) {
         if (state.tab === 0) {

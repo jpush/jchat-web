@@ -1,4 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output,
+    EventEmitter, AfterViewInit, ElementRef } from '@angular/core';
 import { global } from '../../services/common';
 import { md5 } from '../../services/tools';
 
@@ -8,7 +9,7 @@ import { md5 } from '../../services/tools';
     styleUrls: ['./modify-password.component.scss']
 })
 
-export class ModifyPasswordComponent implements OnInit {
+export class ModifyPasswordComponent implements OnInit, AfterViewInit {
     private oldPassword = '';
     private newPassword = '';
     private newPasswordRepeat = '';
@@ -16,11 +17,16 @@ export class ModifyPasswordComponent implements OnInit {
     private repeatPwdTip = 0;
     @Output()
         private modifyPassword: EventEmitter<any> = new EventEmitter();
-    constructor() {
+    constructor(
+        private elementRef: ElementRef
+    ) {
         // pass
     }
     public ngOnInit() {
         // pass
+    }
+    public ngAfterViewInit() {
+        this.elementRef.nativeElement.querySelector('#modifyPasswordInput').focus();
     }
     private confirmModify() {
         if (global.password !== md5(this.oldPassword)) {

@@ -1,4 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output,
+    EventEmitter, AfterViewInit, ElementRef } from '@angular/core';
 
 @Component({
     selector: 'group-description-component',
@@ -6,16 +7,21 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
     styleUrls: ['./group-description.component.scss']
 })
 
-export class GroupDescriptionComponent implements OnInit {
+export class GroupDescriptionComponent implements OnInit, AfterViewInit {
     @Input()
         private description;
     @Output()
         private updateGroupInfo: EventEmitter<any> = new EventEmitter();
-    constructor() {
+    constructor(
+        private elementRef: ElementRef
+    ) {
         // pass
     }
     public ngOnInit() {
         // pass
+    }
+    public ngAfterViewInit() {
+        this.elementRef.nativeElement.querySelector('#groupDescrptionTextarea').focus();
     }
     private stopPropagation(event) {
         event.stopPropagation();
