@@ -87,7 +87,7 @@ export const contactReducer = (state: ContactStore = contactInit, {type, payload
     return state;
 };
 // 切换左侧tab
-function changeListTab(state, payload) {
+function changeListTab(state: ContactStore, payload) {
     if (payload === 1) {
         if (state.tab === 0) {
             if (state.verifyTab === 0) {
@@ -101,7 +101,7 @@ function changeListTab(state, payload) {
     }
 }
 // 更新验证信息未读数
-function updateUnreadNum(state) {
+function updateUnreadNum(state: ContactStore) {
     if (state.verifyTab === 0) {
         state.singleVerifyUnreadNum = 0;
         state.verifyUnreadNum = state.groupVerifyUnreadNum;
@@ -115,7 +115,7 @@ function updateUnreadNum(state) {
     }
 }
 // 多端在线同意好友请求事件
-function addFriendSyncEvent(state, payload) {
+function addFriendSyncEvent(state: ContactStore, payload) {
     for (let user of payload.to_usernames) {
         for (let verifyMessage of state.verifyMessageList) {
             if (verifyMessage.stateType === 0 && verifyMessage.name === user.username) {
@@ -126,7 +126,7 @@ function addFriendSyncEvent(state, payload) {
     }
 }
 // 等待好友验证
-function waitReply(state, payload) {
+function waitReply(state: ContactStore, payload) {
     let verifyMessage = {
         name: payload.name,
         nickName: payload.nickName,
@@ -150,7 +150,7 @@ function waitReply(state, payload) {
     state.verifyMessageList.unshift(verifyMessage);
 }
 // 好友应答
-function friendReply(state, payload) {
+function friendReply(state: ContactStore, payload) {
     payload.name = payload.from_username;
     let verifyMessage = {
         name: payload.from_username,
@@ -185,19 +185,19 @@ function friendReply(state, payload) {
     state.verifyMessageList.unshift(verifyMessage);
 }
 // 标识好友验证消息已读
-function changeFriendFirstOne(state) {
+function changeFriendFirstOne(state: ContactStore) {
     for (let verifyMessage of state.verifyMessageList) {
         verifyMessage.isFriendFirstOne = false;
     }
 }
 // 标识群组验证信息已读
-function changeGroupFirstOne(state) {
+function changeGroupFirstOne(state: ContactStore) {
     for (let verifyMessage of state.verifyGroupList) {
         verifyMessage.isGroupFirstOne = false;
     }
 }
 // 同意或者拒绝好友请求
-function isAgreeAddFriend(state, payload) {
+function isAgreeAddFriend(state: ContactStore, payload) {
     for (let verifyMessage of state.verifyMessageList) {
         if (verifyMessage.eventId === payload.eventId) {
             verifyMessage.stateType = payload.stateType;
@@ -206,7 +206,7 @@ function isAgreeAddFriend(state, payload) {
     }
 }
 // 邀请加好友
-function friendVerify(state, payload) {
+function friendVerify(state: ContactStore, payload) {
     let verifyMessage = {
         name: payload.from_username,
         nickName: payload.from_nickname,
@@ -251,7 +251,7 @@ function friendVerify(state, payload) {
     state.verifyMessageList.unshift(verifyMessage);
 }
 // 收到群组验证信息
-function filterVerifyGroupList(state, payload) {
+function filterVerifyGroupList(state: ContactStore, payload) {
     payload.stateType = 0;
     payload.isGroupFirstOne = false;
     for (let user of payload.to_usernames) {
@@ -283,7 +283,7 @@ function filterVerifyGroupList(state, payload) {
     }
 }
 // 更新群组验证信息
-function updateVerifyGroupList(state, payload) {
+function updateVerifyGroupList(state: ContactStore, payload) {
     for (let verifyGroup of state.verifyGroupList) {
         if (verifyGroup.event_id === payload.event_id &&
             verifyGroup.to_usernames[0].username === payload.to_usernames[0].username) {
@@ -293,7 +293,7 @@ function updateVerifyGroupList(state, payload) {
     }
 }
 // 收到入群被拒绝的事件
-function filterReceiveGroupRefuse(state, payload) {
+function filterReceiveGroupRefuse(state: ContactStore, payload) {
     if (payload.to_usernames[0].username === global.user) {
         payload.stateType = 5;
     } else {

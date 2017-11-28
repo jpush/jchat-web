@@ -9,7 +9,6 @@ import { roomAction } from '../room/actions';
 import { Util } from '../../services/util';
 import { contactAction } from '../contact/actions';
 import * as Push from 'push.js';
-import { setTimeout, clearTimeout } from 'timers';
 
 @Component({
     selector: 'chat-component',

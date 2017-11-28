@@ -18,9 +18,9 @@ export interface MainStore {
     modifyPasswordShow: object;
     searchUserResult: {
         result: {
-            groupArr: Array<any>;
-            singleArr: Array<any>;
-            roomArr: Array<any>;
+            groupArr: any[];
+            singleArr: any[];
+            roomArr: any[];
         },
         isSearch: boolean;
     };
@@ -31,7 +31,7 @@ export interface MainStore {
         info: string;
     };
     blackMenu: {
-        menu: Array<any>;
+        menu: any[];
         show: boolean;
     };
     errorApiTip: object;
@@ -44,7 +44,7 @@ export interface MainStore {
     };
     contactUnreadNum: number;
     conversationUnreadNum: number;
-    friendList: Array<any>;
+    friendList: any[];
     enterPublicGroup: {
         show: boolean;
         info: object;

@@ -473,44 +473,44 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private showYouMoreText(event, item, more) {
         const showArr = [false, true, true];
         const isFirstArr = [false, true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showYouMoreOther(event, item, more) {
+    private showYouMoreOther(event, item) {
         const showArr = [false, true, false];
         const isFirstArr = [false, true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showMeMoreText(event, item, more) {
+    private showMeMoreText(event, item) {
         const showArr = [true, true, true];
         const isFirstArr = [true, false, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showMeMoreOther(event, item, more) {
+    private showMeMoreOther(event, item) {
         const showArr = [true, true, false];
         const isFirstArr = [true, false, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showMeMoreVoice(event, item, more) {
+    private showMeMoreVoice(event, item) {
         const showArr = [true, false, false];
         const isFirstArr = [true, false, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
     // 更多列表的配置
-    private menuOption(info, showArr, isFirstArr) {
+    private menuOption(showArr, isFirstArr) {
         for (let i = 0; i < showArr.length; i++) {
-            info[i].show = showArr[i];
+            this.moreMenu.info[i].show = showArr[i];
         }
         for (let i = 0; i < isFirstArr.length; i++) {
-            info[i].isFirst = isFirstArr[i];
+            this.moreMenu.info[i].isFirst = isFirstArr[i];
         }
     }
     // 更多列表的位置
-    private moreOperation(event, item, more) {
+    private moreOperation(event, item) {
         this.moreMenu.show = !this.moreMenu.show;
         if (this.moreMenu.show) {
             this.moreMenu.top = event.clientY - event.offsetY + 20;
@@ -521,8 +521,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 图片预览
     private imageViewerShow(item) {
         for (let i = 0; i < this.imageViewer.result.length; i++) {
-            let msgIdFlag = item.msg_id && this.imageViewer.result[i].msg_id === item.msg_id;
-            let msgKeyFlag = item.msgKey && this.imageViewer.result[i].msgKey === item.msgKey;
+            const msgIdFlag = item.msg_id && this.imageViewer.result[i].msg_id === item.msg_id;
+            const msgKeyFlag = item.msgKey && this.imageViewer.result[i].msgKey === item.msgKey;
             if (msgIdFlag || msgKeyFlag) {
                 this.imageViewer.active = Util.deepCopyObj(this.imageViewer.result[i]);
                 this.imageViewer.active.index = i;
@@ -1060,9 +1060,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             input.addEventListener('click', (event) => {
                 event.stopPropagation();
                 this.inputNoBlur = false;
-                let selection = window.getSelection();
-                let range = selection.getRangeAt(0);
-                let textNode = range.startContainer;
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+                const textNode = range.startContainer;
                 range.setStart(textNode, range.endOffset);
                 range.setEnd(textNode, range.endOffset);
                 this.contentDiv.focus();
@@ -1171,7 +1171,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             };
         }
         for (let i = 0; i < domArr.length; i ++) {
-            let offsetTop = (domArr[i] as HTMLDivElement).offsetTop;
+            const offsetTop = (domArr[i] as HTMLDivElement).offsetTop;
             if (scrollTop <= offsetTop && offsetTop <= scrollTop + offsetHeight) {
                 if (this.msg[i].content.from_id !== global.user) {
                     readObj.msg_id.push(this.msg[i].msg_id);

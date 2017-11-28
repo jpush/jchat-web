@@ -35,8 +35,8 @@
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                     <div class="room-panel-msgText-you" [ngClass]="{'jpush-emoji-container': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}">
                                         <p class="room-panel-text-msg" [innerHTML]="i.content.msg_body.text | emoji: {nbsp: true, href: true, fontSize: 18} | sanitize: 'html'" [ngClass]="{'room-panel-jpush-emoji': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}"></p>
-                                        <div class="room-panel-more room-panel-more-you display-flex flex-direction-vertical justify-content-end align-items-end" #youText [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                            <div class="room-panel-operation" (click)="showYouMoreText($event, i, youText)"></div>
+                                        <div class="room-panel-more room-panel-more-you display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                            <div class="room-panel-operation" (click)="showYouMoreText($event, i)"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -61,8 +61,8 @@
                                         <div class="room-panel-card-range">个人名片</div>
                                     </div>
                                 </div>
-                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youBusinessCard [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i, youBusinessCard)"></div>
+                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i)"></div>
                                 </div>
                             </div>
                             <!-- 图片消息 -->
@@ -83,8 +83,8 @@
                                         <img (load)="imgLoaded(i)" class="room-panel-message-jpush" [src]="i.content.msg_body.media_url | sanitize: 'url'" alt="">
                                     </div>
                                 </div>
-                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i, youImage)"></div>
+                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i)"></div>
                                 </div>
                             </div>
                             <!-- 文件消息 -->
@@ -107,8 +107,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i, youFile)"></div>
+                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i)"></div>
                                 </div>            
                             </div>
                             <!-- 视频消息 -->
@@ -127,8 +127,8 @@
                                         <div class="room-panel-video-shadow" *ngIf="i.content.load === 0">{{i.content.range}}%</div>
                                     </div>
                                 </div>
-                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i, youVideo)"></div>
+                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i)"></div>
                                 </div>
                             </div>
                             <!-- 地理定位 -->
@@ -145,8 +145,8 @@
                                         <p class="room-panel-address" [title]="i.content.msg_body.label" *ngIf="i.content.msg_body.label">{{i.content.msg_body.label}}</p>
                                     </div>
                                 </div>
-                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" #youLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i, youLocation)"></div>
+                                <div class="room-panel-more float-left display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showYouMoreOther($event, i)"></div>
                                 </div>
                             </div>
                             <!-- 语音 -->
@@ -180,8 +180,8 @@
                                     <div *ngIf="i.success === 1" class="room-panel-send-loading"></div>                                
                                     <div *ngIf="i.success === 3" class="room-panel-send-error align-items-center display-flex" (click)="repeatSendMsgAction(i)"></div>                                
                                     <p class="room-panel-text-msg" [innerHTML]="i.content.msg_body.text | emoji: {nbsp: true, href: true, fontSize: 18} | sanitize: 'html'" [ngClass]="{'room-panel-jpush-emoji': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}"></p>
-                                    <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-text room-panel-more-me display-flex flex-direction-vertical justify-content-end align-items-end" #meText [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                        <div class="room-panel-operation" (click)="showMeMoreText($event, i, meText)"></div>                                    
+                                    <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-text room-panel-more-me display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                        <div class="room-panel-operation" (click)="showMeMoreText($event, i)"></div>                                    
                                     </div>
                                 </div>
                             </div>
@@ -206,8 +206,8 @@
                                         <div class="room-panel-card-range">个人名片</div>
                                     </div>
                                 </div>
-                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i, meFile)"></div>
+                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i)"></div>
                                 </div>
                             </div>
                             <!-- 图片消息 -->
@@ -228,8 +228,8 @@
                                     </div>
                                     <div *ngIf="i.success === 3" class="room-panel-send-error" (click)="repeatSendPicAction(i)"></div>
                                 </div>
-                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meImage [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i, meImage)"></div>
+                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i)"></div>
                                 </div>
                             </div>
                             <!-- 文件消息 -->
@@ -256,8 +256,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meFile [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i, meFile)"></div>
+                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i)"></div>
                                 </div>
                             </div>
                             <!-- 视频消息 -->
@@ -275,8 +275,8 @@
                                     </div>
                                     <div class="room-panel-video-shadow" *ngIf="i.content.load === 0">{{i.content.range}}%</div>
                                 </div>
-                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meVideo [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i, meVideo)"></div>
+                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i)"></div>
                                 </div>
                             </div>
                             <!-- 地理定位 -->
@@ -292,8 +292,8 @@
                                     </a>                                    
                                     <p class="room-panel-address" [title]="i.content.msg_body.label" *ngIf="i.content.msg_body.label">{{i.content.msg_body.label}}</p>
                                 </div>
-                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" #meLocation [ngClass]="{'show-more-icon': i.showMoreIcon}">
-                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i, meLocation)"></div>
+                                <div *ngIf="i.success !== 1 && i.success !== 3" class="room-panel-more room-panel-more-me float-right display-flex flex-direction-vertical justify-content-end align-items-end" [ngClass]="{'show-more-icon': i.showMoreIcon}">
+                                    <div class="room-panel-operation" (click)="showMeMoreOther($event, i)"></div>
                                 </div>
                             </div>
                             <!-- 语音 -->

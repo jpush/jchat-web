@@ -11,14 +11,20 @@ export const chatInit = {
         activeIndex: -1,
         noDisturb: false,
         avatarUrl: '',
-        shield: ''
+        shield: false,
+        memo_name: '',
+        appkey: ''
     },
     defaultPanelIsShow: true,
     actionType: '',
     otherInfo: {
         info: {
             black: false,
-            noDisturb: false
+            noDisturb: false,
+            memo_name: '',
+            name: '',
+            isFriend: false,
+            appkey: ''
         },
         show: false
     },

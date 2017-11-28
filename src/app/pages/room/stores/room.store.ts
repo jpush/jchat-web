@@ -1,18 +1,20 @@
 export interface RoomStore {
     actionType: string;
-    voiceRoomState: Array<any>;
-    roomList: Array<any>;
+    voiceRoomState: any[];
+    roomList: any[];
     active: any;
     roomDetail: Object;
-    enter: {};
+    enter: {
+        id: number
+    };
     roomInfomation: {
         show: boolean,
-        info: Object
+        info: object
     };
-    messageList: Array<any>;
-    imageViewer: Array<any>;
+    messageList: any[];
+    imageViewer: any[];
     newMessage: object;
-    friendList: Array<any>;
+    friendList: any[];
     enterRoomLoading: boolean;
     showPanel: number;
     noMoreRooms: boolean;

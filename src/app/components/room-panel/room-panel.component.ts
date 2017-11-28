@@ -121,9 +121,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
         private elementRef: ElementRef,
         private store$: Store<any>,
         private storageService: StorageService
-    ) {
-        // pass
-     }
+    ) {}
     public ngOnInit() {
         this.store$.select((state) => {
             const roomState = state['roomReducer'];
@@ -189,7 +187,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
             };
         }
     }
-    private scrollBottom(time, isLoad ?: boolean, callback ?: () => void) {
+    private scrollBottom(time: number, isLoad ?: boolean, callback ?: () => void) {
         if (!isLoad) {
             this.loadFlag = false;
         }
@@ -284,41 +282,41 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
         }
         this.moreMenu.show = false;
     }
-    private showYouMoreText(event, item, more) {
+    private showYouMoreText(event, item) {
         const showArr = [true, true];
         const isFirstArr = [true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showYouMoreOther(event, item, more) {
+    private showYouMoreOther(event, item) {
         const showArr = [true, false];
         const isFirstArr = [true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showMeMoreText(event, item, more) {
+    private showMeMoreText(event, item) {
         const showArr = [true, true];
         const isFirstArr = [true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showMeMoreOther(event, item, more) {
+    private showMeMoreOther(event, item) {
         const showArr = [true, false];
         const isFirstArr = [true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
     // 更多列表的配置
-    private menuOption(info, showArr, isFirstArr) {
+    private menuOption(showArr, isFirstArr) {
         for (let i = 0; i < showArr.length; i++) {
-            info[i].show = showArr[i];
+            this.moreMenu.info[i].show = showArr[i];
         }
         for (let i = 0; i < isFirstArr.length; i++) {
-            info[i].isFirst = isFirstArr[i];
+            this.moreMenu.info[i].isFirst = isFirstArr[i];
         }
     }
     // 更多列表的位置
-    private moreOperation(event, item, more) {
+    private moreOperation(event, item) {
         this.moreMenu.show = !this.moreMenu.show;
         if (this.moreMenu.show) {
             this.moreMenu.top = event.clientY - event.offsetY + 20;

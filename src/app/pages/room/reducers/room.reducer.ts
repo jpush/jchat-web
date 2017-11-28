@@ -42,7 +42,9 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
             break;
         // 成功退出聊天室
         case roomAction.exitRoomSuccess:
-            state.enter = {};
+            state.enter = {
+                id: -1
+            };
             state.imageViewer = [];
             break;
         // 显示聊天室信息
@@ -92,7 +94,7 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
     return state;
 };
 // 过滤重复的聊天室，并添加到聊天室列表中
-function filterRepeatRoom(state, payload) {
+function filterRepeatRoom(state: RoomStore, payload) {
     if (payload.length > 0) {
         let newPayload = [];
         for (let newRoom of payload) {
@@ -113,7 +115,7 @@ function filterRepeatRoom(state, payload) {
     }
 }
 // 添加消息到消息列表
-function addMessage(state, payload) {
+function addMessage(state: RoomStore, payload) {
     // 判断消息是否要显示时间
     if (state.messageList.length === 0) {
         payload.time_show = Util.reducerDate(payload.ctime_ms);
@@ -149,7 +151,7 @@ function addMessage(state, payload) {
     state.messageList.push(payload);
 }
 // 完成消息发送（失败或者成功）
-function sendMsgComplete(state, payload) {
+function sendMsgComplete(state: RoomStore, payload) {
     for (let i = state.messageList.length - 1; i >= 0; i--) {
         if (payload.localMsg.msgKey === state.messageList[i].msgKey) {
             state.messageList[i].success = payload.localMsg.success;
@@ -198,7 +200,7 @@ function filterImageViewer(state: RoomStore, payload) {
     }
 }
 // 搜索聊天室查看资料
-function addRoomToList(state, payload) {
+function addRoomToList(state: RoomStore, payload) {
     if (payload.id === state.enter.id) {
         return ;
     }

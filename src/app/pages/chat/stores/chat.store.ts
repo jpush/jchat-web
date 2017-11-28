@@ -1,9 +1,9 @@
 
 export interface ChatStore {
-    conversation: Array<any>; // 会话列表
-    messageList: Array<any>; // 消息记录列表
+    conversation: any[];
+    messageList: any[];
     newMessage: any;
-    activePerson: {// 当前激活的对话用户
+    activePerson: {
         key: string,
         name: string,
         nickName: string,
@@ -13,37 +13,43 @@ export interface ChatStore {
         noDisturb: boolean,
         avatarUrl?: string,
         type?: number,
-        shield: string
+        shield: boolean,
+        memo_name: string,
+        appkey: string
     };
-    groupList: Array<any>;
+    groupList: any[];
     defaultPanelIsShow: boolean;
     actionType: string;
     otherInfo: {
         show: boolean,
         info: {
             black: boolean,
-            noDisturb: boolean
+            noDisturb: boolean,
+            memo_name: string,
+            name: string,
+            isFriend: boolean,
+            appkey: string
         }
     };
-    blackMenu: Array<any>;
+    blackMenu: any[];
     searchUserResult: {
         result: {
-            singleArr: Array<any>;
-            groupArr: Array<any>;
-            roomArr: Array<any>;
+            singleArr: any[];
+            groupArr: any[];
+            roomArr: any[];
         },
         isSearch: boolean;
     };
-    recentMsg: Array<any>;
-    msgId: Array<any>;
+    recentMsg: any[];
+    msgId: any[];
     groupDeacriptionShow: boolean;
     selfInfo: {
         info: {
             avatarUrl: string
         },
     };
-    imageViewer: Array<any>;
-    voiceState: Array<any>;
+    imageViewer: any[];
+    voiceState: any[];
     playVideoShow: {
         url: string,
         show: boolean
@@ -52,10 +58,10 @@ export interface ChatStore {
     currentIsActive: boolean;
     newMessageIsActive: boolean;
     newMessageIsDisturb: boolean;
-    friendList: Array<any>;
+    friendList: any[];
     messageTransmit: {
         searchResult: object,
-        list: Array<any>
+        list: any[]
     };
     transmitSuccess: number;
     verifyModal: {
@@ -63,30 +69,30 @@ export interface ChatStore {
         show: boolean
     };
     noDisturb: {
-        users: Array<any>,
-        groups: Array<any>
+        users: any[],
+        groups: any[]
     };
     viewerImageUrl: object;
     msgFile: {
         show: boolean,
-        audio: Array<any>,
-        document: Array<any>,
-        video: Array<any>,
-        image: Array<any>,
-        other: Array<any>
+        audio: any[],
+        document: any[],
+        video: any[],
+        image: any[],
+        other: any[]
     };
-    msgFileImageViewer: Array<any>;
+    msgFileImageViewer: any[];
     sendBusinessCardSuccess: number;
     unreadList: {
         show: boolean,
         info: {
-            read: Array<any>,
-            unread: Array<any>
+            read: any[],
+            unread: any[]
         },
         loading: boolean
     };
     readObj: object;
-    groupShield: Array<any>;
+    groupShield: any[];
     createGroupSearch: object;
     unreadCount: object;
     roomTransmitMsg: object;

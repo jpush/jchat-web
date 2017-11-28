@@ -182,7 +182,7 @@ export const mainReducer = (state: MainStore = mainInit, {type, payload}) => {
     return state;
 };
 // 为黑名单列表添加备注名
-function filterBlackMenuMemoName(state, payload) {
+function filterBlackMenuMemoName(state: MainStore, payload) {
     for (let black of payload) {
         for (let friend of state.friendList) {
             if (friend.username === black.username && friend.appkey === black.appkey &&
@@ -194,7 +194,7 @@ function filterBlackMenuMemoName(state, payload) {
     }
 }
 // 切换删除黑名单列表的loading状态
-function delSingleBlackLoading(state, payload, loadingValue) {
+function delSingleBlackLoading(state: MainStore, payload, loadingValue) {
     for (let black of state.blackMenu.menu) {
         if (black.username === payload.username) {
             black.loading = loadingValue;

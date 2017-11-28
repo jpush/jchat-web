@@ -61,7 +61,7 @@ export const registerReducer = (state: RegisterStore = registerInit, {type, payl
     }
     return state;
 };
-function isButtonAvailable(state, payload) {
+function isButtonAvailable(state: RegisterStore, payload) {
     if (payload.username.length > 0 &&
         payload.password.length > 0 && payload.repeatPassword.length > 0) {
         state.isButtonAvailable = true;

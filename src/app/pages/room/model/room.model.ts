@@ -4,7 +4,9 @@ export const roomInit = {
     roomList: [],
     active: {},
     roomDetail: {},
-    enter: {},
+    enter: {
+        id: -1
+    },
     roomInfomation: {
         show: false,
         info: {}
