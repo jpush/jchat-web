@@ -4,16 +4,16 @@ import { NgModule } from '@angular/core';
 import { FloorPipe } from './floor.pipe';
 
 @NgModule({
-  declarations: [
-    FloorPipe
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      FloorPipe
-  ],
-  providers: []
+    declarations: [
+        FloorPipe
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        FloorPipe
+    ],
+    providers: []
 })
 export class FloorPipeModule {}

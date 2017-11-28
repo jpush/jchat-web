@@ -5,19 +5,19 @@ import { VideoComponent } from './video.component';
 import { VideoTimePipeModule, SanitizePipeModule } from '../../pipes';
 
 @NgModule({
-  declarations: [
-    VideoComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    VideoTimePipeModule,
-    SanitizePipeModule
-  ],
-  exports: [
-      VideoComponent
-  ],
-  providers: []
+    declarations: [
+        VideoComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        VideoTimePipeModule,
+        SanitizePipeModule
+    ],
+    exports: [
+        VideoComponent
+    ],
+    providers: []
 })
 
 export class VideoModule {}

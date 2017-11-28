@@ -16,7 +16,7 @@
                             <div *ngFor="let user of item.data; let num = index" class="card-modal-item">
                                 <div class="display-flex">
                                     <div class="card-modal-avatar">
-                                        <img [src]="user.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                        <img [src]="user.avatarUrl | sanitize : 'url'" avatarLoad [avatarError]="0" alt="">
                                     </div>
                                     <div class="flex-1">{{user.memo_name || user.nickName || user.name}}</div>
                                     <label class="card-modal-select-label">
@@ -35,7 +35,7 @@
                     <div *ngIf="selectList" class="card-modal-item">
                         <div class="display-flex">
                             <div class="card-modal-avatar">
-                                <img [src]="selectList.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                <img [src]="selectList.avatarUrl | sanitize : 'url'" avatarLoad [avatarError]="0" alt="">
                             </div>
                             <div class="flex-1">{{selectList.memo_name || selectList.nickName || selectList.name}}</div>
                             <div class="card-modal-cancel-select" (click)="cancelSelect()"></div>

@@ -2,7 +2,7 @@
     <div class="main-container display-flex">
         <div class="main-menu">
             <div class="main-self-avatar">
-                <img (load)="avatarLoad($event)" [src]="selfInfo.info.avatarUrl | sanitize : 'url'" (click)="getSelfInfo($event)" (error)="avatarErrorIcon($event)" alt="">
+                <img avatarLoad [avatarError]="0" [src]="selfInfo.info.avatarUrl | sanitize : 'url'" (click)="getSelfInfo($event)" alt="">
             </div>
             <div class="main-tab">
                 <div (click)="changeListTab(0)" class="main-chat">

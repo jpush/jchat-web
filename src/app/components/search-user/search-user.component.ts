@@ -2,9 +2,6 @@ import { Component, OnInit, Input, Output, EventEmitter, trigger, state, style, 
         animate, HostListener, ElementRef, OnChanges, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 @Component({
     selector: 'search-user-component',
@@ -80,12 +77,6 @@ export class SearchUserComponent implements OnInit, OnChanges {
             this.componentScroll.directiveRef.update();
         });
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
-    }
     private clearInput() {
         this.searchKeyword = '';
         this.searchUser.emit(this.searchKeyword);
@@ -110,8 +101,5 @@ export class SearchUserComponent implements OnInit, OnChanges {
     }
     private stopPropagation(event) {
         event.stopPropagation();
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
 }

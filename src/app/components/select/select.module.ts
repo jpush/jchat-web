@@ -4,17 +4,17 @@ import { NgModule } from '@angular/core';
 import { SelectComponent } from './select.component';
 
 @NgModule({
-  declarations: [
-    SelectComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      SelectComponent
-  ],
-  providers: []
+    declarations: [
+        SelectComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        SelectComponent
+    ],
+    providers: []
 })
 
 export class SelectModule {}

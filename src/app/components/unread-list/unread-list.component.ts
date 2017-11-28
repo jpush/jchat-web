@@ -1,6 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'unread-list-component',
@@ -21,12 +19,6 @@ export class UnreadListComponent implements OnInit {
     }
     private closeModal() {
         this.unreadList.show = false;
-    }
-    private avatarLoad(event, item) {
-        Util.reduceAvatarSize(event);
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
     }
     private watchOtherInfo(item) {
         this.readListOtherInfo.emit(item);

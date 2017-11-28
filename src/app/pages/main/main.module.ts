@@ -24,7 +24,7 @@ import { HoverTipModule } from '../../components/hover-tip';
 import { ChatModule } from '../chat';
 import { ContactModule } from '../contact';
 import { RoomModule } from '../room';
-import { HoverEventModule } from '../../directives';
+import { HoverEventModule, AvatarLoadModule, AvatarErrorModule } from '../../directives';
 import { LogoutKickModule } from '../../components//logout-kick';
 import { SanitizePipeModule } from '../../pipes';
 import { BadgeModule } from 'jpush-ui/badge';
@@ -35,44 +35,46 @@ import { CreateGroupNextModule } from '../../components/create-group-next';
 import { GroupAvatarModule } from '../../components/group-avatar';
 
 @NgModule({
-  declarations: [
-    MainComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule.forChild(MAIN_ROUTER),
-    ConversationListModule,
-    SelfInfoModule,
-    CreateGroupModule,
-    GroupListModule,
-    ModifyPasswordModule,
-    ChatPanelModule,
-    DefaultPanelModule,
-    SearchUserModule,
-    OtherInfoModule,
-    TipModalModule,
-    CreateSingleChatModule,
-    BlackMenuModule,
-    ContactListModule,
-    GroupSettingModule,
-    ChatModule,
-    ContactModule,
-    RoomModule,
-    MenuModule,
-    HoverTipModule,
-    HoverEventModule,
-    LogoutKickModule,
-    BadgeModule,
-    SanitizePipeModule,
-    EnterGroupModule,
-    GroupInfoModule,
-    VerifyModalModule,
-    CreateGroupNextModule,
-    GroupAvatarModule
-  ],
-  providers: [
-  ]
+    declarations: [
+        MainComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule.forChild(MAIN_ROUTER),
+        ConversationListModule,
+        SelfInfoModule,
+        CreateGroupModule,
+        GroupListModule,
+        ModifyPasswordModule,
+        ChatPanelModule,
+        DefaultPanelModule,
+        SearchUserModule,
+        OtherInfoModule,
+        TipModalModule,
+        CreateSingleChatModule,
+        BlackMenuModule,
+        ContactListModule,
+        GroupSettingModule,
+        ChatModule,
+        ContactModule,
+        RoomModule,
+        MenuModule,
+        HoverTipModule,
+        HoverEventModule,
+        LogoutKickModule,
+        BadgeModule,
+        SanitizePipeModule,
+        EnterGroupModule,
+        GroupInfoModule,
+        VerifyModalModule,
+        CreateGroupNextModule,
+        GroupAvatarModule,
+        AvatarLoadModule,
+        AvatarErrorModule
+    ],
+    providers: [
+    ]
 })
 export class MainModule {
   public static routes = MAIN_ROUTER;

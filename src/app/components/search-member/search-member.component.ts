@@ -1,8 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter,
     AfterViewInit, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'search-member-component',
@@ -42,9 +40,6 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
     private stopPropagation(event) {
         event.stopPropagation();
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     private searchItemAction(item) {
         if (!this.searchResult.checkbox) {
             this.searchResult.keywords = '';
@@ -63,8 +58,5 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
     }
     private changeCheckedAction(item) {
         this.changeChecked.emit(item);
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
 }

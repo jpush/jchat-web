@@ -6,18 +6,18 @@ import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import { RoomListComponent } from './room-list.component';
 
 @NgModule({
-  declarations: [
-    RoomListComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG)
-  ],
-  exports: [
-      RoomListComponent
-  ],
-  providers: []
+    declarations: [
+        RoomListComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG)
+    ],
+    exports: [
+        RoomListComponent
+    ],
+    providers: []
 })
 
 export class RoomListModule {}

@@ -4,17 +4,17 @@ import { NgModule } from '@angular/core';
 import { InfoMenuComponent } from './info-menu.component';
 
 @NgModule({
-  declarations: [
-    InfoMenuComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      InfoMenuComponent
-  ],
-  providers: []
+    declarations: [
+        InfoMenuComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        InfoMenuComponent
+    ],
+    providers: []
 })
 
 export class InfoMenuModule {}

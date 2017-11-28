@@ -5,9 +5,6 @@ import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
 import { chatAction } from '../../pages/chat/actions';
 import { global } from '../../services/common';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 @Component({
     selector: 'group-setting-component',
@@ -174,15 +171,6 @@ export class GroupSettingComponent implements OnInit, DoCheck {
     }
     private deleteMemberAction(item) {
         this.deleteMember.emit(item);
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
     }
     private groupAvatarChange(event) {
         this.updateGroupAvatar.emit(event.target);

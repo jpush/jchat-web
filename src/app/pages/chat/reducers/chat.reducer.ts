@@ -2915,6 +2915,7 @@ function addGroupMemberSilenceEvent(state, payload) {
 function deleteGroupMemberSilenceEvent(state, payload) {
     changeGroupMemberSilence(state, payload, false, '被解除禁言');
 }
+// 切换群成员禁言
 function changeGroupMemberSilence(state, payload, silence: boolean, text: string) {
     for (let shield of state.groupShield) {
         if (Number(shield.gid) === Number(payload.gid)) {

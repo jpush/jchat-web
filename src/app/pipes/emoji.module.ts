@@ -4,16 +4,16 @@ import { NgModule } from '@angular/core';
 import { EmojiPipe } from './emoji.pipe';
 
 @NgModule({
-  declarations: [
-    EmojiPipe
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      EmojiPipe
-  ],
-  providers: []
+    declarations: [
+        EmojiPipe
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        EmojiPipe
+    ],
+    providers: []
 })
 export class EmojiPipeModule {}

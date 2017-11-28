@@ -8,7 +8,6 @@ import { contactAction } from '../contact/actions';
 import { chatAction } from '../chat/actions';
 import { md5 } from '../../services/tools';
 import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'app-main',
@@ -210,9 +209,6 @@ export class MainComponent implements OnInit, OnDestroy {
         const time = 5 * 60 * 1000;
         this.storageService.set(md5('afterFiveMinutes-username'), global.user, true, time);
         this.storageService.set(md5('afterFiveMinutes-password'), global.password, true, time);
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
     }
     private subscribeStore() {
         this.mainStream$ = this.store$.select((state) => {
@@ -778,9 +774,6 @@ export class MainComponent implements OnInit, OnDestroy {
             default:
         }
         this.settingMenu.show = false;
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
     // 被其他设备登录踢
     private logoutKickEmit(info) {

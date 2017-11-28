@@ -12,7 +12,6 @@ import { global, emojiConfig, jpushConfig, imgRouter,
 import { Util } from '../../services/util';
 import { Emoji } from '../../services/tools';
 import * as download from 'downloadjs';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'chat-panel-component',
@@ -1091,9 +1090,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         item.repeatSend = true;
         this.sendLocation.emit(item);
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     // 向上滚动加载更多消息
     private scrollTopEvent() {
         if (!this.loadFlag) {
@@ -1293,9 +1289,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     private playVideo(url) {
         this.videoPlay.emit(url);
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
     private stopPropagation(event) {
         event.stopPropagation();

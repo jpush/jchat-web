@@ -1,6 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Util } from '../../services/util';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 @Component({
     selector: 'group-info-component',
@@ -23,12 +21,6 @@ export class GroupInfoComponent implements OnInit {
     }
     private groupInfoClose() {
         this.groupInfo.show = false;
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
     private applyEnterGroupAction() {
         this.applyEnterGroup.emit(this.groupInfo.info);

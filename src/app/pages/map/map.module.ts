@@ -6,14 +6,14 @@ import { MAPROUTER } from './map.router';
 import { MapComponent } from './map.component';
 
 @NgModule({
-  declarations: [
-    MapComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule.forChild(MAPROUTER),
-  ],
+    declarations: [
+        MapComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule.forChild(MAPROUTER),
+    ]
 })
 export class MapModule {
   public static routes = MAPROUTER;

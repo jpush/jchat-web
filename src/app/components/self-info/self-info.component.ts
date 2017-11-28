@@ -3,7 +3,6 @@ import { Component, Input, Output, EventEmitter,
 import { Util } from '../../services/util';
 import { Store } from '@ngrx/store';
 import { mainAction } from '../../pages/main/actions';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'self-info-component',
@@ -132,9 +131,6 @@ export class SelfInfoComponent implements OnChanges, AfterViewInit {
     private selectMenuItemEmit() {
         this.sendCard.emit(this.selfInfo.info);
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     private selfCancel() {
         this.selfAvatarInput.value = '';
         this.isEdit = false;
@@ -202,8 +198,5 @@ export class SelfInfoComponent implements OnChanges, AfterViewInit {
     private toEdit() {
         this.isEdit = true;
         this.selfAvatarImg.src = this.selfInfo.info.avatarUrl;
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
 }

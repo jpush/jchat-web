@@ -1,7 +1,5 @@
 import { Component, OnInit, Input, Output,
     EventEmitter, AfterViewInit, ElementRef } from '@angular/core';
-import { Util } from '../../services/util';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 @Component({
     selector: 'create-group-next-component',
@@ -33,12 +31,6 @@ export class CreateGroupNextComponent implements OnInit, AfterViewInit {
     }
     public ngAfterViewInit() {
         this.elementRef.nativeElement.querySelector('#createGroupNextInput').focus();
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
     private changeCreateGroupAvatarAction(event) {
         this.changeCreateGroupAvatar.emit(event.target);

@@ -4,16 +4,16 @@ import { NgModule } from '@angular/core';
 import { VideoTimePipe } from './video-time.pipe';
 
 @NgModule({
-  declarations: [
-    VideoTimePipe
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      VideoTimePipe
-  ],
-  providers: []
+    declarations: [
+        VideoTimePipe
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        VideoTimePipe
+    ],
+    providers: []
 })
 export class VideoTimePipeModule {}

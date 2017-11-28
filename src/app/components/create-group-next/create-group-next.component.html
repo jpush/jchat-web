@@ -5,7 +5,7 @@
             <span class="modal-close" (click)="closeCreateGroupNextAction()"></span>
         </h2>
         <label for="createGroupAvatar" class="create-group-next-avatar">
-            <img [src]="groupAvatarInfo.src" (error)="groupAvatarErrorIcon($event)" (load)="avatarLoad($event)" alt="">
+            <img avatarLoad [avatarError]="1" [src]="groupAvatarInfo.src" alt="">
             <input id="createGroupAvatar" type="file" (change)="changeCreateGroupAvatarAction($event)">
         </label>
         <div class="create-group-next-container">

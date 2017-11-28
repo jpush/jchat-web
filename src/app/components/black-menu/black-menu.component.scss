@@ -9,6 +9,9 @@
             height: 30px;
             margin-right: 10px;
             overflow: hidden;
+            img{
+                width: 100%;
+            }
         }
         .flex-1{
             text-overflow: ellipsis;

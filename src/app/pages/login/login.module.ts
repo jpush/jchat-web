@@ -8,16 +8,16 @@ import { loginReducer } from './reducers';
 import { LoginEffect } from './effects';
 
 @NgModule({
-  declarations: [
-    LoginComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule.forChild(LOGIN_ROUTER)
-  ],
-  providers: [
-  ]
+    declarations: [
+        LoginComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule.forChild(LOGIN_ROUTER)
+    ],
+    providers: [
+    ]
 })
 export class LoginModule {
   public static routes = LOGIN_ROUTER;

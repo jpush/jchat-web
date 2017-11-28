@@ -4,17 +4,17 @@ import { NgModule } from '@angular/core';
 import { HoverEventDirective } from './hover-tip.directive';
 
 @NgModule({
-  declarations: [
-    HoverEventDirective
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      HoverEventDirective
-  ],
-  providers: []
+    declarations: [
+        HoverEventDirective
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        HoverEventDirective
+    ],
+    providers: []
 })
 
 export class HoverEventModule {}

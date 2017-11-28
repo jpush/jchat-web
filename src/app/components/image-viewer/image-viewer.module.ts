@@ -5,18 +5,18 @@ import { ImageViewerComponent } from './image-viewer.component';
 import { SanitizePipeModule } from '../../pipes';
 
 @NgModule({
-  declarations: [
-    ImageViewerComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    SanitizePipeModule
-  ],
-  exports: [
-      ImageViewerComponent
-  ],
-  providers: []
+    declarations: [
+        ImageViewerComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        SanitizePipeModule
+    ],
+    exports: [
+        ImageViewerComponent
+    ],
+    providers: []
 })
 
 export class ImageViewerModule {}

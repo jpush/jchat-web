@@ -5,7 +5,7 @@
             <div class="group-setting-title">群设置</div>
             <div class="display-flex group-avatar-info">
                 <label class="group-avatar" for="groupAvatar">
-                    <img [src]="groupSetting.groupInfo.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="groupAvatarErrorIcon($event)" alt="">
+                    <img avatarLoad [avatarError]="1" [src]="groupSetting.groupInfo.avatarUrl | sanitize : 'url'" alt="">
                 </label>
                 <input type="file" id="groupAvatar" (change)="groupAvatarChange($event)" class="group-avatar-file">
                 <div class="flex-1">
@@ -49,7 +49,7 @@
                 <ul>
                     <li class="clearfix display-flex" *ngFor="let item of groupSetting.memberList">
                         <div class="group-setting-avatar" (click)="watchInfoAction(item)">
-                            <img [src]="item.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                            <img avatarLoad [avatarError]="0" [src]="item.avatarUrl | sanitize: 'url'" alt="">
                         </div>
                         <span class="flex-1" [title]="item.memo_name || item.nickName || item.username">{{item.memo_name || item.nickName || item.username}}</span>
                         <div class="group-setting-host" *ngIf="item.flag === 1" [hoverEvent]="hostHover">

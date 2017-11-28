@@ -16,28 +16,28 @@ import { GroupAvatarModule } from '../../components/group-avatar';
 import { UnreadListModule } from '../../components/unread-list';
 
 @NgModule({
-  declarations: [
-    ChatComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ConversationListModule,
-    ChatPanelModule,
-    DefaultPanelModule,
-    OtherInfoModule,
-    GroupSettingModule,
-    GroupDescriptionModule,
-    VideoModule,
-    MessageTransmitModule,
-    VerifyModalModule,
-    GroupAvatarModule,
-    UnreadListModule
-  ],
-  exports: [
-      ChatComponent
-  ],
-  providers: [
-  ]
+    declarations: [
+        ChatComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ConversationListModule,
+        ChatPanelModule,
+        DefaultPanelModule,
+        OtherInfoModule,
+        GroupSettingModule,
+        GroupDescriptionModule,
+        VideoModule,
+        MessageTransmitModule,
+        VerifyModalModule,
+        GroupAvatarModule,
+        UnreadListModule
+    ],
+    exports: [
+        ChatComponent
+    ],
+    providers: [
+    ]
 })
 export class ChatModule {}

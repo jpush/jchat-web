@@ -4,17 +4,17 @@ import { NgModule } from '@angular/core';
 import { MessageMenuComponent } from './message-menu.component';
 
 @NgModule({
-  declarations: [
-    MessageMenuComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      MessageMenuComponent
-  ],
-  providers: []
+    declarations: [
+        MessageMenuComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        MessageMenuComponent
+    ],
+    providers: []
 })
 
 export class MessageMenuModule {}

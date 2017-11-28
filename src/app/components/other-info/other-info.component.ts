@@ -1,8 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter,
     OnChanges, DoCheck, HostListener, ElementRef } from '@angular/core';
 import { authPayload } from '../../services/common';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'other-info-component',
@@ -97,9 +95,6 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         event.stopPropagation();
         this.infoMenu.show = false;
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     private sendMsgBtn() {
         const user = {
             avatar: this.otherInfo.info.avatar,
@@ -148,9 +143,6 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         setTimeout(() => {
             this.elementRef.nativeElement.querySelector('#editMemoName').focus();
         });
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
     private verifyBtn(num) {
         this.otherInfo.info.stateType = num;

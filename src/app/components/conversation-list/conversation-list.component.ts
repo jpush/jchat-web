@@ -1,8 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { global } from '../../services/common';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 @Component({
     selector: 'conversation-list-component',
@@ -40,12 +37,6 @@ export class ConversationListComponent implements OnInit {
     private selectTarget(item) {
         this.changeActive.emit(item);
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
-    }
     private deleteThis(event, item) {
         event.stopPropagation();
         this.deleteConversationItem.emit(item);
@@ -61,8 +52,5 @@ export class ConversationListComponent implements OnInit {
     }
     private conversationToTopAction() {
         this.conversationToTop.emit(this.topPosition.item);
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
 }

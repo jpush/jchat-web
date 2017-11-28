@@ -4,16 +4,16 @@ import { NgModule } from '@angular/core';
 import { FileSizePipe } from './file-size.pipe';
 
 @NgModule({
-  declarations: [
-    FileSizePipe
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      FileSizePipe
-  ],
-  providers: []
+    declarations: [
+        FileSizePipe
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        FileSizePipe
+    ],
+    providers: []
 })
 export class FileSizePipeModule {}

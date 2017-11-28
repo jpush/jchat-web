@@ -10,7 +10,6 @@ import { Emoji } from '../../services/tools';
 import { chatAction } from '../../pages/chat/actions';
 import { roomAction } from '../../pages/room/actions';
 import * as download from 'downloadjs';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'room-panel-component',
@@ -437,12 +436,6 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
                 that.pasteImage.show = true;
             };
         };
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
     private fileDownload(url) {
         // 为了兼容火狐下a链接下载，引入downloadjs

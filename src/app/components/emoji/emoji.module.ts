@@ -7,20 +7,20 @@ import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import { EmojiPipeModule, SanitizePipeModule } from '../../pipes';
 
 @NgModule({
-  declarations: [
-    EmojiComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
-    EmojiPipeModule,
-    SanitizePipeModule
-  ],
-  exports: [
-      EmojiComponent
-  ],
-  providers: []
+    declarations: [
+        EmojiComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
+        EmojiPipeModule,
+        SanitizePipeModule
+    ],
+    exports: [
+        EmojiComponent
+    ],
+    providers: []
 })
 
 export class EmojiModule {}

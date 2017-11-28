@@ -6,7 +6,6 @@ import { AppStore } from '../../app.store';
 import { mainAction } from '../../pages/main/actions';
 import { chatAction } from '../../pages/chat/actions';
 import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'create-group-component',
@@ -187,9 +186,6 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         this.searchResult.show = false;
         this.searchResult.result = [];
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     private confirmCreateGroup() {
         let memberUsernames = [];
         for (let item of this.selectList) {
@@ -282,8 +278,5 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
                 break;
             }
         }
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
 }

@@ -6,18 +6,22 @@ import { RoomPanelComponent } from './room-panel.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import {
-  DayPipeModule,
-  EmojiPipeModule,
-  EllipsisPipeModule,
-  TimePipeModule,
-  FloorPipeModule,
-  FileTypePipeModule,
-  FileSizePipeModule,
-  VideoTimePipeModule,
-  SanitizePipeModule,
-  FileNamePipeModule
+    DayPipeModule,
+    EmojiPipeModule,
+    EllipsisPipeModule,
+    TimePipeModule,
+    FloorPipeModule,
+    FileTypePipeModule,
+    FileSizePipeModule,
+    VideoTimePipeModule,
+    SanitizePipeModule,
+    FileNamePipeModule
 } from '../../pipes';
-import { MyModelDirective } from '../../directives';
+import {
+    MyModelDirective,
+    AvatarLoadModule,
+    AvatarErrorModule
+} from '../../directives';
 import { EmojiModule } from '../emoji';
 import { HoverTipModule } from '../hover-tip';
 import { HoverEventModule } from '../../directives';
@@ -31,39 +35,41 @@ import { MessageFileModule } from '../../components/message-file';
 import { CardModalModule } from '../../components/card-modal';
 
 @NgModule({
-  declarations: [
-    RoomPanelComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
-    EmojiModule,
-    RouterModule,
-    HoverTipModule,
-    HoverEventModule,
-    DayPipeModule,
-    ImageViewerModule,
-    EmojiPipeModule,
-    EllipsisPipeModule,
-    TimePipeModule,
-    FloorPipeModule,
-    FileTypePipeModule,
-    FileSizePipeModule,
-    VideoTimePipeModule,
-    SanitizePipeModule,
-    MessageMenuModule,
-    PasteImageModule,
-    DropFileModule,
-    AtListModule,
-    FileNamePipeModule,
-    MessageFileModule,
-    CardModalModule
-  ],
-  exports: [
-      RoomPanelComponent
-  ],
-  providers: []
+    declarations: [
+        RoomPanelComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
+        EmojiModule,
+        RouterModule,
+        HoverTipModule,
+        HoverEventModule,
+        DayPipeModule,
+        ImageViewerModule,
+        EmojiPipeModule,
+        EllipsisPipeModule,
+        TimePipeModule,
+        FloorPipeModule,
+        FileTypePipeModule,
+        FileSizePipeModule,
+        VideoTimePipeModule,
+        SanitizePipeModule,
+        MessageMenuModule,
+        PasteImageModule,
+        DropFileModule,
+        AtListModule,
+        FileNamePipeModule,
+        MessageFileModule,
+        CardModalModule,
+        AvatarLoadModule,
+        AvatarErrorModule
+    ],
+    exports: [
+        RoomPanelComponent
+    ],
+    providers: []
 })
 
 export class RoomPanelModule {}

@@ -7,7 +7,7 @@
             <div>
                 <div *ngFor="let data of item.data" class="linkman-list-name display-flex" (click)="selectLinkmanItem(data)">
                     <div class="linkman-list-avatar">
-                        <img (load)="avatarLoad($event)" [src]="data.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                        <img avatarLoad avatarLoad [avatarError]="0" [src]="data.avatarUrl | sanitize: 'url'" alt="">
                     </div>
                     <span class="flex-1">{{data.memo_name || data.nickName || data.name}}</span>
                 </div>

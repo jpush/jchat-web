@@ -33,6 +33,7 @@
         background: rgba(0, 0, 0, 0.3) url(../../../assets/images/app-loading.gif) center center no-repeat;
         background-size: 30px;
         content: '';
+        z-index: 3;
     }
     .group-setting-close{
         position: absolute;
@@ -77,6 +78,9 @@
                     left: 0;
                     right: 0;
                     bottom: 0;
+                }
+                img{
+                    width: 100%;
                 }
             }
             .group-avatar-file{
@@ -182,6 +186,7 @@
                     position: relative;
                     img{
                         cursor: pointer;
+                        width: 100%;
                     }
                 }
                 .flex-1{

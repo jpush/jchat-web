@@ -29,7 +29,7 @@
                             <!-- 文本消息 -->
                             <div *ngIf="i.content.msg_type === 'text' && (!i.content.msg_body.extras || !i.content.msg_body.extras.businessCard)" class="clearfix" (mouseleave)="msgMouseleave()">
                                 <div class="float-left room-panel-fromId-you room-panel-avatar" (click)="watchOtherInfo(i.content)">
-                                    <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-left">
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
@@ -44,14 +44,14 @@
                             <!-- 名片消息 -->
                             <div *ngIf="i.content.msg_type === 'text' && i.content.msg_body?.extras?.businessCard" (mouseleave)="msgMouseleave()" [ngStyle]="{height: 105 + 20 + 'px'}" class="clearfix">
                                 <div class="room-panel-fromId-you float-left room-panel-avatar" (click)="watchOtherInfo(i.content)">
-                                    <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-left clearfix room-panel-business-card">
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
                                     <div class="float-left room-panel-card room-panel-card-you">
                                         <div class="display-flex room-panel-card-icon room-panel-card-icon-you" (click)="watchBusinessCardInfo(i.content.msg_body.extras)">
                                             <div class="room-panel-card-icon-avatar">
-                                                <img (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" [src]="i.content.msg_body.extras.media_url | sanitize: 'url'" alt="">
+                                                <img avatarLoad [avatarError]="0" [src]="i.content.msg_body.extras.media_url | sanitize: 'url'" alt="">
                                             </div>
                                             <div class="flex-1 display-flex justify-content-center flex-direction-vertical">
                                                 <p class="room-panel-card-name" [title]="i.content.msg_body.extras.nickName || i.content.msg_body.extras.userName">{{i.content.msg_body.extras.nickName || i.content.msg_body.extras.userName}}</p>
@@ -68,7 +68,7 @@
                             <!-- 图片消息 -->
                             <div *ngIf="i.content.msg_type === 'image'" (mouseleave)="msgMouseleave()" [ngStyle]="{height: i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon' ? 140 + 20 + 'px' : (i.content.msg_body.width > 219 || i.content.msg_body.height > 300 ? (i.content.msg_body.width/i.content.msg_body.height > 219/300 ? 219/i.content.msg_body.width * i.content.msg_body.height + 20 + 'px' : 300 + 20 + 'px' ) : i.content.msg_body.height + 20 + 'px')}" class="clearfix room-panel-img">
                                 <div class="float-left room-panel-fromId-you room-panel-avatar" (click)="watchOtherInfo(i.content)">
-                                    <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div *ngIf="!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.kLargeEmoticon)" class="float-left">
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
@@ -90,7 +90,7 @@
                             <!-- 文件消息 -->
                             <div *ngIf="i.content.msg_type === 'file' && (!i.content.msg_body.extras || !i.content.msg_body.extras.video)" (mouseleave)="msgMouseleave()" [ngStyle]="{height: 112 + 20 + 'px'}" class="clearfix">
                                 <div class="room-panel-fromId-you float-left room-panel-avatar" (click)="watchOtherInfo(i.content)">
-                                    <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-left clearfix">
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
@@ -114,7 +114,7 @@
                             <!-- 视频消息 -->
                             <div *ngIf="i.content.msg_type === 'file' && i.content.msg_body.extras && i.content.msg_body.extras.video" [ngStyle]="{height: 140 + 20 + 'px'}" (mouseleave)="msgMouseleave()" class="clearfix">
                                 <div class="room-panel-fromId-you float-left room-panel-avatar" (click)="watchOtherInfo(i.content)">
-                                    <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-left">
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
@@ -134,7 +134,7 @@
                             <!-- 地理定位 -->
                             <div *ngIf="i.content.msg_type === 'location'" (mouseleave)="msgMouseleave()" class="room-panel-location clearfix" [ngStyle]="{height: 150 + 20 + 'px'}">
                                 <div class="float-left room-panel-fromId-you room-panel-avatar" (click)="watchOtherInfo(i.content)">
-                                    <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-left">
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
@@ -152,7 +152,7 @@
                             <!-- 语音 -->
                             <div *ngIf="i.content.msg_type === 'voice'" (mouseleave)="msgMouseleave()" class="room-panel-voice room-panel-voice-you clearfix">
                                 <div class="float-left room-panel-fromId-you room-panel-avatar" (click)="watchOtherInfo(i.content)">
-                                    <img (load)="avatarLoad($event)" [src]="i.content.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-left">
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
@@ -174,7 +174,7 @@
                             <!-- 文本消息 -->
                             <div *ngIf="i.content.msg_type === 'text' && (!i.content.msg_body.extras || !i.content.msg_body.extras.businessCard)" class="clearfix" (mouseleave)="msgMouseleave()">
                                 <div class="float-right room-panel-fromId-me room-panel-avatar" (click)="watchSelfInfo()">
-                                    <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="selfInfo.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="room-panel-msgText-me float-right" [ngClass]="{'jpush-emoji-container': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}">
                                     <div *ngIf="i.success === 1" class="room-panel-send-loading"></div>                                
@@ -188,7 +188,7 @@
                             <!-- 名片消息 -->
                             <div *ngIf="i.content.msg_type === 'text' && i.content.msg_body?.extras?.businessCard" (mouseleave)="msgMouseleave()" class="clearfix" style="height: 105px;">
                                 <div class="room-panel-fromId-me float-right room-panel-avatar" (click)="watchSelfInfo()">
-                                    <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="selfInfo.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-right clearfix room-panel-business-card">
                                     <div *ngIf="i.success === 1" class="room-panel-send-loading"></div>                                
@@ -196,7 +196,7 @@
                                     <div class="float-left room-panel-card room-panel-card-me" (click)="watchBusinessCardInfo(i.content.msg_body.extras)">
                                         <div class="display-flex room-panel-card-icon room-panel-card-icon-me">
                                             <div class="room-panel-card-icon-avatar">
-                                                <img (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" [src]="i.content.msg_body.extras.media_url | sanitize: 'url'" alt="">
+                                                <img avatarLoad [avatarError]="0" [src]="i.content.msg_body.extras.media_url | sanitize: 'url'" alt="">
                                             </div>
                                             <div class="flex-1 display-flex justify-content-center flex-direction-vertical">
                                                 <p class="room-panel-card-name" [title]="i.content.msg_body.extras.nickName || i.content.msg_body.extras.userName">{{i.content.msg_body.extras.nickName || i.content.msg_body.extras.userName}}</p>
@@ -213,7 +213,7 @@
                             <!-- 图片消息 -->
                             <div class="room-panel-img-me room-panel-img clearfix" (mouseleave)="msgMouseleave()" *ngIf="i.content.msg_type == 'image'" [ngStyle]="{height: i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon' ? '140px' : (i.content.msg_body.width > 219 || i.content.msg_body.height > 300 ? (i.content.msg_body.width/i.content.msg_body.height > 219/300 ? 219/i.content.msg_body.width * i.content.msg_body.height + 'px' : 300 + 'px' ) : i.content.msg_body.height + 'px')}">
                                 <div class="room-panel-fromId-me float-right room-panel-avatar" (click)="watchSelfInfo()">
-                                    <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="selfInfo.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div *ngIf="!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.kLargeEmoticon)" class="float-right room-panel-message-img-wrap" [ngClass]="{'room-panel-message-img-loading': i.success === 1}">
                                     <div *ngIf="i.success === 3" class="room-panel-send-error" (click)="repeatSendPicAction(i)"></div>
@@ -235,7 +235,7 @@
                             <!-- 文件消息 -->
                             <div (mouseleave)="msgMouseleave()" *ngIf="i.content.msg_type === 'file' && (!i.content.msg_body.extras || (i.content.msg_body.extras && !i.content.msg_body.extras.video))" class="clearfix room-panel-file-container">
                                 <div class="room-panel-fromId-me float-right room-panel-avatar" (click)="watchSelfInfo()">
-                                    <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="selfInfo.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-right room-panel-file-me">
                                     <div *ngIf="i.success === 1" class="room-panel-send-loading"></div>
@@ -263,7 +263,7 @@
                             <!-- 视频消息 -->
                             <div (mouseleave)="msgMouseleave()" *ngIf="i.content.msg_type === 'file' && i.content.msg_body.extras && i.content.msg_body.extras.video" class="clearfix room-panel-video-container">
                                 <div class="room-panel-fromId-me float-right room-panel-avatar" (click)="watchSelfInfo()">
-                                    <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="selfInfo.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-right room-panel-video">
                                     <div *ngIf="i.success === 1" class="room-panel-send-loading"></div>
@@ -282,7 +282,7 @@
                             <!-- 地理定位 -->
                             <div *ngIf="i.content.msg_type === 'location'" (mouseleave)="msgMouseleave()" class="room-panel-location clearfix room-panel-location-container">
                                 <div class="room-panel-fromId-me float-right room-panel-avatar" (click)="watchSelfInfo()">
-                                    <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="selfInfo.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="room-panel-map-wrap float-right">
                                     <div *ngIf="i.success === 1" class="room-panel-send-loading"></div>
@@ -299,7 +299,7 @@
                             <!-- 语音 -->
                             <div *ngIf="i.content.msg_type === 'voice'" (mouseleave)="msgMouseleave()" class="room-panel-voice clearfix">
                                 <div class="float-right room-panel-fromId-me room-panel-avatar" (click)="watchSelfInfo()">
-                                    <img (load)="avatarLoad($event)" [src]="selfInfo.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                                    <img avatarLoad [avatarError]="0" [src]="selfInfo.avatarUrl | sanitize: 'url'" alt="">
                                 </div>
                                 <div class="float-right room-panel-voice-sound room-panel-voice-sound-me" [ngClass]="{loading: i.content.load === 0}">
                                     <div (click)="playVoice(num)" [ngStyle]="{'width': i.content.msg_body.duration * 20 + 'px'}">

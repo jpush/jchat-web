@@ -4,17 +4,17 @@ import { NgModule } from '@angular/core';
 import { PasteImageComponent } from './paste-image.component';
 
 @NgModule({
-  declarations: [
-    PasteImageComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      PasteImageComponent
-  ],
-  providers: []
+    declarations: [
+        PasteImageComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        PasteImageComponent
+    ],
+    providers: []
 })
 
 export class PasteImageModule {}

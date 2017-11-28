@@ -4,17 +4,17 @@ import { NgModule } from '@angular/core';
 import { GroupDescriptionComponent } from './group-description.component';
 
 @NgModule({
-  declarations: [
-    GroupDescriptionComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      GroupDescriptionComponent
-  ],
-  providers: []
+    declarations: [
+        GroupDescriptionComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        GroupDescriptionComponent
+    ],
+    providers: []
 })
 
 export class GroupDescriptionModule {}

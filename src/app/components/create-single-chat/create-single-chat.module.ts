@@ -4,17 +4,17 @@ import { NgModule } from '@angular/core';
 import { CreateSingleChatComponent } from './create-single-chat.component';
 
 @NgModule({
-  declarations: [
-    CreateSingleChatComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      CreateSingleChatComponent
-  ],
-  providers: []
+    declarations: [
+        CreateSingleChatComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        CreateSingleChatComponent
+    ],
+    providers: []
 })
 
 export class CreateSingleChatModule {}

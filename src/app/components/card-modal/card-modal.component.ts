@@ -3,8 +3,6 @@ import { Store } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
 import { mainAction } from '../../pages/main/actions';
 import { global } from '../../services/common';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'card-modal-component',
@@ -130,11 +128,5 @@ export class CardModalComponent implements OnInit {
                 }
             }
         }
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
 }

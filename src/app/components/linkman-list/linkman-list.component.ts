@@ -1,6 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'linkman-list-component',
@@ -33,14 +31,8 @@ export class LinkmanListComponent implements OnInit, DoCheck {
             this.isEmpty = false;
         }
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     private selectLinkmanItem(item) {
         item.type = 3;
         this.selectLinkmanItemEmit.emit(item);
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
 }

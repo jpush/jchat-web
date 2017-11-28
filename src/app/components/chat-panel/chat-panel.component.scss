@@ -263,6 +263,9 @@
                 height: 40px;
                 cursor: pointer;
                 overflow: hidden;
+                img{
+                    width: 100%;
+                }
             }
             .chat-panel-business-card{
                 position: relative;

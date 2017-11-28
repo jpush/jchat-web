@@ -2,9 +2,6 @@ import { Component, OnInit, Input, Output, EventEmitter,
         ElementRef, OnChanges, ViewChild, HostListener } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 @Component({
     selector: 'search-transmit-component',
@@ -71,12 +68,6 @@ export class SearchTransmitComponent implements OnInit, OnChanges {
             this.componentScroll.directiveRef.update();
         });
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
-    }
     private clearInput() {
         this.searchKeyword = '';
         this.groupShowText = '显示全部';
@@ -85,9 +76,6 @@ export class SearchTransmitComponent implements OnInit, OnChanges {
         this.singleHeight = '200px';
         this.searchUser.emit(this.searchKeyword);
         this.fileDom.focus();
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
     private changeChecked(item) {
         this.changeInput.emit(item);

@@ -4,16 +4,16 @@ import { NgModule } from '@angular/core';
 import { FileTypePipe } from './file-type.pipe';
 
 @NgModule({
-  declarations: [
-    FileTypePipe
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      FileTypePipe
-  ],
-  providers: []
+    declarations: [
+        FileTypePipe
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        FileTypePipe
+    ],
+    providers: []
 })
 export class FileTypePipeModule {}

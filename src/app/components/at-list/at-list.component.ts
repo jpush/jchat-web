@@ -1,7 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { global } from '../../services/common';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'at-list-component',
@@ -21,17 +19,11 @@ export class AtListComponent implements OnInit {
     public ngOnInit() {
         // pass
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     private selectPerson(item, event) {
         this.selectAtItem.emit(item);
         event.stopPropagation();
     }
     private stopPropagation(event) {
         event.stopPropagation();
-    }
-    private avatarLoad(event, item) {
-        Util.reduceAvatarSize(event);
     }
 }

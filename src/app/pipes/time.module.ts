@@ -4,16 +4,16 @@ import { NgModule } from '@angular/core';
 import { TimePipe } from './time.pipe';
 
 @NgModule({
-  declarations: [
-    TimePipe
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      TimePipe
-  ],
-  providers: []
+    declarations: [
+        TimePipe
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        TimePipe
+    ],
+    providers: []
 })
 export class TimePipeModule {}

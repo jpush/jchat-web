@@ -9,19 +9,18 @@ import { RegisterComponent } from './register.component';
 import { TipModalModule } from '../../components/tip-modal';
 
 @NgModule({
-  declarations: [
-    RegisterComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule.forChild(REGISTER_ROUTER),
-    TipModalModule
-  ],
-  providers: [
-
-  ]
+    declarations: [
+        RegisterComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterModule.forChild(REGISTER_ROUTER),
+        TipModalModule
+    ],
+    providers: [
+    ]
 })
 export class RegisterModule {
-  public static routes = REGISTER_ROUTER;
+    public static routes = REGISTER_ROUTER;
 }

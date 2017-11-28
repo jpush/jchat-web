@@ -212,6 +212,9 @@
                     height: 40px;
                     cursor: pointer;
                     overflow: hidden;
+                    img{
+                        width: 100%;
+                    }
                 }
                 .room-panel-business-card{
                     position: relative;

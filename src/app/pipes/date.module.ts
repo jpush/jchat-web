@@ -4,16 +4,16 @@ import { NgModule } from '@angular/core';
 import { DatePipe } from './date.pipe';
 
 @NgModule({
-  declarations: [
-    DatePipe
-  ],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  exports: [
-      DatePipe
-  ],
-  providers: []
+    declarations: [
+        DatePipe
+    ],
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    exports: [
+        DatePipe
+    ],
+    providers: []
 })
 export class DatePipeModule {}

@@ -8,20 +8,20 @@ import { LinkmanListModule } from '../../components/linkman-list';
 import { VerifyModule } from '../../components/verify';
 
 @NgModule({
-  declarations: [
-    ContactComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    GroupListModule,
-    ContactListModule,
-    LinkmanListModule,
-    VerifyModule
-  ],
-  exports: [
-      ContactComponent
-  ],
-  providers: []
+    declarations: [
+        ContactComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        GroupListModule,
+        ContactListModule,
+        LinkmanListModule,
+        VerifyModule
+    ],
+    exports: [
+        ContactComponent
+    ],
+    providers: []
 })
 export class ContactModule {}

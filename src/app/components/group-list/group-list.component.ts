@@ -1,6 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
-import { Util } from '../../services/util';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 @Component({
     selector: 'group-list-component',
@@ -38,11 +36,5 @@ export class GroupListComponent implements OnInit, DoCheck {
     private selectGroupItem(item) {
         item.type = 4;
         this.selectGroupItemEmit.emit(item);
-    }
-    private avatarLoad(event, item) {
-        Util.reduceAvatarSize(event);
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
     }
 }

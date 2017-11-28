@@ -8,22 +8,22 @@ import { FileSizePipeModule, FileTypePipeModule,
   DatePipeModule, FileNamePipeModule } from '../../pipes';
 
 @NgModule({
-  declarations: [
-    MessageFileComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
-    FileSizePipeModule,
-    FileTypePipeModule,
-    DatePipeModule,
-    FileNamePipeModule
-  ],
-  exports: [
-      MessageFileComponent
-  ],
-  providers: []
+    declarations: [
+        MessageFileComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
+        FileSizePipeModule,
+        FileTypePipeModule,
+        DatePipeModule,
+        FileNamePipeModule
+    ],
+    exports: [
+        MessageFileComponent
+    ],
+    providers: []
 })
 
 export class MessageFileModule {}

@@ -1,6 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Util } from '../../services/util';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'verify-component',
@@ -38,12 +36,6 @@ export class VerifyComponent implements OnInit {
     }
     public ngOnInit() {
         // pass
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
     private agreeAddFriend(message, type) {
         /**

@@ -6,9 +6,6 @@ import { AppStore } from '../../app.store';
 import { mainAction } from '../../pages/main/actions';
 import { chatAction } from '../../pages/chat/actions';
 import { global } from '../../services/common';
-import { Util } from '../../services/util';
-const singleErrorIcon = '../../../assets/images/single-avatar.svg';
-const groupErrorIcon = '../../../assets/images/group-avatar.svg';
 
 @Component({
     selector: 'message-transmit-component',
@@ -119,9 +116,6 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
             }
         }
     }
-    private avatarErrorIcon(event, item) {
-        event.target.src = item.type === 4 ? groupErrorIcon : singleErrorIcon;
-    }
     private confirmMessageTransmit() {
         if (this.selectList.length > 0) {
             this.confirmTransmit.emit({
@@ -175,8 +169,5 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
                 break;
             }
         }
-    }
-    private avatarLoad(event) {
-        Util.reduceAvatarSize(event);
     }
 }

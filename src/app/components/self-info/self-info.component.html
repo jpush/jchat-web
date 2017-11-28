@@ -5,11 +5,11 @@
         <info-menu-component [hidden]="!infoMenu.show" [menu]="infoMenu" (selectMenuItem)="selectMenuItemEmit($event)"></info-menu-component>
         <div class="self-info-avatar">
             <div [hidden]="isEdit" class="self-info-show-avatar">
-                <img [src]="selfInfo.info.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                <img [src]="selfInfo.info.avatarUrl | sanitize: 'url'" avatarLoad [avatarError]="0" alt="">
             </div>
             <div [hidden]="!isEdit">
                 <label for="selfAvatarInput" [ngClass]="{'camera-shadow': cameraShadow}">
-                    <img id="selfAvatarImg" (load)="avatarLoad($event)" [src]="selfInfo.info.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                    <img id="selfAvatarImg" avatarLoad [avatarError]="0" [src]="selfInfo.info.avatarUrl | sanitize: 'url'" alt="">
                 </label>
             </div>
             <input spellcheck="false" (change)="selfAvatarChange()" type="file" id="selfAvatarInput" style="display:none;">

@@ -7,7 +7,7 @@
         <ul class="black-menu-wrap" *ngIf="menuInfo && menuInfo.length > 0">
             <li *ngFor="let item of menuInfo" class="display-flex">
                 <div class="black-menu-avatar">
-                    <img (load)="avatarLoad($event)" [src]="item.avatarUrl | sanitize : 'url'" alt="" (error)="avatarErrorIcon($event)">
+                    <img avatarLoad [avatarError]="0" [src]="item.avatarUrl | sanitize : 'url'" alt="">
                 </div>
                 <span class="flex-1" [title]="item.memo_name || item.nickname || item.username">{{item.memo_name || item.nickname || item.username}}</span>
                 <button *ngIf="item.loading !== false" type="button" (click)="delSingleBlackAction(item)" [ngClass]="{'loading': item.loading}">移出</button>
