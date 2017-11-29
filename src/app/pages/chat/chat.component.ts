@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, HostListener, OnDestroy, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs/Subject';
+import { Title } from '@angular/platform-browser';
 import { global, authPayload, StorageService } from '../../services/common';
 import { AppStore } from '../../app.store';
 import { chatAction } from './actions';
@@ -152,10 +153,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
-        private elementRef: ElementRef
-    ) {
-        // pass
-    }
+        private elementRef: ElementRef,
+        private titleService: Title
+    ) {}
     public ngOnInit() {
         this.store$.dispatch({
             type: chatAction.init,
@@ -1247,14 +1247,14 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.newMessageNotice.num ++;
             clearInterval(this.newMessageNotice.timer);
             this.newMessageNotice.timer = setInterval(() => {
-                if (document.title === 'JChat - 极光 IM Demo') {
-                    document.title = `jchat(${this.newMessageNotice.num})`;
+                if (this.titleService.getTitle() === 'JChat - 极光 IM Demo') {
+                    this.titleService.setTitle(`jchat(${this.newMessageNotice.num})`);
                 } else {
-                    document.title = 'JChat - 极光 IM Demo';
+                    this.titleService.setTitle('JChat - 极光 IM Demo');
                 }
                 if (this.newMessageNotice.num === 0) {
                     clearInterval(this.newMessageNotice.timer);
-                    document.title = 'JChat - 极光 IM Demo';
+                    this.titleService.setTitle('JChat - 极光 IM Demo');
                 }
             }, 1000);
         }

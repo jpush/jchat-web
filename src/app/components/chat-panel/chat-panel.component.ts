@@ -619,7 +619,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 拖拽预览文件或者图片
     private dropArea(event) {
         event.preventDefault();
-        let fileList = event.dataTransfer.files;
+        const fileList = event.dataTransfer.files;
         if (fileList.length === 0) {
             return false;
         }
@@ -700,7 +700,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 }
                 if (!isAtAll) {
                     for (let item of usernameArr){
-                        let result = atList.filter((atItem) => {
+                        const result = atList.filter((atItem) => {
                             return atItem.username === item.username;
                         });
                         if (result.length === 0) {

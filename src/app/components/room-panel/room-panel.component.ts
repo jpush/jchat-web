@@ -237,7 +237,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
                     latitude: msgBody.latitude,
                     scale: msgBody.scale
                 });
-            }, 100);
+            });
         }
     }
     private msgContentClick(event) {
@@ -620,7 +620,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
             // 如果是未读
             if (!this.messageList[index].content.havePlay) {
                 let voiceState = {
-                    key: this.enter.id,
+                    id: this.enter.id,
                     msgId: this.messageList[index].msg_id
                 };
                 this.voiceState.push(voiceState);
@@ -652,5 +652,10 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
         this.messageList[index].content.playing = false;
         audio.currentTime = 0;
         audio.pause();
+    }
+    // 语音加载完成
+    private voiceLoad(index) {
+        const audio = this.elementRef.nativeElement.querySelector('#audio' + index);
+        this.messageList[index].content.load = 1;
     }
 }

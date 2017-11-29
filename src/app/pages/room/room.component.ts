@@ -1,4 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, Output,
+    EventEmitter, ElementRef, AfterViewInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { global, authPayload } from '../../services/common';
 import { roomAction } from './actions';
@@ -13,7 +14,7 @@ const PageSize = 20;
     styleUrls: ['./room.component.scss']
 })
 
-export class RoomComponent implements OnInit {
+export class RoomComponent implements OnInit, AfterViewInit {
     private roomList = [];
     private active: any = {};
     private roomDetail = {};
@@ -50,11 +51,6 @@ export class RoomComponent implements OnInit {
                 appkey: authPayload.appKey
             }
         });
-        // 获取本地存储的语音已读状态
-        this.store$.dispatch({
-            type: roomAction.getRoomVoiceState,
-            payload: `voiceRoomState-${authPayload.appKey}-${global.user}`
-        });
         // 获取自己目前所在的群聊列表
         this.store$.dispatch({
             type: roomAction.getSelfChatrooms,
@@ -67,6 +63,13 @@ export class RoomComponent implements OnInit {
             return state;
         }).subscribe((state) => {
             // pass
+        });
+    }
+    public ngAfterViewInit() {
+        // 获取本地存储的语音已读状态
+        this.store$.dispatch({
+            type: roomAction.getRoomVoiceState,
+            payload: `voiceRoomState-${authPayload.appKey}-${global.user}`
         });
     }
     private stateChanged(roomState, mainState) {
@@ -96,6 +99,7 @@ export class RoomComponent implements OnInit {
                     type: roomAction.showPanel,
                     payload: 1
                 });
+                this.messageList = roomState.messageList;
                 break;
             case mainAction.selectSearchRoomUser:
                 this.active = roomState.active;
@@ -147,6 +151,7 @@ export class RoomComponent implements OnInit {
                         payload: this.rememberEnter
                     });
                 }
+                this.messageList = roomState.messageList;
             case mainAction.createGroup:
 
             case mainAction.selectSearchUser:

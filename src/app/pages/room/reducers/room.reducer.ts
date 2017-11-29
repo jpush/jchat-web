@@ -23,6 +23,7 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
         case roomAction.changeRoomSuccess:
             state.active = payload.active;
             state.roomDetail = payload.info;
+            state.messageList = [];
             break;
         // 进入聊天室
         case roomAction.enterRoom:
@@ -89,6 +90,11 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
         case roomAction.showPanel:
             state.showPanel = payload;
             break;
+        case mainAction.changeListTab:
+            if (payload !== 2) {
+                state.messageList = [];
+            }
+            break;
         default:
     }
     return state;
@@ -131,6 +137,13 @@ function addMessage(state: RoomStore, payload) {
     if (payload.content.msg_type === 'voice') {
         payload.content.playing = false;
         payload.content.havePlay = false;
+        for (let voice of state.voiceRoomState) {
+            if (Number(voice.id) === Number(payload.room_id) &&
+                Number(voice.msgId) === Number(payload.msg_id)) {
+                payload.content.havePlay = true;
+                break;
+            }
+        }
         payload.content.load = 0;
     }
     // 初始化小视频动画
