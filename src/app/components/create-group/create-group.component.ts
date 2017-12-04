@@ -26,7 +26,6 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     private searchResult = {
         result: [],
         show: false,
-        id: 'createGroupSearch',
         checkbox: {
             show: true,
             list: []

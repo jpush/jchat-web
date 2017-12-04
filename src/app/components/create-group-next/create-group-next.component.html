@@ -5,13 +5,13 @@
             <span class="modal-close" (click)="closeCreateGroupNextAction()"></span>
         </h2>
         <label for="createGroupAvatar" class="create-group-next-avatar">
-            <img avatarLoad [avatarError]="1" [src]="groupAvatarInfo.src" alt="">
+            <img avatarLoad [avatarError]="4" [src]="groupAvatarInfo.src" alt="">
             <input id="createGroupAvatar" type="file" (change)="changeCreateGroupAvatarAction($event)">
         </label>
         <div class="create-group-next-container">
             <div class="create-group-next-name clearfix">
                 <span class="create-group-next-text float-left">群名称：</span>
-                <input id="createGroupNextInput" type="text" class="input-focus float-left" [class.error]="nameTip.length > 0" (keyup)="groupNameKeyup()" maxlength="20" #groupName placeholder="请输入群组名称">
+                <input #createGroupNextInput type="text" class="input-focus float-left" [class.error]="nameTip.length > 0" (keyup)="groupNameKeyup()" maxlength="20" #groupName placeholder="请输入群组名称">
                 <span class="create-group-next-number float-left">{{20 - groupName.value.length}}</span>
                 <span class="create-group-next-tip">{{nameTip}}</span>
             </div>

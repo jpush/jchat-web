@@ -6,6 +6,9 @@
         width: 320px;
         margin: 31px auto 0;
         position: relative;
+        input.error{
+            border-color: #EB424C;
+        }
         span{
             display: block;
             width: 40px;

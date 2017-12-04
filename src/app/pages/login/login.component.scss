@@ -146,7 +146,7 @@
                 height: 42px;
                 font-size: 16px;
                 color: #FFFFFF;
-                &.disabled{
+                &:disabled{
                     color: #d9f6f6 !important;
                     background-color: #81e3e2 !important;
                     border-color: #81e3e2 !important;

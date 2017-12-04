@@ -1,6 +1,9 @@
 .single-chat-wrap{
     .modal-input{
         padding-top: 31px;
+        input.error{
+            border-color: #EB424C;
+        }
         .modal-info{
             text-align: left;
             padding-left: 26px;

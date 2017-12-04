@@ -2,10 +2,10 @@ import { md5 } from '../tools';
 import { authPayload } from '../common';
 import '../tools/dict/pinyin_dict_notone.js';
 import '../tools/pinyinUtil.js';
-declare let pinyinUtil: any;
-declare let BMap;
+declare const pinyinUtil;
+declare const BMap;
 
-export class Util {
+export abstract class Util {
     /**
      * 将input file转化成formData对象
      * @param file: Object
@@ -21,7 +21,7 @@ export class Util {
      * @param name string
      * @return string 后缀名
      */
-    public static getExt(name) {
+    public static getExt(name: string): string {
         const index = name.lastIndexOf('.');
         return index === -1 ? '' : name.substring(index + 1);
     }
@@ -30,7 +30,7 @@ export class Util {
      * @param ext string
      * @return string 后缀名
      */
-    public static sortByExt(ext: string) {
+    public static sortByExt(ext: string): string {
         if (ext === '') {
             return 'other';
         }
@@ -58,11 +58,11 @@ export class Util {
         return newType;
     }
     /**
-     * doubleNumber 将数字9转化成09
+     * doubleNumber 将数字格式化成两位数，如9转化成09，15还是转化成15
      * @param num: 一位或者两位整数
      * @return string 两位的字符串
      */
-    public static doubleNumber(num) {
+    public static doubleNumber(num: number): string {
         return num < 10 ? '0' + num : num.toString();
     }
     /**
@@ -71,7 +71,7 @@ export class Util {
      * @param callback: function 回调函数
      * @param callback2: function 回调函数
      */
-    public static imgReader(file, callback ?: Function, callback2 ?: Function) {
+    public static imgReader(file, callback ?: Function, callback2 ?: Function): void | boolean {
         let files = file.files[0];
         if (!/image\/\w+/.test(files.type)) {
             callback();
@@ -112,7 +112,8 @@ export class Util {
      * @param callback2 回调函数2
      * @param callback3 回调函数3
      */
-    public static getAvatarImgObj(file, callback1, callback2, callback3) {
+    public static getAvatarImgObj
+        (file, callback1: Function, callback2: Function, callback3: Function): void | boolean {
         if (!file || !file.type || file.type === '') {
             return false;
         }
@@ -145,7 +146,7 @@ export class Util {
      * @param file: Object, input file 对象
      * @param callback: function 回调函数
      */
-    public static fileReader(file, callback ?: Function) {
+    public static fileReader(file, callback ?: Function): Promise<any> | boolean {
         let files = file.files[0];
         if (!files.type || files.type === '') {
             return false;
@@ -170,7 +171,7 @@ export class Util {
      * @param value: string 需要插入的内容
      * @param selectPastedContent: boolean 选中内容还是开始点和结束点一致
      */
-    public static insertAtCursor(field, value, selectPastedContent) {
+    public static insertAtCursor(field, value: string, selectPastedContent?: boolean): void {
         let sel;
         let range;
         field.focus();
@@ -207,7 +208,7 @@ export class Util {
      * contenteditable输入框光标聚焦到最后
      * @param obj: Object  输入框dom对象
      */
-    public static focusLast(obj) {
+    public static focusLast(obj): void {
         if (window.getSelection) {
             const range = window.getSelection();
             range.selectAllChildren(obj);
@@ -219,7 +220,7 @@ export class Util {
      * @param str: string  需要操作的字符串
      * @return boolean
      */
-    public static firstLetterIsChinese(str: string) {
+    public static firstLetterIsChinese(str: string): boolean {
         const re = /^[\\u4e00-\\u9fa5]/;
         return re.test(str) ? false : true ;
     }
@@ -228,7 +229,7 @@ export class Util {
      * @param payload: array 需要排序的数组
      * @return array 排好序的数组array
      */
-    public static sortByLetter(payload) {
+    public static sortByLetter(payload: any[]): any[] {
         const letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
             'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '#'];
         let result = [];
@@ -280,7 +281,7 @@ export class Util {
      * @param payload: Object  需要插入的元素
      * @return array 插入元素之后的数组
      */
-    public static insertSortByLetter(arr, payload) {
+    public static insertSortByLetter(arr: any[], payload): any[] {
         const name =
                 (payload.nickName && payload.nickName !== '') ? payload.nickName : payload.name;
         const firstLetter = this.getFirstLetter(name);
@@ -302,7 +303,7 @@ export class Util {
      * @param name: 要获取首字母的字符串
      * @return string 首字母
      */
-    public static getFirstLetter(name) {
+    public static getFirstLetter(name: string): string {
         let firstLetter = name.charAt(0);
         if (name.match(/^[a-zA-Z]/)) {
             firstLetter = firstLetter.toUpperCase();
@@ -322,7 +323,7 @@ export class Util {
      * 获取成员备注名、昵称、用户名首字母
      * @param arr: 成员列表
      */
-    public static getMembersFirstLetter(arr) {
+    public static getMembersFirstLetter(arr: any[]): void {
         for (let item of arr) {
             if (item.nickName && item.nickName !== '') {
                 item.nickNameFirstLetter = this.getFirstLetter(item.nickName);
@@ -339,7 +340,7 @@ export class Util {
      * 获取备注名首字母
      * @param member: 用户对象
      */
-    public static getMemo_nameFirstLetter(member) {
+    public static getMemo_nameFirstLetter(member): void {
         if (member.memo_name && member.memo_name !== '') {
             member.memo_nameFirstLetter = this.getFirstLetter(member.memo_name);
         }
@@ -348,7 +349,7 @@ export class Util {
      * 将接收到的地理定位坐标转化为地图
      * @param obj: Object 坐标对象
      */
-    public static theLocation(obj) {
+    public static theLocation(obj): void {
         let point = new BMap.Point(obj.longitude, obj.latitude);
         let map = new BMap.Map(obj.id);
         // 默认缩放比例是13
@@ -379,7 +380,7 @@ export class Util {
      * 今年其他时间 --- month
      * 今年之前的时间 --- year
      */
-    public static reducerDate(msgTime) {
+    public static reducerDate(msgTime: number): string {
         const time = new Date(msgTime);
         const now = new Date();
         const msgYear = time.getFullYear();
@@ -412,7 +413,7 @@ export class Util {
      * @param newTime: number
      * @return boolean
      */
-    public static fiveMinutes(oldTime, newTime) {
+    public static fiveMinutes(oldTime: number, newTime: number): boolean {
         const gap = newTime - oldTime;
         return gap / 1000 / 60 > 5 ? true : false;
     }
@@ -422,12 +423,10 @@ export class Util {
      * @return object 光标的位置
      */
     public static getOffset(input) {
-        const userAgent = navigator.userAgent;
         const sel = window.getSelection();
         const range = sel.getRangeAt(0);
         let offset;
-        const isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
-        if (!isSafari) {
+        if (!this.isSafari()) {
             offset = range.getBoundingClientRect();
         } else {
             let clonedRange;
@@ -466,7 +465,7 @@ export class Util {
      * @param obj: object 需要拷贝的对象
      * @return result 新的对象
      */
-    public static deepCopyObj(obj) {
+    public static deepCopyObj(obj: object) {
         return JSON.parse(JSON.stringify(obj));
     }
     /**
@@ -474,14 +473,14 @@ export class Util {
      * @param timestamp: number 当前的时间毫秒数
      * @return string 签名
      */
-    public static createSignature(timestamp: number) {
+    public static createSignature(timestamp: number): string {
         return md5(`appkey=${authPayload.appKey}&timestamp=${timestamp}&random_str=${authPayload.randomStr}&key=${authPayload.masterkey}`);
     }
     /**
      * 处理头像的大小
      * @param event: object 头像dom的事件对象
      */
-    public static reduceAvatarSize(event) {
+    public static reduceAvatarSize(event): void {
         if (event.target.naturalHeight >= event.target.naturalWidth) {
             event.target.style.width = '100%';
             event.target.style.height = 'auto';
@@ -489,6 +488,14 @@ export class Util {
             event.target.style.height = '100%';
             event.target.style.width = 'auto';
         }
+    }
+    /**
+     * 判断是否是safari浏览器
+     * @return boolean
+     */
+    public static isSafari(): boolean {
+        const userAgent = navigator.userAgent;
+        return userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
     }
     constructor() {
         // pass

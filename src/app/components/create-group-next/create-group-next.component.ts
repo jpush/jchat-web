@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output,
-    EventEmitter, AfterViewInit, ElementRef } from '@angular/core';
+    EventEmitter, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
     selector: 'create-group-next-component',
@@ -8,6 +8,7 @@ import { Component, OnInit, Input, Output,
 })
 
 export class CreateGroupNextComponent implements OnInit, AfterViewInit {
+    @ViewChild('createGroupNextInput') private createGroupNextInput;
     @Input()
         private groupAvatarInfo;
     @Input()
@@ -21,16 +22,14 @@ export class CreateGroupNextComponent implements OnInit, AfterViewInit {
     @Output()
         private completeCreateGroup: EventEmitter<any> = new EventEmitter();
     private nameTip = '';
-    constructor(
-        private elementRef: ElementRef
-    ) {
+    constructor() {
         // pass
     }
     public ngOnInit() {
         // pass
     }
     public ngAfterViewInit() {
-        this.elementRef.nativeElement.querySelector('#createGroupNextInput').focus();
+        this.createGroupNextInput.nativeElement.focus();
     }
     private changeCreateGroupAvatarAction(event) {
         this.changeCreateGroupAvatar.emit(event.target);

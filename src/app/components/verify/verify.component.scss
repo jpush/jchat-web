@@ -51,13 +51,14 @@
             -webkit-box-sizing: border-box;
                     box-sizing: border-box;
             &:hover{
-                background: #F2F6FB;
+                background-color: #F2F6FB;
             }
             .verify-avatar{
                 width: 40px;
                 height: 40px;
                 margin-right: 9px;
                 cursor: pointer;
+                overflow: hidden;
                 img{
                     width: 100%;
                 }

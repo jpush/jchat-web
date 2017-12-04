@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter,
-    OnChanges, ElementRef, AfterViewInit } from '@angular/core';
+    OnChanges, AfterViewInit, ViewChild } from '@angular/core';
 import { Util } from '../../services/util';
 import { Store } from '@ngrx/store';
 import { mainAction } from '../../pages/main/actions';
@@ -10,7 +10,9 @@ import { mainAction } from '../../pages/main/actions';
     styleUrls: ['./self-info.component.scss']
 })
 
-export class SelfInfoComponent implements OnChanges, AfterViewInit {
+export class SelfInfoComponent implements OnChanges {
+    @ViewChild('selfAvatarImg') private selfAvatarImg;
+    @ViewChild('selfAvatarInput') private selfAvatarInput;
     @Input()
         private selfInfo;
     // 用来标识更新个人信息成功
@@ -76,10 +78,7 @@ export class SelfInfoComponent implements OnChanges, AfterViewInit {
         filename: '',
         title: '个人头像'
     };
-    private selfAvatarImg;
-    private selfAvatarInput;
     constructor(
-        private elementRef: ElementRef,
         private store$: Store<any>
     ) {}
     public ngOnChanges(change) {
@@ -91,10 +90,6 @@ export class SelfInfoComponent implements OnChanges, AfterViewInit {
         if (change.updateSelfInfoFlag) {
             this.isEdit = false;
         }
-    }
-    public ngAfterViewInit() {
-        this.selfAvatarImg = this.elementRef.nativeElement.querySelector('#selfAvatarImg');
-        this.selfAvatarInput = this.elementRef.nativeElement.querySelector('#selfAvatarInput');
     }
     private sexActive() {
         switch (this.selfInfo.info.gender) {
@@ -132,7 +127,7 @@ export class SelfInfoComponent implements OnChanges, AfterViewInit {
         this.sendCard.emit(this.selfInfo.info);
     }
     private selfCancel() {
-        this.selfAvatarInput.value = '';
+        this.selfAvatarInput.nativeElement.value = '';
         this.isEdit = false;
         this.sexActive();
     }
@@ -157,46 +152,46 @@ export class SelfInfoComponent implements OnChanges, AfterViewInit {
         this.isShow.emit(newInfo);
     }
     private selfAvatarChange() {
-        this.getImgObj(this.selfAvatarInput.files[0]);
-        this.selfAvatarInput.value = '';
+        this.getImgObj(this.selfAvatarInput.nativeElement.files[0]);
+        this.selfAvatarInput.nativeElement.value = '';
     }
     // 获取图片对象
     private getImgObj(file) {
-        Util.getAvatarImgObj(file, () => {
-            this.selectIsNotImage.emit();
-        }, () => {
-            this.store$.dispatch({
-                type: mainAction.showModalTip,
-                payload: {
-                    show: true,
-                    info: {
-                        title: '提示',
-                        tip: '选择的图片宽或高的尺寸太小，请重新选择图片',
-                        actionType: '[chat] must be image',
-                        cancel: true
+        Util.getAvatarImgObj(file,
+            () => this.selectIsNotImage.emit(),
+            () => {
+                this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '提示',
+                            tip: '选择的图片宽或高的尺寸太小，请重新选择图片',
+                            actionType: '[chat] must be image',
+                            cancel: true
+                        }
                     }
-                }
+                });
+            }, (that, pasteFile, img) => {
+                this.avatarConfig.info = {
+                    src: that.result,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    pasteFile
+                };
+                this.avatarConfig.src =  that.result;
+                this.avatarConfig.show = true;
+                this.avatarConfig.filename = file.name;
             });
-        }, (that, pasteFile, img) => {
-            this.avatarConfig.info = {
-                src: that.result,
-                width: img.naturalWidth,
-                height: img.naturalHeight,
-                pasteFile
-            };
-            this.avatarConfig.src =  that.result;
-            this.avatarConfig.show = true;
-            this.avatarConfig.filename = file.name;
-        });
     }
     private avatarConfirmEmit(avatarConfig) {
         this.newAvatar.formData = avatarConfig.formData;
-        this.selfAvatarImg.src = avatarConfig.src;
+        this.selfAvatarImg.nativeElement.src = avatarConfig.src;
         this.newAvatar.url = avatarConfig.src;
         this.cameraShadow = false;
     }
     private toEdit() {
         this.isEdit = true;
-        this.selfAvatarImg.src = this.selfInfo.info.avatarUrl;
+        this.selfAvatarImg.nativeElement.src = this.selfInfo.info.avatarUrl;
     }
 }

@@ -27,7 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
             address: 'ws://183.232.25.91:9091'
         });
         this.appStream$ = this.store$.select((state) => {
-            let appState = state['appReducer'];
+            const appState = state['appReducer'];
             switch (appState.actionType) {
                 case appAction.errorApiTip:
                     this.errorApiTip(appState.errorApiTip);

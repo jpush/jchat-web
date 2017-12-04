@@ -17,7 +17,7 @@
                 <p *ngIf="tip.repeatPasswordTip" class="register-tip">{{tip.repeatPasswordTip}}</p>
             </div>
             <p class="register-btn">
-                <button [ngClass]="{'disabled': !isButtonAvailable}" class="btn-active" type="button" (click)="register()">注册</button>
+                <button [disabled]="!isButtonAvailable" class="btn-active" type="button" (click)="register()">注册</button>
             </p>
             <p class="register-to-login">
                 已有账号？

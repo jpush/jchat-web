@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter,
-        ElementRef, OnChanges, ViewChild, HostListener } from '@angular/core';
+        OnChanges, ViewChild, HostListener, AfterViewInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 
@@ -9,35 +9,39 @@ import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
     styleUrls: ['./search-transmit.component.scss']
 })
 
-export class SearchTransmitComponent implements OnInit, OnChanges {
+export class SearchTransmitComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @ViewChild(PerfectScrollbarComponent) private componentScroll;
+    @ViewChild('searchInput') private searchInput;
     private searchKeyword;
     private searchInputIsShow = true;
     private singleShowText = '显示全部';
     private groupShowText = '显示全部';
     private singleHeight = '200px';
     private groupHeight = '200px';
-    private fileDom;
+    private inputStream$;
     @Input()
         private searchUserResult;
     @Output()
         private searchUser: EventEmitter<any> = new EventEmitter();
     @Output()
         private changeInput: EventEmitter<any> = new EventEmitter();
-    constructor(
-        private elementRef: ElementRef
-    ) {}
+    constructor() {
+        // pass
+    }
     public ngOnInit() {
-        this.fileDom = this.elementRef.nativeElement.querySelector('#searchInput');
-        Observable.fromEvent(this.fileDom, 'keyup')
-            .subscribe((event: any) => {
-                this.searchUser.emit(event.target.value);
-            });
+        // pass
     }
     public ngOnChanges() {
         if (!this.searchUserResult.isSearch) {
             this.searchKeyword = '';
         }
+    }
+    public ngAfterViewInit() {
+        this.inputStream$ = Observable.fromEvent(this.searchInput.nativeElement, 'keyup')
+                    .subscribe((event: any) => this.searchUser.emit(event.target.value));
+    }
+    public ngOnDestroy() {
+        this.inputStream$.unsubscribe();
     }
     @HostListener('window:click') private onWindowClick() {
         this.searchUserResult.isSearch = false;
@@ -75,7 +79,7 @@ export class SearchTransmitComponent implements OnInit, OnChanges {
         this.singleShowText = '显示全部';
         this.singleHeight = '200px';
         this.searchUser.emit(this.searchKeyword);
-        this.fileDom.focus();
+        this.searchInput.nativeElement.focus();
     }
     private changeChecked(item) {
         this.changeInput.emit(item);

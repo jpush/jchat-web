@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter,
-    HostListener, ElementRef } from '@angular/core';
+    HostListener, ViewChild } from '@angular/core';
 import { Store, Action } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
 import * as download from 'downloadjs';
@@ -12,6 +12,7 @@ import { Util } from '../../services/util';
 })
 
 export class ImageViewerComponent implements OnInit {
+    @ViewChild('viewerWrap') private viewerWrap;
     @Input()
         private imageViewer;
     private imageStream$;
@@ -35,11 +36,8 @@ export class ImageViewerComponent implements OnInit {
     private imgHidden = false;
     private index;
     constructor(
-        private elementRef: ElementRef,
         private store$: Store<any>
-    ) {
-
-    }
+    ) {}
     public ngOnInit() {
         if (!this.imageViewer) {
             this.imageViewer = {
@@ -80,11 +78,10 @@ export class ImageViewerComponent implements OnInit {
         }
     }
     private initImgviewer() {
-        const viewerWrap = this.elementRef.nativeElement.querySelector('#viewerWrap');
         const activeWidth = this.imageViewer.active.width;
         const activeHeight = this.imageViewer.active.height;
-        const offsetWidth = viewerWrap.offsetWidth;
-        const offsetHeight = viewerWrap.offsetHeight;
+        const offsetWidth = this.viewerWrap.nativeElement.offsetWidth;
+        const offsetHeight = this.viewerWrap.nativeElement.offsetHeight;
         if (activeWidth / offsetWidth > activeHeight / offsetHeight &&
             activeWidth > offsetWidth * 0.6) {
             this.position.width = this.initPosition.width = offsetWidth * 0.6;

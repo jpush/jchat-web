@@ -21,6 +21,8 @@ import * as download from 'downloadjs';
 
 export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     @ViewChild(PerfectScrollbarComponent) private componentScroll;
+    @ViewChild('contentDiv') private contentDiv;
+    @ViewChild('chatPanelContainer') private chatPanelContainer;
     @Input()
         private messageList;
     @Input()
@@ -76,7 +78,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         jpushAlias: jpushConfig,
         contentId: 'contentDiv'
     };
-    private contentDiv;
     private chatStream$;
     private msg = [];
     private groupConversationHover = {
@@ -216,7 +217,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     public ngAfterViewInit() {
         this.allPointerToMap();
-        this.contentDiv = this.elementRef.nativeElement.querySelector('#contentDiv');
     }
     public ngOnDestroy() {
         this.chatStream$.unsubscribe();
@@ -228,8 +228,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         setTimeout(() => {
             this.componentScroll.directiveRef.update();
             this.componentScroll.directiveRef.scrollToBottom();
-            this.contentDiv.focus();
-            Util.focusLast(this.contentDiv);
+            this.contentDiv.nativeElement.focus();
+            Util.focusLast(this.contentDiv.nativeElement);
             if (changeActive) {
                 this.loadFlag = true;
             }
@@ -241,7 +241,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     @HostListener('document:dragleave', ['$event']) private onDragleave(event) {
         event.preventDefault();
     }
-    @HostListener('document:dragenter', ['$event']) private ondDagenter(event) {
+    @HostListener('document:dragenter', ['$event']) private onDragenter(event) {
         event.preventDefault();
     }
     @HostListener('document:dragover', ['$event']) private onDragover(event) {
@@ -580,9 +580,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         const files = clipboardData.files;
         let item;
         // 粘贴图片不兼容safari
-        const userAgent = navigator.userAgent;
-        const isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
-        if (!isSafari) {
+        if (!Util.isSafari()) {
             if (files && files.length) {
                 this.getImgObj(files[0]);
             } else if (items) {
@@ -603,7 +601,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         pastedData = pastedData.replace(/\n/g, '<br>');
         pastedData = pastedData.replace(/ /g, '&nbsp;');
         pastedData = Emoji.emoji(pastedData, 18);
-        Util.insertAtCursor(this.contentDiv, pastedData, false);
+        Util.insertAtCursor(this.contentDiv.nativeElement, pastedData, false);
         return false;
     }
     // 粘贴图片发送
@@ -662,7 +660,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 发送文本
     private sendMsgAction() {
-        let draft = this.contentDiv.innerHTML;
+        let draft = this.contentDiv.nativeElement.innerHTML;
         if (draft) {
             draft = draft.replace(/^(<br>){1,}$/g, '');
             draft = draft.replace(/&nbsp;/g, ' ');
@@ -718,7 +716,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             });
             this.messageList[this.active.activeIndex].draft = '';
             this.flag = true;
-            this.contentDiv.innerHTML = '';
+            this.contentDiv.nativeElement.innerHTML = '';
         }
     }
     // 发送图片
@@ -732,8 +730,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             img,
             type: 'send'
         });
-        this.contentDiv.focus();
-        Util.focusLast(this.contentDiv);
+        this.contentDiv.nativeElement.focus();
+        Util.focusLast(this.contentDiv.nativeElement);
         event.target.value = '';
     }
     // 发送文件
@@ -747,8 +745,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             file,
             fileData: event.target.files[0]
         });
-        this.contentDiv.focus();
-        Util.focusLast(this.contentDiv);
+        this.contentDiv.nativeElement.focus();
+        Util.focusLast(this.contentDiv.nativeElement);
         event.target.value = '';
     }
     private msgContentChange(event) {
@@ -816,9 +814,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private showEmojiPanel(event) {
         this.inputNoBlur = false;
         event.stopPropagation();
-        this.contentDiv.focus();
+        this.contentDiv.nativeElement.focus();
         if (this.inputToLast) {
-            Util.focusLast(this.contentDiv);
+            Util.focusLast(this.contentDiv.nativeElement);
         }
         if (this.emojiInfo.show) {
             setTimeout(() => {
@@ -864,11 +862,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     insertHtml += insertHtml;
                 }
             }
-            const userAgent = navigator.userAgent;
-            const isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
             // safari自身可以换行，不用处理
-            if (!isSafari) {
-                Util.insertAtCursor(this.contentDiv, insertHtml, false);
+            if (!Util.isSafari()) {
+                Util.insertAtCursor(this.contentDiv.nativeElement, insertHtml, false);
             }
         } else if (event.keyCode === 13) {
             this.sendMsgAction();
@@ -1013,7 +1009,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 break;
             }
         }
-        const position = Util.getOffset(this.contentDiv);
+        const position = Util.getOffset(this.contentDiv.nativeElement);
         this.atList = {
             show: true,
             left: position.left,
@@ -1045,7 +1041,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                         type="text" class="chat-panel-at-input"
                         value="@${item.nickName || item.username} "
                         username="${item.username} " appkey="${item.appkey} "/>`;
-        Util.insertAtCursor(this.contentDiv, content, false);
+        Util.insertAtCursor(this.contentDiv.nativeElement, content, false);
         this.atList.show = false;
         setTimeout(() => {
             this.inputNoBlur = true;
@@ -1065,7 +1061,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 const textNode = range.startContainer;
                 range.setStart(textNode, range.endOffset);
                 range.setEnd(textNode, range.endOffset);
-                this.contentDiv.focus();
+                this.contentDiv.nativeElement.focus();
             }, false);
         }
     }
@@ -1152,7 +1148,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             return ;
         }
         const domArr = document.getElementsByClassName('msg-dom');
-        const offsetHeight = this.elementRef.nativeElement.querySelector('#imgViewer').offsetHeight;
+        const offsetHeight = this.chatPanelContainer.nativeElement.offsetHeight;
         const scrollTop = this.componentScroll.directiveRef.geometry().y;
         const scrollHeight = this.componentScroll.directiveRef.geometry().h;
         let readObj;
@@ -1202,8 +1198,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     private contentFocus(event) {
         event.stopPropagation();
-        this.contentDiv.focus();
-        Util.focusLast(this.contentDiv);
+        this.contentDiv.nativeElement.focus();
+        Util.focusLast(this.contentDiv.nativeElement);
         this.emojiInfo.show = false;
         this.store$.dispatch({
             type: chatAction.msgFile,

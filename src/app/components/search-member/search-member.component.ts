@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter,
-    AfterViewInit, ElementRef } from '@angular/core';
+    AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
     styleUrls: ['./search-member.component.scss']
 })
 
-export class SearchMemberComponent implements OnInit, AfterViewInit {
+export class SearchMemberComponent implements OnInit, AfterViewInit, OnDestroy {
+    @ViewChild('searchInput') private searchInput;
     @Input()
         private searchResult;
     @Output()
@@ -21,21 +22,23 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
         private searchKeyup: EventEmitter<any> = new EventEmitter();
     @Output()
         private changeChecked: EventEmitter<any> = new EventEmitter();
-    private fileDom;
-    constructor(
-        private elementRef: ElementRef
-    ) {}
+    private inputStream$;
+    constructor() {
+        // pass
+    }
     public ngOnInit() {
         // pass
     }
     public ngAfterViewInit() {
-        this.fileDom = this.elementRef.nativeElement.querySelector('#' + this.searchResult.id);
-        Observable.fromEvent(this.fileDom, 'keyup')
+        this.inputStream$ = Observable.fromEvent(this.searchInput.nativeElement, 'keyup')
             .subscribe((event: any) => {
                 if (event.keyCode !== 13) {
                     this.searchKeyup.emit(event.target.value);
                 }
             });
+    }
+    public ngOnDestroy() {
+        this.inputStream$.unsubscribe();
     }
     private stopPropagation(event) {
         event.stopPropagation();
@@ -47,7 +50,7 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
         this.searchItem.emit(item);
     }
     private clearInputAction() {
-        this.fileDom.focus();
+        this.searchInput.nativeElement.focus();
         this.searchResult.keywords = '';
         this.clearInput.emit();
     }
@@ -58,5 +61,8 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
     }
     private changeCheckedAction(item) {
         this.changeChecked.emit(item);
+    }
+    private clearKeyWords() {
+        this.searchInput.nativeElement.value = '';
     }
 }

@@ -210,6 +210,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 监听离线事件消息
         global.JIM.onSyncEvent((data) => {
+            console.log('syncEvent', data);
             if (!this.isLoaded) {
                 this.eventArr = data;
             } else {
@@ -235,10 +236,12 @@ export class ChatComponent implements OnInit, OnDestroy {
                 for (let message of this.noLoadedMessage) {
                     this.receiveNewMessage(message);
                 }
+                this.noLoadedMessage = [];
                 for (let item of this.eventArr) {
                     item.isOffline = true;
                     this.asyncEvent(item);
                 }
+                this.eventArr = [];
             }
         });
         // 离线消息同步监听
@@ -1549,9 +1552,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                         }
                     }
                 });
-            }, (value) => {
-                this.sendPicContent(value, data.img);
-            });
+            }, (value) => this.sendPicContent(value, data.img));
             // 发送极光熊表情
         } else if (data.type === 'jpushEmoji') {
             const msg = {
@@ -1690,7 +1691,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                         }
                     }
                 },
-                ctime_ms: (new Date()).getTime(),
+                ctime_ms: new Date().getTime(),
                 success: 1,
                 msgKey: this.msgKey ++,
                 unread_count: 0

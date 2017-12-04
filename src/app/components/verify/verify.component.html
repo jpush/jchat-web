@@ -10,7 +10,7 @@
         <div [hidden]="verifyTab !== 0">
             <div class="display-flex verify-list align-items-center" *ngFor="let message of verifyMessageList">
                 <div class="verify-avatar">
-                    <img avatarLoad (click)="verifyUser(message)" [avatarError]="0" [src]="message.avatarUrl | sanitize : 'url'" alt="">
+                    <img avatarLoad (click)="verifyUser(message)" [avatarError]="3" [src]="message.avatarUrl | sanitize : 'url'" alt="">
                 </div>
                 <div class="flex-1 verify-text" *ngIf="message.stateType !== 5 && message.stateType !== 6 && message.stateType !== 7">
                     <div>{{message.nickName && message.nickName !== '' ? message.nickName : message.name}}请求添加为好友</div>
@@ -34,10 +34,10 @@
         <div [hidden]="verifyTab !== 1">
             <div class="display-flex verify-list align-items-center" *ngFor="let verifyGroup of verifyGroupList">
                 <div (click)="watchApplyUserAction(verifyGroup)" *ngIf="verifyGroup.stateType === 0 || verifyGroup.stateType === 1 || verifyGroup.stateType === 2 || verifyGroup.stateType === 3 || verifyGroup.stateType === 4" class="verify-avatar">
-                    <img avatarLoad [avatarError]="0" [src]="verifyGroup.to_usernames[0].avatarUrl | sanitize : 'url'" alt="">
+                    <img avatarLoad [avatarError]="3" [src]="verifyGroup.to_usernames[0].avatarUrl | sanitize : 'url'" alt="">
                 </div>
                 <div *ngIf="verifyGroup.stateType === 5 || verifyGroup.stateType === 6" class="verify-avatar" (click)="watchGroupInfoAction(verifyGroup)">
-                    <img avatarLoad [avatarError]="1" [src]="verifyGroup.avatarUrl | sanitize : 'url'" alt="">                    
+                    <img avatarLoad [avatarError]="4" [src]="verifyGroup.avatarUrl | sanitize : 'url'" alt="">                    
                 </div>
                 <div *ngIf="verifyGroup.stateType === 0 || verifyGroup.stateType === 1 || verifyGroup.stateType === 2 || verifyGroup.stateType === 3 || verifyGroup.stateType === 4" class="flex-1 verify-text">
                     <div><span (click)="watchApplyUserAction(verifyGroup)" class="green">{{verifyGroup.to_usernames[0].memo_name || verifyGroup.to_usernames[0].nickname || verifyGroup.to_usernames[0].username}}</span> 申请入群 {{verifyGroup.group_name}}</div>

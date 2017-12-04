@@ -1,6 +1,6 @@
 <div class="search-user-container" (click)="stopPropagation($event)">
     <div class="search-user-input-wrap float-right">
-        <input spellcheck="false" id="searchInput" [(ngModel)]="searchKeyword" spellcheck="false" class="search-user-input input-focus" type="text" placeholder="搜索">
+        <input spellcheck="false" #searchInput [(ngModel)]="searchKeyword" spellcheck="false" class="search-user-input input-focus" type="text" placeholder="搜索">
         <span (click)="clearInput()" *ngIf="searchUserResult.isSearch"></span>
         <p></p>
     </div>
@@ -13,7 +13,7 @@
         <ul class="search-user-single" *ngIf="searchUserResult.result.singleArr.length > 0" [ngStyle]="{'max-height': singleHeight}">
             <li class="display-flex" *ngFor="let item of searchUserResult.result.singleArr" [title]="item.name.indexOf(searchKeyword) != -1 ? item.name: item.nickName">
                 <div class="search-user-avatar-container">
-                    <img avatarLoad [avatarError]="0" [src]="item.avatarUrl | sanitize: 'url'" alt="">
+                    <img avatarLoad [avatarError]="3" [src]="item.avatarUrl | sanitize: 'url'" alt="">
                 </div>
                 <span class="search-user-name flex-1" [title]="item.memo_name && item.memo_name.indexOf(searchKeyword) !== -1 ? item.memo_name : (item.nickName && item.nickName.indexOf(searchKeyword) !== -1 ? item.nickName : (item.username ? item.username : item.name))">{{item.memo_name && item.memo_name.indexOf(searchKeyword) !== -1 ? item.memo_name : (item.nickName && item.nickName.indexOf(searchKeyword) !== -1 ? item.nickName : (item.username ? item.username : item.name))}}</span>
                 <label class="search-member-label">
@@ -29,7 +29,7 @@
         <ul class="search-user-group" *ngIf="searchUserResult.result.groupArr.length > 0" [ngStyle]="{'max-height': groupHeight}">
             <li class="display-flex" *ngFor="let item of searchUserResult.result.groupArr" [title]="item.name.indexOf(searchKeyword) != -1 ? item.name: item.nickName">
                 <div class="search-user-avatar-container">
-                    <img avatarLoad [avatarError]="1" [src]="item.avatarUrl | sanitize: 'url'" alt="">
+                    <img avatarLoad [avatarError]="4" [src]="item.avatarUrl | sanitize: 'url'" alt="">
                 </div>
                 <span class="search-user-name flex-1">{{item.name}}</span>
                 <label class="search-member-label">

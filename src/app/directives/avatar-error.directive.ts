@@ -16,12 +16,12 @@ export class AvatarErrorDirective {
     }
     @HostListener('error', ['$event']) private onError(event) {
         /**
-         * group    1
-         * single   0
+         * group    4
+         * single   3
          */
-        if (this.avatarError === 1) {
+        if (this.avatarError === 4) {
             event.target.src = groupAvatarErrorIcon;
-        } else if (this.avatarError === 0) {
+        } else if (this.avatarError === 3) {
             event.target.src = singleAvatarErrorIcon;
         }
     }

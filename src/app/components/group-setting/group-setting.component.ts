@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
 import { chatAction } from '../../pages/chat/actions';
 import { global } from '../../services/common';
+import { SearchMemberComponent } from '../search-member/search-member.component';
 
 @Component({
     selector: 'group-setting-component',
@@ -13,6 +14,8 @@ import { global } from '../../services/common';
 })
 
 export class GroupSettingComponent implements OnInit, DoCheck {
+    @ViewChild('groupSettingHeader') private groupSettingHeader;
+    @ViewChild(SearchMemberComponent) private SearchMemberComponent;
     @Input()
         private groupSetting;
     @Output()
@@ -41,7 +44,6 @@ export class GroupSettingComponent implements OnInit, DoCheck {
     private searchResult = {
         result: [],
         show: false,
-        id: 'searchGroupMember',
         keywords: '',
         placeholder: '搜索群成员'
     };
@@ -58,17 +60,14 @@ export class GroupSettingComponent implements OnInit, DoCheck {
     constructor(
         private store$: Store<AppStore>,
         private elementRef: ElementRef
-    ) {
-
-    }
+    ) {}
     public ngOnInit() {
         // pass
     }
     public ngDoCheck() {
         // 修改群描述时，调整群成员列表的位置
-        const header = this.elementRef.nativeElement.querySelector('#groupSettingHeader');
-        if (header) {
-            this.listTop = header.offsetHeight;
+        if (this.groupSettingHeader.nativeElement) {
+            this.listTop = this.groupSettingHeader.nativeElement.offsetHeight;
         }
     }
     private stopPropagation(event) {
@@ -81,7 +80,7 @@ export class GroupSettingComponent implements OnInit, DoCheck {
         this.searchResult.result = [];
         this.searchResult.show = false;
         this.closeGroupSetting.emit();
-        this.elementRef.nativeElement.querySelector('#' + this.searchResult.id).value = '';
+        this.SearchMemberComponent.clearKeyWords();
     }
     private clearInputEmit() {
         this.searchResult.result = [];

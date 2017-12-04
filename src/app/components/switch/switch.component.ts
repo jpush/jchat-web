@@ -11,8 +11,7 @@ export class SwitchComponent implements OnInit {
         private state;
     @Output()
         private changeSwitch: EventEmitter<any> = new EventEmitter();
-    constructor(
-    ) {
+    constructor() {
         // pass
     }
     public ngOnInit() {

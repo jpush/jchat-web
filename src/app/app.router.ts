@@ -1,5 +1,5 @@
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
-import { MainCanActivate } from './services/common';
+import { MainCanActivate, PreloadService } from './services/common';
 
 export const ROUTES: Routes = [
     {
@@ -13,7 +13,10 @@ export const ROUTES: Routes = [
     {
         path: 'main',
         canActivate: [MainCanActivate],
-        loadChildren: './pages/main#MainModule'
+        loadChildren: './pages/main#MainModule',
+        data: {
+            preload: true
+        }
     },
     {
         path: 'map/:pointer',
@@ -32,5 +35,6 @@ export const ROUTES: Routes = [
 ];
 
 export const routing = RouterModule.forRoot(ROUTES, {
-    useHash: true
+    useHash: true,
+    preloadingStrategy: PreloadService
 });

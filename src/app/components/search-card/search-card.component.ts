@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter,
-    AfterViewInit, ElementRef } from '@angular/core';
+    AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
     styleUrls: ['./search-card.component.scss']
 })
 
-export class SearchCardComponent implements OnInit, AfterViewInit {
+export class SearchCardComponent implements OnInit, AfterViewInit, OnDestroy {
+    @ViewChild('searchCard') private searchCard;
     @Input()
         private searchResult;
     @Output()
@@ -21,19 +22,19 @@ export class SearchCardComponent implements OnInit, AfterViewInit {
         private searchKeyup: EventEmitter<any> = new EventEmitter();
     @Output()
         private changeChecked: EventEmitter<any> = new EventEmitter();
-    private fileDom;
-    constructor(
-        private elementRef: ElementRef
-    ) {}
+    private inputStream$;
+    constructor() {
+        // pass
+    }
     public ngOnInit() {
         // pass
     }
     public ngAfterViewInit() {
-        this.fileDom = this.elementRef.nativeElement.querySelector('#searchCard');
-        Observable.fromEvent(this.fileDom, 'keyup')
-            .subscribe((event: any) => {
-                this.searchKeyup.emit(event.target.value);
-            });
+        this.inputStream$ = Observable.fromEvent(this.searchCard.nativeElement, 'keyup')
+            .subscribe((event: any) => this.searchKeyup.emit(event.target.value));
+    }
+    public ngOnDestroy() {
+        this.inputStream$.unsubscribe();
     }
     private stopPropagation(event) {
         event.stopPropagation();
@@ -42,7 +43,7 @@ export class SearchCardComponent implements OnInit, AfterViewInit {
         this.searchItem.emit(item);
     }
     private clearInputAction() {
-        this.fileDom.focus();
+        this.searchCard.nativeElement.focus();
         this.searchResult.keywords = '';
         this.clearInput.emit();
     }

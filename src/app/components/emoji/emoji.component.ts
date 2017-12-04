@@ -19,9 +19,7 @@ export class EmojiComponent implements OnInit {
     private tab = 0;
     constructor(
         private elementRef: ElementRef
-    ) {
-
-    }
+    ) {}
     public ngOnInit() {
         // pass
     }

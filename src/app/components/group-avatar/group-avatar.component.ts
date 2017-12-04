@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import '../../../assets/static/js/cropper.min.css';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
@@ -17,6 +17,7 @@ const Cropper = require('../../../assets/static/js/cropper.min.js');
 })
 
 export class GroupAvatarComponent implements OnInit {
+    @ViewChild('cropperImg') private cropperImg;
     @Input()
         private groupAvatarInfo;
     @Output()
@@ -29,15 +30,13 @@ export class GroupAvatarComponent implements OnInit {
     private maxWidth;
     private maxHeight;
     constructor(
-        private store$: Store<any>,
-        private elementRef: ElementRef
+        private store$: Store<any>
     ) {}
     public ngOnInit() {
         // pass
     }
     private cropperImgLoad() {
-        const image = this.elementRef.nativeElement.querySelector('#cropper');
-        this.cropper = new Cropper(image, {
+        this.cropper = new Cropper(this.cropperImg.nativeElement, {
             aspectRatio: 1 / 1,
             zoomable: false,
             rotatable: false,

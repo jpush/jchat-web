@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter,
-    OnChanges, DoCheck, HostListener, ElementRef } from '@angular/core';
+    OnChanges, DoCheck, HostListener, ViewChild } from '@angular/core';
 import { authPayload } from '../../services/common';
 
 @Component({
@@ -9,6 +9,7 @@ import { authPayload } from '../../services/common';
 })
 
 export class OtherInfoComponent implements OnInit, OnChanges {
+    @ViewChild('editMemoName') private editMemoName;
     @Input()
         private otherInfo;
     @Input()
@@ -67,7 +68,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         show: false
     };
     private isEdit = false;
-    constructor(private elementRef: ElementRef) {
+    constructor() {
         // pass
     }
     public ngOnInit() {
@@ -141,7 +142,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
     private editBtn() {
         this.isEdit = true;
         setTimeout(() => {
-            this.elementRef.nativeElement.querySelector('#editMemoName').focus();
+            this.editMemoName.nativeElement.focus();
         });
     }
     private verifyBtn(num) {

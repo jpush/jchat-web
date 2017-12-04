@@ -15,7 +15,7 @@ export class DropFileComponent implements OnInit {
         // pass
      }
     public ngOnInit() {
-        let index = this.dropFileInfo.info.name.lastIndexOf('.');
+        const index = this.dropFileInfo.info.name.lastIndexOf('.');
         if (index !== -1) {
             this.dropFileInfo.info.ext = this.dropFileInfo.info.name.substring(index + 1);
         }

@@ -269,9 +269,17 @@ export class RoomEffect {
                         payload: payload.data
                     });
                 }).onFail((error) => {
-                    // pass
+                    payload.data.content.msg_body.media_url = '';
+                    this.store$.dispatch({
+                        type: roomAction.receiveMessageUrlSuccess,
+                        payload: payload.data
+                    });
                 }).onTimeout((errorInfo) => {
-                    // pass
+                    payload.data.content.msg_body.media_url = '';
+                    this.store$.dispatch({
+                        type: roomAction.receiveMessageUrlSuccess,
+                        payload: payload.data
+                    });
                 });
             }
             // 如果接收的是名片

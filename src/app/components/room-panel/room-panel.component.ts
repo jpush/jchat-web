@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output,
-    EventEmitter, AfterViewInit, ElementRef,
+    EventEmitter, ElementRef,
     HostListener, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { PerfectScrollbarComponent, PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
@@ -17,8 +17,9 @@ import * as download from 'downloadjs';
     styleUrls: ['./room-panel.component.scss']
 })
 
-export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
+export class RoomPanelComponent implements OnInit, OnChanges {
     @ViewChild(PerfectScrollbarComponent) private componentScroll;
+    @ViewChild('contentDiv') private contentDiv;
     @Input()
         private enter;
     @Input()
@@ -78,7 +79,6 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
     private inputNoBlur = true;
     private inputToLast = false;
     private flag = false;
-    private contentDiv;
     private businessCard = {
         show: false,
         info: []
@@ -134,21 +134,18 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
     }
     public ngOnChanges(changes: SimpleChanges) {
         if (changes.scrollToBottom) {
-            if (this.contentDiv) {
-                this.contentDiv.innerHTML = '';
+            if (this.contentDiv.nativeElement) {
+                this.contentDiv.nativeElement.innerHTML = '';
             }
             this.scrollBottom(150, false, () => {
-                if (this.contentDiv) {
-                    this.contentDiv.focus();
+                if (this.contentDiv.nativeElement) {
+                    this.contentDiv.nativeElement.focus();
                 }
             });
         }
         if (changes.otherScrollTobottom) {
             this.scrollBottom(150, true);
         }
-    }
-    public ngAfterViewInit() {
-        this.contentDiv = this.elementRef.nativeElement.querySelector('#contentDiv2');
     }
     @HostListener('document:drop', ['$event']) private onDrop(event) {
         event.preventDefault();
@@ -331,9 +328,9 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
     private showEmojiPanel(event) {
         this.inputNoBlur = false;
         event.stopPropagation();
-        this.contentDiv.focus();
+        this.contentDiv.nativeElement.focus();
         if (this.inputToLast) {
-            Util.focusLast(this.contentDiv);
+            Util.focusLast(this.contentDiv.nativeElement);
         }
         if (this.emojiInfo.show) {
             setTimeout(() => {
@@ -365,9 +362,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
         const files = clipboardData.files;
         let item;
         // 粘贴图片不兼容safari
-        const userAgent = navigator.userAgent;
-        const isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
-        if (!isSafari) {
+        if (!Util.isSafari()) {
             if (files && files.length) {
                 this.getImgObj(files[0]);
             } else if (items) {
@@ -388,7 +383,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
         pastedData = pastedData.replace(/\n/g, '<br>');
         pastedData = pastedData.replace(/ /g, '&nbsp;');
         pastedData = Emoji.emoji(pastedData, 18);
-        Util.insertAtCursor(this.contentDiv, pastedData, false);
+        Util.insertAtCursor(this.contentDiv.nativeElement, pastedData, false);
         return false;
     }
     // 拖拽预览文件或者图片
@@ -441,7 +436,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
     }
     // 发送文本
     private sendMsgAction() {
-        let draft = this.contentDiv.innerHTML;
+        let draft = this.contentDiv.nativeElement.innerHTML;
         if (draft) {
             draft = draft.replace(/^(<br>){1,}$/g, '');
             draft = draft.replace(/&nbsp;/g, ' ');
@@ -461,7 +456,7 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
                 content: draft
             });
             this.flag = true;
-            this.contentDiv.innerHTML = '';
+            this.contentDiv.nativeElement.innerHTML = '';
         }
     }
     // 重新发送文本消息和名片消息
@@ -482,8 +477,8 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
             file,
             fileData: event.target.files[0]
         });
-        this.contentDiv.focus();
-        Util.focusLast(this.contentDiv);
+        this.contentDiv.nativeElement.focus();
+        Util.focusLast(this.contentDiv.nativeElement);
         event.target.value = '';
     }
     private repeatSendFileAction(item) {
@@ -503,8 +498,8 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
             img,
             type: 'img'
         });
-        this.contentDiv.focus();
-        Util.focusLast(this.contentDiv);
+        this.contentDiv.nativeElement.focus();
+        Util.focusLast(this.contentDiv.nativeElement);
         event.target.value = '';
     }
     private repeatSendPicAction(item) {
@@ -571,11 +566,9 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
                     insertHtml += insertHtml;
                 }
             }
-            const userAgent = navigator.userAgent;
-            const isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
             // safari自身可以换行，不用处理
-            if (!isSafari) {
-                Util.insertAtCursor(this.contentDiv, insertHtml, false);
+            if (!Util.isSafari()) {
+                Util.insertAtCursor(this.contentDiv.nativeElement, insertHtml, false);
             }
         } else if (event.keyCode === 13) {
             this.sendMsgAction();
@@ -583,8 +576,8 @@ export class RoomPanelComponent implements OnInit, AfterViewInit, OnChanges {
         }
     }
     private contentFocus() {
-        this.contentDiv.focus();
-        Util.focusLast(this.contentDiv);
+        this.contentDiv.nativeElement.focus();
+        Util.focusLast(this.contentDiv.nativeElement);
     }
     // 视频开始加载
     private videoLoadStart(index) {

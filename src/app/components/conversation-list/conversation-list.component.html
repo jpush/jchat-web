@@ -4,8 +4,8 @@
         <li *ngFor="let item of conversationList;let i = index;" (contextmenu)="contextmenu($event, item)" (click)="selectTarget(item)" [ngClass]="{'active': (active.type === 4 && (item.key == active.key || item.gid == active.key)) || (active.type === 3 && (item.name == active.name)), 'isTop': item?.extras?.top_time_ms}" class="display-flex">
             <div class="conversation-avatar">
                 <div>
-                    <img *ngIf="item.type == 3" avatarLoad [avatarError]="0" [src]="item.avatarUrl | sanitize: 'url'" alt="">
-                    <img *ngIf="item.type == 4" avatarLoad [avatarError]="1" [src]="item.avatarUrl | sanitize: 'url'" alt="">
+                    <img *ngIf="item.type == 3" avatarLoad [avatarError]="3" [src]="item.avatarUrl | sanitize: 'url'" alt="">
+                    <img *ngIf="item.type == 4" avatarLoad [avatarError]="4" [src]="item.avatarUrl | sanitize: 'url'" alt="">
                 </div>
                 <jui-badge *ngIf="item.unreadNum && !item.noDisturb" class="conversation-badge" displayType="no-wrapper" [badgeNum]="item.unreadNum" showZero="false" maxNum="100"></jui-badge>
                 <span *ngIf="item.unreadNum && item.noDisturb" class="conversation-dot"></span>

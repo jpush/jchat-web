@@ -1,5 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter, trigger, state, style, transition,
-        animate, HostListener, ElementRef, OnChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter,
+        trigger, state, style, transition, animate, HostListener,
+        OnChanges, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 
@@ -17,8 +18,9 @@ import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
     ]
 })
 
-export class SearchUserComponent implements OnInit, OnChanges {
+export class SearchUserComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @ViewChild(PerfectScrollbarComponent) private componentScroll;
+    @ViewChild('searchInput') private searchInput;
     private searchKeyword;
     private searchInputIsShow = true;
     private inputAnimate = 'out';
@@ -26,7 +28,7 @@ export class SearchUserComponent implements OnInit, OnChanges {
     private groupShowText = '显示全部';
     private singleHeight = '200px';
     private groupHeight = '200px';
-    private fileDom;
+    private inputStream$;
     @Input()
         private searchUserResult;
     @Output()
@@ -35,12 +37,19 @@ export class SearchUserComponent implements OnInit, OnChanges {
         private selectUserResult: EventEmitter<any> = new EventEmitter();
     @Output()
         private selectUserRoomResult: EventEmitter<any> = new EventEmitter();
-    constructor(
-        private elementRef: ElementRef
-    ) {}
+    constructor() {
+        // pass
+    }
     public ngOnInit() {
-        this.fileDom = this.elementRef.nativeElement.querySelector('#searchInput');
-        Observable.fromEvent(this.fileDom, 'keyup')
+        // pass
+    }
+    public ngOnChanges() {
+        if (!this.searchUserResult.isSearch) {
+            this.searchKeyword = '';
+        }
+    }
+    public ngAfterViewInit() {
+        this.inputStream$ = Observable.fromEvent(this.searchInput.nativeElement, 'keyup')
             .debounceTime(300)
             .subscribe((event: any) => {
                 this.searchUser.emit(event.target.value);
@@ -48,10 +57,8 @@ export class SearchUserComponent implements OnInit, OnChanges {
                 this.singleHeight = '200px';
             });
     }
-    public ngOnChanges() {
-        if (!this.searchUserResult.isSearch) {
-            this.searchKeyword = '';
-        }
+    public ngOnDestroy() {
+        this.inputStream$.unsubscribe();
     }
     @HostListener('window:click') private onClickWindow() {
         this.searchKeyword = '';
@@ -80,7 +87,7 @@ export class SearchUserComponent implements OnInit, OnChanges {
     private clearInput() {
         this.searchKeyword = '';
         this.searchUser.emit(this.searchKeyword);
-        this.fileDom.focus();
+        this.searchInput.nativeElement.focus();
     }
     private selectSearchItem(item) {
         this.selectUserResult.emit(item);
@@ -96,7 +103,7 @@ export class SearchUserComponent implements OnInit, OnChanges {
         this.singleShowText = '显示全部';
         this.singleHeight = '200px';
         setTimeout(() => {
-            this.fileDom.focus();
+            this.searchInput.nativeElement.focus();
         }, 200);
     }
     private stopPropagation(event) {

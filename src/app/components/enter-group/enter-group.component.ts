@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, ElementRef,
-    AfterViewInit, OnInit } from '@angular/core';
+    AfterViewInit, OnInit, ViewChild } from '@angular/core';
 
 @Component({
     selector: 'enter-group-component',
@@ -8,20 +8,21 @@ import { Component, Input, Output, EventEmitter, ElementRef,
 })
 
 export class EnterGroupComponent implements OnInit, AfterViewInit {
+    @ViewChild('enterGroupInput') private enterGroupInput;
     @Input()
         private enterPublicGroup;
     @Output()
         private enterGroupComfirm: EventEmitter<any> = new EventEmitter();
     @Output()
         private emptyEnterGroupTip: EventEmitter<any> = new EventEmitter();
-    constructor(
-        private elementRef: ElementRef
-    ) {}
+    constructor() {
+        // pass
+    }
     public ngOnInit() {
         // pass
     }
     public ngAfterViewInit() {
-        this.elementRef.nativeElement.querySelector('#enterGroup').focus();
+        this.enterGroupInput.nativeElement.focus();
     }
     private closeEnterGroup() {
         this.enterPublicGroup.show = false;

@@ -5,7 +5,7 @@
         <span class="modal-close" (click)="otherClose($event)"></span>
         <div class="other-info-avatar">
             <div class="other-info-show-avatar">
-                <img avatarLoad [avatarError]="0" [src]="otherInfo.info.avatarUrl | sanitize: 'url'" alt="">
+                <img avatarLoad [avatarError]="3" [src]="otherInfo.info.avatarUrl | sanitize: 'url'" alt="">
             </div>
             <div class="other-info-avatar-username" [title]="otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username">
                 {{otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username}}
@@ -29,7 +29,7 @@
                 <div class="other-info-edit float-left" *ngIf="!isEdit" (click)="editBtn()" [hoverEvent]="editRmark">
                     <hover-tip-component [hidden]="!editRmark.show" [hoverInfo]="editRmark"></hover-tip-component>
                 </div>
-                <input class="other-info-edit-input input-focus" id="editMemoName" [ngModel]="otherInfo.info.memo_name" (blur)="saveMemoNameAction($event)" type="text" [hidden]="!isEdit">
+                <input class="other-info-edit-input input-focus" #editMemoName [ngModel]="otherInfo.info.memo_name" (blur)="saveMemoNameAction($event)" type="text" [hidden]="!isEdit">
             </span>
         </div>
         <p class="other-info-p display-flex">
