@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter,
-    HostListener, ViewChild } from '@angular/core';
+    HostListener, ViewChild, OnDestroy } from '@angular/core';
 import { Store, Action } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
 import * as download from 'downloadjs';
@@ -11,7 +11,7 @@ import { Util } from '../../services/util';
     styleUrls: ['./image-viewer.component.scss']
 })
 
-export class ImageViewerComponent implements OnInit {
+export class ImageViewerComponent implements OnInit, OnDestroy {
     @ViewChild('viewerWrap') private viewerWrap;
     @Input()
         private imageViewer;
@@ -58,6 +58,9 @@ export class ImageViewerComponent implements OnInit {
         }).subscribe((state) => {
             // pass
         });
+    }
+    public ngOnDestroy() {
+        this.imageStream$.unsubscribe();
     }
     private stateChanged(chatState) {
         switch (chatState.actionType) {

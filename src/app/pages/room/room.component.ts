@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output,
-    EventEmitter, ElementRef, AfterViewInit } from '@angular/core';
+    EventEmitter, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { global, authPayload } from '../../services/common';
 import { roomAction } from './actions';
@@ -14,7 +14,7 @@ const PageSize = 20;
     styleUrls: ['./room.component.scss']
 })
 
-export class RoomComponent implements OnInit, AfterViewInit {
+export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
     private roomList = [];
     private active: any = {};
     private roomDetail = {};
@@ -34,6 +34,7 @@ export class RoomComponent implements OnInit, AfterViewInit {
     private loadMoreRoomsFlag = false;
     private rememberEnter = null;
     private noMoreRooms = false;
+    private roomStream$;
     constructor(
         private store$: Store<any>,
         private elementRef: ElementRef
@@ -56,7 +57,7 @@ export class RoomComponent implements OnInit, AfterViewInit {
             type: roomAction.getSelfChatrooms,
             payload: null
         });
-        this.store$.select((state) => {
+        this.roomStream$ = this.store$.select((state) => {
             const roomState = state['roomReducer'];
             const mainState = state['mainReducer'];
             this.stateChanged(roomState, mainState);
@@ -71,6 +72,9 @@ export class RoomComponent implements OnInit, AfterViewInit {
             type: roomAction.getRoomVoiceState,
             payload: `voiceRoomState-${authPayload.appKey}-${global.user}`
         });
+    }
+    public ngOnDestroy() {
+        this.roomStream$.unsubscribe();
     }
     private stateChanged(roomState, mainState) {
         console.log('roomState', roomState);
@@ -410,9 +414,7 @@ export class RoomComponent implements OnInit, AfterViewInit {
                             }
                         }
                     });
-                }, (value) => {
-                    this.sendPicContent(value, data);
-                });
+                }, (value) => this.sendPicContent(value, data));
             }
         }
     }

@@ -19,30 +19,30 @@
         background: url('../../../assets/images/verify-normal.svg') 20px 10px no-repeat;
     }
     .contact-verify.active{
-        background: url('../../../assets/images/verify-active.svg') 20px 10px no-repeat;
+        background-image: url('../../../assets/images/verify-active.svg');
     }
     .contact-verify:hover{
-        background: url('../../../assets/images/verify-active.svg') 20px 10px no-repeat;
+        background-image: url('../../../assets/images/verify-active.svg');
         color: #2DD0CF;
     }
     .contact-linkman{
         background: url('../../../assets/images/linkman-normal.svg') 20px 10px no-repeat;
     }
     .contact-linkman.active{
-        background: url('../../../assets/images/linkman-active.svg') 20px 10px no-repeat;
+        background-image: url('../../../assets/images/linkman-active.svg');
     }
     .contact-linkman:hover{
-        background: url('../../../assets/images/linkman-active.svg') 20px 10px no-repeat;
+        background-image: url('../../../assets/images/linkman-active.svg');
         color: #2DD0CF;
     }
     .contact-group{
         background: url('../../../assets/images/group-normal.svg') 20px 10px no-repeat;
     }
     .contact-group.active{
-        background: url('../../../assets/images/group-active.svg') 20px 10px no-repeat;
+        background-image: url('../../../assets/images/group-active.svg');
     }
     .contact-group:hover{
-        background: url('../../../assets/images/group-active.svg') 20px 10px no-repeat;
+        background-image: url('../../../assets/images/group-active.svg');
         color: #2DD0CF;
     }
 }

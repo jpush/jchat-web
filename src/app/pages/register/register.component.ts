@@ -25,7 +25,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         passwordTip: '',
         repeatPasswordTip: ''
     };
-    private registerStream;
+    private registerStream$;
     private isButtonAvailable = false;
     private tipModal = {
         show: false,
@@ -45,7 +45,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
             payload: null
         });
         this.JIMInit();
-        this.registerStream = this.store$.select((state) => {
+        this.registerStream$ = this.store$.select((state) => {
             const registerState = state['registerReducer'];
             switch (registerState.actionType) {
                 case registerAction.init:
@@ -69,7 +69,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         this.elementRef.nativeElement.querySelector('#registerUsername').focus();
     }
     public ngOnDestroy() {
-        this.registerStream.unsubscribe();
+        this.registerStream$.unsubscribe();
     }
     private JIMInit() {
         const timestamp = new Date().getTime();

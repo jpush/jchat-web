@@ -1,7 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { chatAction } from '../../pages/chat/actions';
-import { mainAction } from '../../pages/main/actions';
 import { global } from '../../services/common';
 
 @Component({
@@ -22,11 +19,9 @@ export class CardModalComponent implements OnInit {
         keywords: ''
     };
     private businessCardStream$;
-    constructor(
-        private store$: Store<any>
-    ) {
+    constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }
@@ -81,14 +76,13 @@ export class CardModalComponent implements OnInit {
         let result = [];
         for (let item of this.businessCard.info) {
             for (let friend of item.data) {
-                if (friend.memo_name &&
-                    friend.memo_name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1) {
-                    result.push(friend);
-                } else if (friend.nickName &&
-                    friend.nickName.toLowerCase().indexOf(keywords.toLowerCase()) !== -1) {
-                    result.push(friend);
-                } else if (friend.name &&
-                    friend.name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1) {
+                const memoName = friend.memo_name &&
+                            friend.memo_name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
+                const nickName = friend.nickName &&
+                            friend.nickName.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
+                const name = friend.name &&
+                            friend.name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
+                if (memoName || nickName || name) {
                     result.push(friend);
                 }
             }
@@ -114,7 +108,6 @@ export class CardModalComponent implements OnInit {
                 for (let item of list.data) {
                     if (user.name === item.name) {
                         item.checked = true;
-
                     } else {
                         item.checked = false;
                     }

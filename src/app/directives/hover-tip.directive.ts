@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnInit, HostListener, OnChanges } from '@angular/core';
+import { Directive, Input, OnInit, HostListener, OnChanges } from '@angular/core';
 
 /**
  * hover提示
@@ -8,7 +8,7 @@ import { Directive, ElementRef, Input, OnInit, HostListener, OnChanges } from '@
 export class HoverEventDirective implements OnInit {
     @Input()
         private hoverEvent;
-    constructor(private el: ElementRef) {
+    constructor() {
         // pass
     }
     public ngOnInit() {

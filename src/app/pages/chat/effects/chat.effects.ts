@@ -2939,7 +2939,8 @@ export class ChatEffect {
         });
     }
     // 拼接群名称
-    private requestGroupName(eventData, callback1, callback2?, callback3?) {
+    private requestGroupName
+        (eventData, callback1: Function, callback2?: Function, callback3?: Function) {
         global.JIM.getGroupMembers({gid: eventData.key || eventData.gid || eventData.target_id})
         .onSuccess((data) => {
             let name = '';
@@ -2965,7 +2966,7 @@ export class ChatEffect {
             callback1(error);
         });
     }
-    private requestGroupAvatarUrl(groupInfo, callback) {
+    private requestGroupAvatarUrl(groupInfo, callback: Function) {
         global.JIM.getResource({media_id: groupInfo.avatar})
         .onSuccess((urlInfo) => {
             callback(urlInfo.url);

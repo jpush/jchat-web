@@ -1,21 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter,
-        trigger, state, style, transition, animate, HostListener,
-        OnChanges, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+        HostListener, OnChanges, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 
 @Component({
     selector: 'search-user-component',
     templateUrl: './search-user.component.html',
-    styleUrls: ['./search-user.component.scss'],
-    animations: [
-        trigger('flyIn', [
-            state('in', style({transform: 'translateX(-260px)'})),
-            state('out', style({transform: 'translateX(0)'})),
-            transition('out => in', animate(200)),
-            transition('in => out', animate(200))
-        ])
-    ]
+    styleUrls: ['./search-user.component.scss']
 })
 
 export class SearchUserComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
@@ -65,6 +56,7 @@ export class SearchUserComponent implements OnInit, OnChanges, AfterViewInit, On
         this.searchUser.emit(this.searchKeyword);
         this.inputAnimate = 'out';
         this.searchInputIsShow = true;
+        this.searchUserResult.isSearch = false;
     }
     private singleShowAll() {
         this.showAll('single');

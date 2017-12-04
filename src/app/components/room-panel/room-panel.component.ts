@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output,
-    EventEmitter, ElementRef,
+    EventEmitter, ElementRef, OnDestroy,
     HostListener, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { PerfectScrollbarComponent, PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
@@ -17,7 +17,7 @@ import * as download from 'downloadjs';
     styleUrls: ['./room-panel.component.scss']
 })
 
-export class RoomPanelComponent implements OnInit, OnChanges {
+export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild(PerfectScrollbarComponent) private componentScroll;
     @ViewChild('contentDiv') private contentDiv;
     @Input()
@@ -117,13 +117,14 @@ export class RoomPanelComponent implements OnInit, OnChanges {
         ],
         item: null
     };
+    private roomPanelStream$;
     constructor(
         private elementRef: ElementRef,
         private store$: Store<any>,
         private storageService: StorageService
     ) {}
     public ngOnInit() {
-        this.store$.select((state) => {
+        this.roomPanelStream$ = this.store$.select((state) => {
             const roomState = state['roomReducer'];
             const contactState = state['contactReducer'];
             this.stateChanged(roomState, contactState);
@@ -146,6 +147,9 @@ export class RoomPanelComponent implements OnInit, OnChanges {
         if (changes.otherScrollTobottom) {
             this.scrollBottom(150, true);
         }
+    }
+    public ngOnDestroy() {
+        this.roomPanelStream$.unsubscribe();
     }
     @HostListener('document:drop', ['$event']) private onDrop(event) {
         event.preventDefault();

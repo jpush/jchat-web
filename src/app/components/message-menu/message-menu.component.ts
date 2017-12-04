@@ -24,7 +24,7 @@ export class MessageMenuComponent implements OnInit, AfterViewInit {
         // pass
     }
     public ngAfterViewInit() {
-        const clipboard = new Clipboard('.copy');
+        const clipboard = new Clipboard('.message-copy');
     }
     private selectMenuItemAction(item) {
         this.selectMenuItem.emit(item);

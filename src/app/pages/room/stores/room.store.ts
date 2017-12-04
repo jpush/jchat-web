@@ -3,7 +3,7 @@ export interface RoomStore {
     voiceRoomState: any[];
     roomList: any[];
     active: any;
-    roomDetail: Object;
+    roomDetail: object;
     enter: {
         id: number
     };

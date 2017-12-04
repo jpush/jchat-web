@@ -1311,8 +1311,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 切换当前对话用户
     private selectTargetEmit(item) {
-        if ((item.type === 4 && Number(this.active.key) === Number(item.key)) ||
-            (item.type === 3 && this.active.name === item.name)) {
+        if ((item.type === 4 && this.active.type === 4 &&
+            Number(this.active.key) === Number(item.key)) ||
+            (item.type === 3 && this.active.type === 3 && this.active.name === item.name)) {
             return ;
         }
         this.store$.dispatch({

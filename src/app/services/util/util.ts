@@ -461,7 +461,7 @@ export abstract class Util {
         return offset;
     }
     /**
-     * 深度拷贝对象
+     * 深度拷贝对象（只能深度拷贝没有方法属性的对象）
      * @param obj: object 需要拷贝的对象
      * @return result 新的对象
      */

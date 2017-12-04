@@ -3,7 +3,7 @@
     <ul>
         <li class="menu-hover" [ngClass]="{'first': item.isFirst}" [hidden]="!item.show" *ngFor="let item of menu.info;let num = index;" (click)="selectMenuItemAction(item)">
             <div *ngIf="num !== menu.info.length -1">{{item.name}}</div>
-            <div class="copy" *ngIf="num === menu.info.length -1" [attr.data-clipboard-text]="menu.item?.content?.msg_body?.text">{{item.name}}</div>
+            <div class="message-copy" *ngIf="num === menu.info.length -1" [attr.data-clipboard-text]="menu.item?.content?.msg_body?.text">{{item.name}}</div>
             <div *ngIf="item.isFirst" class="menu-arror"></div> 
         </li>
     </ul>
