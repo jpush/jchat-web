@@ -1,5 +1,1 @@
-export * from './my-model.directive';
-export * from './hover-tip.module';
-export * from './avatar-load.module';
-export * from './avatar-error.module';
-export * from './debounce-click.directive';
+export * from './shared-directive.module';

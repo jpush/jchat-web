@@ -5,9 +5,9 @@ import { MessageTransmitComponent } from './message-transmit.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import { SearchMemberModule } from '../search-member';
-import { SanitizePipeModule } from '../../pipes';
 import { SearchTransmitModule } from '../search-transmit';
-import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -18,10 +18,9 @@ import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
         FormsModule,
         PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
         SearchMemberModule,
-        SanitizePipeModule,
+        SharedPipeModule,
         SearchTransmitModule,
-        AvatarLoadModule,
-        AvatarErrorModule
+        SharedDirectiveModule
     ],
     exports: [
         MessageTransmitComponent

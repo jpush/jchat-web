@@ -48,5 +48,12 @@ export const mainAction = {
     searchPublicGroupSuccess: '[main] search public group success',
     groupVerifyModal: '[main] group verify modal',
     sendGroupVerifyMessage: '[main] send group verify message',
-    createGroupNextShow: '[main] create group next show'
+    createGroupNextShow: '[main] create group next show',
+    // 确认提示模态框action
+    logoutShowConfirmModal: '[main] logout show confirm modal',
+    addBlackListConfirmModal: '[main] add black list confirm modal',
+    exitGroupConfirmModal: '[main] exit group confirm modal',
+    deleteMemberConfirmModal: '[main] delete member',
+    addSingleNoDisturbConfirmModal: '[main] add single no disturb confirm modal',
+    deleteFriendConfirmModal: '[main] delete friend modal'
 };

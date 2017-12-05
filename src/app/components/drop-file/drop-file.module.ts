@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { DropFileComponent } from './drop-file.component';
-import { FileTypePipeModule, FileSizePipeModule } from '../../pipes';
+import { SharedPipeModule } from '../../pipes';
 
 @NgModule({
     declarations: [
@@ -11,8 +11,7 @@ import { FileTypePipeModule, FileSizePipeModule } from '../../pipes';
     imports: [
         CommonModule,
         FormsModule,
-        FileTypePipeModule,
-        FileSizePipeModule
+        SharedPipeModule
     ],
     exports: [
         DropFileComponent

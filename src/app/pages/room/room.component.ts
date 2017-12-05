@@ -174,26 +174,6 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
             default:
         }
     }
-    private init() {
-        this.roomList = [];
-        this.active = {};
-        this.roomDetail = {};
-        this.enterRoomLoading = false;
-        this.showPanel = 0;
-        this.enter = {};
-        this.roomInfomation = {
-            show: false,
-            info: {}
-        };
-        this.messageList = [];
-        this.msgKey = 0;
-        this.selfInfo = {};
-        this.scrollToBottom = false;
-        this.otherScrollTobottom = false;
-        this.start = 0;
-        this.loadMoreRoomsFlag = false;
-        this.rememberEnter = null;
-    }
     // 监听聊天室消息
     private watchRoomMsg() {
         global.JIM.onRoomMsg((data) => {
@@ -500,5 +480,25 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
                 show: true
             }
         });
+    }
+    private init() {
+        this.roomList = [];
+        this.active = {};
+        this.roomDetail = {};
+        this.enterRoomLoading = false;
+        this.showPanel = 0;
+        this.enter = {};
+        this.roomInfomation = {
+            show: false,
+            info: {}
+        };
+        this.messageList = [];
+        this.msgKey = 0;
+        this.selfInfo = {};
+        this.scrollToBottom = false;
+        this.otherScrollTobottom = false;
+        this.start = 0;
+        this.loadMoreRoomsFlag = false;
+        this.rememberEnter = null;
     }
 }

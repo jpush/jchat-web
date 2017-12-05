@@ -90,6 +90,7 @@ export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
         case roomAction.showPanel:
             state.showPanel = payload;
             break;
+        // 切换左侧tab
         case mainAction.changeListTab:
             if (payload !== 2) {
                 state.messageList = [];

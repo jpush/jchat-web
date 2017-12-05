@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { VideoComponent } from './video.component';
-import { VideoTimePipeModule, SanitizePipeModule } from '../../pipes';
+import { SharedPipeModule } from '../../pipes';
 
 @NgModule({
     declarations: [
@@ -11,8 +11,7 @@ import { VideoTimePipeModule, SanitizePipeModule } from '../../pipes';
     imports: [
         CommonModule,
         FormsModule,
-        VideoTimePipeModule,
-        SanitizePipeModule
+        SharedPipeModule
     ],
     exports: [
         VideoComponent

@@ -5,8 +5,8 @@ import { CreateGroupComponent } from './create-group.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import { SearchMemberModule } from '../search-member';
-import { SanitizePipeModule } from '../../pipes';
-import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -17,9 +17,8 @@ import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
         FormsModule,
         PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
         SearchMemberModule,
-        SanitizePipeModule,
-        AvatarLoadModule,
-        AvatarErrorModule
+        SharedPipeModule,
+        SharedDirectiveModule
     ],
     exports: [
         CreateGroupComponent

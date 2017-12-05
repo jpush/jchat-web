@@ -5,10 +5,10 @@ import { GroupSettingComponent } from './group-setting.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import { SwitchModule } from '../switch';
-import { HoverEventModule, AvatarLoadModule, AvatarErrorModule } from '../../directives';
 import { HoverTipModule } from '../hover-tip';
 import { SearchMemberModule } from '../search-member';
-import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -19,13 +19,10 @@ import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
         FormsModule,
         PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
         SwitchModule,
-        HoverEventModule,
         HoverTipModule,
         SearchMemberModule,
-        EllipsisPipeModule,
-        SanitizePipeModule,
-        AvatarLoadModule,
-        AvatarErrorModule
+        SharedPipeModule,
+        SharedDirectiveModule
     ],
     exports: [
         GroupSettingComponent

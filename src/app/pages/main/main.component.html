@@ -44,7 +44,7 @@
             </div>
         </div>
     </div>
-    <self-info-component *ngIf="selfInfo.show" [selfInfo]="selfInfo" [updateSelfInfoFlag]="updateSelfInfoFlag" (isShow)="selfInfoEmit($event)" (selectIsNotImage)="selectIsNotImageEmit()" (sendCard)="sendCardEmit($event)"></self-info-component>    
+    <self-info-component *ngIf="selfInfo.show" [selfInfo]="selfInfo" [updateSelfInfoFlag]="updateSelfInfoFlag" (isShow)="selfInfoEmit($event)" (selectImageError)="selectImageErrorEmit($event)" (sendCard)="sendCardEmit($event)"></self-info-component>    
     <create-group-component *ngIf="createGroup.show" [hidden]="!createGroup.display" [createGroup]="createGroup" (isCreateGroup)="createGroupEmit($event)" (nextCreateGroup)="nextCreateGroupEmit($event)"></create-group-component>
     <create-group-next-component *ngIf="createGroupNext.show" [hidden]="!createGroupNext.display" [groupAvatarInfo]="groupAvatarInfo" [createGroupNext]="createGroupNext" (createGroupPrev)="createGroupPrevEmit()" (closeCreateGroupNext)="closeCreateGroupNextEmit()" (completeCreateGroup)="completeCreateGroupEmit($event)" (changeCreateGroupAvatar)="changeCreateGroupAvatarEmit($event)"></create-group-next-component>
     <modify-password-component *ngIf="isModifyPasswordShow" (modifyPassword)="modifyPasswordEmit($event)"></modify-password-component>

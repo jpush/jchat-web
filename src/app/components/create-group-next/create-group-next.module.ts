@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CreateGroupNextComponent } from './create-group-next.component';
-import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -11,8 +11,7 @@ import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
     imports: [
         CommonModule,
         FormsModule,
-        AvatarLoadModule,
-        AvatarErrorModule
+        SharedDirectiveModule
     ],
     exports: [
         CreateGroupNextComponent

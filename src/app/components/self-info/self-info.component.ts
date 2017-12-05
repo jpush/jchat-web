@@ -1,8 +1,6 @@
 import { Component, Input, Output, EventEmitter,
     OnChanges, AfterViewInit, ViewChild } from '@angular/core';
 import { Util } from '../../services/util';
-import { Store } from '@ngrx/store';
-import { mainAction } from '../../pages/main/actions';
 
 @Component({
     selector: 'self-info-component',
@@ -21,7 +19,7 @@ export class SelfInfoComponent implements OnChanges {
     @Output()
         private isShow: EventEmitter<any> = new EventEmitter();
     @Output()
-        private selectIsNotImage: EventEmitter<any> = new EventEmitter();
+        private selectImageError: EventEmitter<any> = new EventEmitter();
     @Output()
         private sendCard: EventEmitter<any> = new EventEmitter();
     private isEdit = false;
@@ -78,9 +76,9 @@ export class SelfInfoComponent implements OnChanges {
         filename: '',
         title: '个人头像'
     };
-    constructor(
-        private store$: Store<any>
-    ) {}
+    constructor() {
+        // pass
+    }
     public ngOnChanges(change) {
         this.newInfo.signature = this.selfInfo.info.signature;
         this.newInfo.nickname = this.selfInfo.info.nickname;
@@ -157,22 +155,12 @@ export class SelfInfoComponent implements OnChanges {
     }
     // 获取图片对象
     private getImgObj(file) {
+        const isNotImage = '选择的文件必须是图片';
+        const imageTooSmall = '选择的图片宽或高的尺寸太小，请重新选择图片';
         Util.getAvatarImgObj(file,
-            () => this.selectIsNotImage.emit(),
-            () => {
-                this.store$.dispatch({
-                    type: mainAction.showModalTip,
-                    payload: {
-                        show: true,
-                        info: {
-                            title: '提示',
-                            tip: '选择的图片宽或高的尺寸太小，请重新选择图片',
-                            actionType: '[chat] must be image',
-                            cancel: true
-                        }
-                    }
-                });
-            }, (that, pasteFile, img) => {
+            () => this.selectImageError.emit(isNotImage),
+            () => this.selectImageError.emit(imageTooSmall),
+            (that, pasteFile, img) => {
                 this.avatarConfig.info = {
                     src: that.result,
                     width: img.naturalWidth,
@@ -182,7 +170,8 @@ export class SelfInfoComponent implements OnChanges {
                 this.avatarConfig.src =  that.result;
                 this.avatarConfig.show = true;
                 this.avatarConfig.filename = file.name;
-            });
+            }
+        );
     }
     private avatarConfirmEmit(avatarConfig) {
         this.newAvatar.formData = avatarConfig.formData;

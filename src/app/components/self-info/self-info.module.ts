@@ -3,10 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { SelfInfoComponent } from './self-info.component';
 import { SelectModule } from '../select';
-import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
 import { InfoMenuModule } from '../info-menu';
 import { GroupAvatarModule } from '../group-avatar';
-import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -16,12 +16,10 @@ import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
         CommonModule,
         FormsModule,
         SelectModule,
-        EllipsisPipeModule,
-        SanitizePipeModule,
+        SharedPipeModule,
         InfoMenuModule,
         GroupAvatarModule,
-        AvatarLoadModule,
-        AvatarErrorModule
+        SharedDirectiveModule
     ],
     exports: [
         SelfInfoComponent

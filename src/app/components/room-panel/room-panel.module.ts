@@ -5,26 +5,8 @@ import { RouterModule } from '@angular/router';
 import { RoomPanelComponent } from './room-panel.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
-import {
-    DayPipeModule,
-    EmojiPipeModule,
-    EllipsisPipeModule,
-    TimePipeModule,
-    FloorPipeModule,
-    FileTypePipeModule,
-    FileSizePipeModule,
-    VideoTimePipeModule,
-    SanitizePipeModule,
-    FileNamePipeModule
-} from '../../pipes';
-import {
-    MyModelDirective,
-    AvatarLoadModule,
-    AvatarErrorModule
-} from '../../directives';
 import { EmojiModule } from '../emoji';
 import { HoverTipModule } from '../hover-tip';
-import { HoverEventModule } from '../../directives';
 import { ImageViewerModule } from '../image-viewer';
 import { StorageService } from '../../services/common';
 import { MessageMenuModule } from '../message-menu';
@@ -33,6 +15,8 @@ import { DropFileModule } from '../drop-file';
 import { AtListModule } from '../../components/at-list';
 import { MessageFileModule } from '../../components/message-file';
 import { CardModalModule } from '../../components/card-modal';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -45,26 +29,15 @@ import { CardModalModule } from '../../components/card-modal';
         EmojiModule,
         RouterModule,
         HoverTipModule,
-        HoverEventModule,
-        DayPipeModule,
         ImageViewerModule,
-        EmojiPipeModule,
-        EllipsisPipeModule,
-        TimePipeModule,
-        FloorPipeModule,
-        FileTypePipeModule,
-        FileSizePipeModule,
-        VideoTimePipeModule,
-        SanitizePipeModule,
         MessageMenuModule,
         PasteImageModule,
         DropFileModule,
         AtListModule,
-        FileNamePipeModule,
+        SharedPipeModule,
         MessageFileModule,
         CardModalModule,
-        AvatarLoadModule,
-        AvatarErrorModule
+        SharedDirectiveModule
     ],
     exports: [
         RoomPanelComponent

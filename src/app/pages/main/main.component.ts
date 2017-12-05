@@ -606,25 +606,25 @@ export class MainComponent implements OnInit, OnDestroy {
         // 提示模态框点击确定按钮
         if (info) {
             switch (info.actionType) {
-                case '[main] logout show':
+                case mainAction.logoutShowConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.logoutAction,
                         payload: null
                     });
                     break;
-                case '[chat] add black list':
+                case mainAction.addBlackListConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.addBlackListAction,
                         payload: info.active
                     });
                     break;
-                case '[chat] exit group':
+                case mainAction.exitGroupConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.exitGroupAction,
                         payload: info.groupInfo.gid
                     });
                     break;
-                case '[chat] delete member':
+                case mainAction.deleteMemberConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.deleteMemberAction,
                         payload: {
@@ -633,13 +633,13 @@ export class MainComponent implements OnInit, OnDestroy {
                         }
                     });
                     break;
-                case '[chat] add single no disturb modal':
+                case mainAction.addSingleNoDisturbConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.addSingleNoDisturbAction,
                         payload: info.active
                     });
                     break;
-                case '[chat] delete friend modal':
+                case mainAction.deleteFriendConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.deleteFriend,
                         payload: info.active
@@ -669,11 +669,7 @@ export class MainComponent implements OnInit, OnDestroy {
     private chatMenuShow(event) {
         event.stopPropagation();
         this.settingMenu.show = false;
-        if (this.chatMenu.show === true) {
-            this.chatMenu.show = false;
-        } else {
-            this.chatMenu.show = true;
-        }
+        this.chatMenu.show = !this.chatMenu.show;
     }
     private selectChatMenuItemEmit(item) {
         let type = '';
@@ -731,11 +727,7 @@ export class MainComponent implements OnInit, OnDestroy {
     private settingMenuShow(event) {
         event.stopPropagation();
         this.chatMenu.show = false;
-        if (this.settingMenu.show === true) {
-            this.settingMenu.show = false;
-        } else {
-            this.settingMenu.show = true;
-        }
+        this.settingMenu.show = !this.settingMenu.show;
     }
     private selectSettingItemEmit(item) {
         switch (item.key) {
@@ -765,7 +757,7 @@ export class MainComponent implements OnInit, OnDestroy {
                         info: {
                             title: '退出',          // 模态框标题
                             tip: '确定要退出web jchat吗？',   // 模态框内容
-                            actionType: '[main] logout show'// 哪种操作，点击确定时可以执行对应操作
+                            actionType: mainAction.logoutShowConfirmModal// 哪种操作，点击确定时可以执行对应操作
                             // success: 1 / 2               // 成功的提示框/失败的提示框，1.5s后会自动消失
                         }
                     }
@@ -793,15 +785,15 @@ export class MainComponent implements OnInit, OnDestroy {
             this.router.navigate(['/login']);
         }
     }
-    // 选择的不是图片
-    private selectIsNotImageEmit() {
+    // 选择图片出错
+    private selectImageErrorEmit(tip: string) {
         this.store$.dispatch({
             type: mainAction.showModalTip,
             payload: {
                 show: true,
                 info: {
                     title: '提示',
-                    tip: '选择的文件必须是图片',
+                    tip,
                     actionType: '[main] must be image',
                     cancel: true
                 }
@@ -845,32 +837,23 @@ export class MainComponent implements OnInit, OnDestroy {
     }
     // 获取图片对象
     private getImgObj(file) {
-        Util.getAvatarImgObj(file, () => {
-            this.selectIsNotImageEmit();
-        }, () => {
-            this.store$.dispatch({
-                type: mainAction.showModalTip,
-                payload: {
-                    show: true,
-                    info: {
-                        title: '提示',
-                        tip: '选择的图片宽或高的尺寸太小，请重新选择图片',
-                        actionType: '[chat] must be image',
-                        cancel: true
-                    }
-                }
-            });
-        }, (that, pasteFile, img) => {
-            this.groupAvatarInfo.info = {
-                src: that.result,
-                width: img.naturalWidth,
-                height: img.naturalHeight,
-                pasteFile
-            };
-            this.groupAvatarInfo.src =  that.result;
-            this.groupAvatarInfo.show = true;
-            this.groupAvatarInfo.filename = file.name;
-        });
+        const isNotImage = '选择的文件必须是图片';
+        const imageTooSmall = '选择的图片宽或高的尺寸太小，请重新选择图片';
+        Util.getAvatarImgObj(file,
+            () => this.selectImageErrorEmit(isNotImage),
+            () => this.selectImageErrorEmit(imageTooSmall),
+            (that, pasteFile, img) => {
+                this.groupAvatarInfo.info = {
+                    src: that.result,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    pasteFile
+                };
+                this.groupAvatarInfo.src =  that.result;
+                this.groupAvatarInfo.show = true;
+                this.groupAvatarInfo.filename = file.name;
+            }
+        );
     }
     private groupAvatarEmit(groupInfo) {
         this.groupAvatarInfo = groupInfo;

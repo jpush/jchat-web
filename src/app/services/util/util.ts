@@ -73,7 +73,10 @@ export abstract class Util {
      */
     public static imgReader(file, callback ?: Function, callback2 ?: Function): void | boolean {
         let files = file.files[0];
-        if (!/image\/\w+/.test(files.type)) {
+        if (!files) {
+            return false;
+        }
+        if (!files.type || files.type === '' || !/image\/\w+/.test(files.type)) {
             callback();
             return false;
         }
@@ -114,10 +117,10 @@ export abstract class Util {
      */
     public static getAvatarImgObj
         (file, callback1: Function, callback2: Function, callback3: Function): void | boolean {
-        if (!file || !file.type || file.type === '') {
+        if (!file) {
             return false;
         }
-        if (!/image\/\w+/.test(file.type)) {
+        if (!file.type || file.type === '' || !/image\/\w+/.test(file.type)) {
             callback1();
             return false;
         }

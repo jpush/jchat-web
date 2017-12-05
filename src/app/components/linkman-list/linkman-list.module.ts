@@ -4,8 +4,8 @@ import { NgModule } from '@angular/core';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import { LinkmanListComponent } from './linkman-list.component';
-import { SanitizePipeModule } from '../../pipes';
-import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -15,9 +15,8 @@ import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
         CommonModule,
         FormsModule,
         PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
-        SanitizePipeModule,
-        AvatarLoadModule,
-        AvatarErrorModule
+        SharedPipeModule,
+        SharedDirectiveModule
     ],
     exports: [
         LinkmanListComponent

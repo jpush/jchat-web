@@ -2,11 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { RoomComponent } from './room.component';
-import { RoomListModule } from '../../components/room-list';
-import { RoomInfomationModule } from '../../components/room-infomation';
-import { RoomDetailModule } from '../../components/room-detail';
-import { DefaultPanelModule } from '../../components/default-panel';
-import { RoomPanelModule } from '../../components/room-panel';
+import { SharedComponentModule } from '../../components/shared';
 
 @NgModule({
     declarations: [
@@ -15,11 +11,7 @@ import { RoomPanelModule } from '../../components/room-panel';
     imports: [
         CommonModule,
         FormsModule,
-        RoomListModule,
-        RoomInfomationModule,
-        RoomDetailModule,
-        DefaultPanelModule,
-        RoomPanelModule
+        SharedComponentModule
     ],
     exports: [
         RoomComponent

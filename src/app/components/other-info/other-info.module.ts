@@ -3,9 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { OtherInfoComponent } from './other-info.component';
 import { HoverTipModule } from '../hover-tip';
-import { HoverEventModule, AvatarLoadModule, AvatarErrorModule } from '../../directives';
-import { EllipsisPipeModule, SanitizePipeModule } from '../../pipes';
 import { InfoMenuModule } from '../info-menu';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -15,12 +15,9 @@ import { InfoMenuModule } from '../info-menu';
         CommonModule,
         FormsModule,
         HoverTipModule,
-        HoverEventModule,
-        EllipsisPipeModule,
-        SanitizePipeModule,
+        SharedDirectiveModule,
+        SharedPipeModule,
         InfoMenuModule,
-        AvatarLoadModule,
-        AvatarErrorModule
     ],
     exports: [
         OtherInfoComponent

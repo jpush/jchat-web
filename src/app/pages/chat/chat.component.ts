@@ -1311,9 +1311,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 切换当前对话用户
     private selectTargetEmit(item) {
-        if ((item.type === 4 && this.active.type === 4 &&
-            Number(this.active.key) === Number(item.key)) ||
-            (item.type === 3 && this.active.type === 3 && this.active.name === item.name)) {
+        const group = item.type === 4 && this.active.type === 4 &&
+                    Number(this.active.key) === Number(item.key);
+        const single = item.type === 3 && this.active.type === 3 && this.active.name === item.name;
+        if (group || single) {
             return ;
         }
         this.store$.dispatch({
@@ -1540,20 +1541,11 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.sendPicContent(data.info, data.img);
         // 正常发送图片
         } else if (data.type === 'send') {
-            Util.imgReader(file, () => {
-                this.store$.dispatch({
-                    type: mainAction.showModalTip,
-                    payload: {
-                        show: true,
-                        info: {
-                            title: '提示',
-                            tip: '选择的文件必须是图片',
-                            actionType: '[chat] must be image',
-                            cancel: true
-                        }
-                    }
-                });
-            }, (value) => this.sendPicContent(value, data.img));
+            const isNotImage = '选择的文件必须是图片';
+            Util.imgReader(file,
+                () => this.selectImageError(isNotImage),
+                (value) => this.sendPicContent(value, data.img)
+            );
             // 发送极光熊表情
         } else if (data.type === 'jpushEmoji') {
             const msg = {
@@ -1880,7 +1872,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     groupInfo,
                     title: '退群',
                     tip: `确定要退出 ${groupInfo.name} 吗？`,
-                    actionType: '[chat] exit group'
+                    actionType: mainAction.exitGroupConfirmModal
                 }
             }
         });
@@ -1902,7 +1894,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                         title: '加入黑名单',
                         tip: `确定将 ${otherInfo.memo_name || otherInfo.nickname
                             || otherInfo.username} 加入黑名单吗？`,
-                        actionType: '[chat] add black list'
+                        actionType: mainAction.addBlackListConfirmModal
                     }
                 }
             });
@@ -1926,7 +1918,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                         tip: `确定将 ${otherInfo.memo_name || otherInfo.nickname
                             || otherInfo.username} 加入免打扰吗？`,
                         subTip: '设置之后正常接收消息，但无通知提示',
-                        actionType: '[chat] add single no disturb modal'
+                        actionType: mainAction.addSingleNoDisturbConfirmModal
                     }
                 }
             });
@@ -1943,7 +1935,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     deleteItem: item,
                     title: '删除群成员',
                     tip: `确定删除群成员 ${item.memo_name || item.nickName || item.username} 吗？`,
-                    actionType: '[chat] delete member'
+                    actionType: mainAction.deleteMemberConfirmModal
                 }
             }
         });
@@ -2222,7 +2214,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                     active: info,
                     title: '删除好友',
                     tip: `确定删除好友 ${info.memo_name || info.nickName || info.name} 吗？`,
-                    actionType: '[chat] delete friend modal'
+                    actionType: mainAction.deleteFriendConfirmModal
                 }
             }
         });
@@ -2251,14 +2243,15 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.getImgObj(groupAvatarInput.files[0]);
         groupAvatarInput.value = '';
     }
-    private selectIsNotImage() {
+    // 选择图片出错
+    private selectImageError(tip: string) {
         this.store$.dispatch({
             type: mainAction.showModalTip,
             payload: {
                 show: true,
                 info: {
                     title: '提示',
-                    tip: '选择的文件必须是图片',
+                    tip,
                     actionType: '[main] must be image',
                     cancel: true
                 }
@@ -2267,32 +2260,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 获取图片对象
     private getImgObj(file) {
-        Util.getAvatarImgObj(file, () => {
-            this.selectIsNotImage();
-        }, () => {
-            this.store$.dispatch({
-                type: mainAction.showModalTip,
-                payload: {
-                    show: true,
-                    info: {
-                        title: '提示',
-                        tip: '选择的图片宽或高的尺寸太小，请重新选择图片',
-                        actionType: '[chat] must be image',
-                        cancel: true
-                    }
-                }
-            });
-        }, (that, pasteFile, img) => {
-            this.groupAvatar.info = {
-                src: that.result,
-                width: img.naturalWidth,
-                height: img.naturalHeight,
-                pasteFile
-            };
-            this.groupAvatar.src =  that.result;
-            this.groupAvatar.show = true;
-            this.groupAvatar.filename = file.name;
-        });
+        const isNotImage = '选择的文件必须是图片';
+        const imageTooSmall = '选择的图片宽或高的尺寸太小，请重新选择图片';
+        Util.getAvatarImgObj(file,
+            () => this.selectImageError(isNotImage),
+            () => this.selectImageError(imageTooSmall),
+            (that, pasteFile, img) => {
+                this.groupAvatar.info = {
+                    src: that.result,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    pasteFile
+                };
+                this.groupAvatar.src =  that.result;
+                this.groupAvatar.show = true;
+                this.groupAvatar.filename = file.name;
+            }
+        );
     }
     // 修改群头像
     private groupAvatarEmit(groupAvatarInfo) {

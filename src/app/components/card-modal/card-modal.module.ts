@@ -5,8 +5,8 @@ import { CardModalComponent } from './card-modal.component';
 import { SearchCardModule } from '../search-card';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
-import { SanitizePipeModule } from '../../pipes';
-import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -17,9 +17,8 @@ import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
         FormsModule,
         PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
         SearchCardModule,
-        SanitizePipeModule,
-        AvatarLoadModule,
-        AvatarErrorModule
+        SharedPipeModule,
+        SharedDirectiveModule
     ],
     exports: [
         CardModalComponent

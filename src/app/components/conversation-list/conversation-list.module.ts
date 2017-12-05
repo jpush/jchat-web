@@ -4,10 +4,9 @@ import { NgModule } from '@angular/core';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from '../../services/common';
 import { ConversationListComponent } from './conversation-list.component';
-import { DayPipeModule, EmojiPipeModule, TimePipeModule,
-         SanitizePipeModule } from '../../pipes';
 import { BadgeModule } from 'jpush-ui/badge';
-import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
     declarations: [
@@ -17,13 +16,9 @@ import { AvatarLoadModule, AvatarErrorModule } from '../../directives';
         CommonModule,
         FormsModule,
         PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
-        DayPipeModule,
-        EmojiPipeModule,
-        TimePipeModule,
-        SanitizePipeModule,
+        SharedPipeModule,
         BadgeModule,
-        AvatarLoadModule,
-        AvatarErrorModule
+        SharedDirectiveModule
     ],
     exports: [
         ConversationListComponent
