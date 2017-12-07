@@ -27,8 +27,12 @@
                 <div class="message-file-time">
                     <p [ngClass]="{absolute: item.position === 'absolute'}">{{item.time}}</p>
                 </div>
-                <div class="message-file-item display-flex" *ngFor="let message of item.msgs">
-                    <div class="message-file-icon" [ngClass]="{'image': (message.content.msg_body?.extras?.fileType | fileType) === 'image', 'video': (message.content.msg_body?.extras?.fileType | fileType) === 'video' || message.content.msg_body?.extras?.video, 'audio': (message.content.msg_body?.extras?.fileType | fileType) === 'audio', 'document': (message.content.msg_body?.extras?.fileType | fileType) === 'document'}"></div>
+                <div class="message-file-item display-flex" *ngFor="let message of item.msgs" [ngSwitch]="message.content.msg_body?.extras?.fileType | fileType">
+                    <div *ngSwitchCase="'image'" class="message-file-icon image"></div>
+                    <div *ngSwitchCase="'video'" class="message-file-icon video"></div>
+                    <div *ngSwitchCase="'audio'" class="message-file-icon audio"></div>
+                    <div *ngSwitchCase="'document'" class="message-file-icon document"></div>
+                    <div *ngSwitchDefault class="message-file-icon"></div>
                     <div class="message-file-main flex-1">
                         <p class="message-file-filename" [title]="message.content.msg_body.fname">{{message.content.msg_body.fname | fileName: 16}}</p>
                         <p class="message-file-size">{{message.content.msg_body.fsize | fileSize}}</p>

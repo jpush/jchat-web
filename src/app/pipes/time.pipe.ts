@@ -8,7 +8,7 @@ import { Util } from '../services/util';
 })
 
 export class TimePipe implements PipeTransform {
-    public transform(time, str: string): string {
+    public transform(time: number, str: string): string {
         const t = new Date(time);
         const y = t.getFullYear();
         const mo = Util.doubleNumber(t.getMonth() + 1);
@@ -53,7 +53,7 @@ export class TimePipe implements PipeTransform {
             }
             return newTime;
         } else {
-            return time;
+            return time.toString();
         }
     }
 }

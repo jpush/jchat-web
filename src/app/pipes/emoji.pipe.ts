@@ -8,7 +8,7 @@ import { Emoji } from '../services/tools';
 })
 
 export class EmojiPipe implements PipeTransform {
-    public transform(text, option) {
+    public transform(text: string, option): string {
         let newText = text.replace(/</g, '&lt;');
         newText = newText.replace(/>/g, '&gt;');
         // 匹配url地址

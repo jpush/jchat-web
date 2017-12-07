@@ -1286,9 +1286,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private playVideo(url) {
         this.videoPlay.emit(url);
     }
-    private stopPropagation(event) {
-        event.stopPropagation();
-    }
     private fileDownload(url) {
         // 为了兼容火狐下a链接下载，引入downloadjs
         download(url);

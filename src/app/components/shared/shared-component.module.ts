@@ -1,5 +1,3 @@
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { AtListModule } from '../at-list';
 import { BlackMenuModule } from '../black-menu';
@@ -54,55 +52,7 @@ import { BadgeModule } from 'jpush-ui/badge';
         // pass
     ],
     imports: [
-        CommonModule,
-        FormsModule,
-        AtListModule,
-        BlackMenuModule,
-        CardModalModule,
-        ChatPanelModule,
-        ContactListModule,
-        ConversationListModule,
-        CreateGroupModule,
-        CreateGroupNextModule,
-        CreateSingleChatModule,
-        DefaultPanelModule,
-        DropFileModule,
-        EmojiModule,
-        EnterGroupModule,
-        GroupAvatarModule,
-        GroupDescriptionModule,
-        GroupInfoModule,
-        GroupListModule,
-        GroupSettingModule,
-        HoverTipModule,
-        ImageViewerModule,
-        InfoMenuModule,
-        LinkmanListModule,
-        LogoutKickModule,
-        MenuModule,
-        MessageFileModule,
-        MessageMenuModule,
-        MessageTransmitModule,
-        ModifyPasswordModule,
-        OtherInfoModule,
-        PasteImageModule,
-        RoomDetailModule,
-        RoomInfomationModule,
-        RoomListModule,
-        RoomPanelModule,
-        SearchCardModule,
-        SearchMemberModule,
-        SearchTransmitModule,
-        SearchUserModule,
-        SelectModule,
-        SelfInfoModule,
-        SwitchModule,
-        TipModalModule,
-        UnreadListModule,
-        VerifyModule,
-        VerifyModalModule,
-        VideoModule,
-        BadgeModule
+        // pass
     ],
     exports: [
         AtListModule,

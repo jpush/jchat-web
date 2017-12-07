@@ -1336,10 +1336,12 @@ function modifyActiveMessageList(state: ChatStore, payload) {
                 message.content.memo_name = payload.memo_name;
             }
         }
-        for (let member of messageList.groupSetting.memberList) {
-            if (member.username === payload.name || member.username === payload.username) {
-                member.memo_name = payload.memo_name;
-                Util.getMemo_nameFirstLetter(member);
+        if (messageList.groupSetting && messageList.groupSetting.memberList) {
+            for (let member of messageList.groupSetting.memberList) {
+                if (member.username === payload.name || member.username === payload.username) {
+                    member.memo_name = payload.memo_name;
+                    Util.getMemo_nameFirstLetter(member);
+                }
             }
         }
     }
@@ -1578,12 +1580,25 @@ function deleteGroupMembersEvent(state: ChatStore, payload) {
     for (let messageList of state.messageList) {
         if (messageList.type === 4 && Number(messageList.key) === Number(payload.gid)) {
             if (messageList.groupSetting && messageList.groupSetting.memberList) {
-                messageList.groupSetting.memberList =
-                messageList.groupSetting.memberList.filter((item1) => {
-                    return payload.to_usernames.every((item2) => {
-                        return item2.username !== item1.username;
-                    });
-                });
+                let memberList = messageList.groupSetting.memberList;
+                for (let user of payload.to_usernames) {
+                    for (let i = 0; i < memberList.length; i++) {
+                        if (user.username === memberList[i].username) {
+                            memberList.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+                if (payload.new_owner) {
+                    for (let i = 0; i < memberList.length; i++) {
+                        if (payload.new_owner.username === memberList[i].username) {
+                            let item = memberList.splice(i, 1)[0];
+                            item.flag = 1;
+                            memberList.unshift(item);
+                            break;
+                        }
+                    }
+                }
             }
             break;
         }
@@ -1611,15 +1626,17 @@ function updateGroupMembers(state: ChatStore, eventData) {
                 for (let user of eventData.to_usernames) {
                     user.flag = 0;
                 }
-                for (let user of eventData.to_usernames) {
-                    let flag = true;
-                    for (let member of messageList.groupSetting.memberList) {
-                        if (user.username === member.username) {
-                            flag = false;
+                if (messageList.groupSetting.memberList) {
+                    for (let user of eventData.to_usernames) {
+                        let flag = true;
+                        for (let member of messageList.groupSetting.memberList) {
+                            if (user.username === member.username) {
+                                flag = false;
+                            }
                         }
-                    }
-                    if (flag) {
-                        messageList.groupSetting.memberList.push(user);
+                        if (flag) {
+                            messageList.groupSetting.memberList.push(user);
+                        }
                     }
                 }
             }
@@ -3017,12 +3034,12 @@ function changeGroupMemberSilence(state: ChatStore, payload, silence: boolean, t
                             } else {
                                 msg.time_show = Util.reducerDate(payload.ctime_ms);
                             }
-                            flag = true;
+                            flag2 = true;
                             msgs.push(msg);
                             break;
                         }
                     }
-                    if (!flag) {
+                    if (!flag2) {
                         msg.time_show = Util.reducerDate(payload.ctime_ms);
                         state.messageList.push({
                             key: payload.gid,
@@ -3039,7 +3056,7 @@ function changeGroupMemberSilence(state: ChatStore, payload, silence: boolean, t
     }
 }
 // 更新会话的未读总数
- function conversationUnreadNum(state: ChatStore) {
+function conversationUnreadNum(state: ChatStore) {
     let count = 0;
     for (let conversation of state.conversation) {
         if (!conversation.noDisturb && conversation.unreadNum) {
@@ -3047,9 +3064,9 @@ function changeGroupMemberSilence(state: ChatStore, payload, silence: boolean, t
         }
     }
     state.conversationUnreadNum = count;
- }
+}
 //  给入群邀请的邀请者和被邀请者添加备注名
- function filterInvitationEventMeMoName(state: ChatStore, payload) {
+function filterInvitationEventMeMoName(state: ChatStore, payload) {
     for (let friend of state.friendList) {
         if (payload.from_username === friend.username && payload.from_appkey === friend.appkey) {
             if (friend.memo_name) {
@@ -3068,4 +3085,4 @@ function changeGroupMemberSilence(state: ChatStore, payload, silence: boolean, t
             }
         }
     }
- }
+}

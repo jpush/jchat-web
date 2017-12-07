@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, SafeUrl } from '@angular/platform-browser';
 
 /**
  * 防止xss攻击(html, url)
@@ -12,7 +12,7 @@ export class SanitizePipe implements PipeTransform {
     constructor(
        private sanitizer: DomSanitizer
     ) { }
-    public transform(value: string, type: string) {
+    public transform(value: string, type: string): string | SafeHtml | SafeUrl {
         if (!value) {
             return '';
         }
@@ -21,5 +21,6 @@ export class SanitizePipe implements PipeTransform {
         } else if (type === 'url') {
             return this.sanitizer.bypassSecurityTrustUrl(value);
         }
+        return value;
     }
 }

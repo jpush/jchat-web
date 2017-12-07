@@ -6,6 +6,10 @@ import { authPayload } from './config';
 import { md5 } from '../../services/tools';
 import { Util } from '../../services/util';
 
+/**
+ * main路由的路由守卫服务
+ */
+
 @Injectable()
 export class MainCanActivate implements CanActivate {
     private username = '';

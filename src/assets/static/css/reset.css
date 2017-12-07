@@ -237,12 +237,15 @@ svg:not(:root) {
  * 2. Remove the margin in Firefox and Safari.
  */
 
-button,
+button{
+  font-size: 100%; /* 1 */
+  line-height: 1; /* 1 */
+  margin: 0; /* 2 */
+}
 input,
 optgroup,
 select,
 textarea {
-  font-family: sans-serif; /* 1 */
   font-size: 100%; /* 1 */
   line-height: 1.2; /* 1 */
   margin: 0; /* 2 */

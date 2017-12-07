@@ -23,12 +23,6 @@ export class GroupAvatarComponent implements OnInit {
     @Output()
         private groupAvatar: EventEmitter<any> = new EventEmitter();
     private cropper;
-    private width;
-    private height;
-    private minWidth;
-    private minHeight;
-    private maxWidth;
-    private maxHeight;
     constructor(
         private store$: Store<any>
     ) {}
@@ -41,32 +35,14 @@ export class GroupAvatarComponent implements OnInit {
             zoomable: false,
             rotatable: false,
             viewMode: 1,
-            minCropBoxWidth: 25,
-            crop (event) {
-                this.width = event.detail.width;
-                this.height = event.detail.height;
-                this.minWidth = event.detail.minWidth;
-                this.minHeight = event.detail.minHeight;
-                this.maxWidth = event.detail.maxWidth;
-                this.maxHeight = event.detail.maxHeight;
-            }
+            minCropBoxWidth: 25
         });
     }
     private modalAction(event, type ?) {
         event.stopPropagation();
         if (type === 'confirm') {
             const that = this;
-            let canvas = this.cropper.getCroppedCanvas({
-                width: that.width,
-                height: that.height,
-                minWidth: that.minWidth,
-                minHeight: that.minHeight,
-                maxWidth: that.maxWidth,
-                maxHeight: that.maxHeight,
-                fillColor: '#fff',
-                imageSmoothingEnabled: false,
-                imageSmoothingQuality: 'high'
-            });
+            let canvas = this.cropper.getCroppedCanvas();
             if (canvas.toBlob) {
                 canvas.toBlob((blob) => {
                     let formData = new FormData();

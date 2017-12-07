@@ -7,7 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 
 export class FileNamePipe implements PipeTransform {
-    public transform(fileName, num): string {
+    public transform(fileName: string, num: number): string {
         if (fileName.length <= num) {
             return fileName;
         }

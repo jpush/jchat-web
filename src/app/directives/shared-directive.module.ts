@@ -1,11 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { DebounceClickDirective } from './debounce-click.directive';
 import { MyModelDirective } from './my-model.directive';
 import { AvatarErrorDirective } from './avatar-error.directive';
 import { AvatarLoadDirective } from './avatar-load.directive';
 import { HoverEventDirective } from './hover-tip.directive';
+
+/**
+ * 共享模块，导出所有指令
+ */
 
 @NgModule({
     declarations: [
@@ -16,8 +18,7 @@ import { HoverEventDirective } from './hover-tip.directive';
         HoverEventDirective
     ],
     imports: [
-        CommonModule,
-        FormsModule
+        // pass
     ],
     exports: [
         DebounceClickDirective,

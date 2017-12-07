@@ -1,3 +1,6 @@
+/**
+ * emoji和jpush表情的配置
+ */
 export const emojiConfig = [
     {
         imgNum: 1,

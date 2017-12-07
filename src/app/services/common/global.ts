@@ -1,3 +1,7 @@
+/**
+ * 全局对象
+ */
+
 export let global = {
     injector: null,
     JIM: null,

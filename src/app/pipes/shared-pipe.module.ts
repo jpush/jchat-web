@@ -1,5 +1,3 @@
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { MyDatePipe } from './date.pipe';
 import { DayPipe } from './day.pipe';
@@ -12,6 +10,10 @@ import { FloorPipe } from './floor.pipe';
 import { SanitizePipe } from './sanitize.pipe';
 import { TimePipe } from './time.pipe';
 import { VideoTimePipe } from './video-time.pipe';
+
+/**
+ * 共享模块，导出所有管道
+ */
 
 @NgModule({
     declarations: [
@@ -28,8 +30,7 @@ import { VideoTimePipe } from './video-time.pipe';
         VideoTimePipe
     ],
     imports: [
-        CommonModule,
-        FormsModule
+        // pass
     ],
     exports: [
         MyDatePipe,

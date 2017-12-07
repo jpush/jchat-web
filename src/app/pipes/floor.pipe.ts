@@ -7,7 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 
 export class FloorPipe implements PipeTransform {
-    public transform(time): number {
+    public transform(time: number): number {
         return Math.floor(Number(time));
     }
 }

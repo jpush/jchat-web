@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 
+/**
+ * 前端存储（cookie和localStorage）服务
+ */
+
 @Injectable()
 export class StorageService {
     constructor() {

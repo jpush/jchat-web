@@ -5,11 +5,15 @@ import '../tools/pinyinUtil.js';
 declare const pinyinUtil;
 declare const BMap;
 
+/**
+ * 工具类
+ */
+
 export abstract class Util {
     /**
      * 将input file转化成formData对象
-     * @param file: Object
-     * @return Object FormData对象
+     * @param {Element} file - input type=file dom element
+     * @returns {Object} fd - FormData对象
      */
     public static getFileFormData(file) {
         let fd = new FormData();
@@ -18,8 +22,8 @@ export abstract class Util {
     }
     /**
      * 发送文件时截取后缀名作为拓展字段
-     * @param name string
-     * @return string 后缀名
+     * @param {string} name - 文件名
+     * @returns {string} 后缀名
      */
     public static getExt(name: string): string {
         const index = name.lastIndexOf('.');
@@ -27,8 +31,8 @@ export abstract class Util {
     }
     /**
      * 将文件后缀名分类
-     * @param ext string
-     * @return string 后缀名
+     * @param {string} ext - 后缀名
+     * @returns {string} newType - 分类名
      */
     public static sortByExt(ext: string): string {
         if (ext === '') {
@@ -59,17 +63,17 @@ export abstract class Util {
     }
     /**
      * doubleNumber 将数字格式化成两位数，如9转化成09，15还是转化成15
-     * @param num: 一位或者两位整数
-     * @return string 两位的字符串
+     * @param {number} num - 一位或者两位整数
+     * @returns {string} 两位数的字符串
      */
     public static doubleNumber(num: number): string {
         return num < 10 ? '0' + num : num.toString();
     }
     /**
      * fileReader预览图片返回img url
-     * @param file: Object, input file 对象
-     * @param callback: function 回调函数
-     * @param callback2: function 回调函数
+     * @param {Element} file - input type=file dom element
+     * @param {Function} callback - 回调函数
+     * @param {Function} callback2 - 回调函数
      */
     public static imgReader(file, callback ?: Function, callback2 ?: Function): void | boolean {
         let files = file.files[0];
@@ -110,10 +114,10 @@ export abstract class Util {
     }
     /**
      * 获取头像裁剪的预览对象
-     * @param file input dom 对象的files[0]
-     * @param callback1 回调函数1
-     * @param callback2 回调函数2
-     * @param callback3 回调函数3
+     * @param {Object} file - input type=file dom element的files[0]
+     * @param {Function} callback1 - 回调函数1
+     * @param {Function} callback2 - 回调函数2
+     * @param {Function} callback3 - 回调函数3
      */
     public static getAvatarImgObj
         (file, callback1: Function, callback2: Function, callback3: Function): void | boolean {
@@ -146,8 +150,8 @@ export abstract class Util {
     }
     /**
      * fileReader预览图片url
-     * @param file: Object, input file 对象
-     * @param callback: function 回调函数
+     * @param {Element} file - input type=file dom element
+     * @param {Function} callback - 回调函数
      */
     public static fileReader(file, callback ?: Function): Promise<any> | boolean {
         let files = file.files[0];
@@ -170,9 +174,9 @@ export abstract class Util {
     }
     /**
      * contenteditable输入框插入内容（表情、粘贴文本等）
-     * @param field: Object  输入框dom对象
-     * @param value: string 需要插入的内容
-     * @param selectPastedContent: boolean 选中内容还是开始点和结束点一致
+     * @param {Element} field - dom element
+     * @param {string} value - 需要插入的内容
+     * @param {boolean} selectPastedContent - 选中内容还是开始点和结束点一致
      */
     public static insertAtCursor(field, value: string, selectPastedContent?: boolean): void {
         let sel;
@@ -209,19 +213,19 @@ export abstract class Util {
     }
     /**
      * contenteditable输入框光标聚焦到最后
-     * @param obj: Object  输入框dom对象
+     * @param {Element} element - dom element
      */
-    public static focusLast(obj): void {
+    public static focusLast(element): void {
         if (window.getSelection) {
             const range = window.getSelection();
-            range.selectAllChildren(obj);
-            range.collapse(obj, obj.childNodes.length);
+            range.selectAllChildren(element);
+            range.collapse(element, element.childNodes.length);
         }
     }
     /**
      * 判断字符串首字母是否是中文
-     * @param str: string  需要操作的字符串
-     * @return boolean
+     * @param {string} str - 需要操作的字符串
+     * @returns {boolean}
      */
     public static firstLetterIsChinese(str: string): boolean {
         const re = /^[\\u4e00-\\u9fa5]/;
@@ -229,8 +233,8 @@ export abstract class Util {
     }
     /**
      * 将数组中的字符串按照首字母及中文拼音首字母排序
-     * @param payload: array 需要排序的数组
-     * @return array 排好序的数组array
+     * @param {Array} payload - 需要排序的数组
+     * @returns {Array} result - 排好序的数组
      */
     public static sortByLetter(payload: any[]): any[] {
         const letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
@@ -280,9 +284,9 @@ export abstract class Util {
     }
     /**
      * 将元素插入按首字母排序的数组中
-     * @param arr: array 之前排好序的数组
-     * @param payload: Object  需要插入的元素
-     * @return array 插入元素之后的数组
+     * @param {Array} arr - 之前排好序的数组
+     * @param {Object} payload - 需要插入的对象
+     * @returns {Array} arr - 插入元素之后的数组
      */
     public static insertSortByLetter(arr: any[], payload): any[] {
         const name =
@@ -303,8 +307,8 @@ export abstract class Util {
     }
     /**
      * 获取首字母
-     * @param name: 要获取首字母的字符串
-     * @return string 首字母
+     * @param {string} name - 要获取首字母的字符串
+     * @returns {string} firstLetter - 首字母
      */
     public static getFirstLetter(name: string): string {
         let firstLetter = name.charAt(0);
@@ -324,7 +328,7 @@ export abstract class Util {
     }
     /**
      * 获取成员备注名、昵称、用户名首字母
-     * @param arr: 成员列表
+     * @param {Array} arr - 成员列表
      */
     public static getMembersFirstLetter(arr: any[]): void {
         for (let item of arr) {
@@ -341,7 +345,7 @@ export abstract class Util {
     }
     /**
      * 获取备注名首字母
-     * @param member: 用户对象
+     * @param {Object} member - 用户对象
      */
     public static getMemo_nameFirstLetter(member): void {
         if (member.memo_name && member.memo_name !== '') {
@@ -350,7 +354,7 @@ export abstract class Util {
     }
     /**
      * 将接收到的地理定位坐标转化为地图
-     * @param obj: Object 坐标对象
+     * @param {Object} obj - 坐标对象
      */
     public static theLocation(obj): void {
         let point = new BMap.Point(obj.longitude, obj.latitude);
@@ -375,8 +379,8 @@ export abstract class Util {
     }
     /**
      * 将时间转化成需要的格式
-     * @param msgTime: 需要转换的时间毫秒数
-     * @return string 时间的标识，根据标识可以再页面应用不同的date管道
+     * @param {number} msgTime - 需要转换的时间毫秒数
+     * @returns {string} showTime - 时间的标识，根据标识可以再页面应用不同的date管道
      * 当天 --- today
      * 昨天和前天 --- yesterday或the day before
      * 近7天（排除今天，昨天，前天） --- day
@@ -412,9 +416,9 @@ export abstract class Util {
     }
     /**
      * 判断两个时间间隔是否超过5分钟
-     * @param oldTime: number
-     * @param newTime: number
-     * @return boolean
+     * @param {number} oldTime
+     * @param {number} newTime
+     * @returns {boolean}
      */
     public static fiveMinutes(oldTime: number, newTime: number): boolean {
         const gap = newTime - oldTime;
@@ -422,8 +426,8 @@ export abstract class Util {
     }
     /**
      * 获取当前光标的在页面中的位置
-     * @param input: dom obj 输入框的dom元素
-     * @return object 光标的位置
+     * @param {Element} input - input dom element
+     * @returns {Object} offset - 光标的位置
      */
     public static getOffset(input) {
         const sel = window.getSelection();
@@ -465,23 +469,23 @@ export abstract class Util {
     }
     /**
      * 深度拷贝对象（只能深度拷贝没有方法属性的对象）
-     * @param obj: object 需要拷贝的对象
-     * @return result 新的对象
+     * @param {Object} obj - 需要拷贝的对象
+     * @returns {Object} result - 新的对象
      */
     public static deepCopyObj(obj: object) {
         return JSON.parse(JSON.stringify(obj));
     }
     /**
      * 生成JIM初始化的签名
-     * @param timestamp: number 当前的时间毫秒数
-     * @return string 签名
+     * @param {number} timestamp - 当前的时间毫秒数
+     * @returns {string} 签名
      */
     public static createSignature(timestamp: number): string {
         return md5(`appkey=${authPayload.appKey}&timestamp=${timestamp}&random_str=${authPayload.randomStr}&key=${authPayload.masterkey}`);
     }
     /**
      * 处理头像的大小
-     * @param event: object 头像dom的事件对象
+     * @param {Event} event 头像dom的事件对象
      */
     public static reduceAvatarSize(event): void {
         if (event.target.naturalHeight >= event.target.naturalWidth) {
@@ -494,7 +498,7 @@ export abstract class Util {
     }
     /**
      * 判断是否是safari浏览器
-     * @return boolean
+     * @returns {boolean}
      */
     public static isSafari(): boolean {
         const userAgent = navigator.userAgent;
