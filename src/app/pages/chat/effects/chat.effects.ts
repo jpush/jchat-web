@@ -23,11 +23,11 @@ export class ChatEffect {
         .switchMap((info) => {
             let count = 0;
             if (info.data.messages[0].content.msg_body.media_id) {
-                count ++;
+                count++;
                 this.requestMediaUrl(info.data, count);
             }
             if (info.data.messages[0]) {
-                count ++;
+                count++;
                 this.requestMsgAvatarUrl(info.data.messages[0], info, count);
             }
             if (count <= 0) {
@@ -37,9 +37,9 @@ export class ChatEffect {
                 });
             }
             return Observable.of('syncReceiveMessage')
-                    .map(() => {
-                        return {type: '[chat] sync receive message useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] sync receive message useless' };
+                });
         });
     // 接收到单聊新消息
     @Effect()
@@ -50,14 +50,14 @@ export class ChatEffect {
             let count = 0;
             const content = info.data.messages[0].content;
             if (info.data.messages[0].content.msg_body.media_id) {
-                count ++;
+                count++;
                 this.requestMediaUrl(info.data, count);
             }
             const result = info.conversation.filter((conversation) => {
                 return info.data.messages[0].content.from_id === conversation.name;
             });
             if (result.length === 0) {
-                count ++;
+                count++;
                 this.requestMsgAvatarUrl(info.data.messages[0], info, count);
                 // 给已有的单聊用户添加头像
             } else {
@@ -66,7 +66,7 @@ export class ChatEffect {
             // 如果接收的是名片
             if (content.msg_type === 'text' && content.msg_body.extras &&
                 content.msg_body.extras.businessCard) {
-                count ++;
+                count++;
                 this.requestCardInfo(info.data, count);
             }
             if (count <= 0) {
@@ -76,9 +76,9 @@ export class ChatEffect {
                 });
             }
             return Observable.of('receiveSingleMessage')
-                    .map(() => {
-                        return {type: '[chat] receive single message useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] receive single message useless' };
+                });
         });
     // 接收到群聊新消息
     @Effect()
@@ -92,13 +92,13 @@ export class ChatEffect {
             let flag = false;
             const content = obj.data.messages[0].content;
             if (messages.content.msg_body.media_id) {
-                count ++;
+                count++;
                 this.requestMediaUrl(obj.data, count);
             }
             // 如果接收的是名片
             if (content.msg_type === 'text' && content.msg_body.extras &&
                 content.msg_body.extras.businessCard) {
-                count ++;
+                count++;
                 this.requestCardInfo(obj.data, count);
             }
             // 判断是否消息列表中已经加载过头像
@@ -124,14 +124,14 @@ export class ChatEffect {
                 }
             }
             if (!flag) {
-                count ++;
+                count++;
                 // 消息列表中没有加载过头像
                 this.requestMsgAvatarUrl(messages, obj, count);
             }
             return Observable.of('receiveMessage')
-                    .map(() => {
-                        return {type: '[chat] receive message useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] receive message useless' };
+                });
         });
     // 获取storage里的voice状态
     @Effect()
@@ -147,9 +147,9 @@ export class ChatEffect {
                 });
             }
             return Observable.of('getVoiceState')
-                    .map(() => {
-                        return {type: '[chat] get voice state useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] get voice state useless' };
+                });
         });
     // 获取好友列表
     @Effect()
@@ -176,12 +176,12 @@ export class ChatEffect {
                         if (friend.avatar === '') {
                             continue;
                         }
-                        global.JIM.getResource({media_id: friend.avatar})
-                        .onSuccess((urlInfo) => {
-                            friend.avatarUrl = urlInfo.url;
-                        }).onFail((error) => {
-                            // pass
-                        });
+                        global.JIM.getResource({ media_id: friend.avatar })
+                            .onSuccess((urlInfo) => {
+                                friend.avatarUrl = urlInfo.url;
+                            }).onFail((error) => {
+                                // pass
+                            });
                     }
                 }).onFail((error) => {
                     this.store$.dispatch({
@@ -190,9 +190,9 @@ export class ChatEffect {
                     });
                 });
             return Observable.of(friendListObj)
-                    .map(() => {
-                        return {type: '[chat] get friend list useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] get friend list useless' };
+                });
         });
     // 获取messageList 图片消息url
     @Effect()
@@ -212,23 +212,23 @@ export class ChatEffect {
                     msgs[i].hasLoad = true;
                     const msgBody = msgs[i].content.msg_body;
                     if (msgBody.media_id && !msgBody.media_url) {
-                        global.JIM.getResource({media_id: msgBody.media_id})
-                        .onSuccess((urlInfo) => {
-                            msgs[i].content.msg_body.media_url = urlInfo.url;
-                            this.store$.dispatch({
-                                type: chatAction.getAllMessageSuccess,
-                                payload: info.messageList
+                        global.JIM.getResource({ media_id: msgBody.media_id })
+                            .onSuccess((urlInfo) => {
+                                msgs[i].content.msg_body.media_url = urlInfo.url;
+                                this.store$.dispatch({
+                                    type: chatAction.getAllMessageSuccess,
+                                    payload: info.messageList
+                                });
+                            }).onFail((error) => {
+                                msgs[i].content.msg_body.media_url = '';
+                                this.store$.dispatch({
+                                    type: chatAction.getAllMessageSuccess,
+                                    payload: info.messageList
+                                });
                             });
-                        }).onFail((error) => {
-                            msgs[i].content.msg_body.media_url = '';
-                            this.store$.dispatch({
-                                type: chatAction.getAllMessageSuccess,
-                                payload: info.messageList
-                            });
-                        });
                     } else if (msgBody.extras && msgBody.extras.businessCard) {
                         global.JIM.getUserInfo({
-                            username:  msgBody.extras.userName
+                            username: msgBody.extras.userName
                         }).onSuccess((data) => {
                             msgBody.extras.nickName = data.user_info.nickname;
                             if (data.user_info.avatar === '') {
@@ -238,19 +238,19 @@ export class ChatEffect {
                                     payload: info.messageList
                                 });
                             } else {
-                                global.JIM.getResource({media_id: data.user_info.avatar})
-                                .onSuccess((urlInfo) => {
-                                    msgBody.extras.media_url = urlInfo.url;
-                                    this.store$.dispatch({
-                                        type: chatAction.getAllMessageSuccess,
-                                        payload: info.messageList
+                                global.JIM.getResource({ media_id: data.user_info.avatar })
+                                    .onSuccess((urlInfo) => {
+                                        msgBody.extras.media_url = urlInfo.url;
+                                        this.store$.dispatch({
+                                            type: chatAction.getAllMessageSuccess,
+                                            payload: info.messageList
+                                        });
+                                    }).onFail((error) => {
+                                        this.store$.dispatch({
+                                            type: chatAction.getAllMessageSuccess,
+                                            payload: info.messageList
+                                        });
                                     });
-                                }).onFail((error) => {
-                                    this.store$.dispatch({
-                                        type: chatAction.getAllMessageSuccess,
-                                        payload: info.messageList
-                                    });
-                                });
                             }
                         }).onFail((error) => {
                             this.store$.dispatch({
@@ -262,9 +262,9 @@ export class ChatEffect {
                 }
             }
             return Observable.of('getSourceUrl')
-                    .map(() => {
-                        return {type: '[chat] get source url useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] get source url useless' };
+                });
         });
     // 获取messageList avatar url
     @Effect()
@@ -304,19 +304,19 @@ export class ChatEffect {
                             payload: info.messageList
                         });
                     } else {
-                        global.JIM.getResource({media_id: data.user_info.avatar})
-                        .onSuccess((urlInfo) => {
-                            msgs[i].content.avatarUrl = urlInfo.url;
-                            this.store$.dispatch({
-                                type: chatAction.getAllMessageSuccess,
-                                payload: info.messageList
+                        global.JIM.getResource({ media_id: data.user_info.avatar })
+                            .onSuccess((urlInfo) => {
+                                msgs[i].content.avatarUrl = urlInfo.url;
+                                this.store$.dispatch({
+                                    type: chatAction.getAllMessageSuccess,
+                                    payload: info.messageList
+                                });
+                            }).onFail((error) => {
+                                this.store$.dispatch({
+                                    type: chatAction.getAllMessageSuccess,
+                                    payload: info.messageList
+                                });
                             });
-                        }).onFail((error) => {
-                            this.store$.dispatch({
-                                type: chatAction.getAllMessageSuccess,
-                                payload: info.messageList
-                            });
-                        });
                     }
                 }).onFail((error) => {
                     this.store$.dispatch({
@@ -326,9 +326,9 @@ export class ChatEffect {
                 });
             }
             return Observable.of('getMemberAvatarUrl')
-                    .map(() => {
-                        return {type: '[chat] get member avatar url useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] get member avatar url useless' };
+                });
         });
     // 获取所有漫游同步消息及资源路径
     @Effect()
@@ -345,7 +345,7 @@ export class ChatEffect {
                         }
                         if (j + 1 !== dataItem.msgs.length) {
                             let timeGap =
-                            (dataItem.msgs[j + 1].ctime_ms - dataItem.msgs[j].ctime_ms) / 1000 / 60;
+                                (dataItem.msgs[j + 1].ctime_ms - dataItem.msgs[j].ctime_ms) / 1000 / 60;
                             if (timeGap > 5) {
                                 dataItem.msgs[j + 1].time_show =
                                     Util.reducerDate(dataItem.msgs[j + 1].ctime_ms);
@@ -377,128 +377,128 @@ export class ChatEffect {
                 }
             }
             const conversationObj = global.JIM.getConversation()
-            .onSuccess((info) => {
-                // 删除feedBack_
-                for (let i = 0; i < info.conversations.length; i++) {
-                    info.conversations[i].unreadNum = info.conversations[i].unread_msg_count;
-                    if (info.conversations[i].name.match(/^feedback_/g)) {
-                        info.conversations.splice(i, 1);
-                    }
-                }
-                info.conversations.reverse();
-                // 对置顶会话进行排序
-                let topArr = [];
-                let notopArr = [];
-                for (let conversation of info.conversations) {
-                    if (conversation.extras && conversation.extras.top_time_ms) {
-                        topArr.push(conversation);
-                    } else {
-                        notopArr.push(conversation);
-                    }
-                }
-                for (let i = 0; i < topArr.length; i++) {
-                    for (let j = i + 1; j < topArr.length; j++) {
-                        if (topArr[i].extras.top_time_ms > topArr[j].extras.top_time_ms) {
-                            let temp = topArr[i];
-                            topArr[i] = topArr[j];
-                            topArr[j] = temp;
+                .onSuccess((info) => {
+                    // 删除feedBack_
+                    for (let i = 0; i < info.conversations.length; i++) {
+                        info.conversations[i].unreadNum = info.conversations[i].unread_msg_count;
+                        if (info.conversations[i].name.match(/^feedback_/g)) {
+                            info.conversations.splice(i, 1);
                         }
                     }
-                }
-                info.conversations = topArr.concat(notopArr);
-                // 获取头像url
-                let count = 0;
-                for (let conversation of info.conversations) {
-                    if (conversation.avatar && conversation.avatar !== '') {
-                        count ++;
-                        global.JIM.getResource({media_id: conversation.avatar})
-                        .onSuccess((urlInfo) => {
-                            conversation.avatarUrl = urlInfo.url;
-                            count --;
-                            this.dispatchConversation(count, info, data);
-                        }).onFail((error) => {
-                            count --;
-                            this.dispatchConversation(count, info, data);
-                        }).onTimeout(() => {
-                            count --;
-                            this.dispatchConversation(count, info, data);
-                        });
+                    info.conversations.reverse();
+                    // 对置顶会话进行排序
+                    let topArr = [];
+                    let notopArr = [];
+                    for (let conversation of info.conversations) {
+                        if (conversation.extras && conversation.extras.top_time_ms) {
+                            topArr.push(conversation);
+                        } else {
+                            notopArr.push(conversation);
+                        }
                     }
-                    if (conversation.type === 4 && conversation.name === '') {
-                        count ++;
-                        this.requestGroupName(conversation, (error) => {
-                            count --;
-                            conversation.name = '群名获取失败？？';
+                    for (let i = 0; i < topArr.length; i++) {
+                        for (let j = i + 1; j < topArr.length; j++) {
+                            if (topArr[i].extras.top_time_ms > topArr[j].extras.top_time_ms) {
+                                let temp = topArr[i];
+                                topArr[i] = topArr[j];
+                                topArr[j] = temp;
+                            }
+                        }
+                    }
+                    info.conversations = topArr.concat(notopArr);
+                    // 获取头像url
+                    let count = 0;
+                    for (let conversation of info.conversations) {
+                        if (conversation.avatar && conversation.avatar !== '') {
+                            count++;
+                            global.JIM.getResource({ media_id: conversation.avatar })
+                                .onSuccess((urlInfo) => {
+                                    conversation.avatarUrl = urlInfo.url;
+                                    count--;
+                                    this.dispatchConversation(count, info, data);
+                                }).onFail((error) => {
+                                    count--;
+                                    this.dispatchConversation(count, info, data);
+                                }).onTimeout(() => {
+                                    count--;
+                                    this.dispatchConversation(count, info, data);
+                                });
+                        }
+                        if (conversation.type === 4 && conversation.name === '') {
+                            count++;
+                            this.requestGroupName(conversation, (error) => {
+                                count--;
+                                conversation.name = '群名获取失败？？';
+                                this.store$.dispatch({
+                                    type: appAction.errorApiTip,
+                                    payload: error
+                                });
+                                this.dispatchConversation(count, info, data);
+                            }, () => {
+                                count--;
+                                this.dispatchConversation(count, info, data);
+                            });
+                        }
+                    }
+                    this.dispatchConversation(count, info, data);
+                    // 获取屏蔽列表
+                    global.JIM.groupShieldList()
+                        .onSuccess((groupList) => {
+                            this.store$.dispatch({
+                                type: chatAction.getConversationSuccess,
+                                payload: {
+                                    shield: groupList.groups
+                                }
+                            });
+                        }).onFail((error) => {
                             this.store$.dispatch({
                                 type: appAction.errorApiTip,
                                 payload: error
                             });
-                            this.dispatchConversation(count, info, data);
-                        }, () => {
-                            count --;
-                            this.dispatchConversation(count, info, data);
+                        }).onTimeout(() => {
+                            const error = { code: 910000 };
+                            this.store$.dispatch({
+                                type: appAction.errorApiTip,
+                                payload: error
+                            });
                         });
-                    }
-                }
-                this.dispatchConversation(count, info, data);
-                // 获取屏蔽列表
-                global.JIM.groupShieldList()
-                .onSuccess((groupList) => {
-                    this.store$.dispatch({
-                        type: chatAction.getConversationSuccess,
-                        payload: {
-                            shield: groupList.groups
-                        }
-                    });
+                    global.JIM.getNoDisturb()
+                        .onSuccess((noDisturbList) => {
+                            this.store$.dispatch({
+                                type: chatAction.getConversationSuccess,
+                                payload: {
+                                    noDisturb: noDisturbList.no_disturb
+                                }
+                            });
+                        }).onFail((error) => {
+                            this.store$.dispatch({
+                                type: appAction.errorApiTip,
+                                payload: error
+                            });
+                        }).onTimeout(() => {
+                            const error = { code: 910000 };
+                            this.store$.dispatch({
+                                type: appAction.errorApiTip,
+                                payload: error
+                            });
+                        });
                 }).onFail((error) => {
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 }).onTimeout(() => {
-                    const error = {code: 910000};
+                    const error = { code: 910000 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 });
-                global.JIM.getNoDisturb()
-                .onSuccess((noDisturbList) => {
-                   this.store$.dispatch({
-                        type: chatAction.getConversationSuccess,
-                        payload: {
-                            noDisturb: noDisturbList.no_disturb
-                        }
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout(() => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout(() => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
             return Observable.of(conversationObj)
-                    .map(() => {
-                        return {type: '[chat] get all messageList useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] get all messageList useless' };
+                });
+        });
     // 发送单人消息
     @Effect()
     private sendMessage$: Observable<Action> = this.actions$
@@ -512,57 +512,57 @@ export class ChatEffect {
         })
         .switchMap((text) => {
             const msgObj = global.JIM.sendSingleMsg(text.singleMsg)
-            .onSuccess((data, msgs) => {
-                msgs.key = data.key;
-                msgs.unread_count = 1;
-                msgs.msg_type = 3;
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: text.msgs.msgKey,
-                        key: text.key,
-                        success: 2,
-                        msgs,
-                        name: text.active.name,
-                        type: 3
-                    }
-                });
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: text.msgs.msgKey,
-                        key: text.key,
-                        success: 3,
-                        name: text.active.name,
-                        type: 3
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: text.msgs.msgKey,
-                        key: text.key,
-                        success: 3,
-                        name: text.active.name,
-                        type: 3
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(msgObj)
-                    .map(() => {
-                        return {type: '[chat] send single message useless'};
+                .onSuccess((data, msgs) => {
+                    msgs.key = data.key;
+                    msgs.unread_count = 1;
+                    msgs.msg_type = 3;
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: text.msgs.msgKey,
+                            key: text.key,
+                            success: 2,
+                            msgs,
+                            name: text.active.name,
+                            type: 3
+                        }
                     });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: text.msgs.msgKey,
+                            key: text.key,
+                            success: 3,
+                            name: text.active.name,
+                            type: 3
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: text.msgs.msgKey,
+                            key: text.key,
+                            success: 3,
+                            name: text.active.name,
+                            type: 3
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(msgObj)
+                .map(() => {
+                    return { type: '[chat] send single message useless' };
+                });
         });
     // 转发单人消息
     @Effect()
@@ -631,9 +631,9 @@ export class ChatEffect {
                 });
             });
             return Observable.of(msgObj)
-                    .map(() => {
-                        return {type: '[chat] transmit single message useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] transmit single message useless' };
+                });
         });
     // 发送群组消息
     @Effect()
@@ -648,54 +648,54 @@ export class ChatEffect {
         })
         .switchMap((text) => {
             const groupMessageObj = global.JIM.sendGroupMsg(text.groupMsg)
-            .onSuccess((data, msgs) => {
-                msgs.key = data.key;
-                msgs.unread_count = data.unread_count;
-                msgs.msg_type = 4;
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: text.msgs.msgKey,
-                        key: text.key,
-                        success: 2,
-                        msgs,
-                        type: 4
-                    }
-                });
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: text.msgs.msgKey,
-                        key: text.key,
-                        success: 3,
-                        type: 4
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: text.msgs.msgKey,
-                        key: text.key,
-                        success: 3,
-                        type: 4
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(groupMessageObj)
-                    .map(() => {
-                        return {type: '[chat] send group message useless'};
+                .onSuccess((data, msgs) => {
+                    msgs.key = data.key;
+                    msgs.unread_count = data.unread_count;
+                    msgs.msg_type = 4;
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: text.msgs.msgKey,
+                            key: text.key,
+                            success: 2,
+                            msgs,
+                            type: 4
+                        }
                     });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: text.msgs.msgKey,
+                            key: text.key,
+                            success: 3,
+                            type: 4
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: text.msgs.msgKey,
+                            key: text.key,
+                            success: 3,
+                            type: 4
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(groupMessageObj)
+                .map(() => {
+                    return { type: '[chat] send group message useless' };
+                });
         });
     // 转发群组消息
     @Effect()
@@ -761,9 +761,9 @@ export class ChatEffect {
                 });
             });
             return Observable.of(groupMessageObj)
-                    .map(() => {
-                        return {type: '[chat] transmit group message useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] transmit group message useless' };
+                });
         });
     // 发送单聊图片
     @Effect()
@@ -772,57 +772,57 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((img) => {
             const singlePicObj = global.JIM.sendSinglePic(img.singlePicFormData)
-            .onSuccess((data, msgs) => {
-                msgs.key = data.key;
-                msgs.unread_count = 1;
-                msgs.msg_type = 3;
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: img.msgs.msgKey,
-                        key: img.key,
-                        success: 2,
-                        msgs,
-                        name: img.active.name,
-                        type: 3
-                    }
-                });
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: img.msgs.msgKey,
-                        key: img.key,
-                        success: 3,
-                        name: img.active.name,
-                        type: 3
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: img.msgs.msgKey,
-                        key: img.key,
-                        success: 3,
-                        name: img.active.name,
-                        type: 3
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(singlePicObj)
-                    .map(() => {
-                        return {type: '[chat] send single picture useless'};
+                .onSuccess((data, msgs) => {
+                    msgs.key = data.key;
+                    msgs.unread_count = 1;
+                    msgs.msg_type = 3;
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: img.msgs.msgKey,
+                            key: img.key,
+                            success: 2,
+                            msgs,
+                            name: img.active.name,
+                            type: 3
+                        }
                     });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: img.msgs.msgKey,
+                            key: img.key,
+                            success: 3,
+                            name: img.active.name,
+                            type: 3
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: img.msgs.msgKey,
+                            key: img.key,
+                            success: 3,
+                            name: img.active.name,
+                            type: 3
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(singlePicObj)
+                .map(() => {
+                    return { type: '[chat] send single picture useless' };
+                });
         });
     // 转发单聊图片
     @Effect()
@@ -838,7 +838,7 @@ export class ChatEffect {
                 height: body.height,
                 format: body.format,
                 fsize: body.fsize,
-                extras : body.extras
+                extras: body.extras
             };
             const singlePicObj = global.JIM.sendSinglePic({
                 target_username: img.select.name,
@@ -900,9 +900,9 @@ export class ChatEffect {
                 });
             });
             return Observable.of(singlePicObj)
-                    .map(() => {
-                        return {type: '[chat] transmit single picture useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] transmit single picture useless' };
+                });
         });
     // 发送群组图片
     @Effect()
@@ -911,54 +911,54 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((img) => {
             const sendGroupPicObj = global.JIM.sendGroupPic(img.groupPicFormData)
-            .onSuccess((data, msgs) => {
-                msgs.key = data.key;
-                msgs.unread_count = data.unread_count;
-                msgs.msg_type = 4;
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: img.msgs.msgKey,
-                        key: img.key,
-                        success: 2,
-                        msgs,
-                        type: 4
-                    }
-                });
-            }).onFail((error, msgs) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: img.msgs.msgKey,
-                        key: img.key,
-                        success: 3,
-                        type: 4
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: img.msgs.msgKey,
-                        key: img.key,
-                        success: 3,
-                        type: 4
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(sendGroupPicObj)
-                    .map(() => {
-                        return {type: '[chat] send group pic useless'};
+                .onSuccess((data, msgs) => {
+                    msgs.key = data.key;
+                    msgs.unread_count = data.unread_count;
+                    msgs.msg_type = 4;
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: img.msgs.msgKey,
+                            key: img.key,
+                            success: 2,
+                            msgs,
+                            type: 4
+                        }
                     });
+                }).onFail((error, msgs) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: img.msgs.msgKey,
+                            key: img.key,
+                            success: 3,
+                            type: 4
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: img.msgs.msgKey,
+                            key: img.key,
+                            success: 3,
+                            type: 4
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(sendGroupPicObj)
+                .map(() => {
+                    return { type: '[chat] send group pic useless' };
+                });
         });
     // 转发群组图片
     @Effect()
@@ -974,7 +974,7 @@ export class ChatEffect {
                 height: body.height,
                 format: body.format,
                 fsize: body.fsize,
-                extras : body.extras
+                extras: body.extras
             };
             const sendGroupPicObj = global.JIM.sendGroupPic({
                 target_gid: img.select.key,
@@ -1029,9 +1029,9 @@ export class ChatEffect {
                 });
             });
             return Observable.of(sendGroupPicObj)
-                    .map(() => {
-                        return {type: '[chat] transmit group pic useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] transmit group pic useless' };
+                });
         });
     // 发送单聊文件
     @Effect()
@@ -1040,57 +1040,57 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((file) => {
             const sendSingleFileObj = global.JIM.sendSingleFile(file.singleFile)
-            .onSuccess((data, msgs) => {
-                msgs.key = data.key;
-                msgs.unread_count = 1;
-                msgs.msg_type = 3;
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: file.msgs.msgKey,
-                        key: file.key,
-                        success: 2,
-                        msgs,
-                        type: 3,
-                        name: file.active.name
-                    }
-                });
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: file.msgs.msgKey,
-                        key: file.key,
-                        success: 3,
-                        type: 3,
-                        name: file.active.name
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: file.msgs.msgKey,
-                        key: file.key,
-                        success: 3,
-                        type: 3,
-                        name: file.active.name
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(sendSingleFileObj)
-                    .map(() => {
-                        return {type: '[chat] send single file useless'};
+                .onSuccess((data, msgs) => {
+                    msgs.key = data.key;
+                    msgs.unread_count = 1;
+                    msgs.msg_type = 3;
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: file.msgs.msgKey,
+                            key: file.key,
+                            success: 2,
+                            msgs,
+                            type: 3,
+                            name: file.active.name
+                        }
                     });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: file.msgs.msgKey,
+                            key: file.key,
+                            success: 3,
+                            type: 3,
+                            name: file.active.name
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: file.msgs.msgKey,
+                            key: file.key,
+                            success: 3,
+                            type: 3,
+                            name: file.active.name
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(sendSingleFileObj)
+                .map(() => {
+                    return { type: '[chat] send single file useless' };
+                });
         });
     // 转发单聊文件
     @Effect()
@@ -1105,7 +1105,7 @@ export class ChatEffect {
                 hash: body.hash,
                 fname: body.fname,
                 fsize: body.fsize,
-                extras : body.extras
+                extras: body.extras
             };
             const sendSingleFileObj = global.JIM.sendSingleFile({
                 target_username: file.select.name,
@@ -1163,9 +1163,9 @@ export class ChatEffect {
                 });
             });
             return Observable.of(sendSingleFileObj)
-                    .map(() => {
-                        return {type: '[chat] transmit single file useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] transmit single file useless' };
+                });
         });
     // 发送群组文件
     @Effect()
@@ -1174,54 +1174,54 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((file) => {
             const sendgroupFileObj = global.JIM.sendGroupFile(file.groupFile)
-            .onSuccess((data, msgs) => {
-                msgs.key = data.key;
-                msgs.unread_count = data.unread_count;
-                msgs.msg_type = 4;
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: file.msgs.msgKey,
-                        key: file.key,
-                        success: 2,
-                        msgs,
-                        type: 4
-                    }
-                });
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: file.msgs.msgKey,
-                        key: file.key,
-                        success: 3,
-                        type: 4
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                this.store$.dispatch({
-                    type: chatAction.sendMsgComplete,
-                    payload: {
-                        msgKey: file.msgs.msgKey,
-                        key: file.key,
-                        success: 3,
-                        type: 4
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(sendgroupFileObj)
-                    .map(() => {
-                        return {type: '[chat] send group file useless'};
+                .onSuccess((data, msgs) => {
+                    msgs.key = data.key;
+                    msgs.unread_count = data.unread_count;
+                    msgs.msg_type = 4;
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: file.msgs.msgKey,
+                            key: file.key,
+                            success: 2,
+                            msgs,
+                            type: 4
+                        }
                     });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: file.msgs.msgKey,
+                            key: file.key,
+                            success: 3,
+                            type: 4
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    this.store$.dispatch({
+                        type: chatAction.sendMsgComplete,
+                        payload: {
+                            msgKey: file.msgs.msgKey,
+                            key: file.key,
+                            success: 3,
+                            type: 4
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(sendgroupFileObj)
+                .map(() => {
+                    return { type: '[chat] send group file useless' };
+                });
         });
     // 转发群组文件
     @Effect()
@@ -1236,7 +1236,7 @@ export class ChatEffect {
                 hash: body.hash,
                 fname: body.fname,
                 fsize: body.fsize,
-                extras : body.extras
+                extras: body.extras
             };
             const sendgroupFileObj = global.JIM.sendGroupFile({
                 target_gid: file.select.key,
@@ -1291,9 +1291,9 @@ export class ChatEffect {
                 });
             });
             return Observable.of(sendgroupFileObj)
-                    .map(() => {
-                        return {type: '[chat] transmit group file useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] transmit group file useless' };
+                });
         });
     // 转发单聊位置
     @Effect()
@@ -1308,7 +1308,7 @@ export class ChatEffect {
                 scale: body.scale,
                 label: body.label,
                 fsize: body.fsize,
-                extras : body.extras
+                extras: body.extras
             };
             const sendSingleLocation = global.JIM.sendSingleLocation({
                 target_username: location.select.name,
@@ -1355,16 +1355,16 @@ export class ChatEffect {
                         type: 3
                     }
                 });
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(sendSingleLocation)
-                    .map(() => {
-                        return {type: '[chat] transmit single location useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] transmit single location useless' };
+                });
         });
     // 转发群组位置
     @Effect()
@@ -1379,7 +1379,7 @@ export class ChatEffect {
                 scale: body.scale,
                 label: body.label,
                 fsize: body.fsize,
-                extras : body.extras
+                extras: body.extras
             };
             const transmitGroupLocation = global.JIM.sendGroupLocation({
                 target_gid: location.select.key,
@@ -1423,16 +1423,16 @@ export class ChatEffect {
                         type: 4
                     }
                 });
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(transmitGroupLocation)
-                    .map(() => {
-                        return {type: '[chat] transmit group location useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] transmit group location useless' };
+                });
         });
     // 查看别人的资料
     @Effect()
@@ -1456,25 +1456,25 @@ export class ChatEffect {
                         }
                     });
                 } else {
-                    global.JIM.getResource({media_id: data.user_info.avatar})
-                    .onSuccess((urlInfo) => {
-                        data.user_info.avatarUrl = urlInfo.url;
-                        this.store$.dispatch({
-                            type: chatAction.watchOtherInfoSuccess,
-                            payload: {
-                                info: data.user_info,
-                                show: true
-                            }
+                    global.JIM.getResource({ media_id: data.user_info.avatar })
+                        .onSuccess((urlInfo) => {
+                            data.user_info.avatarUrl = urlInfo.url;
+                            this.store$.dispatch({
+                                type: chatAction.watchOtherInfoSuccess,
+                                payload: {
+                                    info: data.user_info,
+                                    show: true
+                                }
+                            });
+                        }).onFail((error) => {
+                            this.store$.dispatch({
+                                type: chatAction.watchOtherInfoSuccess,
+                                payload: {
+                                    info: data.user_info,
+                                    show: true
+                                }
+                            });
                         });
-                    }).onFail((error) => {
-                        this.store$.dispatch({
-                            type: chatAction.watchOtherInfoSuccess,
-                            payload: {
-                                info: data.user_info,
-                                show: true
-                            }
-                        });
-                    });
                 }
             }).onFail((error) => {
                 this.store$.dispatch({
@@ -1482,17 +1482,17 @@ export class ChatEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(OtherInfoObj)
-                    .map(() => {
-                        return {type: '[chat] watch other info useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] watch other info useless' };
+                });
+        });
     // 获取群组信息
     @Effect()
     private groupInfo$: Observable<Action> = this.actions$
@@ -1504,120 +1504,120 @@ export class ChatEffect {
             }
             return data;
         }).switchMap((info) => {
-            const groupInfoObj = global.JIM.getGroupInfo({gid: info.active.key})
-            .onSuccess((data) => {
-                if (data.group_info.avatar && data.group_info.avatar !== '') {
-                    global.JIM.getResource({media_id: data.group_info.avatar})
-                    .onSuccess((urlInfo) => {
-                        data.group_info.avatarUrl = urlInfo.url;
+            const groupInfoObj = global.JIM.getGroupInfo({ gid: info.active.key })
+                .onSuccess((data) => {
+                    if (data.group_info.avatar && data.group_info.avatar !== '') {
+                        global.JIM.getResource({ media_id: data.group_info.avatar })
+                            .onSuccess((urlInfo) => {
+                                data.group_info.avatarUrl = urlInfo.url;
+                                this.store$.dispatch({
+                                    type: chatAction.groupInfo,
+                                    payload: {
+                                        groupInfo: data.group_info
+                                    }
+                                });
+                            }).onFail((error) => {
+                                this.store$.dispatch({
+                                    type: chatAction.groupInfo,
+                                    payload: {
+                                        groupInfo: data.group_info
+                                    }
+                                });
+                            }).onTimeout((error) => {
+                                this.store$.dispatch({
+                                    type: chatAction.groupInfo,
+                                    payload: {
+                                        groupInfo: data.group_info
+                                    }
+                                });
+                            });
+                    } else {
                         this.store$.dispatch({
                             type: chatAction.groupInfo,
                             payload: {
                                 groupInfo: data.group_info
                             }
                         });
-                    }).onFail((error) => {
-                        this.store$.dispatch({
-                            type: chatAction.groupInfo,
-                            payload: {
-                                groupInfo: data.group_info
-                            }
-                        });
-                    }).onTimeout((error) => {
-                        this.store$.dispatch({
-                            type: chatAction.groupInfo,
-                            payload: {
-                                groupInfo: data.group_info
-                            }
-                        });
-                    });
-                } else {
+                    }
+                }).onFail((error) => {
                     this.store$.dispatch({
                         type: chatAction.groupInfo,
                         payload: {
-                            groupInfo: data.group_info
+                            groupInfo: {}
                         }
                     });
-                }
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: chatAction.groupInfo,
-                    payload: {
-                        groupInfo: {}
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                this.store$.dispatch({
-                    type: chatAction.groupInfo,
-                    payload: {
-                        groupInfo: {}
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(groupInfoObj)
-                    .map(() => {
-                        return {type: '[chat] group setting useless'};
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
                     });
-    });
+                }).onTimeout((data) => {
+                    this.store$.dispatch({
+                        type: chatAction.groupInfo,
+                        payload: {
+                            groupInfo: {}
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(groupInfoObj)
+                .map(() => {
+                    return { type: '[chat] group setting useless' };
+                });
+        });
     // 获取群成员信息
     @Effect()
     private getGroupMembers$: Observable<Action> = this.actions$
         .ofType(chatAction.getGroupMembers)
         .map(toPayload)
         .switchMap((info) => {
-            const groupMemberObj = global.JIM.getGroupMembers({gid: info.key})
-            .onSuccess((data) => {
-                Util.getMembersFirstLetter(data.member_list);
-                this.store$.dispatch({
-                    type: chatAction.groupInfo,
-                    payload: {
-                        memberList: data.member_list,
-                        key: info.key
-                    }
-                });
-                for (let member of data.member_list) {
-                    if (member.avatar !== '') {
-                        global.JIM.getResource({media_id: member.avatar})
-                        .onSuccess((urlInfo) => {
-                            member.avatarUrl = urlInfo.url;
-                            this.store$.dispatch({
-                                type: chatAction.groupInfo,
-                                payload: {
-                                    memberList: data.member_list,
-                                    key: info.key
-                                }
-                            });
-                        }).onFail((error) => {
-                            //
-                        });
-                    }
-                }
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(groupMemberObj)
-                    .map(() => {
-                        return {type: '[chat] get group memebers useless'};
+            const groupMemberObj = global.JIM.getGroupMembers({ gid: info.key })
+                .onSuccess((data) => {
+                    Util.getMembersFirstLetter(data.member_list);
+                    this.store$.dispatch({
+                        type: chatAction.groupInfo,
+                        payload: {
+                            memberList: data.member_list,
+                            key: info.key
+                        }
                     });
-    });
+                    for (let member of data.member_list) {
+                        if (member.avatar !== '') {
+                            global.JIM.getResource({ media_id: member.avatar })
+                                .onSuccess((urlInfo) => {
+                                    member.avatarUrl = urlInfo.url;
+                                    this.store$.dispatch({
+                                        type: chatAction.groupInfo,
+                                        payload: {
+                                            memberList: data.member_list,
+                                            key: info.key
+                                        }
+                                    });
+                                }).onFail((error) => {
+                                    //
+                                });
+                        }
+                    }
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(groupMemberObj)
+                .map(() => {
+                    return { type: '[chat] get group memebers useless' };
+                });
+        });
     // 更新群组资料
     @Effect()
     private updateGroupInfo$: Observable<Action> = this.actions$
@@ -1635,46 +1635,46 @@ export class ChatEffect {
                 requestObj.avatar = info.avatar;
             }
             const groupInfoObj = global.JIM.updateGroupInfo(requestObj)
-            .onSuccess((data) => {
-                if (info.actionType && info.actionType === 'modifyDescription') {
-                    this.store$.dispatch({
-                        type: chatAction.groupDescription,
-                        payload: {
-                            data,
-                            show: false
-                        }
-                    });
-                } else if (info.actionType && info.actionType === 'modifyGroupAvatar') {
-                    this.store$.dispatch({
-                        type: mainAction.showModalTip,
-                        payload: {
-                            show: true,
-                            info: {
-                                title: '修改群头像',
-                                tip: '修改群头像成功',
-                                actionType: '[chat] modify group avatar success useless',
-                                success: 1
+                .onSuccess((data) => {
+                    if (info.actionType && info.actionType === 'modifyDescription') {
+                        this.store$.dispatch({
+                            type: chatAction.groupDescription,
+                            payload: {
+                                data,
+                                show: false
                             }
-                        }
+                        });
+                    } else if (info.actionType && info.actionType === 'modifyGroupAvatar') {
+                        this.store$.dispatch({
+                            type: mainAction.showModalTip,
+                            payload: {
+                                show: true,
+                                info: {
+                                    title: '修改群头像',
+                                    tip: '修改群头像成功',
+                                    actionType: '[chat] modify group avatar success useless',
+                                    success: 1
+                                }
+                            }
+                        });
+                    }
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
                     });
-                }
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
                 });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
             return Observable.of(groupInfoObj)
-                    .map(() => {
-                        return {type: '[chat] update group info useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] update group info useless' };
+                });
+        });
     // 切换群屏蔽
     @Effect()
     private changeGroupShield$: Observable<Action> = this.actions$
@@ -1682,51 +1682,51 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((active) => {
             if (active.shield) {
-                global.JIM.delGroupShield({gid: active.key})
-                .onSuccess((data) => {
-                    active.shield = false;
-                    this.store$.dispatch({
-                        type: chatAction.changeGroupShieldSuccess,
-                        payload: active
+                global.JIM.delGroupShield({ gid: active.key })
+                    .onSuccess((data) => {
+                        active.shield = false;
+                        this.store$.dispatch({
+                            type: chatAction.changeGroupShieldSuccess,
+                            payload: active
+                        });
+                    }).onFail((error) => {
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
+                    }).onTimeout((data) => {
+                        const error = { code: 910000 };
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
                     });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
             } else {
-                global.JIM.addGroupShield({gid: active.key})
-                .onSuccess((data) => {
-                    active.shield = true;
-                    this.store$.dispatch({
-                        type: chatAction.changeGroupShieldSuccess,
-                        payload: active
+                global.JIM.addGroupShield({ gid: active.key })
+                    .onSuccess((data) => {
+                        active.shield = true;
+                        this.store$.dispatch({
+                            type: chatAction.changeGroupShieldSuccess,
+                            payload: active
+                        });
+                    }).onFail((error) => {
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
+                    }).onTimeout((data) => {
+                        const error = { code: 910000 };
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
                     });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
             }
             return Observable.of('changeShieldObj')
-                    .map(() => {
-                        return {type: '[chat] change group shield useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] change group shield useless' };
+                });
+        });
     // 切换群免打扰
     @Effect()
     private changeGroupNoDisturb$: Observable<Action> = this.actions$
@@ -1734,50 +1734,50 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((active) => {
             if (active.noDisturb) {
-                global.JIM.delGroupNoDisturb({gid: active.key})
-                .onSuccess((data) => {
-                    active.noDisturb = false;
-                    this.store$.dispatch({
-                        type: chatAction.changeGroupNoDisturbSuccess,
-                        payload: active
+                global.JIM.delGroupNoDisturb({ gid: active.key })
+                    .onSuccess((data) => {
+                        active.noDisturb = false;
+                        this.store$.dispatch({
+                            type: chatAction.changeGroupNoDisturbSuccess,
+                            payload: active
+                        });
+                    }).onFail((error) => {
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
+                    }).onTimeout((data) => {
+                        const error = { code: 910000 };
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
                     });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
             } else {
-                global.JIM.addGroupNoDisturb({gid: active.key})
-                .onSuccess((data) => {
-                    active.noDisturb = true;
-                    this.store$.dispatch({
-                        type: chatAction.changeGroupNoDisturbSuccess,
-                        payload: active
+                global.JIM.addGroupNoDisturb({ gid: active.key })
+                    .onSuccess((data) => {
+                        active.noDisturb = true;
+                        this.store$.dispatch({
+                            type: chatAction.changeGroupNoDisturbSuccess,
+                            payload: active
+                        });
+                    }).onFail((error) => {
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
+                    }).onTimeout((data) => {
+                        const error = { code: 910000 };
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
                     });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                });
             }
             return Observable.of('changeNoDisturbObj')
-                    .map(() => {
-                        return {type: '[chat] change group no disturb useless'};
-                    });
+                .map(() => {
+                    return { type: '[chat] change group no disturb useless' };
+                });
         });
     // 被添加进群时获取群信息
     @Effect()
@@ -1785,24 +1785,59 @@ export class ChatEffect {
         .ofType(chatAction.addGroupMembersEvent)
         .map(toPayload)
         .switchMap((eventData) => {
-            const groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
-            .onSuccess((obj) => {
-                if (obj.group_info.name && obj.group_info.name !== '') {
-                    eventData.name = obj.group_info.name;
-                    this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
-                        eventData.avatarUrl = avatarUrl || '';
-                        this.store$.dispatch({
-                            type: chatAction.addGroupMembersEventSuccess,
-                            payload: eventData
+            const groupInfoObj = global.JIM.getGroupInfo({ gid: eventData.gid })
+                .onSuccess((obj) => {
+                    if (obj.group_info.name && obj.group_info.name !== '') {
+                        eventData.name = obj.group_info.name;
+                        this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
+                            eventData.avatarUrl = avatarUrl || '';
+                            this.store$.dispatch({
+                                type: chatAction.addGroupMembersEventSuccess,
+                                payload: eventData
+                            });
                         });
-                    });
-                    let count = 0;
-                    for (let userList of eventData.to_usernames) {
-                        global.JIM.getUserInfo({
-                            username: userList.username
-                        }).onSuccess((user) => {
-                            if (user.user_info.avatar === '') {
-                                count ++;
+                        let count = 0;
+                        for (let userList of eventData.to_usernames) {
+                            global.JIM.getUserInfo({
+                                username: userList.username
+                            }).onSuccess((user) => {
+                                if (user.user_info.avatar === '') {
+                                    count++;
+                                    if (count === eventData.to_usernames.length) {
+                                        this.store$.dispatch({
+                                            type: chatAction.updateGroupMembersEvent,
+                                            payload: {
+                                                eventData
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    global.JIM.getResource({ media_id: user.user_info.avatar })
+                                        .onSuccess((urlInfo) => {
+                                            userList.avatarUrl = urlInfo.url;
+                                            count++;
+                                            if (count === eventData.to_usernames.length) {
+                                                this.store$.dispatch({
+                                                    type: chatAction.updateGroupMembersEvent,
+                                                    payload: {
+                                                        eventData
+                                                    }
+                                                });
+                                            }
+                                        }).onFail((error) => {
+                                            count++;
+                                            if (count === eventData.to_usernames.length) {
+                                                this.store$.dispatch({
+                                                    type: chatAction.updateGroupMembersEvent,
+                                                    payload: {
+                                                        eventData
+                                                    }
+                                                });
+                                            }
+                                        });
+                                }
+                            }).onFail((error) => {
+                                count++;
                                 if (count === eventData.to_usernames.length) {
                                     this.store$.dispatch({
                                         type: chatAction.updateGroupMembersEvent,
@@ -1811,138 +1846,103 @@ export class ChatEffect {
                                         }
                                     });
                                 }
-                            } else {
-                                global.JIM.getResource({media_id: user.user_info.avatar})
-                                .onSuccess((urlInfo) => {
-                                    userList.avatarUrl = urlInfo.url;
-                                    count ++;
-                                    if (count === eventData.to_usernames.length) {
-                                        this.store$.dispatch({
-                                            type: chatAction.updateGroupMembersEvent,
-                                            payload: {
-                                                eventData
-                                            }
-                                        });
-                                    }
-                                }).onFail((error) => {
-                                    count ++;
-                                    if (count === eventData.to_usernames.length) {
-                                        this.store$.dispatch({
-                                            type: chatAction.updateGroupMembersEvent,
-                                            payload: {
-                                                eventData
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        }).onFail((error) => {
-                            count ++;
-                            if (count === eventData.to_usernames.length) {
+                            });
+                        }
+                    } else {
+                        this.requestGroupName(eventData, (error) => {
+                            this.store$.dispatch({
+                                type: appAction.errorApiTip,
+                                payload: error
+                            });
+                            eventData.name = '群名获取失败？？';
+                            this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
+                                eventData.avatarUrl = avatarUrl || '';
                                 this.store$.dispatch({
-                                    type: chatAction.updateGroupMembersEvent,
-                                    payload: {
-                                        eventData
-                                    }
+                                    type: chatAction.addGroupMembersEventSuccess,
+                                    payload: eventData
                                 });
+                            });
+                        }, () => {
+                            this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
+                                eventData.avatarUrl = avatarUrl || '';
+                                this.store$.dispatch({
+                                    type: chatAction.addGroupMembersEventSuccess,
+                                    payload: eventData
+                                });
+                            });
+                        }, (member, count) => {
+                            for (let userList of eventData.to_usernames) {
+                                if (userList.username === member.username) {
+                                    global.JIM.getResource({ media_id: member.avatar })
+                                        .onSuccess((urlInfo) => {
+                                            userList.avatarUrl = urlInfo.url;
+                                            count++;
+                                            if (count === eventData.to_usernames.length) {
+                                                this.store$.dispatch({
+                                                    type: chatAction.updateGroupMembersEvent,
+                                                    payload: {
+                                                        eventData
+                                                    }
+                                                });
+                                            }
+                                        }).onFail((error) => {
+                                            count++;
+                                            if (count === eventData.to_usernames.length) {
+                                                this.store$.dispatch({
+                                                    type: chatAction.updateGroupMembersEvent,
+                                                    payload: {
+                                                        eventData
+                                                    }
+                                                });
+                                            }
+                                        });
+                                }
                             }
                         });
                     }
-                } else {
-                    this.requestGroupName(eventData, (error) => {
-                        this.store$.dispatch({
-                            type: appAction.errorApiTip,
-                            payload: error
-                        });
-                        eventData.name = '群名获取失败？？';
-                        this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
-                            eventData.avatarUrl = avatarUrl || '';
-                            this.store$.dispatch({
-                                type: chatAction.addGroupMembersEventSuccess,
-                                payload: eventData
-                            });
-                        });
-                    }, () => {
-                        this.requestGroupAvatarUrl(obj.group_info, (avatarUrl) => {
-                            eventData.avatarUrl = avatarUrl || '';
-                            this.store$.dispatch({
-                                type: chatAction.addGroupMembersEventSuccess,
-                                payload: eventData
-                            });
-                        });
-                    }, (member, count) => {
-                        for (let userList of eventData.to_usernames) {
-                            if (userList.username === member.username) {
-                                global.JIM.getResource({media_id: member.avatar})
-                                .onSuccess((urlInfo) => {
-                                    userList.avatarUrl = urlInfo.url;
-                                    count ++;
-                                    if (count === eventData.to_usernames.length) {
-                                        this.store$.dispatch({
-                                            type: chatAction.updateGroupMembersEvent,
-                                            payload: {
-                                                eventData
-                                            }
-                                        });
-                                    }
-                                }).onFail((error) => {
-                                    count ++;
-                                    if (count === eventData.to_usernames.length) {
-                                        this.store$.dispatch({
-                                            type: chatAction.updateGroupMembersEvent,
-                                            payload: {
-                                                eventData
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        }
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
                     });
-                }
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
                 });
-            });
             return Observable.of('addGroupMembersEventObj')
-                    .map(() => {
-                        return {type: '[chat] add group members event useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] add group members event useless' };
+                });
+        });
     // 创建群组事件
     @Effect()
     private createGroupEvent$: Observable<Action> = this.actions$
         .ofType(chatAction.createGroupEvent)
         .map(toPayload)
         .switchMap((eventData) => {
-            const groupInfoObj = global.JIM.getGroupInfo({gid: eventData.gid})
-            .onSuccess((obj) => {
-                eventData.name = obj.group_info.name;
-                this.store$.dispatch({
-                    type: chatAction.createGroupSuccessEvent,
-                    payload: eventData
-                });
-            })
-            .onFail((error) => {
-                eventData.name = '群名获取失败？？';
-                this.store$.dispatch({
-                    type: chatAction.createGroupSuccessEvent,
-                    payload: eventData
-                });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of('createGroupEvent')
-                    .map(() => {
-                        return {type: '[chat] create group event useless'};
+            const groupInfoObj = global.JIM.getGroupInfo({ gid: eventData.gid })
+                .onSuccess((obj) => {
+                    eventData.name = obj.group_info.name;
+                    this.store$.dispatch({
+                        type: chatAction.createGroupSuccessEvent,
+                        payload: eventData
                     });
-    });
+                })
+                .onFail((error) => {
+                    eventData.name = '群名获取失败？？';
+                    this.store$.dispatch({
+                        type: chatAction.createGroupSuccessEvent,
+                        payload: eventData
+                    });
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of('createGroupEvent')
+                .map(() => {
+                    return { type: '[chat] create group event useless' };
+                });
+        });
     // 消息撤回事件
     @Effect()
     private msgRetract$: Observable<Action> = this.actions$
@@ -1950,29 +1950,29 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((item) => {
             const msgRetract = global.JIM.msgRetract({
-                    msg_id: item.msg_id,
-                }).onSuccess((data , msg) => {
-                    this.store$.dispatch({
-                        type: chatAction.msgRetractSuccess,
-                        payload: item
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
+                msg_id: item.msg_id,
+            }).onSuccess((data, msg) => {
+                this.store$.dispatch({
+                    type: chatAction.msgRetractSuccess,
+                    payload: item
                 });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = { code: 910000 };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
             return Observable.of(msgRetract)
-                    .map(() => {
-                        return {type: '[chat] msg eetract useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] msg eetract useless' };
+                });
+        });
     // 添加好友
     @Effect()
     private addFriendConfirm$: Observable<Action> = this.actions$
@@ -1980,39 +1980,39 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((user) => {
             const addFriendConfirm = global.JIM.addFriend({
-                    target_name: user.name,
-                    from_type: 1,
-                    why: user.verifyModalText
-                }).onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: mainAction.showModalTip,
-                        payload: {
-                            show: true,
-                            info: {
-                                title: '好友申请',
-                                tip: '好友申请发送成功',
-                                actionType: '[chat] add friend success',
-                                success: 1
-                            }
+                target_name: user.name,
+                from_type: 1,
+                why: user.verifyModalText
+            }).onSuccess((data) => {
+                this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '好友申请',
+                            tip: '好友申请发送成功',
+                            actionType: '[chat] add friend success',
+                            success: 1
                         }
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
+                    }
                 });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = { code: 910000 };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
             return Observable.of(addFriendConfirm)
-                    .map(() => {
-                        return {type: '[chat] add friend confirm useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] add friend confirm useless' };
+                });
+        });
     // 个人资料中取消黑名单
     @Effect()
     private deleteSingleBlack$: Observable<Action> = this.actions$
@@ -2020,41 +2020,41 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((user) => {
             const deleteSingleBlack = global.JIM.delSingleBlacks({
-                    member_usernames: [{username: user.name}]
-                }).onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: mainAction.showModalTip,
-                        payload: {
-                            show: true,
-                            info: {
-                                title: '取消黑名单',
-                                tip: '取消黑名单成功',
-                                actionType: '[chat] delete single black success useless',
-                                success: 1
-                            }
+                member_usernames: [{ username: user.name }]
+            }).onSuccess((data) => {
+                this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '取消黑名单',
+                            tip: '取消黑名单成功',
+                            actionType: '[chat] delete single black success useless',
+                            success: 1
                         }
-                    });
-                    this.store$.dispatch({
-                        type: chatAction.deleteSingleBlackSuccess,
-                        payload: user
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
+                    }
                 });
+                this.store$.dispatch({
+                    type: chatAction.deleteSingleBlackSuccess,
+                    payload: user
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = { code: 910000 };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
             return Observable.of(deleteSingleBlack)
-                    .map(() => {
-                        return {type: '[chat] delete single black useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] delete single black useless' };
+                });
+        });
     // 个人资料中取消免打扰
     @Effect()
     private deleteSingleNoDisturb$: Observable<Action> = this.actions$
@@ -2062,41 +2062,41 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((user) => {
             const deleteSingleNoDisturb = global.JIM.delSingleNoDisturb({
-                    target_name: user.name
-                }).onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: mainAction.showModalTip,
-                        payload: {
-                            show: true,
-                            info: {
-                                title: '取消免打扰',
-                                tip: '取消免打扰成功',
-                                actionType: '[chat] delete single no disturb success useless',
-                                success: 1
-                            }
+                target_name: user.name
+            }).onSuccess((data) => {
+                this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '取消免打扰',
+                            tip: '取消免打扰成功',
+                            actionType: '[chat] delete single no disturb success useless',
+                            success: 1
                         }
-                    });
-                    this.store$.dispatch({
-                        type: chatAction.deleteSingleNoDisturbSuccess,
-                        payload: user
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
+                    }
                 });
+                this.store$.dispatch({
+                    type: chatAction.deleteSingleNoDisturbSuccess,
+                    payload: user
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = { code: 910000 };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
             return Observable.of(deleteSingleNoDisturb)
-                    .map(() => {
-                        return {type: '[chat] delete single no disturb useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] delete single no disturb useless' };
+                });
+        });
     // 修改备注名
     @Effect()
     private saveMemoName$: Observable<Action> = this.actions$
@@ -2104,40 +2104,40 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((user) => {
             const saveMemoName = global.JIM.updateFriendMemo({
-                    target_name: user.name,
-                    memo_name: user.memo_name,
-                    memo_others: 'a'
-                }).onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: chatAction.saveMemoNameSuccess,
-                        payload: {
-                            to_usernames: [user]
-                        }
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
+                target_name: user.name,
+                memo_name: user.memo_name,
+                memo_others: 'a'
+            }).onSuccess((data) => {
+                this.store$.dispatch({
+                    type: chatAction.saveMemoNameSuccess,
+                    payload: {
+                        to_usernames: [user]
+                    }
                 });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = { code: 910000 };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
             return Observable.of(saveMemoName)
-                    .map(() => {
-                        return {type: '[chat] save memo name useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] save memo name useless' };
+                });
+        });
     // 加载预览图片的图片url
     @Effect()
     private loadViewerImage$: Observable<Action> = this.actions$
         .ofType(chatAction.loadViewerImage)
         .map(toPayload)
         .switchMap((info) => {
-            const loadViewerImage = global.JIM.getResource({media_id: info.mediaId})
+            const loadViewerImage = global.JIM.getResource({ media_id: info.mediaId })
                 .onSuccess((urlInfo) => {
                     info.src = urlInfo.url;
                     this.store$.dispatch({
@@ -2150,17 +2150,17 @@ export class ChatEffect {
                         payload: info
                     });
                 }).onTimeout((data) => {
-                    const error = {code: 910000};
+                    const error = { code: 910000 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 });
             return Observable.of(loadViewerImage)
-                    .map(() => {
-                        return {type: '[chat] load viewer image useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] load viewer image useless' };
+                });
+        });
     // 加载聊天文件的url
     @Effect()
     private msgFile$: Observable<Action> = this.actions$
@@ -2169,9 +2169,9 @@ export class ChatEffect {
         .switchMap((info) => {
             if (!info.show) {
                 return Observable.of('msgFile')
-                        .map(() => {
-                            return {type: '[chat] msg file useless'};
-                        });
+                    .map(() => {
+                        return { type: '[chat] msg file useless' };
+                    });
             }
             const msgs = info.messageList[info.active.activeIndex].msgs;
             let count = 0;
@@ -2191,55 +2191,55 @@ export class ChatEffect {
                 if ((type === info.type ||
                     (msgs[i].content.msg_type === info.type && info.type === 'image')) &&
                     !msgs[i].content.msg_body.media_url) {
-                    count ++;
-                    global.JIM.getResource({media_id: msgs[i].content.msg_body.media_id})
-                    .onSuccess((urlInfo) => {
-                        msgs[i].content.msg_body.media_url = urlInfo.url;
-                        count --;
-                        if (count <= 0 && info.type === 'image') {
+                    count++;
+                    global.JIM.getResource({ media_id: msgs[i].content.msg_body.media_id })
+                        .onSuccess((urlInfo) => {
+                            msgs[i].content.msg_body.media_url = urlInfo.url;
+                            count--;
+                            if (count <= 0 && info.type === 'image') {
+                                this.store$.dispatch({
+                                    type: chatAction.msgFileSuccess,
+                                    payload: {
+                                        messageList: info.messageList,
+                                        type: info.type,
+                                        isFirst: false
+                                    }
+                                });
+                            }
+                        }).onFail((error) => {
+                            count--;
+                            if (count <= 0 && info.type === 'image') {
+                                this.store$.dispatch({
+                                    type: chatAction.msgFileSuccess,
+                                    payload: {
+                                        messageList: info.messageList,
+                                        type: info.type,
+                                        isFirst: false
+                                    }
+                                });
+                            }
                             this.store$.dispatch({
-                                type: chatAction.msgFileSuccess,
-                                payload: {
-                                    messageList: info.messageList,
-                                    type: info.type,
-                                    isFirst: false
-                                }
+                                type: appAction.errorApiTip,
+                                payload: error
                             });
-                        }
-                    }).onFail((error) => {
-                        count --;
-                        if (count <= 0 && info.type === 'image') {
+                        }).onTimeout((data) => {
+                            const error = { code: 910000 };
                             this.store$.dispatch({
-                                type: chatAction.msgFileSuccess,
-                                payload: {
-                                    messageList: info.messageList,
-                                    type: info.type,
-                                    isFirst: false
-                                }
+                                type: appAction.errorApiTip,
+                                payload: error
                             });
-                        }
-                        this.store$.dispatch({
-                            type: appAction.errorApiTip,
-                            payload: error
+                            count--;
+                            if (count <= 0 && info.type === 'image') {
+                                this.store$.dispatch({
+                                    type: chatAction.msgFileSuccess,
+                                    payload: {
+                                        messageList: info.messageList,
+                                        type: info.type,
+                                        isFirst: false
+                                    }
+                                });
+                            }
                         });
-                    }).onTimeout((data) => {
-                        const error = {code: 910000};
-                        this.store$.dispatch({
-                            type: appAction.errorApiTip,
-                            payload: error
-                        });
-                        count --;
-                        if (count <= 0 && info.type === 'image') {
-                            this.store$.dispatch({
-                                type: chatAction.msgFileSuccess,
-                                payload: {
-                                    messageList: info.messageList,
-                                    type: info.type,
-                                    isFirst: false
-                                }
-                            });
-                        }
-                    });
                 }
             }
             this.store$.dispatch({
@@ -2251,10 +2251,10 @@ export class ChatEffect {
                 }
             });
             return Observable.of('msgFile')
-                    .map(() => {
-                        return {type: '[chat] msg file useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] msg file useless' };
+                });
+        });
     // 会话置顶
     @Effect()
     private conversationToTop$: Observable<Action> = this.actions$
@@ -2286,10 +2286,10 @@ export class ChatEffect {
                 payload: info
             });
             return Observable.of('conversationToTop')
-                    .map(() => {
-                        return {type: '[chat] conversation to top useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] conversation to top useless' };
+                });
+        });
     // 已读未读列表
     @Effect()
     private watchUnreadList$: Observable<Action> = this.actions$
@@ -2298,50 +2298,50 @@ export class ChatEffect {
         .switchMap((info) => {
             if (!info.message) {
                 return Observable.of('watchUnreadList')
-                        .map(() => {
-                            return {type: '[chat] watch unread list useless'};
-                        });
-            }
-            global.JIM.msgUnreadList({msg_id: info.message.msg_id})
-            .onSuccess((list) => {
-                if (info.message.unread_count !== list.msg_unread_list.unread_list.length) {
-                    info.message.unread_count = list.msg_unread_list.unread_list.length;
-                }
-                for (let unread of list.msg_unread_list.unread_list) {
-                    this.getUnreadListInfo(list, unread);
-                }
-                for (let unread of list.msg_unread_list.read_list) {
-                    this.getUnreadListInfo(list, unread);
-                }
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: chatAction.watchUnreadList,
-                    payload: {
-                        show: false
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout(() => {
-                this.store$.dispatch({
-                    type: chatAction.watchUnreadList,
-                    payload: {
-                        show: false
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of('watchUnreadList')
                     .map(() => {
-                        return {type: '[chat] watch unread list useless'};
+                        return { type: '[chat] watch unread list useless' };
                     });
-    });
+            }
+            global.JIM.msgUnreadList({ msg_id: info.message.msg_id })
+                .onSuccess((list) => {
+                    if (info.message.unread_count !== list.msg_unread_list.unread_list.length) {
+                        info.message.unread_count = list.msg_unread_list.unread_list.length;
+                    }
+                    for (let unread of list.msg_unread_list.unread_list) {
+                        this.getUnreadListInfo(list, unread);
+                    }
+                    for (let unread of list.msg_unread_list.read_list) {
+                        this.getUnreadListInfo(list, unread);
+                    }
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: chatAction.watchUnreadList,
+                        payload: {
+                            show: false
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout(() => {
+                    this.store$.dispatch({
+                        type: chatAction.watchUnreadList,
+                        payload: {
+                            show: false
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of('watchUnreadList')
+                .map(() => {
+                    return { type: '[chat] watch unread list useless' };
+                });
+        });
     // 已读回执
     @Effect()
     private addReceiptReport$: Observable<Action> = this.actions$
@@ -2349,7 +2349,7 @@ export class ChatEffect {
         .map(toPayload)
         .switchMap((readObj) => {
             if (readObj && readObj.msg_id.length === 0) {
-                return ;
+                return;
             }
             if (readObj.type === 3) {
                 global.JIM.addSingleReceiptReport({
@@ -2375,10 +2375,10 @@ export class ChatEffect {
                 });
             }
             return Observable.of('addReceiptReport')
-                    .map(() => {
-                        return {type: '[chat] add receipt report useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] add receipt report useless' };
+                });
+        });
     // 验证消息请求头像
     @Effect()
     private friendEvent$: Observable<Action> = this.actions$
@@ -2392,80 +2392,75 @@ export class ChatEffect {
             } else if (info.extra === 2) {
                 type = chatAction.friendReplyEventSuccess;
             }
-            const friendEvent = global.JIM.getResource({media_id: info.media_id})
-            .onSuccess((urlInfo) => {
-                info.avatarUrl = urlInfo.url;
-                this.store$.dispatch({
-                    type,
-                    payload: info
+            const friendEvent = global.JIM.getResource({ media_id: info.media_id })
+                .onSuccess((urlInfo) => {
+                    info.avatarUrl = urlInfo.url;
+                    this.store$.dispatch({
+                        type,
+                        payload: info
+                    });
+                }).onFail((error) => {
+                    info.avatarUrl = '';
+                    this.store$.dispatch({
+                        type,
+                        payload: info
+                    });
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    info.avatarUrl = '';
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                    this.store$.dispatch({
+                        type,
+                        payload: info
+                    });
                 });
-            }).onFail((error) => {
-                info.avatarUrl = '';
-                this.store$.dispatch({
-                    type,
-                    payload: info
-                });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                info.avatarUrl = '';
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-                this.store$.dispatch({
-                    type,
-                    payload: info
-                });
-            });
             return Observable.of(friendEvent)
-                    .map(() => {
-                        return {type: '[chat] friend event useless'};
-                    });
-    });
-    // 清空会话未读数
-    @Effect()
-    private updateUnreadCount$: Observable<Action> = this.actions$
-        .ofType(chatAction.updateUnreadCount)
-        .map(toPayload)
-        .switchMap((active) => {
-            if (active.type === 3) {
-                if (active.name) {
-                    global.JIM._updateSingleUnreadCount({
-                        username: active.name
-                    });
-                }
-            } else if (active.type === 4) {
-                if (active.key) {
-                    global.JIM._updateGroupUnreadCount({
-                        gid: active.key,
-                    });
-                }
-            }
-            return Observable.of('updateUnreadCount')
-                    .map(() => {
-                        return {type: '[chat] update unread count useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] friend event useless' };
+                });
+        });
     // 更新群信息事件
     @Effect()
     private updateGroupInfoEvent$: Observable<Action> = this.actions$
         .ofType(chatAction.updateGroupInfoEvent)
         .map(toPayload)
         .switchMap((info) => {
-            const updateGroupInfoEvent = global.JIM.getGroupInfo({gid: info.gid})
-            .onSuccess((data) => {
-                if (data.group_info.avatar && data.group_info.avatar !== '') {
-                    global.JIM.getResource({media_id: data.group_info.avatar})
-                    .onSuccess((urlInfo) => {
-                        data.group_info.avatarUrl = urlInfo.url;
-                        this.store$.dispatch({
-                            type: chatAction.updateGroupInfoEventSuccess,
-                            payload: {
-                                groupInfo: data.group_info,
-                                eventData: info
-                            }
-                        });
-                    }).onFail((error) => {
+            const updateGroupInfoEvent = global.JIM.getGroupInfo({ gid: info.gid })
+                .onSuccess((data) => {
+                    if (data.group_info.avatar && data.group_info.avatar !== '') {
+                        global.JIM.getResource({ media_id: data.group_info.avatar })
+                            .onSuccess((urlInfo) => {
+                                data.group_info.avatarUrl = urlInfo.url;
+                                this.store$.dispatch({
+                                    type: chatAction.updateGroupInfoEventSuccess,
+                                    payload: {
+                                        groupInfo: data.group_info,
+                                        eventData: info
+                                    }
+                                });
+                            }).onFail((error) => {
+                                data.group_info.avatarUrl = '';
+                                this.store$.dispatch({
+                                    type: chatAction.updateGroupInfoEventSuccess,
+                                    payload: {
+                                        groupInfo: data.group_info,
+                                        eventData: info
+                                    }
+                                });
+                            }).onTimeout((error) => {
+                                data.group_info.avatarUrl = '';
+                                this.store$.dispatch({
+                                    type: chatAction.updateGroupInfoEventSuccess,
+                                    payload: {
+                                        groupInfo: data.group_info,
+                                        eventData: info
+                                    }
+                                });
+                            });
+                    } else {
                         data.group_info.avatarUrl = '';
                         this.store$.dispatch({
                             type: chatAction.updateGroupInfoEventSuccess,
@@ -2474,43 +2469,24 @@ export class ChatEffect {
                                 eventData: info
                             }
                         });
-                    }).onTimeout((error) => {
-                        data.group_info.avatarUrl = '';
-                        this.store$.dispatch({
-                            type: chatAction.updateGroupInfoEventSuccess,
-                            payload: {
-                                groupInfo: data.group_info,
-                                eventData: info
-                            }
-                        });
-                    });
-                } else {
-                    data.group_info.avatarUrl = '';
+                    }
+                }).onFail((error) => {
                     this.store$.dispatch({
-                        type: chatAction.updateGroupInfoEventSuccess,
-                        payload: {
-                            groupInfo: data.group_info,
-                            eventData: info
-                        }
+                        type: appAction.errorApiTip,
+                        payload: error
                     });
-                }
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
                 });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
             return Observable.of(updateGroupInfoEvent)
-                    .map(() => {
-                        return {type: '[chat] update group info event useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] update group info event useless' };
+                });
+        });
     // 更新用户的信息事件
     @Effect()
     private userInfUpdateEvent$: Observable<Action> = this.actions$
@@ -2532,26 +2508,26 @@ export class ChatEffect {
                     });
                     return;
                 }
-                global.JIM.getResource({media_id: userInfo.user_info.avatar})
-                .onSuccess((urlInfo) => {
-                    info.avatarUrl = urlInfo.url;
-                    this.store$.dispatch({
-                        type: chatAction.userInfUpdateEventSuccess,
-                        payload: info
+                global.JIM.getResource({ media_id: userInfo.user_info.avatar })
+                    .onSuccess((urlInfo) => {
+                        info.avatarUrl = urlInfo.url;
+                        this.store$.dispatch({
+                            type: chatAction.userInfUpdateEventSuccess,
+                            payload: info
+                        });
+                    }).onFail((error) => {
+                        info.avatarUrl = '';
+                        this.store$.dispatch({
+                            type: chatAction.userInfUpdateEventSuccess,
+                            payload: info
+                        });
+                    }).onTimeout(() => {
+                        info.avatarUrl = '';
+                        this.store$.dispatch({
+                            type: chatAction.userInfUpdateEventSuccess,
+                            payload: info
+                        });
                     });
-                }).onFail((error) => {
-                    info.avatarUrl = '';
-                    this.store$.dispatch({
-                        type: chatAction.userInfUpdateEventSuccess,
-                        payload: info
-                    });
-                }).onTimeout(() => {
-                    info.avatarUrl = '';
-                    this.store$.dispatch({
-                        type: chatAction.userInfUpdateEventSuccess,
-                        payload: info
-                    });
-                });
             }).onFail((error) => {
                 info.avatarUrl = '';
                 this.store$.dispatch({
@@ -2566,10 +2542,10 @@ export class ChatEffect {
                 });
             });
             return Observable.of('userInfUpdateEvent')
-                    .map(() => {
-                        return {type: '[chat] user inf update event useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] user inf update event useless' };
+                });
+        });
     // 清空会话未读数
     @Effect()
     private emptyUnreadNum$: Observable<Action> = this.actions$
@@ -2590,10 +2566,10 @@ export class ChatEffect {
                 }
             }
             return Observable.of('emptyUnreadNum')
-                    .map(() => {
-                        return {type: '[chat] empty unread count useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] empty unread count useless' };
+                });
+        });
     // 发送透传消息正在输入
     @Effect()
     private inputMessage$: Observable<Action> = this.actions$
@@ -2609,10 +2585,10 @@ export class ChatEffect {
                 // pass
             });
             return Observable.of('inputMessage')
-                    .map(() => {
-                        return {type: '[chat] input message useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] input message useless' };
+                });
+        });
     // 添加群组成员禁言
     @Effect()
     private addGroupMemberSilence$: Observable<Action> = this.actions$
@@ -2645,10 +2621,10 @@ export class ChatEffect {
                 });
             });
             return Observable.of('addGroupMemberSilence')
-                    .map(() => {
-                        return {type: '[chat] add group member silence useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] add group member silence useless' };
+                });
+        });
     // 删除群组成员禁言
     @Effect()
     private deleteGroupMemberSilence$: Observable<Action> = this.actions$
@@ -2681,10 +2657,10 @@ export class ChatEffect {
                 });
             });
             return Observable.of('deleteGroupMemberSilence')
-                    .map(() => {
-                        return {type: '[chat] delete group member silence useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] delete group member silence useless' };
+                });
+        });
     // 群主或者管理员，收到用户申请入群事件请求头像
     @Effect()
     private receiveGroupInvitationEvent$: Observable<Action> = this.actions$
@@ -2693,85 +2669,85 @@ export class ChatEffect {
         .switchMap((info) => {
             let count = 0;
             for (let user of info.to_usernames) {
-                global.JIM.getResource({media_id: user.avatar})
-                .onSuccess((urlInfo) => {
-                    user.avatarUrl = urlInfo.url;
-                    if (++ count === info.to_usernames.length) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveGroupInvitationEventSuccess,
-                            payload: info
-                        });
-                    }
-                }).onFail((error) => {
-                    user.avatarUrl = '';
-                    if (++ count === info.to_usernames.length) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveGroupInvitationEventSuccess,
-                            payload: info
-                        });
-                    }
-                }).onTimeout((data) => {
-                    user.avatarUrl = '';
-                    if (++ count === info.to_usernames.length) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveGroupInvitationEventSuccess,
-                            payload: info
-                        });
-                    }
-                });
+                global.JIM.getResource({ media_id: user.avatar })
+                    .onSuccess((urlInfo) => {
+                        user.avatarUrl = urlInfo.url;
+                        if (++count === info.to_usernames.length) {
+                            this.store$.dispatch({
+                                type: chatAction.receiveGroupInvitationEventSuccess,
+                                payload: info
+                            });
+                        }
+                    }).onFail((error) => {
+                        user.avatarUrl = '';
+                        if (++count === info.to_usernames.length) {
+                            this.store$.dispatch({
+                                type: chatAction.receiveGroupInvitationEventSuccess,
+                                payload: info
+                            });
+                        }
+                    }).onTimeout((data) => {
+                        user.avatarUrl = '';
+                        if (++count === info.to_usernames.length) {
+                            this.store$.dispatch({
+                                type: chatAction.receiveGroupInvitationEventSuccess,
+                                payload: info
+                            });
+                        }
+                    });
             }
             return Observable.of('receiveGroupInvitationEvent')
-                    .map(() => {
-                        return {type: '[chat] receive group invitation event useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[chat] receive group invitation event useless' };
+                });
+        });
     // 被拒绝入群事件
     @Effect()
     private receiveGroupRefuseEvent$: Observable<Action> = this.actions$
         .ofType(chatAction.receiveGroupRefuseEvent)
         .map(toPayload)
         .switchMap((info) => {
-            global.JIM.getResource({media_id: info.media_id})
-            .onSuccess((urlInfo) => {
-                info.avatarUrl = urlInfo.url;
-                this.store$.dispatch({
-                    type: chatAction.receiveGroupRefuseEventSuccess,
-                    payload: info
-                });
-            }).onFail((error) => {
-                info.avatarUrl = '';
-                this.store$.dispatch({
-                    type: chatAction.receiveGroupRefuseEventSuccess,
-                    payload: info
-                });
-            }).onTimeout((data) => {
-                info.avatarUrl = '';
-                this.store$.dispatch({
-                    type: chatAction.receiveGroupRefuseEventSuccess,
-                    payload: info
-                });
-            });
-            return Observable.of('receiveGroupRefuseEvent')
-                    .map(() => {
-                        return {type: '[chat] receive group refuse event useless'};
+            global.JIM.getResource({ media_id: info.media_id })
+                .onSuccess((urlInfo) => {
+                    info.avatarUrl = urlInfo.url;
+                    this.store$.dispatch({
+                        type: chatAction.receiveGroupRefuseEventSuccess,
+                        payload: info
                     });
-    });
+                }).onFail((error) => {
+                    info.avatarUrl = '';
+                    this.store$.dispatch({
+                        type: chatAction.receiveGroupRefuseEventSuccess,
+                        payload: info
+                    });
+                }).onTimeout((data) => {
+                    info.avatarUrl = '';
+                    this.store$.dispatch({
+                        type: chatAction.receiveGroupRefuseEventSuccess,
+                        payload: info
+                    });
+                });
+            return Observable.of('receiveGroupRefuseEvent')
+                .map(() => {
+                    return { type: '[chat] receive group refuse event useless' };
+                });
+        });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,
         private router: Router,
         private storageService: StorageService
-    ) {}
+    ) { }
     // 获取消息的发送方的头像
     private requestMsgAvatarUrl(messages, obj, count) {
         const username = messages.content.from_id !== global.user ?
-                    messages.content.from_id : messages.content.target_id;
+            messages.content.from_id : messages.content.target_id;
         global.JIM.getUserInfo({
             username
         }).onSuccess((user) => {
             if (!user.user_info.avatar || user.user_info.avatar === '') {
                 messages.content.avatarUrl = '';
-                if (-- count <= 0) {
+                if (--count <= 0) {
                     this.store$.dispatch({
                         type: chatAction.receiveMessageSuccess,
                         payload: obj.data
@@ -2779,26 +2755,26 @@ export class ChatEffect {
                 }
                 return;
             }
-            global.JIM.getResource({media_id: user.user_info.avatar})
-            .onSuccess((urlInfo) => {
-                messages.content.avatarUrl = urlInfo.url;
-                if (-- count <= 0) {
-                    this.store$.dispatch({
-                        type: chatAction.receiveMessageSuccess,
-                        payload: obj.data
-                    });
-                }
-            }).onFail((error) => {
-                messages.content.avatarUrl = '';
-                if (-- count <= 0) {
-                    this.store$.dispatch({
-                        type: chatAction.receiveMessageSuccess,
-                        payload: obj.data
-                    });
-                }
-            });
+            global.JIM.getResource({ media_id: user.user_info.avatar })
+                .onSuccess((urlInfo) => {
+                    messages.content.avatarUrl = urlInfo.url;
+                    if (--count <= 0) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: obj.data
+                        });
+                    }
+                }).onFail((error) => {
+                    messages.content.avatarUrl = '';
+                    if (--count <= 0) {
+                        this.store$.dispatch({
+                            type: chatAction.receiveMessageSuccess,
+                            payload: obj.data
+                        });
+                    }
+                });
         }).onFail((error) => {
-            if (-- count <= 0) {
+            if (--count <= 0) {
                 this.store$.dispatch({
                     type: chatAction.receiveMessageSuccess,
                     payload: obj.data
@@ -2821,39 +2797,39 @@ export class ChatEffect {
     }
     //  获取静态资源的url
     private requestMediaUrl(data, count) {
-        global.JIM.getResource({media_id: data.messages[0].content.msg_body.media_id})
-        .onSuccess((urlInfo) => {
-            data.messages[0].content.msg_body.media_url = urlInfo.url;
-            if (-- count <= 0) {
+        global.JIM.getResource({ media_id: data.messages[0].content.msg_body.media_id })
+            .onSuccess((urlInfo) => {
+                data.messages[0].content.msg_body.media_url = urlInfo.url;
+                if (--count <= 0) {
+                    this.store$.dispatch({
+                        type: chatAction.receiveMessageSuccess,
+                        payload: data
+                    });
+                }
+            }).onFail((error) => {
+                if (--count <= 0) {
+                    this.store$.dispatch({
+                        type: chatAction.receiveMessageSuccess,
+                        payload: data
+                    });
+                }
                 this.store$.dispatch({
-                    type: chatAction.receiveMessageSuccess,
-                    payload: data
+                    type: appAction.errorApiTip,
+                    payload: error
                 });
-            }
-        }).onFail((error) => {
-            if (-- count <= 0) {
+            }).onTimeout((errorInfo) => {
+                if (--count <= 0) {
+                    this.store$.dispatch({
+                        type: chatAction.receiveMessageSuccess,
+                        payload: data
+                    });
+                }
+                const error = { code: 910000 };
                 this.store$.dispatch({
-                    type: chatAction.receiveMessageSuccess,
-                    payload: data
+                    type: appAction.errorApiTip,
+                    payload: error
                 });
-            }
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
             });
-        }).onTimeout((errorInfo) => {
-            if (-- count <= 0) {
-                this.store$.dispatch({
-                    type: chatAction.receiveMessageSuccess,
-                    payload: data
-                });
-            }
-            const error = {code: 910000};
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        });
     }
     // 发送名片获取对方的信息
     private requestCardInfo(data, count) {
@@ -2863,40 +2839,40 @@ export class ChatEffect {
         }).onSuccess((otherInfo) => {
             data.messages[0].content.msg_body.extras.nickName = otherInfo.user_info.nickname;
             if (otherInfo.user_info.avatar !== '') {
-                global.JIM.getResource({media_id: otherInfo.user_info.avatar})
-                .onSuccess((urlInfo) => {
-                    data.messages[0].content.msg_body.extras.media_url = urlInfo.url;
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: data
-                        });
-                    }
-                }).onFail((error) => {
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: data
-                        });
-                    }
-                }).onTimeout((errorInfo) => {
-                    if (-- count <= 0) {
-                        this.store$.dispatch({
-                            type: chatAction.receiveMessageSuccess,
-                            payload: data
-                        });
-                    }
-                });
+                global.JIM.getResource({ media_id: otherInfo.user_info.avatar })
+                    .onSuccess((urlInfo) => {
+                        data.messages[0].content.msg_body.extras.media_url = urlInfo.url;
+                        if (--count <= 0) {
+                            this.store$.dispatch({
+                                type: chatAction.receiveMessageSuccess,
+                                payload: data
+                            });
+                        }
+                    }).onFail((error) => {
+                        if (--count <= 0) {
+                            this.store$.dispatch({
+                                type: chatAction.receiveMessageSuccess,
+                                payload: data
+                            });
+                        }
+                    }).onTimeout((errorInfo) => {
+                        if (--count <= 0) {
+                            this.store$.dispatch({
+                                type: chatAction.receiveMessageSuccess,
+                                payload: data
+                            });
+                        }
+                    });
             }
         }).onFail((error) => {
-            if (-- count <= 0) {
+            if (--count <= 0) {
                 this.store$.dispatch({
                     type: chatAction.receiveMessageSuccess,
                     payload: data
                 });
             }
         }).onTimeout(() => {
-            if (-- count <= 0) {
+            if (--count <= 0) {
                 this.store$.dispatch({
                     type: chatAction.receiveMessageSuccess,
                     payload: data
@@ -2917,63 +2893,63 @@ export class ChatEffect {
             });
             return;
         }
-        global.JIM.getResource({media_id: unread.avatar})
-        .onSuccess((urlInfo) => {
-            unread.avatarUrl = urlInfo.url;
-            this.store$.dispatch({
-                type: chatAction.watchUnreadListSuccess,
-                payload: {
-                    info: list.msg_unread_list,
-                    loading: false
-                }
+        global.JIM.getResource({ media_id: unread.avatar })
+            .onSuccess((urlInfo) => {
+                unread.avatarUrl = urlInfo.url;
+                this.store$.dispatch({
+                    type: chatAction.watchUnreadListSuccess,
+                    payload: {
+                        info: list.msg_unread_list,
+                        loading: false
+                    }
+                });
+            }).onFail((error) => {
+                unread.avatarUrl = '';
+                this.store$.dispatch({
+                    type: chatAction.watchUnreadListSuccess,
+                    payload: {
+                        info: list.msg_unread_list,
+                        loading: false
+                    }
+                });
             });
-        }).onFail((error) => {
-            unread.avatarUrl = '';
-            this.store$.dispatch({
-                type: chatAction.watchUnreadListSuccess,
-                payload: {
-                    info: list.msg_unread_list,
-                    loading: false
-                }
-            });
-        });
     }
     // 拼接群名称
     private requestGroupName
         (eventData, callback1: Function, callback2?: Function, callback3?: Function) {
-        global.JIM.getGroupMembers({gid: eventData.key || eventData.gid || eventData.target_id})
-        .onSuccess((data) => {
-            let name = '';
-            let count = 0;
-            for (let member of data.member_list) {
-                name += (member.nickName || member.nickname ||
-                    member.username || member.name) + '、';
-                if (callback3) {
-                    callback3(member, count);
+        global.JIM.getGroupMembers({ gid: eventData.key || eventData.gid || eventData.target_id })
+            .onSuccess((data) => {
+                let name = '';
+                let count = 0;
+                for (let member of data.member_list) {
+                    name += (member.nickName || member.nickname ||
+                        member.username || member.name) + '、';
+                    if (callback3) {
+                        callback3(member, count);
+                    }
                 }
-            }
-            if (name.length > 20) {
-                eventData.name = name.substr(0, 20);
-            } else {
-                eventData.name = name.substr(0, name.length - 1);
-            }
-            eventData.target_name = eventData.name;
-            eventData.group_name = eventData.name;
-            if (callback2) {
-                callback2();
-            }
-        }).onFail((error) => {
-            callback1(error);
-        });
+                if (name.length > 20) {
+                    eventData.name = name.substr(0, 20);
+                } else {
+                    eventData.name = name.substr(0, name.length - 1);
+                }
+                eventData.target_name = eventData.name;
+                eventData.group_name = eventData.name;
+                if (callback2) {
+                    callback2();
+                }
+            }).onFail((error) => {
+                callback1(error);
+            });
     }
     private requestGroupAvatarUrl(groupInfo, callback: Function) {
-        global.JIM.getResource({media_id: groupInfo.avatar})
-        .onSuccess((urlInfo) => {
-            callback(urlInfo.url);
-        }).onFail((error) => {
-            callback();
-        }).onTimeout((errorInfo) => {
-            callback();
-        });
+        global.JIM.getResource({ media_id: groupInfo.avatar })
+            .onSuccess((urlInfo) => {
+                callback(urlInfo.url);
+            }).onFail((error) => {
+                callback();
+            }).onTimeout((errorInfo) => {
+                callback();
+            });
     }
 }

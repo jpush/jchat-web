@@ -1,10 +1,14 @@
-import { Component, OnInit, Input, Output,
+import {
+    Component, OnInit, Input, Output,
     EventEmitter, ElementRef, OnDestroy,
-    HostListener, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+    HostListener, OnChanges, SimpleChanges, ViewChild
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { PerfectScrollbarComponent, PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
-import { global, emojiConfig, jpushConfig, imgRouter,
-    pageNumber, authPayload, StorageService } from '../../services/common';
+import {
+    global, emojiConfig, jpushConfig, imgRouter,
+    pageNumber, authPayload, StorageService
+} from '../../services/common';
 import { Util } from '../../services/util';
 import { Emoji } from '../../services/tools';
 import { chatAction } from '../../pages/chat/actions';
@@ -21,35 +25,36 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild(PerfectScrollbarComponent) private componentScroll;
     @ViewChild('contentDiv') private contentDiv;
     @Input()
-        private enter;
+    private enter;
     @Input()
-        private messageList;
+    private messageList;
     @Input()
-        private selfInfo;
+    private selfInfo;
     @Input()
-        private scrollToBottom;
+    private scrollToBottom;
     @Input()
-        private otherScrollTobottom;
+    private otherScrollTobottom;
     @Output()
-        private showRoomInfomation: EventEmitter<any> = new EventEmitter();
+    private showRoomInfomation: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendFile: EventEmitter<any> = new EventEmitter();
+    private sendFile: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendPic: EventEmitter<any> = new EventEmitter();
+    private sendPic: EventEmitter<any> = new EventEmitter();
     @Output()
-        private businessCardSend: EventEmitter<any> = new EventEmitter();
+    private businessCardSend: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendMsg: EventEmitter<any> = new EventEmitter();
+    private sendMsg: EventEmitter<any> = new EventEmitter();
     @Output()
-        private msgTransmit: EventEmitter<any> = new EventEmitter();
+    private msgTransmit: EventEmitter<any> = new EventEmitter();
     @Output()
-        private selfInfoEmit: EventEmitter<any> = new EventEmitter();
+    private selfInfoEmit: EventEmitter<any> = new EventEmitter();
     @Output()
-        private otherInfo: EventEmitter<any> = new EventEmitter();
+    private otherInfo: EventEmitter<any> = new EventEmitter();
     @Output()
-        private videoPlay: EventEmitter<any> = new EventEmitter();
+    private videoPlay: EventEmitter<any> = new EventEmitter();
+    @Output()
+    private voiceHasPlay: EventEmitter<any> = new EventEmitter();
     private viewer = {};
-    private voiceState = [];
     private imageViewer = {
         result: [],
         active: {
@@ -122,7 +127,7 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
         private elementRef: ElementRef,
         private store$: Store<any>,
         private storageService: StorageService
-    ) {}
+    ) { }
     public ngOnInit() {
         this.roomPanelStream$ = this.store$.select((state) => {
             const roomState = state['roomReducer'];
@@ -188,7 +193,7 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
             };
         }
     }
-    private scrollBottom(time: number, isLoad ?: boolean, callback ?: () => void) {
+    private scrollBottom(time: number, isLoad?: boolean, callback?: () => void) {
         if (!isLoad) {
             this.loadFlag = false;
         }
@@ -218,9 +223,6 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
 
             case roomAction.transmitPicMsg:
                 this.imageViewer.result = roomState.imageViewer;
-                break;
-            case roomAction.getRoomVoiceStateSuccess:
-                this.voiceState = roomState.voiceRoomState;
                 break;
             default:
         }
@@ -361,7 +363,7 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
     }
     // 粘贴文本，将文本多余的样式代码去掉/粘贴图片
     private pasteMessage(event) {
-        const clipboardData = event.clipboardData || (<any> window).clipboardData;
+        const clipboardData = event.clipboardData || (<any>window).clipboardData;
         const items = clipboardData.items;
         const files = clipboardData.files;
         let item;
@@ -420,10 +422,10 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
         let pasteFile = file;
         let reader = new FileReader();
         reader.readAsDataURL(pasteFile);
-        reader.onload = function(e){
+        reader.onload = function (e) {
             img.src = this.result;
             const _this = this;
-            img.onload = function(){
+            img.onload = function () {
                 that.pasteImage.info = {
                     src: _this.result,
                     width: img.naturalWidth,
@@ -589,10 +591,10 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
         this.messageList[index].content.timer4 = setInterval(function () {
             if (!that.messageList[index] || !that.messageList[index].content) {
                 clearInterval(this);
-                return ;
+                return;
             }
             if (that.messageList[index].content.range < 90) {
-                that.messageList[index].content.range ++;
+                that.messageList[index].content.range++;
             }
         }, 100);
     }
@@ -620,11 +622,8 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
                     id: this.enter.id,
                     msgId: this.messageList[index].msg_id
                 };
-                this.voiceState.push(voiceState);
                 this.messageList[index].content.havePlay = true;
-                const key = `voiceRoomState-${authPayload.appKey}-${global.user}`;
-                const value = JSON.stringify(this.voiceState);
-                this.storageService.set(key, value);
+                this.voiceHasPlay.emit(voiceState);
             }
         } else {
             audio.pause();

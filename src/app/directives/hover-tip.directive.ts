@@ -7,7 +7,7 @@ import { Directive, Input, OnInit, HostListener, OnChanges } from '@angular/core
 
 export class HoverEventDirective implements OnInit {
     @Input()
-        private hoverEvent;
+    private hoverEvent;
     constructor() {
         // pass
     }

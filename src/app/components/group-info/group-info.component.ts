@@ -8,11 +8,11 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export class GroupInfoComponent implements OnInit {
     @Input()
-        private groupInfo;
+    private groupInfo;
     @Output()
-        private applyEnterGroup: EventEmitter<any> = new EventEmitter();
+    private applyEnterGroup: EventEmitter<any> = new EventEmitter();
     @Output()
-        private changeGroupConversation: EventEmitter<any> = new EventEmitter();
+    private changeGroupConversation: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

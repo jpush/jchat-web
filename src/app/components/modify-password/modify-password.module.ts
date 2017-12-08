@@ -17,4 +17,4 @@ import { ModifyPasswordComponent } from './modify-password.component';
     providers: []
 })
 
-export class ModifyPasswordModule {}
+export class ModifyPasswordModule { }

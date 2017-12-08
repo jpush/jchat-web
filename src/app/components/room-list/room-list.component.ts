@@ -12,13 +12,13 @@ export class RoomListComponent implements OnInit {
         this.flag = false;
     }
     @Input()
-        private roomList;
+    private roomList;
     @Input()
-        private active;
+    private active;
     @Output()
-        private changeRoom: EventEmitter<any> = new EventEmitter();
+    private changeRoom: EventEmitter<any> = new EventEmitter();
     @Output()
-        private loadMoreRooms: EventEmitter<any> = new EventEmitter();
+    private loadMoreRooms: EventEmitter<any> = new EventEmitter();
     private flag = false;
     constructor() {
         // pass

@@ -25,4 +25,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class OtherInfoModule {}
+export class OtherInfoModule { }

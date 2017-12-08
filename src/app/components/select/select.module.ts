@@ -17,4 +17,4 @@ import { SelectComponent } from './select.component';
     providers: []
 })
 
-export class SelectModule {}
+export class SelectModule { }

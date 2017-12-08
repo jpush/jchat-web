@@ -17,4 +17,4 @@ import { TipModalComponent } from './tip-modal.component';
     providers: []
 })
 
-export class TipModalModule {}
+export class TipModalModule { }

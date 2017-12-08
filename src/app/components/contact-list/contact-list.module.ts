@@ -19,4 +19,4 @@ import { BadgeModule } from 'jpush-ui/badge';
     providers: []
 })
 
-export class ContactListModule {}
+export class ContactListModule { }

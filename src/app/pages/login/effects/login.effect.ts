@@ -31,19 +31,19 @@ export class LoginEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(loginObj)
-                    .map((data) => {
-                        return {type: '[login] login useless', payload: null};
-                    });
+                .map((data) => {
+                    return { type: '[login] login useless', payload: null };
+                });
         });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>
-    ) {}
+    ) { }
 }

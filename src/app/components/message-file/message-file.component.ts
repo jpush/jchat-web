@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-    HostListener, ViewChild } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    HostListener, ViewChild
+} from '@angular/core';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 import * as download from 'downloadjs';
 import { Util } from '../../services/util';
@@ -13,13 +15,13 @@ import { Util } from '../../services/util';
 export class MessageFileComponent implements OnInit {
     @ViewChild(PerfectScrollbarComponent) private componentScroll;
     @Input()
-        private msgFile;
+    private msgFile;
     @Output()
-        private changeMsgFile: EventEmitter<any> = new EventEmitter();
+    private changeMsgFile: EventEmitter<any> = new EventEmitter();
     @Output()
-        private msgFileImageViewer: EventEmitter<any> = new EventEmitter();
+    private msgFileImageViewer: EventEmitter<any> = new EventEmitter();
     @Output()
-        private fileImageLoad: EventEmitter<any> = new EventEmitter();
+    private fileImageLoad: EventEmitter<any> = new EventEmitter();
     private msgType = 'image';
     constructor() {
         // pass

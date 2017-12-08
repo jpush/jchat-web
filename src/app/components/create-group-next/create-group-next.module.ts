@@ -19,4 +19,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class CreateGroupNextModule {}
+export class CreateGroupNextModule { }

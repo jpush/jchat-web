@@ -1,5 +1,7 @@
-import { Component, Input, Output, EventEmitter,
-    OnChanges, AfterViewInit, ViewChild } from '@angular/core';
+import {
+    Component, Input, Output, EventEmitter,
+    OnChanges, AfterViewInit, ViewChild
+} from '@angular/core';
 import { Util } from '../../services/util';
 
 @Component({
@@ -12,16 +14,16 @@ export class SelfInfoComponent implements OnChanges {
     @ViewChild('selfAvatarImg') private selfAvatarImg;
     @ViewChild('selfAvatarInput') private selfAvatarInput;
     @Input()
-        private selfInfo;
+    private selfInfo;
     // 用来标识更新个人信息成功
     @Input()
-        private updateSelfInfoFlag;
+    private updateSelfInfoFlag;
     @Output()
-        private isShow: EventEmitter<any> = new EventEmitter();
+    private isShow: EventEmitter<any> = new EventEmitter();
     @Output()
-        private selectImageError: EventEmitter<any> = new EventEmitter();
+    private selectImageError: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendCard: EventEmitter<any> = new EventEmitter();
+    private sendCard: EventEmitter<any> = new EventEmitter();
     private isEdit = false;
     private sexList = {
         active: {
@@ -91,13 +93,13 @@ export class SelfInfoComponent implements OnChanges {
     }
     private sexActive() {
         switch (this.selfInfo.info.gender) {
-            case 0 :
+            case 0:
                 this.sexList.active = {
                     key: 0,
                     name: '保密'
                 };
                 break;
-            case 1 :
+            case 1:
                 this.sexList.active = {
                     key: 1,
                     name: '男'
@@ -144,7 +146,7 @@ export class SelfInfoComponent implements OnChanges {
     }
     private selfConfirm() {
         const newInfo = {
-            info: Object.assign({}, this.newInfo, {gender: this.sexList.active.key}),
+            info: Object.assign({}, this.newInfo, { gender: this.sexList.active.key }),
             avatar: this.newAvatar
         };
         this.isShow.emit(newInfo);
@@ -167,7 +169,7 @@ export class SelfInfoComponent implements OnChanges {
                     height: img.naturalHeight,
                     pasteFile
                 };
-                this.avatarConfig.src =  that.result;
+                this.avatarConfig.src = that.result;
                 this.avatarConfig.show = true;
                 this.avatarConfig.filename = file.name;
             }

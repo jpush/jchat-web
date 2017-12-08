@@ -53,4 +53,4 @@ import { SharedDirectiveModule } from '../../directives';
     ]
 })
 
-export class ChatPanelModule {}
+export class ChatPanelModule { }

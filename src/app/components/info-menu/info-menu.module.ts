@@ -17,4 +17,4 @@ import { InfoMenuComponent } from './info-menu.component';
     providers: []
 })
 
-export class InfoMenuModule {}
+export class InfoMenuModule { }

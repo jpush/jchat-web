@@ -17,4 +17,4 @@ import { RoomInfomationComponent } from './room-infomation.component';
     providers: []
 })
 
-export class RoomInfomationModule {}
+export class RoomInfomationModule { }

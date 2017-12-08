@@ -8,7 +8,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export class SelectComponent implements OnInit {
     @Input()
-        private selectList;
+    private selectList;
     constructor() {
         // pass
     }

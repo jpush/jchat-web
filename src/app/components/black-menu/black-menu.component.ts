@@ -8,11 +8,11 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export class BlackMenuComponent implements OnInit {
     @Input()
-        private menuInfo;
+    private menuInfo;
     @Output()
-        private blockMenuConfirm: EventEmitter<any> = new EventEmitter();
+    private blockMenuConfirm: EventEmitter<any> = new EventEmitter();
     @Output()
-        private delSingleBlack: EventEmitter<any> = new EventEmitter();
+    private delSingleBlack: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

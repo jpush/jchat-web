@@ -45,4 +45,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class RoomPanelModule {}
+export class RoomPanelModule { }

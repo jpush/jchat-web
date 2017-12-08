@@ -24,4 +24,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class SearchMemberModule {}
+export class SearchMemberModule { }

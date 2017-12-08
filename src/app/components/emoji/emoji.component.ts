@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-    HostListener, ElementRef } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    HostListener, ElementRef
+} from '@angular/core';
 import { Util } from '../../services/util';
 import { imgRouter, jpushRouter } from '../../services/common';
 
@@ -11,15 +13,15 @@ import { imgRouter, jpushRouter } from '../../services/common';
 
 export class EmojiComponent implements OnInit {
     @Input()
-        private emojiInfo;
+    private emojiInfo;
     @Output()
-        private jpushEmojiSelect: EventEmitter<any> = new EventEmitter();
+    private jpushEmojiSelect: EventEmitter<any> = new EventEmitter();
     private imgRouter = imgRouter;
     private jpushRouter = jpushRouter;
     private tab = 0;
     constructor(
         private elementRef: ElementRef
-    ) {}
+    ) { }
     public ngOnInit() {
         // pass
     }

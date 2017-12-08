@@ -243,7 +243,7 @@
                 .group-setting-delete{
                     font-weight: 700;
                     display: none;
-                    color: #EB424D;
+                    color: #808080;
                     cursor: pointer;
                     position: absolute;
                     line-height: 25px;
@@ -255,6 +255,9 @@
                 }
                 &:hover .group-setting-delete{
                     display: block;
+                    &:hover{
+                        color: #02BDBC;
+                    }
                 }
             }
         }

@@ -8,9 +8,9 @@ import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angula
 
 export class LinkmanListComponent implements OnInit, DoCheck {
     @Input()
-        private friendList;
+    private friendList;
     @Output()
-        private selectLinkmanItemEmit: EventEmitter<any> = new EventEmitter();
+    private selectLinkmanItemEmit: EventEmitter<any> = new EventEmitter();
     private isEmpty = false;
     constructor() {
         // pass

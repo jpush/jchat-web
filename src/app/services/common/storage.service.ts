@@ -10,8 +10,8 @@ export class StorageService {
         // pass
     }
 
-    public set (key: string, data: string, useCookie ?: boolean, time ?: any, path ?: any) {
-        if ( localStorage && !useCookie ) {
+    public set(key: string, data: string, useCookie?: boolean, time?: any, path?: any) {
+        if (localStorage && !useCookie) {
             try {
                 localStorage.setItem(key, data);
                 return;
@@ -32,26 +32,26 @@ export class StorageService {
         document.cookie = key + '=' + data + ';expires=' + exp.toUTCString();
     }
 
-    public get (key: string, useCookie ?: boolean) {
-        if ( localStorage && !useCookie ) {
+    public get(key: string, useCookie?: boolean) {
+        if (localStorage && !useCookie) {
             let value = localStorage.getItem(key);
-            if ( value ) {
+            if (value) {
                 return value;
             }
         }
         // 从cookie里面取
         let reg = new RegExp(key + '=([^;]*)');
         let m = document.cookie.match(reg);
-        if ( m && m.length > 1) {
+        if (m && m.length > 1) {
             return m[1];
         }
         return null;
     }
 
-    public remove (key: string, useCookie ?: boolean, path ?: any) {
-        if ( localStorage && !useCookie ) {
+    public remove(key: string, useCookie?: boolean, path?: any) {
+        if (localStorage && !useCookie) {
             let value = localStorage.getItem(key);
-            if ( value ) {
+            if (value) {
                 localStorage.removeItem(key);
                 return value;
             }

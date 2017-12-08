@@ -48,4 +48,4 @@ import { VideoTimePipe } from './video-time.pipe';
     providers: []
 })
 
-export class SharedPipeModule {}
+export class SharedPipeModule { }

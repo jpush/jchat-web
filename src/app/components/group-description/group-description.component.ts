@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output,
-    EventEmitter, AfterViewInit, ViewChild } from '@angular/core';
+import {
+    Component, OnInit, Input, Output,
+    EventEmitter, AfterViewInit, ViewChild
+} from '@angular/core';
 
 @Component({
     selector: 'group-description-component',
@@ -10,9 +12,9 @@ import { Component, OnInit, Input, Output,
 export class GroupDescriptionComponent implements OnInit, AfterViewInit {
     @ViewChild('groupDescrptionTextarea') private groupDescrptionTextarea;
     @Input()
-        private description;
+    private description;
     @Output()
-        private updateGroupInfo: EventEmitter<any> = new EventEmitter();
+    private updateGroupInfo: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

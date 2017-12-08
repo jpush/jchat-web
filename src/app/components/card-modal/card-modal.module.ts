@@ -26,4 +26,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class CardModalModule {}
+export class CardModalModule { }

@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-    OnChanges, DoCheck, HostListener, ViewChild } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    OnChanges, DoCheck, HostListener, ViewChild
+} from '@angular/core';
 import { authPayload } from '../../services/common';
 
 @Component({
@@ -11,25 +13,25 @@ import { authPayload } from '../../services/common';
 export class OtherInfoComponent implements OnInit, OnChanges {
     @ViewChild('editMemoName') private editMemoName;
     @Input()
-        private otherInfo;
+    private otherInfo;
     @Input()
-        private changeOtherInfoFlag;
+    private changeOtherInfoFlag;
     @Output()
-        private isShow: EventEmitter<any> = new EventEmitter();
+    private isShow: EventEmitter<any> = new EventEmitter();
     @Output()
-        private changeSingleBlack: EventEmitter<any> = new EventEmitter();
+    private changeSingleBlack: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendCard: EventEmitter<any> = new EventEmitter();
+    private sendCard: EventEmitter<any> = new EventEmitter();
     @Output()
-        private changeSingleNoDisturb: EventEmitter<any> = new EventEmitter();
+    private changeSingleNoDisturb: EventEmitter<any> = new EventEmitter();
     @Output()
-        private addFriend: EventEmitter<any> = new EventEmitter();
+    private addFriend: EventEmitter<any> = new EventEmitter();
     @Output()
-        private saveMemoName: EventEmitter<any> = new EventEmitter();
+    private saveMemoName: EventEmitter<any> = new EventEmitter();
     @Output()
-        private deleteFriend: EventEmitter<any> = new EventEmitter();
+    private deleteFriend: EventEmitter<any> = new EventEmitter();
     @Output()
-        private verifyUserBtn: EventEmitter<any> = new EventEmitter();
+    private verifyUserBtn: EventEmitter<any> = new EventEmitter();
     private editRmark = {
         tip: '修改备注名',
         position: {

@@ -1,5 +1,7 @@
-import { Directive, ElementRef, Input, OnInit,
-    HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
+import {
+    Directive, ElementRef, Input, OnInit,
+    HostListener, EventEmitter, Output, OnDestroy
+} from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 /**
@@ -9,9 +11,9 @@ import { Subject } from 'rxjs/Subject';
 
 export class DebounceClickDirective implements OnInit, OnDestroy {
     @Input()
-        private debounceClickDirective;
+    private debounceClickDirective;
     @Output()
-        private debounceClick: EventEmitter<any> = new EventEmitter();
+    private debounceClick: EventEmitter<any> = new EventEmitter();
     private clicks = new Subject<any>();
     private debounceStream$;
     constructor() {

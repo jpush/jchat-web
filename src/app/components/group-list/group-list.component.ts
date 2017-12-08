@@ -8,9 +8,9 @@ import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angula
 
 export class GroupListComponent implements OnInit, DoCheck {
     @Input()
-        private groupList;
+    private groupList;
     @Output()
-        private selectGroupItemEmit: EventEmitter<any> = new EventEmitter();
+    private selectGroupItemEmit: EventEmitter<any> = new EventEmitter();
     private isEmpty = false;
     constructor() {
         // pass

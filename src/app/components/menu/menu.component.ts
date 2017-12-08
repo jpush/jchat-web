@@ -8,9 +8,9 @@ import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@a
 
 export class MenuComponent implements OnInit {
     @Input()
-        private menu;
+    private menu;
     @Output()
-        private selectMenuItem: EventEmitter<any> = new EventEmitter();
+    private selectMenuItem: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

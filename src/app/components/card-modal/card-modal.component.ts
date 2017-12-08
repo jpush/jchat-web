@@ -9,9 +9,9 @@ import { global } from '../../services/common';
 
 export class CardModalComponent implements OnInit {
     @Input()
-        private businessCard;
+    private businessCard;
     @Output()
-        private businessCardSend: EventEmitter<any> = new EventEmitter();
+    private businessCardSend: EventEmitter<any> = new EventEmitter();
     private selectList = null;
     private searchResult = {
         result: [],
@@ -71,17 +71,17 @@ export class CardModalComponent implements OnInit {
         if (keywords === '') {
             this.searchResult.result = [];
             this.searchResult.show = false;
-            return ;
+            return;
         }
         let result = [];
         for (let item of this.businessCard.info) {
             for (let friend of item.data) {
                 const memoName = friend.memo_name &&
-                            friend.memo_name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
+                    friend.memo_name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
                 const nickName = friend.nickName &&
-                            friend.nickName.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
+                    friend.nickName.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
                 const name = friend.name &&
-                            friend.name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
+                    friend.name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
                 if (memoName || nickName || name) {
                     result.push(friend);
                 }

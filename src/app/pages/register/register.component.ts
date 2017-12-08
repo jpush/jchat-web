@@ -6,7 +6,7 @@ import { AppStore } from '../../app.store';
 import { registerAction } from './actions';
 import { Util } from '../../services/util';
 import { appAction } from '../../actions';
-declare function JMessage(obj ?: Object): void;
+declare function JMessage(obj?: Object): void;
 
 @Component({
     selector: 'app-register',
@@ -88,7 +88,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
                 payload: error
             });
         }).onTimeout((data) => {
-            const error = {code: 910000};
+            const error = { code: 910000 };
             this.store$.dispatch({
                 type: appAction.errorApiTip,
                 payload: error

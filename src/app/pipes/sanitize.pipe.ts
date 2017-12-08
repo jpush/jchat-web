@@ -10,7 +10,7 @@ import { DomSanitizer, SafeHtml, SafeUrl } from '@angular/platform-browser';
 
 export class SanitizePipe implements PipeTransform {
     constructor(
-       private sanitizer: DomSanitizer
+        private sanitizer: DomSanitizer
     ) { }
     public transform(value: string, type: string): string | SafeHtml | SafeUrl {
         if (!value) {

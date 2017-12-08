@@ -8,29 +8,29 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export class VerifyComponent implements OnInit {
     @Input()
-        private verifyMessageList;
+    private verifyMessageList;
     @Input()
-        private verifyGroupList;
+    private verifyGroupList;
     @Input()
-        private verifyTab;
+    private verifyTab;
     @Input()
-        private groupVerifyUnreadNum;
+    private groupVerifyUnreadNum;
     @Input()
-        private singleVerifyUnreadNum;
+    private singleVerifyUnreadNum;
     @Output()
-        private isAgreeAddFriend: EventEmitter<any>  = new EventEmitter();
+    private isAgreeAddFriend: EventEmitter<any> = new EventEmitter();
     @Output()
-        private isAgreeEnterGroup: EventEmitter<any>  = new EventEmitter();
+    private isAgreeEnterGroup: EventEmitter<any> = new EventEmitter();
     @Output()
-        private watchVerifyUser: EventEmitter<any>  = new EventEmitter();
+    private watchVerifyUser: EventEmitter<any> = new EventEmitter();
     @Output()
-        private watchGroupInfo: EventEmitter<any>  = new EventEmitter();
+    private watchGroupInfo: EventEmitter<any> = new EventEmitter();
     @Output()
-        private changeVerifyTab: EventEmitter<any>  = new EventEmitter();
+    private changeVerifyTab: EventEmitter<any> = new EventEmitter();
     @Output()
-        private watchApplyUser: EventEmitter<any>  = new EventEmitter();
+    private watchApplyUser: EventEmitter<any> = new EventEmitter();
     @Output()
-        private watchInvitateUser: EventEmitter<any>  = new EventEmitter();
+    private watchInvitateUser: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

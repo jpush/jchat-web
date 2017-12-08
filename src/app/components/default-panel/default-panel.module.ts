@@ -17,4 +17,4 @@ import { DefaultPanelComponent } from './default-panel.component';
     providers: []
 })
 
-export class DefaultPanelModule {}
+export class DefaultPanelModule { }

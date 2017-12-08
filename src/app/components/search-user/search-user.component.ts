@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-        HostListener, OnChanges, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    HostListener, OnChanges, ViewChild, AfterViewInit, OnDestroy
+} from '@angular/core';
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 
@@ -21,13 +23,13 @@ export class SearchUserComponent implements OnInit, OnChanges, AfterViewInit, On
     private groupHeight = '200px';
     private inputStream$;
     @Input()
-        private searchUserResult;
+    private searchUserResult;
     @Output()
-        private searchUser: EventEmitter<any> = new EventEmitter();
+    private searchUser: EventEmitter<any> = new EventEmitter();
     @Output()
-        private selectUserResult: EventEmitter<any> = new EventEmitter();
+    private selectUserResult: EventEmitter<any> = new EventEmitter();
     @Output()
-        private selectUserRoomResult: EventEmitter<any> = new EventEmitter();
+    private selectUserRoomResult: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

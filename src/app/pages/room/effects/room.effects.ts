@@ -23,9 +23,27 @@ export class RoomEffect {
                 });
             }
             return Observable.of('getRoomVoiceState')
-                    .map(() => {
-                        return {type: '[room] get room voice state useless'};
-                    });
+                .map(() => {
+                    return { type: '[room] get room voice state useless' };
+                });
+        });
+    // 获取storage里的voice状态
+    @Effect()
+    private storageVoiceState$: Observable<Action> = this.actions$
+        .ofType(roomAction.storageVoiceState)
+        .map(toPayload)
+        .switchMap((info) => {
+            if (info.voiceStateKey && info.voiceState) {
+                this.storageService.set(info.voiceStateKey, JSON.stringify(info.voiceState));
+                this.store$.dispatch({
+                    type: roomAction.getRoomVoiceStateSuccess,
+                    payload: info.voiceState
+                });
+            }
+            return Observable.of('storageRoomVoiceState')
+                .map(() => {
+                    return { type: '[room] storage room voice state useless' };
+                });
         });
     // 获取自己已经进入的聊天室列表，并一一退出
     @Effect()
@@ -34,57 +52,57 @@ export class RoomEffect {
         .map(toPayload)
         .switchMap((payload) => {
             const getSelfChatrooms = global.JIM.getSelfChatrooms()
-            .onSuccess((data) => {
-                if (data.chat_rooms.length === 0) {
+                .onSuccess((data) => {
+                    if (data.chat_rooms.length === 0) {
+                        this.store$.dispatch({
+                            type: roomAction.exitAllChatroomsSuccess,
+                            payload: null
+                        });
+                        return;
+                    }
+                    let count = 0;
+                    for (let room of data.chat_rooms) {
+                        global.JIM.exitChatroom({
+                            id: room.id
+                        }).onSuccess((success) => {
+                            if (++count === data.chat_rooms.length) {
+                                this.store$.dispatch({
+                                    type: roomAction.exitAllChatroomsSuccess,
+                                    payload: null
+                                });
+                            }
+                        }).onFail((error) => {
+                            if (++count === data.chat_rooms.length) {
+                                this.store$.dispatch({
+                                    type: roomAction.exitAllChatroomsSuccess,
+                                    payload: null
+                                });
+                            }
+                        }).onTimeout(() => {
+                            if (++count === data.chat_rooms.length) {
+                                this.store$.dispatch({
+                                    type: roomAction.exitAllChatroomsSuccess,
+                                    payload: null
+                                });
+                            }
+                        });
+                    }
+                }).onFail((error) => {
                     this.store$.dispatch({
-                        type: roomAction.exitAllChatroomsSuccess,
-                        payload: null
+                        type: appAction.errorApiTip,
+                        payload: error
                     });
-                    return ;
-                }
-                let count = 0;
-                for (let room of data.chat_rooms) {
-                    global.JIM.exitChatroom({
-                        id: room.id
-                    }).onSuccess((success) => {
-                        if (++ count === data.chat_rooms.length) {
-                            this.store$.dispatch({
-                                type: roomAction.exitAllChatroomsSuccess,
-                                payload: null
-                            });
-                        }
-                    }).onFail((error) => {
-                        if (++ count === data.chat_rooms.length) {
-                            this.store$.dispatch({
-                                type: roomAction.exitAllChatroomsSuccess,
-                                payload: null
-                            });
-                        }
-                    }).onTimeout(() => {
-                        if (++ count === data.chat_rooms.length) {
-                            this.store$.dispatch({
-                                type: roomAction.exitAllChatroomsSuccess,
-                                payload: null
-                            });
-                        }
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
                     });
-                }
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
                 });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
             return Observable.of(getSelfChatrooms)
-                    .map(() => {
-                        return {type: '[room] get self chatrooms useless'};
-                    });
+                .map(() => {
+                    return { type: '[room] get self chatrooms useless' };
+                });
         });
     // 请求聊天室列表
     @Effect()
@@ -106,16 +124,16 @@ export class RoomEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(getRoomList)
-                    .map(() => {
-                        return {type: '[room] get room list useless'};
-                    });
+                .map(() => {
+                    return { type: '[room] get room list useless' };
+                });
         });
     // 切换active聊天室，退出聊天室，请求聊天室详情
     @Effect()
@@ -147,16 +165,16 @@ export class RoomEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(changeRoom)
-                    .map(() => {
-                        return {type: '[room] change room useless'};
-                    });
+                .map(() => {
+                    return { type: '[room] change room useless' };
+                });
         });
     // 进入新的聊天室
     @Effect()
@@ -188,7 +206,7 @@ export class RoomEffect {
                     });
                 }
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -199,9 +217,9 @@ export class RoomEffect {
                 });
             });
             return Observable.of('enterRoom')
-                    .map(() => {
-                        return {type: '[room] enter room useless'};
-                    });
+                .map(() => {
+                    return { type: '[room] enter room useless' };
+                });
         });
     // 退出聊天室
     @Effect()
@@ -213,9 +231,9 @@ export class RoomEffect {
                 this.exitRoom(payload);
             }
             return Observable.of('exitRoom')
-                    .map(() => {
-                        return {type: '[room] exit room useless'};
-                    });
+                .map(() => {
+                    return { type: '[room] exit room useless' };
+                });
         });
     // 显示聊天室资料
     @Effect()
@@ -239,16 +257,16 @@ export class RoomEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(showRoomInfomation)
-                    .map(() => {
-                        return {type: '[room] show room infomation useless'};
-                    });
+                .map(() => {
+                    return { type: '[room] show room infomation useless' };
+                });
         });
     // 收到新消息
     @Effect()
@@ -261,26 +279,26 @@ export class RoomEffect {
                 payload: payload.data
             });
             if (payload.data.content.msg_body.media_id) {
-                global.JIM.getResource({media_id: payload.data.content.msg_body.media_id})
-                .onSuccess((urlInfo) => {
-                    payload.data.content.msg_body.media_url = urlInfo.url;
-                    this.store$.dispatch({
-                        type: roomAction.receiveMessageUrlSuccess,
-                        payload: payload.data
+                global.JIM.getResource({ media_id: payload.data.content.msg_body.media_id })
+                    .onSuccess((urlInfo) => {
+                        payload.data.content.msg_body.media_url = urlInfo.url;
+                        this.store$.dispatch({
+                            type: roomAction.receiveMessageUrlSuccess,
+                            payload: payload.data
+                        });
+                    }).onFail((error) => {
+                        payload.data.content.msg_body.media_url = '';
+                        this.store$.dispatch({
+                            type: roomAction.receiveMessageUrlSuccess,
+                            payload: payload.data
+                        });
+                    }).onTimeout((errorInfo) => {
+                        payload.data.content.msg_body.media_url = '';
+                        this.store$.dispatch({
+                            type: roomAction.receiveMessageUrlSuccess,
+                            payload: payload.data
+                        });
                     });
-                }).onFail((error) => {
-                    payload.data.content.msg_body.media_url = '';
-                    this.store$.dispatch({
-                        type: roomAction.receiveMessageUrlSuccess,
-                        payload: payload.data
-                    });
-                }).onTimeout((errorInfo) => {
-                    payload.data.content.msg_body.media_url = '';
-                    this.store$.dispatch({
-                        type: roomAction.receiveMessageUrlSuccess,
-                        payload: payload.data
-                    });
-                });
             }
             // 如果接收的是名片
             if (payload.data.content.msg_type === 'text' && payload.data.content.msg_body.extras &&
@@ -306,14 +324,14 @@ export class RoomEffect {
                     username
                 }).onSuccess((user) => {
                     if (user.user_info.avatar !== '') {
-                        global.JIM.getResource({media_id: user.user_info.avatar})
-                        .onSuccess((urlInfo) => {
-                            payload.data.content.avatarUrl = urlInfo.url;
-                        }).onFail((error) => {
-                            // pass
-                        }).onTimeout((errorInfo) => {
-                            // pass
-                        });
+                        global.JIM.getResource({ media_id: user.user_info.avatar })
+                            .onSuccess((urlInfo) => {
+                                payload.data.content.avatarUrl = urlInfo.url;
+                            }).onFail((error) => {
+                                // pass
+                            }).onTimeout((errorInfo) => {
+                                // pass
+                            });
                     }
                 }).onFail((error) => {
                     // pass
@@ -322,9 +340,9 @@ export class RoomEffect {
                 });
             }
             return Observable.of('receiveMessage')
-                    .map(() => {
-                        return {type: '[room] receive message useless'};
-                    });
+                .map(() => {
+                    return { type: '[room] receive message useless' };
+                });
         });
     // 发送文本消息
     @Effect()
@@ -333,50 +351,50 @@ export class RoomEffect {
         .map(toPayload)
         .switchMap((payload) => {
             const sendTextMsg = global.JIM.sendChatroomMsg(payload.sendMsg)
-            .onSuccess((data, msg) => {
-                payload.localMsg.success = 2;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend,
-                        msg
-                    }
-                });
-            }).onFail((error) => {
-                payload.localMsg.success = 3;
-                payload.localMsg.sendMsg = payload.sendMsg;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                payload.localMsg.success = 3;
-                payload.localMsg.sendMsg = payload.sendMsg;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(sendTextMsg)
-                    .map(() => {
-                        return {type: '[room] send text msg useless'};
+                .onSuccess((data, msg) => {
+                    payload.localMsg.success = 2;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend,
+                            msg
+                        }
                     });
+                }).onFail((error) => {
+                    payload.localMsg.success = 3;
+                    payload.localMsg.sendMsg = payload.sendMsg;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    payload.localMsg.success = 3;
+                    payload.localMsg.sendMsg = payload.sendMsg;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(sendTextMsg)
+                .map(() => {
+                    return { type: '[room] send text msg useless' };
+                });
         });
     // 发送文件消息
     @Effect()
@@ -385,50 +403,50 @@ export class RoomEffect {
         .map(toPayload)
         .switchMap((payload) => {
             const sendFileMsg = global.JIM.sendChatroomFile(payload.sendMsg)
-            .onSuccess((data, msg) => {
-                payload.localMsg.success = 2;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend,
-                        msg
-                    }
-                });
-            }).onFail((error) => {
-                payload.localMsg.success = 3;
-                payload.localMsg.sendMsg = payload.sendMsg;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                payload.localMsg.success = 3;
-                payload.localMsg.sendMsg = payload.sendMsg;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(sendFileMsg)
-                    .map(() => {
-                        return {type: '[room] send file msg useless'};
+                .onSuccess((data, msg) => {
+                    payload.localMsg.success = 2;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend,
+                            msg
+                        }
                     });
+                }).onFail((error) => {
+                    payload.localMsg.success = 3;
+                    payload.localMsg.sendMsg = payload.sendMsg;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    payload.localMsg.success = 3;
+                    payload.localMsg.sendMsg = payload.sendMsg;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(sendFileMsg)
+                .map(() => {
+                    return { type: '[room] send file msg useless' };
+                });
         });
     // 发送图片消息
     @Effect()
@@ -437,50 +455,50 @@ export class RoomEffect {
         .map(toPayload)
         .switchMap((payload) => {
             const sendPicMsg = global.JIM.sendChatroomPic(payload.sendMsg)
-            .onSuccess((data, msg) => {
-                payload.localMsg.success = 2;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend,
-                        msg
-                    }
-                });
-            }).onFail((error) => {
-                payload.localMsg.success = 3;
-                payload.localMsg.sendMsg = payload.sendMsg;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                payload.localMsg.success = 3;
-                payload.localMsg.sendMsg = payload.sendMsg;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(sendPicMsg)
-                    .map(() => {
-                        return {type: '[room] send pic msg useless'};
+                .onSuccess((data, msg) => {
+                    payload.localMsg.success = 2;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend,
+                            msg
+                        }
                     });
+                }).onFail((error) => {
+                    payload.localMsg.success = 3;
+                    payload.localMsg.sendMsg = payload.sendMsg;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    payload.localMsg.success = 3;
+                    payload.localMsg.sendMsg = payload.sendMsg;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(sendPicMsg)
+                .map(() => {
+                    return { type: '[room] send pic msg useless' };
+                });
         });
     // 发送jpush表情
     @Effect()
@@ -489,56 +507,56 @@ export class RoomEffect {
         .map(toPayload)
         .switchMap((payload) => {
             const transmitPicMsg = global.JIM.sendChatroomPic(payload.sendMsg)
-            .onSuccess((data, msg) => {
-                payload.localMsg.success = 2;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend,
-                        msg
-                    }
-                });
-            }).onFail((error) => {
-                payload.localMsg.success = 3;
-                payload.localMsg.sendMsg = payload.sendMsg;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
-                    }
-                });
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                payload.localMsg.success = 3;
-                payload.localMsg.sendMsg = payload.sendMsg;
-                this.store$.dispatch({
-                    type: roomAction.sendMsgComplete,
-                    payload: {
-                        localMsg: payload.localMsg,
-                        repeatSend: payload.repeatSend
-                    }
-                });
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(transmitPicMsg)
-                    .map(() => {
-                        return {type: '[room] transmit pic msg useless'};
+                .onSuccess((data, msg) => {
+                    payload.localMsg.success = 2;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend,
+                            msg
+                        }
                     });
+                }).onFail((error) => {
+                    payload.localMsg.success = 3;
+                    payload.localMsg.sendMsg = payload.sendMsg;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    payload.localMsg.success = 3;
+                    payload.localMsg.sendMsg = payload.sendMsg;
+                    this.store$.dispatch({
+                        type: roomAction.sendMsgComplete,
+                        payload: {
+                            localMsg: payload.localMsg,
+                            repeatSend: payload.repeatSend
+                        }
+                    });
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(transmitPicMsg)
+                .map(() => {
+                    return { type: '[room] transmit pic msg useless' };
+                });
         });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,
         private storageService: StorageService
-    ) {}
+    ) { }
     // 退出聊天室
     private exitRoom(payload) {
         global.JIM.exitChatroom({
@@ -562,14 +580,14 @@ export class RoomEffect {
         }).onSuccess((otherInfo) => {
             data.content.msg_body.extras.nickName = otherInfo.user_info.nickname;
             if (otherInfo.user_info.avatar !== '') {
-                global.JIM.getResource({media_id: otherInfo.user_info.avatar})
-                .onSuccess((urlInfo) => {
-                    data.content.msg_body.extras.media_url = urlInfo.url;
-                }).onFail((error) => {
-                    // pass
-                }).onTimeout((errorInfo) => {
-                    // pass
-                });
+                global.JIM.getResource({ media_id: otherInfo.user_info.avatar })
+                    .onSuccess((urlInfo) => {
+                        data.content.msg_body.extras.media_url = urlInfo.url;
+                    }).onFail((error) => {
+                        // pass
+                    }).onTimeout((errorInfo) => {
+                        // pass
+                    });
             }
         }).onFail((error) => {
             // pass

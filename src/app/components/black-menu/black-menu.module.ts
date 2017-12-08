@@ -21,4 +21,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class BlackMenuModule {}
+export class BlackMenuModule { }

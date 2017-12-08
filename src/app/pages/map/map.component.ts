@@ -12,7 +12,7 @@ export class MapComponent implements OnInit {
     private errorTipShow = false;
     constructor(
         private activatedRoute: ActivatedRoute
-    ) {}
+    ) { }
     public ngOnInit() {
         // 获取url参数（地理坐标）
         let pointer = this.activatedRoute.snapshot.params.pointer;

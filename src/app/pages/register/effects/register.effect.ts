@@ -79,16 +79,16 @@ export class RegisterEffect {
                     payload: usernameTip
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(registerObj)
-                    .map(() => {
-                        return {type: '[register] register useless'};
-                    });
+                .map(() => {
+                    return { type: '[register] register useless' };
+                });
         });
     // 用户名是否被注册
     @Effect()
@@ -121,13 +121,13 @@ export class RegisterEffect {
             } else {
                 this.store$.dispatch({
                     type: registerAction.usernameTip,
-                     payload: ''
+                    payload: ''
                 });
             }
             return Observable.of('usernameObj')
-                    .map(() => {
-                        return {type: '[register] is username available useless'};
-                    });
+                .map(() => {
+                    return { type: '[register] is username available useless' };
+                });
         });
     // 正则验证密码
     @Effect()
@@ -146,10 +146,10 @@ export class RegisterEffect {
             });
             return val;
         }).map((val) => {
-            return {type: '[register] password useless'};
+            return { type: '[register] password useless' };
         });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>
-    ) {}
+    ) { }
 }

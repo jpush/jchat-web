@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { appAction } from './actions';
 import { global } from './services/common/global';
 import '../assets/static/js/jmessage-sdk-web.2.5.0.min.js';
-declare function JMessage(obj ?: Object): void;
+declare function JMessage(obj?: Object): void;
 
 @Component({
     selector: 'my-app',
@@ -19,13 +19,13 @@ export class AppComponent implements OnInit, OnDestroy {
     };
     constructor(
         private store$: Store<any>
-    ) {}
+    ) { }
     public ngOnInit() {
         // 创建JIM 对象
         global.JIM = new JMessage(
             {
                 debug: true,
-            //     address: 'ws://183.232.25.91:9091'
+                //     address: 'ws://183.232.25.91:9091'
             }
         );
         this.appStream$ = this.store$.select((state) => {

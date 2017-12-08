@@ -20,4 +20,4 @@ import { RoomListComponent } from './room-list.component';
     providers: []
 })
 
-export class RoomListModule {}
+export class RoomListModule { }

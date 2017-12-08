@@ -17,4 +17,4 @@ import { GroupDescriptionComponent } from './group-description.component';
     providers: []
 })
 
-export class GroupDescriptionModule {}
+export class GroupDescriptionModule { }

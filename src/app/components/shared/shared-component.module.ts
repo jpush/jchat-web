@@ -106,4 +106,4 @@ import { BadgeModule } from 'jpush-ui/badge';
     providers: []
 })
 
-export class SharedComponentModule {}
+export class SharedComponentModule { }

@@ -24,5 +24,6 @@ export const roomAction = {
     transmitAllMsg: '[room] transmit all msg',
     getRoomVoiceState: '[room] get room voice state',
     getRoomVoiceStateSuccess: '[room] get room voice state success',
-    showPanel: '[room] show panel'
+    showPanel: '[room] show panel',
+    storageVoiceState: '[room] storage voice state'
 };

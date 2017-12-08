@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild,
-    HostListener, ElementRef, DoCheck } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter, ViewChild,
+    HostListener, ElementRef, DoCheck
+} from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
@@ -17,29 +19,29 @@ export class GroupSettingComponent implements OnInit, DoCheck {
     @ViewChild('groupSettingHeader') private groupSettingHeader;
     @ViewChild(SearchMemberComponent) private SearchMemberComponent;
     @Input()
-        private groupSetting;
+    private groupSetting;
     @Output()
-        private closeGroupSetting: EventEmitter<any> = new EventEmitter();
+    private closeGroupSetting: EventEmitter<any> = new EventEmitter();
     @Output()
-        private exitGroup: EventEmitter<any> = new EventEmitter();
+    private exitGroup: EventEmitter<any> = new EventEmitter();
     @Output()
-        private modifyGroupDescription: EventEmitter<any> = new EventEmitter();
+    private modifyGroupDescription: EventEmitter<any> = new EventEmitter();
     @Output()
-        private addMember: EventEmitter<any> = new EventEmitter();
+    private addMember: EventEmitter<any> = new EventEmitter();
     @Output()
-        private searchGroupMember: EventEmitter<any> = new EventEmitter();
+    private searchGroupMember: EventEmitter<any> = new EventEmitter();
     @Output()
-        private watchOtherInfo: EventEmitter<any> = new EventEmitter();
+    private watchOtherInfo: EventEmitter<any> = new EventEmitter();
     @Output()
-        private watchSelfInfo: EventEmitter<any> = new EventEmitter();
+    private watchSelfInfo: EventEmitter<any> = new EventEmitter();
     @Output()
-        private deleteMember: EventEmitter<any> = new EventEmitter();
+    private deleteMember: EventEmitter<any> = new EventEmitter();
     @Output()
-        private modifyGroupName: EventEmitter<any> = new EventEmitter();
+    private modifyGroupName: EventEmitter<any> = new EventEmitter();
     @Output()
-        private updateGroupAvatar: EventEmitter<any> = new EventEmitter();
+    private updateGroupAvatar: EventEmitter<any> = new EventEmitter();
     @Output()
-        private keepSilence: EventEmitter<any> = new EventEmitter();
+    private keepSilence: EventEmitter<any> = new EventEmitter();
     private global = global;
     private searchResult = {
         result: [],
@@ -60,7 +62,7 @@ export class GroupSettingComponent implements OnInit, DoCheck {
     constructor(
         private store$: Store<AppStore>,
         private elementRef: ElementRef
-    ) {}
+    ) { }
     public ngOnInit() {
         // pass
     }
@@ -93,11 +95,11 @@ export class GroupSettingComponent implements OnInit, DoCheck {
             let result = [];
             for (let member of this.groupSetting.memberList) {
                 const memoNameExist = member.memo_name &&
-                        member.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                    member.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
                 const usernameExist = member.username &&
-                        member.username.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                    member.username.toLowerCase().indexOf(value.toLowerCase()) !== -1;
                 const nickNameExist = member.nickName &&
-                        member.nickName.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                    member.nickName.toLowerCase().indexOf(value.toLowerCase()) !== -1;
                 if (memoNameExist || nickNameExist || usernameExist) {
                     result.push(member);
                 }

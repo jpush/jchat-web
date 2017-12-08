@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output,
-    EventEmitter, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import {
+    Component, OnInit, Input, Output,
+    EventEmitter, ElementRef, AfterViewInit, OnDestroy
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { global, authPayload } from '../../services/common';
 import { roomAction } from './actions';
@@ -35,10 +37,11 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
     private rememberEnter = null;
     private noMoreRooms = false;
     private roomStream$;
+    private voiceState = [];
     constructor(
         private store$: Store<any>,
         private elementRef: ElementRef
-    ) {}
+    ) { }
     public ngOnInit() {
         this.store$.dispatch({
             type: roomAction.init,
@@ -67,10 +70,11 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
     public ngAfterViewInit() {
+        const voiceStateKey = `voiceRoomState-${authPayload.appKey}-${global.user}`;
         // 获取本地存储的语音已读状态
         this.store$.dispatch({
             type: roomAction.getRoomVoiceState,
-            payload: `voiceRoomState-${authPayload.appKey}-${global.user}`
+            payload: voiceStateKey
         });
     }
     public ngOnDestroy() {
@@ -171,6 +175,9 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
             case roomAction.showPanel:
                 this.showPanel = roomState.showPanel;
                 break;
+            case roomAction.getRoomVoiceStateSuccess:
+                this.voiceState = roomState.voiceRoomState;
+                break;
             default:
         }
     }
@@ -262,7 +269,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
                 ctime_ms: new Date().getTime(),
                 success: 1,
-                msgKey: this.msgKey ++
+                msgKey: this.msgKey++
             };
             let sendMsg: any = {
                 target_rid: this.enter.id,
@@ -295,7 +302,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
             });
         } else {
             const ext = Util.getExt(data.fileData.name);
-            const localMsg  = {
+            const localMsg = {
                 content: {
                     msg_type: 'file',
                     from_id: global.user,
@@ -311,7 +318,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
                 ctime_ms: new Date().getTime(),
                 success: 1,
-                msgKey: this.msgKey ++
+                msgKey: this.msgKey++
             };
             const sendMsg = {
                 target_rid: this.enter.id,
@@ -355,7 +362,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
                     },
                     ctime_ms: new Date().getTime(),
                     success: 1,
-                    msgKey: this.msgKey ++
+                    msgKey: this.msgKey++
                 };
                 const sendMsg = {
                     target_rid: this.enter.id,
@@ -412,7 +419,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             ctime_ms: new Date().getTime(),
             success: 1,
-            msgKey: this.msgKey ++
+            msgKey: this.msgKey++
         };
         const sendMsg = {
             target_rid: this.enter.id,
@@ -471,6 +478,17 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
         };
         this.sendMsgEmit(msg);
     }
+    private voiceHasPlayEmit(voice) {
+        this.voiceState.push(voice);
+        const voiceStateKey = `voiceRoomState-${authPayload.appKey}-${global.user}`;
+        this.store$.dispatch({
+            type: roomAction.storageVoiceState,
+            payload: {
+                voiceState: this.voiceState,
+                voiceStateKey
+            }
+        });
+    }
     // 显示视频模态框
     private playVideoEmit(url) {
         this.store$.dispatch({
@@ -500,5 +518,6 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
         this.start = 0;
         this.loadMoreRoomsFlag = false;
         this.rememberEnter = null;
+        this.voiceState = [];
     }
 }

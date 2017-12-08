@@ -5,7 +5,7 @@ import { roomInit } from '../model';
 import { Util } from '../../../services/util';
 import { chatAction } from '../../chat/actions';
 
-export const roomReducer = (state: RoomStore = roomInit, {type, payload}) => {
+export const roomReducer = (state: RoomStore = roomInit, { type, payload }) => {
     state.actionType = type;
     switch (type) {
         case mainAction.init:
@@ -128,8 +128,8 @@ function addMessage(state: RoomStore, payload) {
         payload.time_show = Util.reducerDate(payload.ctime_ms);
     } else {
         const fiveMinutes =
-                Util.fiveMinutes(state.messageList[state.messageList.length - 1].ctime_ms,
-            payload.ctime_ms);
+            Util.fiveMinutes(state.messageList[state.messageList.length - 1].ctime_ms,
+                payload.ctime_ms);
         if (fiveMinutes) {
             payload.time_show = Util.reducerDate(payload.ctime_ms);
         }
@@ -216,11 +216,11 @@ function filterImageViewer(state: RoomStore, payload) {
 // 搜索聊天室查看资料
 function addRoomToList(state: RoomStore, payload) {
     if (payload.id === state.enter.id) {
-        return ;
+        return;
     }
     state.showPanel = 1;
     let flag = false;
-    for (let i = 0; i < state.roomList.length; i ++) {
+    for (let i = 0; i < state.roomList.length; i++) {
         if (state.roomList[i].id === payload.id) {
             let item = state.roomList.splice(i, 1)[0];
             state.roomList.unshift(item);

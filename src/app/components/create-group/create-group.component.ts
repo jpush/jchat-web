@@ -17,11 +17,11 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     private global = global;
     private createGroupStream$;
     @Input()
-        private createGroup;
+    private createGroup;
     @Output()
-        private isCreateGroup: EventEmitter<any> = new EventEmitter();
+    private isCreateGroup: EventEmitter<any> = new EventEmitter();
     @Output()
-        private nextCreateGroup: EventEmitter<any> = new EventEmitter();
+    private nextCreateGroup: EventEmitter<any> = new EventEmitter();
     private selectList = [];
     private searchResult = {
         result: [],
@@ -35,7 +35,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     };
     constructor(
         private store$: Store<any>
-    ) {}
+    ) { }
     public ngOnInit() {
         this.initData();
         this.createGroupStream$ = this.store$.select((state) => {
@@ -51,7 +51,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     }
     private stateChanged(chatState) {
         switch (chatState.actionType) {
-            case  chatAction.createGroupSearchComplete:
+            case chatAction.createGroupSearchComplete:
                 this.searchResult.show = true;
                 let result = Util.deepCopyObj(chatState.createGroupSearch);
                 if (result.length > 0) {
@@ -176,7 +176,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             for (let member of list.data) {
                 if (item.name === member.name) {
                     member.checked = item.checked;
-                    return ;
+                    return;
                 }
             }
         }
@@ -201,18 +201,18 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         if (this.createGroup.info.action && this.createGroup.info.action === 'add') {
             groupInfo.add = true;
             groupInfo.activeGroup = this.createGroup.info.activeGroup;
-        }else if (this.createGroup.info.action && this.createGroup.info.action === 'many') {
+        } else if (this.createGroup.info.action && this.createGroup.info.action === 'many') {
             groupInfo.groupName = this.createGroup.info.selfInfo.nickname ||
                 this.createGroup.info.selfInfo.username;
-            for (let item of this.selectList){
+            for (let item of this.selectList) {
                 let name;
                 if (item.nickName && item.nickName !== '') {
                     name = item.nickName;
-                }else if (item.nickname && item.nickname !== '') {
+                } else if (item.nickname && item.nickname !== '') {
                     name = item.nickname;
-                }else if (item.username && item.username !== '') {
+                } else if (item.username && item.username !== '') {
                     name = item.username;
-                }else if (item.name && item.name !== '') {
+                } else if (item.name && item.name !== '') {
                     name = item.name;
                 }
                 groupInfo.groupName += '、' + name;
@@ -253,7 +253,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             for (let member of list.data) {
                 if (member.name === user.name) {
                     member.checked = event.target.checked;
-                    return ;
+                    return;
                 }
             }
         }
@@ -264,7 +264,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             for (let member of list.data) {
                 if (member.name === user.name) {
                     member.checked = false;
-                    return ;
+                    return;
                 }
             }
         }

@@ -28,4 +28,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class MessageTransmitModule {}
+export class MessageTransmitModule { }

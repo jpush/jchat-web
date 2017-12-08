@@ -17,4 +17,4 @@ import { GroupAvatarComponent } from './group-avatar.component';
     providers: []
 })
 
-export class GroupAvatarModule {}
+export class GroupAvatarModule { }

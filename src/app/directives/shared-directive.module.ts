@@ -30,4 +30,4 @@ import { HoverEventDirective } from './hover-tip.directive';
     providers: []
 })
 
-export class SharedDirectiveModule {}
+export class SharedDirectiveModule { }

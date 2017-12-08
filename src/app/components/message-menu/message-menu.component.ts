@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-    HostListener, AfterViewInit } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    HostListener, AfterViewInit
+} from '@angular/core';
 import * as Clipboard from 'clipboard/dist/clipboard.min.js';
 
 @Component({
@@ -10,16 +12,16 @@ import * as Clipboard from 'clipboard/dist/clipboard.min.js';
 
 export class MessageMenuComponent implements OnInit, AfterViewInit {
     @Input()
-        private menu;
+    private menu;
     @Output()
-        private selectMenuItem: EventEmitter<any> = new EventEmitter();
+    private selectMenuItem: EventEmitter<any> = new EventEmitter();
     @Output()
-        private menuItemEnter: EventEmitter<any> = new EventEmitter();
+    private menuItemEnter: EventEmitter<any> = new EventEmitter();
     @Output()
-        private menuItemLeave: EventEmitter<any> = new EventEmitter();
+    private menuItemLeave: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }

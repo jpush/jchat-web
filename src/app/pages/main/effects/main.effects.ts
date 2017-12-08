@@ -14,7 +14,7 @@ import { appAction } from '../../../actions';
 @Injectable()
 export class MainEffect {
     // 获取个人信息
-    @Effect ()
+    @Effect()
     private getSelfInfo$: Observable<Action> = this.actions$
         .ofType(mainAction.getSelfInfo)
         .map(toPayload)
@@ -34,45 +34,45 @@ export class MainEffect {
                     });
                     return;
                 }
-                global.JIM.getResource({media_id: data.user_info.avatar})
-                .onSuccess((urlInfo) => {
-                    data.user_info.avatarUrl = urlInfo.url;
-                    this.store$.dispatch({
-                        type: mainAction.showSelfInfo,
-                        payload: {
-                            info: data.user_info,
-                            show: false,
-                            loading: false
-                        }
+                global.JIM.getResource({ media_id: data.user_info.avatar })
+                    .onSuccess((urlInfo) => {
+                        data.user_info.avatarUrl = urlInfo.url;
+                        this.store$.dispatch({
+                            type: mainAction.showSelfInfo,
+                            payload: {
+                                info: data.user_info,
+                                show: false,
+                                loading: false
+                            }
+                        });
+                    }).onFail((error) => {
+                        data.user_info.avatarUrl = '';
+                        this.store$.dispatch({
+                            type: mainAction.showSelfInfo,
+                            payload: {
+                                info: data.user_info,
+                                show: false,
+                                loading: false
+                            }
+                        });
                     });
-                }).onFail((error) => {
-                    data.user_info.avatarUrl = '';
-                    this.store$.dispatch({
-                        type: mainAction.showSelfInfo,
-                        payload: {
-                            info: data.user_info,
-                            show: false,
-                            loading: false
-                        }
-                    });
-                });
             }).onFail((error) => {
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(usrInfoObj)
-                    .map(() => {
-                        return {type: '[main] get selfInfo useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] get selfInfo useless' };
+                });
+        });
     // 退出登录
     @Effect()
     private logoutAction$: Observable<Action> = this.actions$
@@ -81,10 +81,10 @@ export class MainEffect {
         .switchMap(() => {
             const loginOutObj = global.JIM.loginOut();
             return Observable.of(loginOutObj)
-                    .map(() => {
-                        this.router.navigate(['/login']);
-                        return {type: '[main] login out useless'};
-                    });
+                .map(() => {
+                    this.router.navigate(['/login']);
+                    return { type: '[main] login out useless' };
+                });
         });
     // 更新个人信息
     @Effect()
@@ -134,16 +134,16 @@ export class MainEffect {
                             }
                         });
                     }
-                    const error = {code: 910000};
+                    const error = { code: 910000 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
                 });
             return Observable.of(updateSelfInfo)
-                    .map(() => {
-                        return {type: '[main] update self info useless'};
-                    });
+                .map(() => {
+                    return { type: '[main] update self info useless' };
+                });
         });
     // 创建群聊
     @Effect()
@@ -161,71 +161,71 @@ export class MainEffect {
                 param.avatar = groupInfo.avatar;
             }
             const createGroupObj = global.JIM.createGroup(param)
-            .onSuccess((data) => {
-                this.store$.dispatch({
-                    type: mainAction.createGroupNextShow,
-                    payload: {
-                        show: false,
-                        display: false,
-                        info: {}
-                    }
-                });
-                this.store$.dispatch({
-                    type: mainAction.createGroupShow,
-                    payload: {
-                        show: false,
-                        display: false,
-                        info: {}
-                    }
-                });
-                const groupObj = {
-                    appkey: authPayload.appKey,
-                    desc: data.group_description,
-                    gid: data.gid,
-                    mtime: data.ctime,
-                    name: data.group_name,
-                    type: 4,
-                    avatarUrl: groupInfo.avatarUrl ? groupInfo.avatarUrl : ''
-                };
-                // 如果有其他成员
-                if (groupInfo.memberUsernames.length > 0) {
-                    global.JIM.addGroupMembers({
+                .onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.createGroupNextShow,
+                        payload: {
+                            show: false,
+                            display: false,
+                            info: {}
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.createGroupShow,
+                        payload: {
+                            show: false,
+                            display: false,
+                            info: {}
+                        }
+                    });
+                    const groupObj = {
+                        appkey: authPayload.appKey,
+                        desc: data.group_description,
                         gid: data.gid,
-                        member_usernames: groupInfo.memberUsernames
-                    }).onSuccess((members) => {
+                        mtime: data.ctime,
+                        name: data.group_name,
+                        type: 4,
+                        avatarUrl: groupInfo.avatarUrl ? groupInfo.avatarUrl : ''
+                    };
+                    // 如果有其他成员
+                    if (groupInfo.memberUsernames.length > 0) {
+                        global.JIM.addGroupMembers({
+                            gid: data.gid,
+                            member_usernames: groupInfo.memberUsernames
+                        }).onSuccess((members) => {
+                            this.store$.dispatch({
+                                type: mainAction.createGroupSuccess,
+                                payload: groupObj
+                            });
+                        }).onFail((error) => {
+                            this.store$.dispatch({
+                                type: appAction.errorApiTip,
+                                payload: error
+                            });
+                        });
+                    } else {
                         this.store$.dispatch({
                             type: mainAction.createGroupSuccess,
                             payload: groupObj
                         });
-                    }).onFail((error) => {
-                        this.store$.dispatch({
-                            type: appAction.errorApiTip,
-                            payload: error
-                        });
-                    });
-                } else {
+                    }
+                }).onFail((error) => {
                     this.store$.dispatch({
-                        type: mainAction.createGroupSuccess,
-                        payload: groupObj
+                        type: appAction.errorApiTip,
+                        payload: error
                     });
-                }
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
                 });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
             return Observable.of(createGroupObj)
-                    .map(() => {
-                        return {type: '[main] create group useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] create group useless' };
+                });
+        });
     // 添加群聊成员
     @Effect()
     private addGroupMember$: Observable<Action> = this.actions$
@@ -246,17 +246,17 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(addGroupMemberObj)
-                    .map(() => {
-                        return {type: '[main] add group members useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] add group members useless' };
+                });
+        });
     // 修改密码
     @Effect()
     private modifyPassword$: Observable<Action> = this.actions$
@@ -268,110 +268,110 @@ export class MainEffect {
                 new_pwd: md5(passwordInfo.new_pwd),
                 is_md5: true
             })
-            .onSuccess((data) => {
-                global.JIM.loginOut();
-                this.store$.dispatch({
-                    type: mainAction.modifyPasswordShow,
-                    payload: {
-                        repeatLogin: md5(passwordInfo.new_pwd),
-                        show: false
-                    }
-                });
-                this.store$.dispatch({
-                    type: mainAction.showModalTip,
-                    payload: {
-                        show: true,
-                        info: {
-                            title: '提示',
-                            tip: '密码修改成功',
-                            actionType: '[main] modify password alert',
-                            success: 1// 1 代表成功 2代表失败
+                .onSuccess((data) => {
+                    global.JIM.loginOut();
+                    this.store$.dispatch({
+                        type: mainAction.modifyPasswordShow,
+                        payload: {
+                            repeatLogin: md5(passwordInfo.new_pwd),
+                            show: false
                         }
-                    }
-                });
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(passwordInfoObj)
-                    .map(() => {
-                        return {type: '[main] modify password useless'};
                     });
-    });
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: true,
+                            info: {
+                                title: '提示',
+                                tip: '密码修改成功',
+                                actionType: '[main] modify password alert',
+                                success: 1// 1 代表成功 2代表失败
+                            }
+                        }
+                    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(passwordInfoObj)
+                .map(() => {
+                    return { type: '[main] modify password useless' };
+                });
+        });
     // 创建单聊/添加好友
     @Effect()
     private createSingleChatAction$: Observable<Action> = this.actions$
         .ofType(mainAction.createSingleChatAction)
         .map(toPayload)
         .switchMap((info) => {
-            const createSingleChatObj = global.JIM.getUserInfo({username: info.singleName})
-            .onSuccess((data) => {
-                let user = data.user_info;
-                let item = {
-                    avatar: user.avatar,
-                    mtime: user.mtime,
-                    name: user.username,
-                    nickName: user.nickname,
-                    username: user.username,
-                    nickname: user.nickname,
-                    type: 3,
-                    signature: user.signature,
-                    gender: user.gender,
-                    region: user.region,
-                    avatarUrl: '',
-                    infoType: info.type
-                };
-                if (item.avatar !== '') {
-                    global.JIM.getResource({media_id: data.user_info.avatar})
-                    .onSuccess((urlInfo) => {
-                        item.avatarUrl = urlInfo.url;
-                        this.store$.dispatch({
-                            type: mainAction.createSingleChatSuccess,
-                            payload: item
-                        });
-                    }).onFail((error) => {
-                        // pass
-                    });
-                }
-                this.store$.dispatch({
-                    type: mainAction.createSingleChatSuccess,
-                    payload: item
-                });
-            }).onFail((error) => {
-                if (error.code === 882002) {
+            const createSingleChatObj = global.JIM.getUserInfo({ username: info.singleName })
+                .onSuccess((data) => {
+                    let user = data.user_info;
+                    let item = {
+                        avatar: user.avatar,
+                        mtime: user.mtime,
+                        name: user.username,
+                        nickName: user.nickname,
+                        username: user.username,
+                        nickname: user.nickname,
+                        type: 3,
+                        signature: user.signature,
+                        gender: user.gender,
+                        region: user.region,
+                        avatarUrl: '',
+                        infoType: info.type
+                    };
+                    if (item.avatar !== '') {
+                        global.JIM.getResource({ media_id: data.user_info.avatar })
+                            .onSuccess((urlInfo) => {
+                                item.avatarUrl = urlInfo.url;
+                                this.store$.dispatch({
+                                    type: mainAction.createSingleChatSuccess,
+                                    payload: item
+                                });
+                            }).onFail((error) => {
+                                // pass
+                            });
+                    }
                     this.store$.dispatch({
-                        type: mainAction.createSingleChatShow,
-                        payload: {
-                            show: true,
-                            info: '用户不存在'
-                        }
+                        type: mainAction.createSingleChatSuccess,
+                        payload: item
                     });
-                } else {
+                }).onFail((error) => {
+                    if (error.code === 882002) {
+                        this.store$.dispatch({
+                            type: mainAction.createSingleChatShow,
+                            payload: {
+                                show: true,
+                                info: '用户不存在'
+                            }
+                        });
+                    } else {
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
+                    }
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
                     });
-                }
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
                 });
-            });
             return Observable.of(createSingleChatObj)
-                    .map(() => {
-                        return {type: '[main] create single chat action useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] create single chat action useless' };
+                });
+        });
     // 创建群聊搜索联系人或者转发消息搜索联系人
     @Effect()
     private createGroupSearchAction$: Observable<Action> = this.actions$
@@ -393,15 +393,15 @@ export class MainEffect {
                     appkey: user.appkey
                 };
                 if (user.avatar !== '') {
-                    global.JIM.getResource({media_id: user.avatar})
-                    .onSuccess((urlInfo) => {
-                        item.avatarUrl = urlInfo.url;
-                        this.searUserType(info, item, info.keywords);
-                    }).onFail((error) => {
-                        this.searUserType(info, item, info.keywords);
-                    }).onTimeout(() => {
-                        this.searUserType(info, item, info.keywords);
-                    });
+                    global.JIM.getResource({ media_id: user.avatar })
+                        .onSuccess((urlInfo) => {
+                            item.avatarUrl = urlInfo.url;
+                            this.searUserType(info, item, info.keywords);
+                        }).onFail((error) => {
+                            this.searUserType(info, item, info.keywords);
+                        }).onTimeout(() => {
+                            this.searUserType(info, item, info.keywords);
+                        });
                 } else {
                     this.searUserType(info, item, info.keywords);
                 }
@@ -416,17 +416,17 @@ export class MainEffect {
                 }
             }).onTimeout((data) => {
                 this.searUserType(info, null, info.keywords);
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(createGroupSearchObj)
-                    .map(() => {
-                        return {type: '[main] create group search action useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] create group search action useless' };
+                });
+        });
     // 获取黑名单列表
     @Effect()
     private blackMenuShow$: Observable<Action> = this.actions$
@@ -434,55 +434,55 @@ export class MainEffect {
         .map(toPayload)
         .switchMap((isShow) => {
             const blackMenuObj = global.JIM.getBlacks()
-            .onSuccess((data) => {
-                if (data.black_list.length === 0) {
+                .onSuccess((data) => {
+                    if (data.black_list.length === 0) {
+                        this.store$.dispatch({
+                            type: mainAction.blackMenuSuccess,
+                            payload: {
+                                show: isShow.show,
+                                menu: data.black_list
+                            }
+                        });
+                        return;
+                    }
+                    for (let black of data.black_list) {
+                        global.JIM.getResource({ media_id: black.avatar })
+                            .onSuccess((urlInfo) => {
+                                black.avatarUrl = urlInfo.url;
+                                this.store$.dispatch({
+                                    type: mainAction.blackMenuSuccess,
+                                    payload: {
+                                        show: isShow.show,
+                                        menu: data.black_list
+                                    }
+                                });
+                            }).onFail((error) => {
+                                this.store$.dispatch({
+                                    type: mainAction.blackMenuSuccess,
+                                    payload: {
+                                        show: isShow.show,
+                                        menu: data.black_list
+                                    }
+                                });
+                            });
+                    }
+                }).onFail((error) => {
                     this.store$.dispatch({
-                        type: mainAction.blackMenuSuccess,
-                        payload: {
-                            show: isShow.show,
-                            menu: data.black_list
-                        }
+                        type: appAction.errorApiTip,
+                        payload: error
                     });
-                    return ;
-                }
-                for (let black of data.black_list) {
-                    global.JIM.getResource({media_id: black.avatar})
-                    .onSuccess((urlInfo) => {
-                        black.avatarUrl = urlInfo.url;
-                        this.store$.dispatch({
-                            type: mainAction.blackMenuSuccess,
-                            payload: {
-                                show: isShow.show,
-                                menu: data.black_list
-                            }
-                        });
-                    }).onFail((error) => {
-                        this.store$.dispatch({
-                            type: mainAction.blackMenuSuccess,
-                            payload: {
-                                show: isShow.show,
-                                menu: data.black_list
-                            }
-                        });
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
                     });
-                }
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
                 });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
             return Observable.of(blackMenuObj)
-                    .map(() => {
-                        return {type: '[main] black menu show useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] black menu show useless' };
+                });
+        });
     // 移出黑名单列表
     @Effect()
     private delSingleBlack$: Observable<Action> = this.actions$
@@ -505,17 +505,17 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(delSingleBlackObj)
-                    .map(() => {
-                        return {type: '[main] delete single black useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] delete single black useless' };
+                });
+        });
     // 加入黑名单
     @Effect()
     private addBlackListAction$: Observable<Action> = this.actions$
@@ -559,17 +559,17 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(addBlackListObj)
-                    .map(() => {
-                        return {type: '[main] add black list useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] add black list useless' };
+                });
+        });
     // 退出群聊
     @Effect()
     private exitGroupAction$: Observable<Action> = this.actions$
@@ -579,40 +579,40 @@ export class MainEffect {
             return data ? data : false;
         })
         .switchMap((gid) => {
-            const exitGroupObj = global.JIM.exitGroup({gid})
-            .onSuccess((data) => {
-                this.store$.dispatch({
-                    type: mainAction.exitGroupSuccess,
-                    payload: {
-                        tipModal: {
-                            show: false,
-                            info: {
-                                title: '',
-                                tip: ''
+            const exitGroupObj = global.JIM.exitGroup({ gid })
+                .onSuccess((data) => {
+                    this.store$.dispatch({
+                        type: mainAction.exitGroupSuccess,
+                        payload: {
+                            tipModal: {
+                                show: false,
+                                info: {
+                                    title: '',
+                                    tip: ''
+                                }
+                            },
+                            item: {
+                                key: gid
                             }
-                        },
-                        item: {
-                            key: gid
                         }
-                    }
-                });
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                const error = {code: 910000};
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(exitGroupObj)
-                    .map(() => {
-                        return {type: '[main] exit group useless'};
                     });
-    });
+                }).onFail((error) => {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                }).onTimeout((data) => {
+                    const error = { code: 910000 };
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: error
+                    });
+                });
+            return Observable.of(exitGroupObj)
+                .map(() => {
+                    return { type: '[main] exit group useless' };
+                });
+        });
     // 删除群聊成员
     @Effect()
     private deleteMemberAction$: Observable<Action> = this.actions$
@@ -622,7 +622,7 @@ export class MainEffect {
             const deleteMember = global.JIM.delGroupMembers({
                 gid: info.group.key,
                 member_usernames: [
-                    {username: info.deleteItem.username}
+                    { username: info.deleteItem.username }
                 ]
             }).onSuccess((data) => {
                 this.store$.dispatch({
@@ -645,17 +645,17 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(deleteMember)
-                    .map(() => {
-                        return {type: '[main] delete group member useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] delete group member useless' };
+                });
+        });
     // 被踢后重新登录
     @Effect()
     private login$: Observable<Action> = this.actions$
@@ -676,33 +676,33 @@ export class MainEffect {
                     password: val.password,
                     is_md5: val.md5
                 })
-                .onSuccess((login) => {
-                    if (val.reload) {
-                        window.location.reload();
-                    }
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
+                    .onSuccess((login) => {
+                        if (val.reload) {
+                            window.location.reload();
+                        }
+                    }).onFail((error) => {
+                        this.store$.dispatch({
+                            type: appAction.errorApiTip,
+                            payload: error
+                        });
                     });
-                });
             }).onFail((error) => {
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(loginObj)
-                    .map(() => {
-                        return {type: '[main] login useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] login useless' };
+                });
+        });
     // 用户资料中删除免打扰
     @Effect()
     private addSingleNoDisturbAction$: Observable<Action> = this.actions$
@@ -710,55 +710,55 @@ export class MainEffect {
         .map(toPayload)
         .switchMap((user) => {
             const loginObj = global.JIM.addSingleNoDisturb({
-                    target_name: user.name
-                }).onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: mainAction.showModalTip,
-                        payload: {
-                            show: true,
-                            info: {
-                                title: '添加消息免打扰',
-                                tip: '添加消息免打扰成功',
-                                actionType: '[main] add single no disturb action useless',
-                                success: 1
-                            }
+                target_name: user.name
+            }).onSuccess((data) => {
+                this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '添加消息免打扰',
+                            tip: '添加消息免打扰成功',
+                            actionType: '[main] add single no disturb action useless',
+                            success: 1
                         }
-                    });
-                    this.store$.dispatch({
-                        type: mainAction.addSingleNoDisturbSuccess,
-                        payload: user
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                    this.store$.dispatch({
-                        type: mainAction.hideModalTip,
-                        payload: {
-                            show: false,
-                            info: {}
-                        }
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                    this.store$.dispatch({
-                        type: mainAction.hideModalTip,
-                        payload: {
-                            show: false,
-                            info: {}
-                        }
-                    });
+                    }
                 });
+                this.store$.dispatch({
+                    type: mainAction.addSingleNoDisturbSuccess,
+                    payload: user
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+                this.store$.dispatch({
+                    type: mainAction.hideModalTip,
+                    payload: {
+                        show: false,
+                        info: {}
+                    }
+                });
+            }).onTimeout((data) => {
+                const error = { code: 910000 };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+                this.store$.dispatch({
+                    type: mainAction.hideModalTip,
+                    payload: {
+                        show: false,
+                        info: {}
+                    }
+                });
+            });
             return Observable.of(loginObj)
-                    .map(() => {
-                        return {type: '[main] add single no disturb action useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] add single no disturb action useless' };
+                });
+        });
     // 删除好友
     @Effect()
     private deleteFriend$: Observable<Action> = this.actions$
@@ -766,41 +766,41 @@ export class MainEffect {
         .map(toPayload)
         .switchMap((user) => {
             const deleteFriend = global.JIM.delFriend({
-                    target_name: user.name
-                }).onSuccess((data) => {
-                    this.store$.dispatch({
-                        type: mainAction.showModalTip,
-                        payload: {
-                            show: true,
-                            info: {
-                                title: '删除好友',
-                                tip: '删除好友成功',
-                                actionType: '[main] delete friend success useless',
-                                success: 1
-                            }
+                target_name: user.name
+            }).onSuccess((data) => {
+                this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: true,
+                        info: {
+                            title: '删除好友',
+                            tip: '删除好友成功',
+                            actionType: '[main] delete friend success useless',
+                            success: 1
                         }
-                    });
-                    this.store$.dispatch({
-                        type: mainAction.deleteFriendSuccess,
-                        payload: user
-                    });
-                }).onFail((error) => {
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
-                }).onTimeout((data) => {
-                    const error = {code: 910000};
-                    this.store$.dispatch({
-                        type: appAction.errorApiTip,
-                        payload: error
-                    });
+                    }
                 });
+                this.store$.dispatch({
+                    type: mainAction.deleteFriendSuccess,
+                    payload: user
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                const error = { code: 910000 };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            });
             return Observable.of(deleteFriend)
-                    .map(() => {
-                        return {type: '[main] delete friend useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] delete friend useless' };
+                });
+        });
     // 搜索聊天室
     @Effect()
     private searchUser$: Observable<Action> = this.actions$
@@ -845,9 +845,9 @@ export class MainEffect {
                 });
             }
             return Observable.of('searchUser')
-                    .map(() => {
-                        return {type: '[main] search user useless'};
-                    });
+                .map(() => {
+                    return { type: '[main] search user useless' };
+                });
         });
     // 搜索公开群群组资料
     @Effect()
@@ -866,9 +866,9 @@ export class MainEffect {
                     }
                 });
                 return Observable.of('searchPublicGroupObj')
-                        .map(() => {
-                            return {type: '[main] search public group useless'};
-                        });
+                    .map(() => {
+                        return { type: '[main] search public group useless' };
+                    });
             }
             const searchPublicGroupObj = global.JIM.getGroupInfo({
                 gid
@@ -876,42 +876,42 @@ export class MainEffect {
                 if (data.group_info.group_type === 2) {
                     let count = 0;
                     if (data.group_info.avatar && data.group_info.avatar !== '') {
-                        count ++;
-                        global.JIM.getResource({media_id: data.group_info.avatar})
-                        .onSuccess((urlInfo) => {
-                            data.group_info.avatarUrl = urlInfo.url;
-                            if (-- count <= 0) {
-                                this.store$.dispatch({
-                                    type: mainAction.searchPublicGroupSuccess,
-                                    payload: {
-                                        show: true,
-                                        info: data.group_info
-                                    }
-                                });
-                            }
-                        }).onFail((error) => {
-                            if (-- count <= 0) {
-                                this.store$.dispatch({
-                                    type: mainAction.searchPublicGroupSuccess,
-                                    payload: {
-                                        show: true,
-                                        info: data.group_info
-                                    }
-                                });
-                            }
-                        }).onTimeout(() => {
-                            if (-- count <= 0) {
-                                this.store$.dispatch({
-                                    type: mainAction.searchPublicGroupSuccess,
-                                    payload: {
-                                        show: true,
-                                        info: data.group_info
-                                    }
-                                });
-                            }
-                        });
+                        count++;
+                        global.JIM.getResource({ media_id: data.group_info.avatar })
+                            .onSuccess((urlInfo) => {
+                                data.group_info.avatarUrl = urlInfo.url;
+                                if (--count <= 0) {
+                                    this.store$.dispatch({
+                                        type: mainAction.searchPublicGroupSuccess,
+                                        payload: {
+                                            show: true,
+                                            info: data.group_info
+                                        }
+                                    });
+                                }
+                            }).onFail((error) => {
+                                if (--count <= 0) {
+                                    this.store$.dispatch({
+                                        type: mainAction.searchPublicGroupSuccess,
+                                        payload: {
+                                            show: true,
+                                            info: data.group_info
+                                        }
+                                    });
+                                }
+                            }).onTimeout(() => {
+                                if (--count <= 0) {
+                                    this.store$.dispatch({
+                                        type: mainAction.searchPublicGroupSuccess,
+                                        payload: {
+                                            show: true,
+                                            info: data.group_info
+                                        }
+                                    });
+                                }
+                            });
                     }
-                    count ++;
+                    count++;
                     global.JIM.getGroupMembers({
                         gid
                     }).onSuccess((groupList) => {
@@ -924,7 +924,7 @@ export class MainEffect {
                                 data.group_info.isMember = true;
                             }
                         }
-                        if (-- count <= 0) {
+                        if (--count <= 0) {
                             this.store$.dispatch({
                                 type: mainAction.searchPublicGroupSuccess,
                                 payload: {
@@ -944,7 +944,7 @@ export class MainEffect {
                             }
                         });
                     }).onTimeout((timeout) => {
-                        const error = {code: 910000};
+                        const error = { code: 910000 };
                         this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
@@ -984,17 +984,17 @@ export class MainEffect {
                     });
                 }
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(searchPublicGroupObj)
-                    .map(() => {
-                        return {type: '[main] search public group useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] search public group useless' };
+                });
+        });
     // 发送申请入群
     @Effect()
     private sendGroupVerifyMessage$: Observable<Action> = this.actions$
@@ -1029,23 +1029,23 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = {code: 910000};
+                const error = { code: 910000 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             });
             return Observable.of(sendGroupVerifyMessageObj)
-                    .map(() => {
-                        return {type: '[main] send group verify message useless'};
-                    });
-    });
+                .map(() => {
+                    return { type: '[main] send group verify message useless' };
+                });
+        });
     constructor(
         private actions$: Actions,
         private store$: Store<AppStore>,
         private router: Router
-    ) {}
-    private searUserType (info, item, keywords) {
+    ) { }
+    private searUserType(info, item, keywords) {
         if (info.type === 'createGroup') {
             this.store$.dispatch({
                 type: chatAction.createGroupSearchComplete,
@@ -1058,42 +1058,42 @@ export class MainEffect {
     }
     // 更新个人头像
     private updateSelfAvatar(self) {
-        global.JIM.updateSelfAvatar({avatar: self.avatar.formData})
-        .onSuccess((data) => {
-            this.store$.dispatch({
-                type: mainAction.showSelfInfo,
-                payload: {
-                    avatar: self.avatar,
-                    info: self.info,
-                    loading: false
-                }
+        global.JIM.updateSelfAvatar({ avatar: self.avatar.formData })
+            .onSuccess((data) => {
+                this.store$.dispatch({
+                    type: mainAction.showSelfInfo,
+                    payload: {
+                        avatar: self.avatar,
+                        info: self.info,
+                        loading: false
+                    }
+                });
+                this.store$.dispatch({
+                    type: mainAction.updateSelfInfoFlag
+                });
+            }).onFail((error) => {
+                this.store$.dispatch({
+                    type: mainAction.showSelfInfo,
+                    payload: {
+                        loading: false
+                    }
+                });
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+            }).onTimeout((data) => {
+                this.store$.dispatch({
+                    type: mainAction.showSelfInfo,
+                    payload: {
+                        loading: false
+                    }
+                });
+                const error = { code: 910000 };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
             });
-            this.store$.dispatch({
-                type: mainAction.updateSelfInfoFlag
-            });
-        }).onFail((error) => {
-            this.store$.dispatch({
-                type: mainAction.showSelfInfo,
-                payload: {
-                    loading: false
-                }
-            });
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        }).onTimeout((data) => {
-            this.store$.dispatch({
-                type: mainAction.showSelfInfo,
-                payload: {
-                    loading: false
-                }
-            });
-            const error = {code: 910000};
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        });
     }
 }

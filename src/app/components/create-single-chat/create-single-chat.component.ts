@@ -1,5 +1,7 @@
-import { Component, Input, Output, EventEmitter,
-    AfterViewInit, OnInit, ViewChild } from '@angular/core';
+import {
+    Component, Input, Output, EventEmitter,
+    AfterViewInit, OnInit, ViewChild
+} from '@angular/core';
 
 @Component({
     selector: 'create-single-chat-component',
@@ -10,14 +12,14 @@ import { Component, Input, Output, EventEmitter,
 export class CreateSingleChatComponent implements OnInit, AfterViewInit {
     @ViewChild('singleChatInput') private singleChatInput;
     @Input()
-        private info;
+    private info;
     @Input()
-        private createSingleOption;
+    private createSingleOption;
     private singleName = '';
     @Output()
-        private createSingleChat: EventEmitter<any> = new EventEmitter();
+    private createSingleChat: EventEmitter<any> = new EventEmitter();
     @Output()
-        private emptySingleChatTip: EventEmitter<any> = new EventEmitter();
+    private emptySingleChatTip: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

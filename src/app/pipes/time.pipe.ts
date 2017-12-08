@@ -30,12 +30,12 @@ export class TimePipe implements PipeTransform {
             const arr3 = arr[1].split(':');
             if (arr3.length === 3) {
                 newTime += (h + ':' + mi + ':' + s);
-            }else if (arr3.length === 2) {
+            } else if (arr3.length === 2) {
                 newTime += (h + ':' + mi);
             }
-            return(newTime);
-        // HH:mm
-        }else if (arr.length === 1) {
+            return (newTime);
+            // HH:mm
+        } else if (arr.length === 1) {
             if (arr[0].match(/:/g)) {
                 const arr2 = arr[0].split(':');
                 if (arr2.length === 3) {

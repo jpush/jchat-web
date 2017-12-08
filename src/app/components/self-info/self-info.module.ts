@@ -27,4 +27,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class SelfInfoModule {}
+export class SelfInfoModule { }

@@ -22,4 +22,4 @@ import { SharedPipeModule } from '../../pipes';
     providers: []
 })
 
-export class MessageFileModule {}
+export class MessageFileModule { }

@@ -30,4 +30,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class GroupSettingModule {}
+export class GroupSettingModule { }

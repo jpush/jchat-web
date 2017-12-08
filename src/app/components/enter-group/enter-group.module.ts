@@ -17,4 +17,4 @@ import { EnterGroupComponent } from './enter-group.component';
     providers: []
 })
 
-export class EnterGroupModule {}
+export class EnterGroupModule { }

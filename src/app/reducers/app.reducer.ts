@@ -9,7 +9,7 @@ const appInit = {
     errorApiTip: {},
     tipModal: {}
 };
-export const appReducer = (state: AppStore = appInit, {type, payload}) => {
+export const appReducer = (state: AppStore = appInit, { type, payload }) => {
     state.actionType = type;
     switch (type) {
         case appAction.errorApiTip:

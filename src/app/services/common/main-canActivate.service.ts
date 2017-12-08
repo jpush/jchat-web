@@ -17,7 +17,7 @@ export class MainCanActivate implements CanActivate {
     constructor(
         private router: Router,
         private storageService: StorageService
-    ) {}
+    ) { }
     public canActivate(): boolean | Promise<boolean> {
         // 如果是从登陆界面跳转过来的就直接return true
         if (window.location.href.match(/\/login$/g)) {

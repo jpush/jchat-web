@@ -8,16 +8,16 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export class PasteImageComponent implements OnInit {
     @Input()
-        private pasteInfo;
+    private pasteInfo;
     @Output()
-        private pasteImage: EventEmitter<any> = new EventEmitter();
+    private pasteImage: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }
-    private pasteModalAction(type ?: string) {
+    private pasteModalAction(type?: string) {
         this.pasteInfo.show = false;
         if (type) {
             this.pasteImage.emit();

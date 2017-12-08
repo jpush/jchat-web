@@ -8,9 +8,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export class SwitchComponent implements OnInit {
     @Input()
-        private state;
+    private state;
     @Output()
-        private changeSwitch: EventEmitter<any> = new EventEmitter();
+    private changeSwitch: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

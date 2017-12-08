@@ -19,4 +19,4 @@ import { SharedComponentModule } from '../../components/shared';
     providers: [
     ]
 })
-export class ChatModule {}
+export class ChatModule { }

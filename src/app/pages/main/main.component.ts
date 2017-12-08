@@ -268,7 +268,7 @@ export class MainComponent implements OnInit, OnDestroy {
                 }
                 break;
             case chatAction.searchUserSuccess:
-                this.searchUserResult =  mainState.searchUserResult;
+                this.searchUserResult = mainState.searchUserResult;
                 break;
             case mainAction.selectSearchUser:
                 this.listTab = mainState.listTab;
@@ -542,7 +542,7 @@ export class MainComponent implements OnInit, OnDestroy {
                     info: ''
                 }
             });
-        // 点击确定 输入为空
+            // 点击确定 输入为空
         } else if (info.singleName === '') {
             const text = info.type === 'addFriend' ? '请输入要添加好友的用户名' : '请输入要单聊的用户名';
             this.store$.dispatch({
@@ -552,7 +552,7 @@ export class MainComponent implements OnInit, OnDestroy {
                     info: text
                 }
             });
-        // 点击确定 如果单聊搜索到自己
+            // 点击确定 如果单聊搜索到自己
         } else if (info.singleName === global.user) {
             this.store$.dispatch({
                 type: mainAction.showSelfInfo,
@@ -568,7 +568,7 @@ export class MainComponent implements OnInit, OnDestroy {
                     info: ''
                 }
             });
-        // 点击确定
+            // 点击确定
         } else if (info.singleName) {
             this.store$.dispatch({
                 type: mainAction.createSingleChatAction,
@@ -654,7 +654,7 @@ export class MainComponent implements OnInit, OnDestroy {
                         }
                     });
             }
-        // 模态框点击取消按钮
+            // 模态框点击取消按钮
         } else {
             this.store$.dispatch({
                 type: mainAction.hideModalTip,
@@ -780,7 +780,7 @@ export class MainComponent implements OnInit, OnDestroy {
                     reload: true
                 }
             });
-        // 去登录页面
+            // 去登录页面
         } else {
             this.router.navigate(['/login']);
         }
@@ -849,7 +849,7 @@ export class MainComponent implements OnInit, OnDestroy {
                     height: img.naturalHeight,
                     pasteFile
                 };
-                this.groupAvatarInfo.src =  that.result;
+                this.groupAvatarInfo.src = that.result;
                 this.groupAvatarInfo.show = true;
                 this.groupAvatarInfo.filename = file.name;
             }

@@ -1,7 +1,7 @@
 import { loginAction } from '../actions';
 import { LoginStore } from '../stores/login.store';
 const loginInit = {
-    isLoginSuccess : false,
+    isLoginSuccess: false,
     loginTip: '',
     isButtonAvailable: false,
     actionType: 'init',
@@ -12,7 +12,7 @@ const loginInit = {
     loginRemember: false
 };
 
-export const loginReducer = (state: LoginStore = loginInit, {type, payload}) => {
+export const loginReducer = (state: LoginStore = loginInit, { type, payload }) => {
     if (type) {
         state.actionType = type;
     }

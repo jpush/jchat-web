@@ -8,12 +8,12 @@ import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@a
 
 export class RoomInfomationComponent implements OnInit {
     @Input()
-        private roomInfomation;
+    private roomInfomation;
     @Output()
-        private hideRoomInfomation: EventEmitter<any> = new EventEmitter();
+    private hideRoomInfomation: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }

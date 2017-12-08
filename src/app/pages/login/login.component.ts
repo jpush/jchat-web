@@ -7,7 +7,7 @@ import { global, authPayload, StorageService } from '../../services/common';
 import { md5 } from '../../services/tools';
 import { Util } from '../../services/util';
 import { ActivatedRoute, Router } from '@angular/router';
-declare function JMessage(obj ?: Object): void;
+declare function JMessage(obj?: Object): void;
 
 @Component({
     selector: 'app-login',
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         private storageService: StorageService,
         private router: Router,
         private elementRef: ElementRef
-    ) {}
+    ) { }
     public ngOnInit() {
         // 创建JIM 对象，退出登录后重新创建对象
         global.JIM = new JMessage(
@@ -94,7 +94,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
             this.elementRef.nativeElement.querySelector('#loginUsername').focus();
         }
     }
-    public ngOnDestroy () {
+    public ngOnDestroy() {
         this.loginStream$.unsubscribe();
     }
     private JIMInit() {
@@ -131,7 +131,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                 payload: error
             });
         }).onTimeout((data) => {
-            const error = {code: 910000};
+            const error = { code: 910000 };
             this.store$.dispatch({
                 type: appAction.errorApiTip,
                 payload: error
@@ -163,7 +163,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
     }
-    private isButtonAvailableAction(type ?: string) {
+    private isButtonAvailableAction(type?: string) {
         this.rememberPassword = '';
         this.store$.dispatch({
             type: loginAction.isButtonAvailableAction,

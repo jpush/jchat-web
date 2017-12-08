@@ -16,13 +16,13 @@ import { global } from '../../services/common';
 export class MessageTransmitComponent implements OnInit, OnDestroy {
     private messageTransmitStream$;
     @Input()
-        private messageTransmit;
+    private messageTransmit;
     @Output()
-        private isMessageTransmit: EventEmitter<any> = new EventEmitter();
+    private isMessageTransmit: EventEmitter<any> = new EventEmitter();
     @Output()
-        private searchMessageTransmit: EventEmitter<any> = new EventEmitter();
+    private searchMessageTransmit: EventEmitter<any> = new EventEmitter();
     @Output()
-        private confirmTransmit: EventEmitter<any> = new EventEmitter();
+    private confirmTransmit: EventEmitter<any> = new EventEmitter();
     private selectList = [];
     private searchResult = {
         result: {
@@ -50,7 +50,7 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
         this.messageTransmitStream$.unsubscribe();
     }
     private init() {
-        for ( let item of this.messageTransmit.list) {
+        for (let item of this.messageTransmit.list) {
             item.checked = false;
         }
     }
@@ -108,11 +108,11 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
         for (let member of this.messageTransmit.list) {
             if (member.type === 4 && Number(item.key) === Number(member.key)) {
                 member.checked = item.checked;
-                break ;
+                break;
             } else if (member.type === 3 && item.name === member.name) {
                 member.checked = item.checked;
                 item.key = member.key;
-                break ;
+                break;
             }
         }
     }
@@ -143,7 +143,7 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
             const single = member.type === 3 && member.name === user.name;
             if (group || single) {
                 member.checked = event.target.checked;
-                return ;
+                return;
             }
         }
     }
@@ -154,7 +154,7 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
             const single = member.type === 3 && member.name === user.name;
             if (group || single) {
                 member.checked = false;
-                return ;
+                return;
             }
         }
     }
@@ -162,7 +162,7 @@ export class MessageTransmitComponent implements OnInit, OnDestroy {
     private deleteItem(user) {
         for (let i = 0; i < this.selectList.length; i++) {
             const group = this.selectList[i].type === 4 &&
-                        Number(this.selectList[i].key) === Number(user.key);
+                Number(this.selectList[i].key) === Number(user.key);
             const single = this.selectList[i].type === 3 && this.selectList[i].name === user.name;
             if (group || single) {
                 this.selectList.splice(i, 1);

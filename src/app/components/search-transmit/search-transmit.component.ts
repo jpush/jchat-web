@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-        OnChanges, ViewChild, HostListener, AfterViewInit, OnDestroy } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    OnChanges, ViewChild, HostListener, AfterViewInit, OnDestroy
+} from '@angular/core';
 import { Observable } from 'rxjs';
 import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 
@@ -20,11 +22,11 @@ export class SearchTransmitComponent implements OnInit, OnChanges, AfterViewInit
     private groupHeight = '200px';
     private inputStream$;
     @Input()
-        private searchUserResult;
+    private searchUserResult;
     @Output()
-        private searchUser: EventEmitter<any> = new EventEmitter();
+    private searchUser: EventEmitter<any> = new EventEmitter();
     @Output()
-        private changeInput: EventEmitter<any> = new EventEmitter();
+    private changeInput: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }
@@ -38,7 +40,7 @@ export class SearchTransmitComponent implements OnInit, OnChanges, AfterViewInit
     }
     public ngAfterViewInit() {
         this.inputStream$ = Observable.fromEvent(this.searchInput.nativeElement, 'keyup')
-                    .subscribe((event: any) => this.searchUser.emit(event.target.value));
+            .subscribe((event: any) => this.searchUser.emit(event.target.value));
     }
     public ngOnDestroy() {
         this.inputStream$.unsubscribe();

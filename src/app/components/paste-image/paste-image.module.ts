@@ -17,4 +17,4 @@ import { PasteImageComponent } from './paste-image.component';
     providers: []
 })
 
-export class PasteImageModule {}
+export class PasteImageModule { }

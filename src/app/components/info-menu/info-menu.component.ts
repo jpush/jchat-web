@@ -8,12 +8,12 @@ import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@a
 
 export class InfoMenuComponent implements OnInit {
     @Input()
-        private menu;
+    private menu;
     @Output()
-        private selectMenuItem: EventEmitter<any> = new EventEmitter();
+    private selectMenuItem: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }

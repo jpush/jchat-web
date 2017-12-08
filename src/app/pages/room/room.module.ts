@@ -18,4 +18,4 @@ import { SharedComponentModule } from '../../components/shared';
     ],
     providers: []
 })
-export class RoomModule {}
+export class RoomModule { }

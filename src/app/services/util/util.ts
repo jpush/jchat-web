@@ -75,7 +75,7 @@ export abstract class Util {
      * @param {Function} callback - 回调函数
      * @param {Function} callback2 - 回调函数
      */
-    public static imgReader(file, callback ?: Function, callback2 ?: Function): void | boolean {
+    public static imgReader(file, callback?: Function, callback2?: Function): void | boolean {
         let files = file.files[0];
         if (!files) {
             return false;
@@ -88,10 +88,10 @@ export abstract class Util {
         reader.readAsDataURL(files);
         let img = new Image();
         let promise = new Promise((resolve, reject) => {
-            reader.onload = function(e){
+            reader.onload = function (e) {
                 img.src = this.result;
                 let that = this;
-                img.onload = function(){
+                img.onload = function () {
                     let width = img.naturalWidth;
                     let height = img.naturalHeight;
                     resolve({
@@ -135,14 +135,14 @@ export abstract class Util {
         reader.readAsDataURL(pasteFile);
         let fd = new FormData();
         fd.append(file.name, file);
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             img.src = this.result;
             const _this = this;
-            img.onload = function() {
+            img.onload = function () {
                 // 如果选择的图片尺寸小于60*60，弹窗提示
                 if (img.naturalWidth < 60 || img.naturalHeight < 60) {
                     callback2();
-                    return ;
+                    return;
                 }
                 callback3(_this, pasteFile, img);
             };
@@ -153,7 +153,7 @@ export abstract class Util {
      * @param {Element} file - input type=file dom element
      * @param {Function} callback - 回调函数
      */
-    public static fileReader(file, callback ?: Function): Promise<any> | boolean {
+    public static fileReader(file, callback?: Function): Promise<any> | boolean {
         let files = file.files[0];
         if (!files.type || files.type === '') {
             return false;
@@ -165,7 +165,7 @@ export abstract class Util {
         let reader = new FileReader();
         reader.readAsDataURL(files);
         return new Promise((resolve, reject) => {
-            reader.onload = function(e){
+            reader.onload = function (e) {
                 resolve(this.result);
             };
         }).catch(() => {
@@ -229,7 +229,7 @@ export abstract class Util {
      */
     public static firstLetterIsChinese(str: string): boolean {
         const re = /^[\\u4e00-\\u9fa5]/;
-        return re.test(str) ? false : true ;
+        return re.test(str) ? false : true;
     }
     /**
      * 将数组中的字符串按照首字母及中文拼音首字母排序
@@ -267,7 +267,7 @@ export abstract class Util {
                         flag = true;
                         break;
                     }
-                }else if (this.firstLetterIsChinese(name)) {
+                } else if (this.firstLetterIsChinese(name)) {
                     let py = pinyinUtil.getFirstLetter(name, false)[0];
                     if (py && py.toUpperCase() === re.letter) {
                         re.data.push(item);
@@ -290,7 +290,7 @@ export abstract class Util {
      */
     public static insertSortByLetter(arr: any[], payload): any[] {
         const name =
-                (payload.nickName && payload.nickName !== '') ? payload.nickName : payload.name;
+            (payload.nickName && payload.nickName !== '') ? payload.nickName : payload.name;
         const firstLetter = this.getFirstLetter(name);
         for (let item of arr) {
             if (item.letter === firstLetter) {

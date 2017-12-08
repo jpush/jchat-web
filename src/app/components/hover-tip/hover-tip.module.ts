@@ -17,4 +17,4 @@ import { HoverTipComponent } from './hover-tip.component';
     providers: []
 })
 
-export class HoverTipModule {}
+export class HoverTipModule { }

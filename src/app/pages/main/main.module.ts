@@ -31,5 +31,5 @@ import { SharedDirectiveModule } from '../../directives';
     ]
 })
 export class MainModule {
-  public static routes = MAIN_ROUTER;
+    public static routes = MAIN_ROUTER;
 }

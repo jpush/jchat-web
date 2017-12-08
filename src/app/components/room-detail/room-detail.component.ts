@@ -8,11 +8,11 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export class RoomDetailComponent implements OnInit {
     @Input()
-        private roomDetail;
+    private roomDetail;
     @Input()
-        private enterRoomLoading;
+    private enterRoomLoading;
     @Output()
-        private enterRoom: EventEmitter<any> = new EventEmitter();
+    private enterRoom: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

@@ -17,4 +17,4 @@ import { VerifyModalComponent } from './verify-modal.component';
     providers: []
 })
 
-export class VerifyModalModule {}
+export class VerifyModalModule { }

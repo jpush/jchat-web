@@ -17,4 +17,4 @@ import { MessageMenuComponent } from './message-menu.component';
     providers: []
 })
 
-export class MessageMenuModule {}
+export class MessageMenuModule { }

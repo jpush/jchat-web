@@ -19,4 +19,4 @@ import { SharedPipeModule } from '../../pipes';
     providers: []
 })
 
-export class ImageViewerModule {}
+export class ImageViewerModule { }

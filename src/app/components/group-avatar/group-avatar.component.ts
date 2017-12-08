@@ -19,13 +19,13 @@ const Cropper = require('../../../assets/static/js/cropper.min.js');
 export class GroupAvatarComponent implements OnInit {
     @ViewChild('cropperImg') private cropperImg;
     @Input()
-        private groupAvatarInfo;
+    private groupAvatarInfo;
     @Output()
-        private groupAvatar: EventEmitter<any> = new EventEmitter();
+    private groupAvatar: EventEmitter<any> = new EventEmitter();
     private cropper;
     constructor(
         private store$: Store<any>
-    ) {}
+    ) { }
     public ngOnInit() {
         // pass
     }
@@ -38,7 +38,7 @@ export class GroupAvatarComponent implements OnInit {
             minCropBoxWidth: 25
         });
     }
-    private modalAction(event, type ?) {
+    private modalAction(event, type?) {
         event.stopPropagation();
         if (type === 'confirm') {
             const that = this;

@@ -16,5 +16,5 @@ import { MapComponent } from './map.component';
     ]
 })
 export class MapModule {
-  public static routes = MAPROUTER;
+    public static routes = MAPROUTER;
 }

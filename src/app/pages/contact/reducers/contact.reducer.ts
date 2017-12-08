@@ -6,78 +6,78 @@ import { chatAction } from '../../chat/actions';
 import { Util } from '../../../services/util';
 import { global } from '../../../services/common';
 
-export const contactReducer = (state: ContactStore = contactInit, {type, payload}) => {
+export const contactReducer = (state: ContactStore = contactInit, { type, payload }) => {
     state.actionType = type;
     switch (type) {
-            // 初始化state
+        // 初始化state
         case contactAction.init:
             state = Util.deepCopyObj(contactInit);
             break;
-            // 传递群列表
+        // 传递群列表
         case chatAction.dispatchGroupList:
             state.groupList = Util.sortByLetter(payload);
             break;
-            // 切换联系人或者会话的tab
+        // 切换联系人或者会话的tab
         case mainAction.changeListTab:
             state.listTab = payload;
             changeListTab(state, payload);
             break;
-            // 切换联系人中的tab
+        // 切换联系人中的tab
         case contactAction.changeTab:
             state.tab = payload;
             if (payload === 0) {
                 updateUnreadNum(state);
             }
             break;
-            // 添加好友邀请事件
+        // 添加好友邀请事件
         case chatAction.friendInvitationEventSuccess:
             friendVerify(state, payload);
             break;
-            // 自己拒绝添加好友
+        // 自己拒绝添加好友
         case contactAction.refuseAddFriendSuccess:
             isAgreeAddFriend(state, payload);
             break;
-            // 自己同意添加好友
+        // 自己同意添加好友
         case contactAction.agreeAddFriendSuccess:
             isAgreeAddFriend(state, payload);
             break;
-            // 自己同意添加好友失败
+        // 自己同意添加好友失败
         case contactAction.addFriendError:
             isAgreeAddFriend(state, payload);
             break;
-            // 传递好友列表的数据
+        // 传递好友列表的数据
         case chatAction.dispatchFriendList:
             state.friendList = Util.sortByLetter(payload);
             break;
-            // 添加好友的应答事件
+        // 添加好友的应答事件
         case chatAction.friendReplyEventSuccess:
             friendReply(state, payload);
             break;
-            // 发送给好友验证信息
+        // 发送给好友验证信息
         case chatAction.addFriendConfirm:
             waitReply(state, payload);
             break;
-            // 添加好友同步事件
+        // 添加好友同步事件
         case chatAction.addFriendSyncEvent:
             addFriendSyncEvent(state, payload);
             break;
-            // 传递收到进入邀请的事件
+        // 传递收到进入邀请的事件
         case chatAction.dispatchReceiveGroupInvitationEvent:
             filterVerifyGroupList(state, payload);
             break;
-            // 同意或者拒绝入群成功
+        // 同意或者拒绝入群成功
         case contactAction.isAgreeEnterGroupSuccess:
             updateVerifyGroupList(state, payload);
             break;
-            // 同意或者拒绝入群失败
+        // 同意或者拒绝入群失败
         case contactAction.isAgreeEnterGroupError:
             updateVerifyGroupList(state, payload);
             break;
-            // 传递被拒绝入群的事件
+        // 传递被拒绝入群的事件
         case chatAction.dispatchReceiveGroupRefuseEvent:
             filterReceiveGroupRefuse(state, payload);
             break;
-            // 切换验证信息的tab
+        // 切换验证信息的tab
         case contactAction.changeVerifyTab:
             state.verifyTab = payload;
             updateUnreadNum(state);
@@ -178,7 +178,7 @@ function friendReply(state: ContactStore, payload) {
     }
     if (state.tab !== 0 || state.listTab !== 1 ||
         (state.tab === 0 && state.verifyTab !== 0)) {
-        state.singleVerifyUnreadNum ++;
+        state.singleVerifyUnreadNum++;
         state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
         state.contactUnreadNum = state.verifyUnreadNum;
     }
@@ -242,7 +242,7 @@ function friendVerify(state: ContactStore, payload) {
     if ((state.tab !== 0 || state.listTab !== 1 ||
         (state.tab === 0 && state.verifyTab !== 0))) {
         if (!flag) {
-            state.singleVerifyUnreadNum ++;
+            state.singleVerifyUnreadNum++;
             state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
             state.contactUnreadNum = state.verifyUnreadNum;
         }
@@ -258,7 +258,7 @@ function filterVerifyGroupList(state: ContactStore, payload) {
         let newPayload = Util.deepCopyObj(payload);
         newPayload.to_usernames = [user];
         let flag = false;
-        for (let i = 0; i < state.verifyGroupList.length; i ++) {
+        for (let i = 0; i < state.verifyGroupList.length; i++) {
             let verifyGroupList = state.verifyGroupList[i];
             if ((verifyGroupList.stateType === 0 || verifyGroupList.stateType === 1 ||
                 verifyGroupList.stateType === 2) && verifyGroupList.from_gid === payload.from_gid &&
@@ -273,7 +273,7 @@ function filterVerifyGroupList(state: ContactStore, payload) {
         if (state.tab !== 0 || state.listTab !== 1 ||
             (state.tab === 0 && state.verifyTab !== 1)) {
             if (!flag) {
-                state.groupVerifyUnreadNum ++;
+                state.groupVerifyUnreadNum++;
                 state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
                 state.contactUnreadNum = state.verifyUnreadNum;
             }
@@ -301,7 +301,7 @@ function filterReceiveGroupRefuse(state: ContactStore, payload) {
     }
     if (state.tab !== 0 || state.listTab !== 1 ||
         (state.tab === 0 && state.verifyTab !== 1)) {
-        state.groupVerifyUnreadNum ++;
+        state.groupVerifyUnreadNum++;
         state.verifyUnreadNum = state.groupVerifyUnreadNum + state.singleVerifyUnreadNum;
         state.contactUnreadNum = state.verifyUnreadNum;
     }

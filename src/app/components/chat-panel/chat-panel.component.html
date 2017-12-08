@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <!-- 名片消息 -->
-                        <div *ngIf="i.content.msg_type === 'text' && i.content.msg_body?.extras?.businessCard" (mouseleave)="msgMouseleave()" [ngStyle]="{height: 105 + (active.type === 4 ? 20 : 0) + 'px'}" class="clearfix">
+                        <div *ngIf="i.content.msg_type === 'text' && i.content.msg_body?.extras?.businessCard" (mouseleave)="msgMouseleave()" [ngStyle]="{height: 105 + (active.type === 4 ? 16 : 0) + 'px'}" class="clearfix">
                             <div class="chat-panel-fromId-you float-left chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img avatarLoad [avatarError]="3" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                             </div>
@@ -80,7 +80,7 @@
                             </div>
                         </div>
                         <!-- 图片消息 -->
-                        <div *ngIf="i.content.msg_type === 'image'" (mouseleave)="msgMouseleave()" [ngStyle]="{height: i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon' ? 140 + (active.type === 4 ? 20 : 0) + 'px' : (i.content.msg_body.width > 219 || i.content.msg_body.height > 300 ? (i.content.msg_body.width/i.content.msg_body.height > 219/300 ? 219/i.content.msg_body.width * i.content.msg_body.height + (active.type === 4 ? 20 : 0) + 'px' : 300 + (active.type === 4 ? 20 : 0) + 'px' ) : i.content.msg_body.height + (active.type === 4 ? 20 : 0) + 'px')}" class="clearfix chat-panel-img">
+                        <div *ngIf="i.content.msg_type === 'image'" (mouseleave)="msgMouseleave()" [ngStyle]="{height: i.content.msg_body.extras && i.content.msg_body.extras.kLargeEmoticon === 'kLargeEmoticon' ? 140 + (active.type === 4 ? 16 : 0) + 'px' : (i.content.msg_body.width > 219 || i.content.msg_body.height > 300 ? (i.content.msg_body.width/i.content.msg_body.height > 219/300 ? 219/i.content.msg_body.width * i.content.msg_body.height + (active.type === 4 ? 16 : 0) + 'px' : 300 + (active.type === 4 ? 16 : 0) + 'px' ) : i.content.msg_body.height + (active.type === 4 ? 16 : 0) + 'px')}" class="clearfix chat-panel-img">
                             <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img avatarLoad [avatarError]="3" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                             </div>
@@ -103,7 +103,7 @@
                             </div>
                         </div>
                         <!-- 文件消息 -->
-                        <div *ngIf="i.content.msg_type === 'file' && (!i.content.msg_body.extras || !i.content.msg_body.extras.video)" (mouseleave)="msgMouseleave()" [ngStyle]="{height: 112 + (active.type === 4 ? 20 : 0) + 'px'}" class="clearfix">
+                        <div *ngIf="i.content.msg_type === 'file' && (!i.content.msg_body.extras || !i.content.msg_body.extras.video)" (mouseleave)="msgMouseleave()" [ngStyle]="{height: 112 + (active.type === 4 ? 16 : 0) + 'px'}" class="clearfix">
                             <div class="chat-panel-fromId-you float-left chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img avatarLoad [avatarError]="3" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                             </div>
@@ -132,7 +132,7 @@
                             </div>            
                         </div>
                         <!-- 视频消息 -->
-                        <div *ngIf="i.content.msg_type === 'file' && i.content.msg_body.extras && i.content.msg_body.extras.video" [ngStyle]="{height: 140 + (active.type === 4 ? 20 : 0) + 'px'}" (mouseleave)="msgMouseleave()" class="clearfix">
+                        <div *ngIf="i.content.msg_type === 'file' && i.content.msg_body.extras && i.content.msg_body.extras.video" [ngStyle]="{height: 140 + (active.type === 4 ? 16 : 0) + 'px'}" (mouseleave)="msgMouseleave()" class="clearfix">
                             <div class="chat-panel-fromId-you float-left chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img avatarLoad [avatarError]="3" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                             </div>
@@ -153,7 +153,7 @@
                             </div>
                         </div>
                         <!-- 地理定位 -->
-                        <div *ngIf="i.content.msg_type === 'location'" (mouseleave)="msgMouseleave()" class="chat-panel-location clearfix" [ngStyle]="{height: 150 + (active.type === 4 ? 20 : 0) + 'px'}">
+                        <div *ngIf="i.content.msg_type === 'location'" (mouseleave)="msgMouseleave()" class="chat-panel-location clearfix" [ngStyle]="{height: 150 + (active.type === 4 ? 16 : 0) + 'px'}">
                             <div class="float-left chat-panel-fromId-you chat-panel-avatar" (click)="watchOtherInfo(i.content)">
                                 <img avatarLoad [avatarError]="3" [src]="i.content.avatarUrl | sanitize: 'url'" alt="">
                             </div>
@@ -198,6 +198,8 @@
                             <div class="float-right chat-panel-fromId-me chat-panel-avatar" (click)="watchSelfInfo()">
                                 <img avatarLoad [avatarError]="3" [src]="selfInfo.avatarUrl | sanitize: 'url'" alt="">
                             </div>
+                            <!-- 为了兼容某些safari 气泡箭头错位的问题 -->
+                            <div class="chat-panel-text-arror float-right"></div>
                             <div class="chat-panel-msgText-me float-right" [ngClass]="{'jpush-emoji-container': i.content.msg_body.text.indexOf('jpush-emoji') !== -1}">
                                 <div *ngIf="i.success === 1" class="chat-panel-send-loading"></div>                                
                                 <div *ngIf="i.success === 3" class="chat-panel-send-error align-items-center display-flex" (click)="repeatSendMsgAction(i)"></div>                                

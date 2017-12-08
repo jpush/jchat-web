@@ -10,7 +10,7 @@ const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 export class AvatarErrorDirective {
     @Input()
-        private avatarError;
+    private avatarError;
     constructor() {
         //    pass
     }

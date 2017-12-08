@@ -26,4 +26,4 @@ import { SharedDirectiveModule } from '../../directives';
     providers: []
 })
 
-export class ConversationListModule {}
+export class ConversationListModule { }

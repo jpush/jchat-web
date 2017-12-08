@@ -22,4 +22,4 @@ import { SharedPipeModule } from '../../pipes';
     providers: []
 })
 
-export class EmojiModule {}
+export class EmojiModule { }

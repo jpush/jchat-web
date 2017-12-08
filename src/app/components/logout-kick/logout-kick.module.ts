@@ -17,4 +17,4 @@ import { LogoutKickComponent } from './logout-kick.component';
     providers: []
 })
 
-export class LogoutKickModule {}
+export class LogoutKickModule { }

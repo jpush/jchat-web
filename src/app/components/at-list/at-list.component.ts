@@ -9,13 +9,13 @@ import { global } from '../../services/common';
 
 export class AtListComponent implements OnInit {
     @Input()
-        private atList: EventEmitter<any> = new EventEmitter();
+    private atList: EventEmitter<any> = new EventEmitter();
     @Output()
-        private selectAtItem: EventEmitter<any> = new EventEmitter();
+    private selectAtItem: EventEmitter<any> = new EventEmitter();
     private global = global;
     constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }

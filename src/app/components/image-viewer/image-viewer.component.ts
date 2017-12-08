@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-    HostListener, ViewChild, OnDestroy } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    HostListener, ViewChild, OnDestroy
+} from '@angular/core';
 import { Store, Action } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
 import * as download from 'downloadjs';
@@ -14,7 +16,7 @@ import { Util } from '../../services/util';
 export class ImageViewerComponent implements OnInit, OnDestroy {
     @ViewChild('viewerWrap') private viewerWrap;
     @Input()
-        private imageViewer;
+    private imageViewer;
     private imageStream$;
     private ratio = 1;
     private ratioTip = '';
@@ -37,7 +39,7 @@ export class ImageViewerComponent implements OnInit, OnDestroy {
     private index;
     constructor(
         private store$: Store<any>
-    ) {}
+    ) { }
     public ngOnInit() {
         if (!this.imageViewer) {
             this.imageViewer = {
@@ -142,7 +144,7 @@ export class ImageViewerComponent implements OnInit, OnDestroy {
             this.position.left = this.position.left +
                 (this.position.width - this.initPosition.width * ratio) / 2;
             this.position.top = this.position.top +
-            (this.position.height - this.initPosition.height * ratio) / 2;
+                (this.position.height - this.initPosition.height * ratio) / 2;
             this.position.width = this.initPosition.width * ratio;
             this.position.height = this.initPosition.height * ratio;
         }
@@ -188,7 +190,7 @@ export class ImageViewerComponent implements OnInit, OnDestroy {
     private next() {
         const activeIndex = this.imageViewer.active.index;
         const index = activeIndex < this.imageViewer.result.length - 1 ?
-                    activeIndex + 1 : activeIndex;
+            activeIndex + 1 : activeIndex;
         if (index !== activeIndex) {
             // 为了解决相邻两张相同的base64图片不触发onload事件
             if (this.imageViewer.active.src === this.imageViewer.result[index].src) {

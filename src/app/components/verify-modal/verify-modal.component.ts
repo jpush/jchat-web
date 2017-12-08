@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output,
-    EventEmitter, AfterViewInit, ViewChild } from '@angular/core';
+import {
+    Component, OnInit, Input, Output,
+    EventEmitter, AfterViewInit, ViewChild
+} from '@angular/core';
 
 @Component({
     selector: 'verify-modal-component',
@@ -10,9 +12,9 @@ import { Component, OnInit, Input, Output,
 export class VerifyModalComponent implements OnInit, AfterViewInit {
     @ViewChild('verifyModalTextarea') private verifyModalTextarea;
     @Input()
-        private verifyModal;
+    private verifyModal;
     @Output()
-        private verifyModalBtn: EventEmitter<any> = new EventEmitter();
+    private verifyModalBtn: EventEmitter<any> = new EventEmitter();
     private modelText = '';
     constructor() {
         // pass

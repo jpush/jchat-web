@@ -9,15 +9,15 @@ import { global } from '../../services/common';
 
 export class ConversationListComponent implements OnInit {
     @Input()
-        private conversationList;
+    private conversationList;
     @Input()
-        private active;
+    private active;
     @Output()
-        private changeActive: EventEmitter<any> = new EventEmitter();
+    private changeActive: EventEmitter<any> = new EventEmitter();
     @Output()
-        private deleteConversationItem: EventEmitter<any> = new EventEmitter();
+    private deleteConversationItem: EventEmitter<any> = new EventEmitter();
     @Output()
-        private conversationToTop: EventEmitter<any> = new EventEmitter();
+    private conversationToTop: EventEmitter<any> = new EventEmitter();
     private global = global;
     private topPosition = {
         left: 0,

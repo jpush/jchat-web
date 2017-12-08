@@ -8,9 +8,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export class LogoutKickComponent implements OnInit {
     @Input()
-        private info;
+    private info;
     @Output()
-        private modalTipEmit: EventEmitter<any> = new EventEmitter();
+    private modalTipEmit: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

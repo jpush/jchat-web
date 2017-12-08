@@ -17,4 +17,4 @@ import { CreateSingleChatComponent } from './create-single-chat.component';
     providers: []
 })
 
-export class CreateSingleChatModule {}
+export class CreateSingleChatModule { }

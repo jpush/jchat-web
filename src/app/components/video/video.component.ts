@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild,
-        AfterViewInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter, ViewChild,
+    AfterViewInit, ChangeDetectorRef, OnDestroy
+} from '@angular/core';
 
 @Component({
     selector: 'video-component',
@@ -10,15 +12,15 @@ import { Component, OnInit, Input, Output, EventEmitter, ViewChild,
 export class VideoComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('videoTag') private videoTag;
     @Input()
-        private url;
+    private url;
     @Output()
-        private closeVideo: EventEmitter<any> = new EventEmitter();
+    private closeVideo: EventEmitter<any> = new EventEmitter();
     private state = 'play';
     private timer = null;
     private currentTime = 0;
     constructor(
         private cdr: ChangeDetectorRef
-    ) {}
+    ) { }
     public ngOnInit() {
         // pass
     }
