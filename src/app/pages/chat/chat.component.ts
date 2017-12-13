@@ -866,8 +866,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                     }
                 }
             });
-            this.transmitAllMsg.totalTransmitNum = 0;
         }
+        this.transmitAllMsg.totalTransmitNum = 0;
     }
     // 事件消息
     private asyncEvent(data) {
@@ -1487,8 +1487,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                         name: this.active.name,
                         type: 3
                     },
-                    key: this.active.key,
-                    sendType: 'repeatSend'
+                    key: this.active.key
                 }
             });
             return;
@@ -1501,8 +1500,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                         key: this.active.key,
                         type: 4
                     },
-                    key: this.active.key,
-                    sendType: 'repeatSend'
+                    key: this.active.key
                 }
             });
             return;
@@ -1560,8 +1558,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             const message = {
                 select: this.active,
                 msgs: msg,
-                key: this.active.key,
-                sendType: 'jpushEmoji'
+                key: this.active.key
             };
             let type;
             if (this.active.type === 3) {
@@ -2125,7 +2122,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             const data = {
                 select: item,
                 msgs: Util.deepCopyObj(this.transmitAllMsg),
-                key: item.key
+                key: item.key,
+                transmitMsg: true
             };
             let type = '';
             switch (this.transmitAllMsg.content.msg_type) {

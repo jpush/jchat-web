@@ -1,13 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Util } from '../../services/util';
 import '../../../assets/static/js/cropper.min.css';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/debounceTime';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Actions, Effect, toPayload } from '@ngrx/effects';
-import { Store, Action } from '@ngrx/store';
-import { chatAction } from '../../pages/chat/actions';
+import '../../services/tools/canvas-to-blob.js';
 const Cropper = require('../../../assets/static/js/cropper.min.js');
 
 @Component({
@@ -23,9 +17,9 @@ export class GroupAvatarComponent implements OnInit {
     @Output()
     private groupAvatar: EventEmitter<any> = new EventEmitter();
     private cropper;
-    constructor(
-        private store$: Store<any>
-    ) { }
+    constructor() {
+        // pass
+    }
     public ngOnInit() {
         // pass
     }
@@ -35,21 +29,26 @@ export class GroupAvatarComponent implements OnInit {
             zoomable: false,
             rotatable: false,
             viewMode: 1,
-            minCropBoxWidth: 25
+            minCropBoxWidth: 30
         });
     }
     private modalAction(event, type?) {
         event.stopPropagation();
         if (type === 'confirm') {
             const that = this;
-            let canvas = this.cropper.getCroppedCanvas();
+            const canvas = this.cropper.getCroppedCanvas({
+                width: 100,
+                height: 100,
+                imageSmoothingQuality: 'low'
+            });
             if (canvas.toBlob) {
                 canvas.toBlob((blob) => {
                     let formData = new FormData();
                     formData.append(that.groupAvatarInfo.filename, blob,
                         that.groupAvatarInfo.filename);
+                    const ext = Util.getExt(that.groupAvatarInfo.filename) || 'png';
                     that.groupAvatarInfo.formData = formData;
-                    that.groupAvatarInfo.src = canvas.toDataURL('image/png', 1.0);
+                    that.groupAvatarInfo.src = canvas.toDataURL(`image/${ext}`, 1);
                     that.groupAvatar.emit(that.groupAvatarInfo);
                     that.groupAvatarInfo.show = false;
                 }, '');

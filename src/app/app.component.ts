@@ -66,8 +66,11 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log('error', errorMsg);
         switch (errorMsg.code) {
             // 自定义提示语
-            case 0:
+            case -1:
                 tip = `${name}${errorMsg.myText}`;
+                break;
+            case -2:
+                tip = `${name}请求超时`;
                 break;
             case 880001:
                 tip = `${name}未知错误码`;
@@ -245,9 +248,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 break;
             case 898000:
                 tip = `${name}服务器内部错误`;
-                break;
-            case 910000:
-                tip = `${name}请求超时`;
                 break;
             case 898003:
                 tip = `${name}无效的参数`;

@@ -62,7 +62,7 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -134,7 +134,7 @@ export class MainEffect {
                             }
                         });
                     }
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -215,7 +215,7 @@ export class MainEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -246,7 +246,7 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -295,7 +295,7 @@ export class MainEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -361,7 +361,7 @@ export class MainEffect {
                         });
                     }
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -416,7 +416,7 @@ export class MainEffect {
                 }
             }).onTimeout((data) => {
                 this.searUserType(info, null, info.keywords);
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -472,7 +472,7 @@ export class MainEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -501,14 +501,22 @@ export class MainEffect {
                 });
             }).onFail((error) => {
                 this.store$.dispatch({
+                    type: mainAction.delSingleBlackError,
+                    payload: user
+                });
+                this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
+                });
+                this.store$.dispatch({
+                    type: mainAction.delSingleBlackError,
+                    payload: user
                 });
             });
             return Observable.of(delSingleBlackObj)
@@ -559,7 +567,7 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -584,15 +592,18 @@ export class MainEffect {
                     this.store$.dispatch({
                         type: mainAction.exitGroupSuccess,
                         payload: {
-                            tipModal: {
-                                show: false,
-                                info: {
-                                    title: '',
-                                    tip: ''
-                                }
-                            },
                             item: {
                                 key: gid
+                            }
+                        }
+                    });
+                    this.store$.dispatch({
+                        type: mainAction.showModalTip,
+                        payload: {
+                            show: false,
+                            info: {
+                                title: '',
+                                tip: ''
                             }
                         }
                     });
@@ -602,7 +613,7 @@ export class MainEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -628,15 +639,18 @@ export class MainEffect {
                 this.store$.dispatch({
                     type: mainAction.deleteMemberSuccess,
                     payload: {
-                        tipModal: {
-                            show: false,
-                            info: {
-                                title: '',
-                                tip: ''
-                            }
-                        },
                         deleteItem: info.deleteItem,
                         group: info.group
+                    }
+                });
+                this.store$.dispatch({
+                    type: mainAction.showModalTip,
+                    payload: {
+                        show: false,
+                        info: {
+                            title: '',
+                            tip: ''
+                        }
                     }
                 });
             }).onFail((error) => {
@@ -645,7 +659,7 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -692,7 +706,7 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -703,7 +717,7 @@ export class MainEffect {
                     return { type: '[main] login useless' };
                 });
         });
-    // 用户资料中删除免打扰
+    // 用户资料中添加免打扰
     @Effect()
     private addSingleNoDisturbAction$: Observable<Action> = this.actions$
         .ofType(mainAction.addSingleNoDisturbAction)
@@ -741,7 +755,7 @@ export class MainEffect {
                     }
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -790,7 +804,7 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -944,7 +958,7 @@ export class MainEffect {
                             }
                         });
                     }).onTimeout((timeout) => {
-                        const error = { code: 910000 };
+                        const error = { code: -2 };
                         this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
@@ -984,7 +998,7 @@ export class MainEffect {
                     });
                 }
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1029,7 +1043,7 @@ export class MainEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1089,7 +1103,7 @@ export class MainEffect {
                         loading: false
                     }
                 });
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error

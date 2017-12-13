@@ -93,7 +93,7 @@ export class RoomEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -124,7 +124,7 @@ export class RoomEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -165,7 +165,7 @@ export class RoomEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -206,7 +206,7 @@ export class RoomEffect {
                     });
                 }
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -257,7 +257,7 @@ export class RoomEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -385,7 +385,7 @@ export class RoomEffect {
                             repeatSend: payload.repeatSend
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -437,7 +437,7 @@ export class RoomEffect {
                             repeatSend: payload.repeatSend
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -489,7 +489,7 @@ export class RoomEffect {
                             repeatSend: payload.repeatSend
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -541,7 +541,7 @@ export class RoomEffect {
                             repeatSend: payload.repeatSend
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error

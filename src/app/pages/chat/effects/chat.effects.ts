@@ -456,7 +456,7 @@ export class ChatEffect {
                                 payload: error
                             });
                         }).onTimeout(() => {
-                            const error = { code: 910000 };
+                            const error = { code: -2 };
                             this.store$.dispatch({
                                 type: appAction.errorApiTip,
                                 payload: error
@@ -476,7 +476,7 @@ export class ChatEffect {
                                 payload: error
                             });
                         }).onTimeout(() => {
-                            const error = { code: 910000 };
+                            const error = { code: -2 };
                             this.store$.dispatch({
                                 type: appAction.errorApiTip,
                                 payload: error
@@ -488,7 +488,7 @@ export class ChatEffect {
                         payload: error
                     });
                 }).onTimeout(() => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -553,7 +553,7 @@ export class ChatEffect {
                             type: 3
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -605,7 +605,9 @@ export class ChatEffect {
                         type: 3
                     }
                 });
-                error.text = text.select.memo_name || text.select.nickName || text.select.name;
+                if (text.transmitMsg) {
+                    error.text = text.select.memo_name || text.select.nickName || text.select.name;
+                }
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -622,7 +624,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {
-                    code: 910000,
+                    code: -2,
                     text: text.select.name
                 };
                 this.store$.dispatch({
@@ -645,8 +647,7 @@ export class ChatEffect {
                 return false;
             }
             return data;
-        })
-        .switchMap((text) => {
+        }).switchMap((text) => {
             const groupMessageObj = global.JIM.sendGroupMsg(text.groupMsg)
                 .onSuccess((data, msgs) => {
                     msgs.key = data.key;
@@ -686,7 +687,7 @@ export class ChatEffect {
                             type: 4
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -736,7 +737,9 @@ export class ChatEffect {
                         type: 4
                     }
                 });
-                error.text = text.select.memo_name || text.select.nickName || text.select.name;
+                if (text.transmitMsg) {
+                    error.text = text.select.name;
+                }
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -752,7 +755,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {
-                    code: 910000,
+                    code: -2,
                     text: text.select.name
                 };
                 this.store$.dispatch({
@@ -813,7 +816,7 @@ export class ChatEffect {
                             type: 3
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -870,7 +873,7 @@ export class ChatEffect {
                         type: 3
                     }
                 });
-                if (!img.sendType) {
+                if (img.transmitMsg) {
                     error.text = img.select.memo_name || img.select.nickName || img.select.name;
                 }
                 this.store$.dispatch({
@@ -889,7 +892,7 @@ export class ChatEffect {
                     }
                 });
                 const error: any = {
-                    code: 910000
+                    code: -2
                 };
                 if (!img.sendType) {
                     error.text = img.select.memo_name || img.select.nickName || img.select.name;
@@ -949,7 +952,7 @@ export class ChatEffect {
                             type: 4
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -1004,7 +1007,9 @@ export class ChatEffect {
                         type: 4
                     }
                 });
-                error.text = img.select.memo_name || img.select.nickName || img.select.name;
+                if (img.transmitMsg) {
+                    error.text = img.select.name;
+                }
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1020,7 +1025,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {
-                    code: 910000,
+                    code: -2,
                     text: img.select.name
                 };
                 this.store$.dispatch({
@@ -1081,7 +1086,7 @@ export class ChatEffect {
                             name: file.active.name
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -1137,7 +1142,9 @@ export class ChatEffect {
                         type: 3
                     }
                 });
-                error.text = file.select.memo_name || file.select.nickName || file.select.name;
+                if (file.transmitMsg) {
+                    error.text = file.select.memo_name || file.select.nickName || file.select.name;
+                }
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1154,7 +1161,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {
-                    code: 910000,
+                    code: -2,
                     text: file.select.name
                 };
                 this.store$.dispatch({
@@ -1212,7 +1219,7 @@ export class ChatEffect {
                             type: 4
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -1266,7 +1273,9 @@ export class ChatEffect {
                         type: 4
                     }
                 });
-                error.text = file.select.memo_name || file.select.nickName || file.select.name;
+                if (file.transmitMsg) {
+                    error.text = file.select.name;
+                }
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1282,7 +1291,7 @@ export class ChatEffect {
                     }
                 });
                 const error = {
-                    code: 910000,
+                    code: -2,
                     text: file.select.name
                 };
                 this.store$.dispatch({
@@ -1340,6 +1349,10 @@ export class ChatEffect {
                         type: 3
                     }
                 });
+                if (location.transmitMsg) {
+                    error.text = location.select.memo_name ||
+                        location.select.nickName || location.select.name;
+                }
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1355,7 +1368,7 @@ export class ChatEffect {
                         type: 3
                     }
                 });
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1409,6 +1422,9 @@ export class ChatEffect {
                         type: 4
                     }
                 });
+                if (location.transmitMsg) {
+                    error.text = location.select.name;
+                }
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1423,7 +1439,7 @@ export class ChatEffect {
                         type: 4
                     }
                 });
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1482,7 +1498,7 @@ export class ChatEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -1557,7 +1573,7 @@ export class ChatEffect {
                             groupInfo: {}
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -1607,7 +1623,7 @@ export class ChatEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -1664,7 +1680,7 @@ export class ChatEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -1695,7 +1711,7 @@ export class ChatEffect {
                             payload: error
                         });
                     }).onTimeout((data) => {
-                        const error = { code: 910000 };
+                        const error = { code: -2 };
                         this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
@@ -1715,7 +1731,7 @@ export class ChatEffect {
                             payload: error
                         });
                     }).onTimeout((data) => {
-                        const error = { code: 910000 };
+                        const error = { code: -2 };
                         this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
@@ -1747,7 +1763,7 @@ export class ChatEffect {
                             payload: error
                         });
                     }).onTimeout((data) => {
-                        const error = { code: 910000 };
+                        const error = { code: -2 };
                         this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
@@ -1767,7 +1783,7 @@ export class ChatEffect {
                             payload: error
                         });
                     }).onTimeout((data) => {
-                        const error = { code: 910000 };
+                        const error = { code: -2 };
                         this.store$.dispatch({
                             type: appAction.errorApiTip,
                             payload: error
@@ -1932,7 +1948,7 @@ export class ChatEffect {
                         payload: eventData
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -1962,7 +1978,7 @@ export class ChatEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -2002,7 +2018,7 @@ export class ChatEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -2044,7 +2060,7 @@ export class ChatEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -2086,7 +2102,7 @@ export class ChatEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -2120,7 +2136,7 @@ export class ChatEffect {
                     payload: error
                 });
             }).onTimeout((data) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
@@ -2150,7 +2166,7 @@ export class ChatEffect {
                         payload: info
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -2223,7 +2239,7 @@ export class ChatEffect {
                                 payload: error
                             });
                         }).onTimeout((data) => {
-                            const error = { code: 910000 };
+                            const error = { code: -2 };
                             this.store$.dispatch({
                                 type: appAction.errorApiTip,
                                 payload: error
@@ -2331,7 +2347,7 @@ export class ChatEffect {
                             show: false
                         }
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -2406,7 +2422,7 @@ export class ChatEffect {
                         payload: info
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     info.avatarUrl = '';
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
@@ -2476,7 +2492,7 @@ export class ChatEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -2603,7 +2619,7 @@ export class ChatEffect {
                 //  pass
             }).onFail((data) => {
                 const error = {
-                    code: 0,
+                    code: -1,
                     myText: '禁言失败'
                 };
                 this.store$.dispatch({
@@ -2612,7 +2628,7 @@ export class ChatEffect {
                 });
             }).onTimeout((data) => {
                 const error = {
-                    code: 0,
+                    code: -1,
                     myText: '禁言失败'
                 };
                 this.store$.dispatch({
@@ -2639,7 +2655,7 @@ export class ChatEffect {
                 //  pass
             }).onFail((data) => {
                 const error = {
-                    code: 0,
+                    code: -1,
                     myText: '取消禁言失败'
                 };
                 this.store$.dispatch({
@@ -2648,7 +2664,7 @@ export class ChatEffect {
                 });
             }).onTimeout(() => {
                 const error = {
-                    code: 0,
+                    code: -1,
                     myText: '取消禁言失败'
                 };
                 this.store$.dispatch({
@@ -2824,7 +2840,7 @@ export class ChatEffect {
                         payload: data
                     });
                 }
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error

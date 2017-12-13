@@ -595,6 +595,8 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
             }
             if (that.messageList[index].content.range < 90) {
                 that.messageList[index].content.range++;
+            } else {
+                clearInterval(this);
             }
         }, 100);
     }

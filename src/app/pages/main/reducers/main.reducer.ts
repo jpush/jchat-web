@@ -111,12 +111,6 @@ export const mainReducer = (state: MainStore = mainInit, { type, payload }) => {
         case mainAction.showModalTip:
 
         case mainAction.hideModalTip:
-        // 成功加入黑名单列表
-        case mainAction.addBlackListSuccess:
-        // 退群成功
-        case mainAction.exitGroupSuccess:
-        // 删除群成员成功
-        case mainAction.deleteMemberSuccess:
             state.tipModal = payload;
             break;
         // 显示创建单聊模态框
@@ -156,6 +150,9 @@ export const mainReducer = (state: MainStore = mainInit, { type, payload }) => {
             break;
         // 删除黑名单列表成功
         case mainAction.delSingleBlackSuccess:
+            delSingleBlackLoading(state, payload, false);
+            break;
+        case mainAction.delSingleBlackError:
             delSingleBlackLoading(state, payload, false);
             break;
         // 被其他设备登录踢掉的提示

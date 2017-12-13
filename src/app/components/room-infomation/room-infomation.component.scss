@@ -49,33 +49,36 @@
     }
     .room-infomation-detail{
         padding: 20px 20px 0 20px;
-        .room-infomation-avatar{
-            height: 60px;
-            width: 60px;
-            overflow: hidden;
-            margin-right: 11px;
-            img{
-                display: block;
-                width: 100%;
+        .room-infomation-main{
+            margin-bottom: 21px;
+            .room-infomation-avatar{
+                height: 60px;
+                width: 60px;
+                overflow: hidden;
+                margin-right: 11px;
+                img{
+                    display: block;
+                    width: 100%;
+                }
+            }
+            .room-infomation-name{
+                font-size: 14px;
+                color: #2C2C2C;
+                line-height: 20px;
+                margin: 8px 0 7px 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .room-infomation-id{
+                color: #999;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
         }
-        .room-infomation-name{
-            font-size: 14px;
-            color: #2C2C2C;
-            line-height: 20px;
-            margin: 8px 0 7px 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .room-infomation-id{
-            color: #999;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
         .room-infomation-member{
-            margin: 21px 0 15px 0;
+            margin-bottom: 15px;
             line-height: 17px;
         }
         .room-infomation-description{

@@ -139,8 +139,8 @@ export abstract class Util {
             img.src = this.result;
             const _this = this;
             img.onload = function () {
-                // 如果选择的图片尺寸小于60*60，弹窗提示
-                if (img.naturalWidth < 60 || img.naturalHeight < 60) {
+                // 如果选择的图片尺寸小于80*80，弹窗提示
+                if (img.naturalWidth < 80 || img.naturalHeight < 80) {
                     callback2();
                     return;
                 }

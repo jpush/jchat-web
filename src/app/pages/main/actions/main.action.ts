@@ -28,6 +28,7 @@ export const mainAction = {
     blackMenuSuccess: '[main] black menu success',
     delSingleBlack: '[main] delete single black',
     delSingleBlackSuccess: '[main] delete single black success',
+    delSingleBlackError: '[main] delete single black error',
     hideBlackMenu: '[main] hide black menu',
     selectGroupItem: '[main] select group item',
     exitGroupAction: '[main] exit group action',

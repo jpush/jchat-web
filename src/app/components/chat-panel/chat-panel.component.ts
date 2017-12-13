@@ -1276,6 +1276,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             }
             if (that.msg[index].content.range < 90) {
                 that.msg[index].content.range++;
+            } else {
+                clearInterval(this);
             }
         }, 100);
     }

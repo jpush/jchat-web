@@ -119,7 +119,7 @@ export class ContactEffect {
                         type: contactAction.addFriendError,
                         payload: message
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -151,7 +151,7 @@ export class ContactEffect {
                         type: contactAction.addFriendError,
                         payload: message
                     });
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -250,7 +250,7 @@ export class ContactEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -302,7 +302,7 @@ export class ContactEffect {
                         payload: error
                     });
                 }).onTimeout((data) => {
-                    const error = { code: 910000 };
+                    const error = { code: -2 };
                     this.store$.dispatch({
                         type: appAction.errorApiTip,
                         payload: error
@@ -319,16 +319,64 @@ export class ContactEffect {
         .ofType(contactAction.watchGroupInfo)
         .map(toPayload)
         .switchMap((verifyGroup) => {
+            let groupInfo: any = {
+                gid: verifyGroup.from_gid,
+                name: verifyGroup.group_name,
+                avatarUrl: verifyGroup.avatarUrl,
+                avatar: verifyGroup.avatar
+            };
+            let count = 0;
+            global.JIM.getGroupInfo({
+                gid: verifyGroup.from_gid
+            }).onSuccess((data) => {
+                groupInfo.desc = data.group_info.desc || '';
+                count ++;
+                if (count === 2) {
+                    this.store$.dispatch({
+                        type: mainAction.searchPublicGroupSuccess,
+                        payload: {
+                            show: true,
+                            info: groupInfo
+                        }
+                    });
+                }
+            }).onFail((error) => {
+                groupInfo.desc = '';
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+                count ++;
+                if (count === 2) {
+                    this.store$.dispatch({
+                        type: mainAction.searchPublicGroupSuccess,
+                        payload: {
+                            show: true,
+                            info: groupInfo
+                        }
+                    });
+                }
+            }).onTimeout((timeout) => {
+                groupInfo.desc = '';
+                const error = { code: -2 };
+                this.store$.dispatch({
+                    type: appAction.errorApiTip,
+                    payload: error
+                });
+                count ++;
+                if (count === 2) {
+                    this.store$.dispatch({
+                        type: mainAction.searchPublicGroupSuccess,
+                        payload: {
+                            show: true,
+                            info: groupInfo
+                        }
+                    });
+                }
+            });
             const watchGroupInfo = global.JIM.getGroupMembers({
                 gid: verifyGroup.from_gid
             }).onSuccess((groupList) => {
-                let groupInfo: any = {
-                    gid: verifyGroup.from_gid,
-                    name: verifyGroup.group_name,
-                    desc: verifyGroup.description,
-                    avatarUrl: verifyGroup.avatarUrl,
-                    avatar: verifyGroup.avatar
-                };
                 groupInfo.member_list_count = groupList.member_list.length;
                 for (let member of groupList.member_list) {
                     if (member.flag === 1) {
@@ -338,24 +386,47 @@ export class ContactEffect {
                         groupInfo.isMember = true;
                     }
                 }
-                this.store$.dispatch({
-                    type: mainAction.searchPublicGroupSuccess,
-                    payload: {
-                        show: true,
-                        info: groupInfo
-                    }
-                });
+                count ++;
+                if (count === 2) {
+                    this.store$.dispatch({
+                        type: mainAction.searchPublicGroupSuccess,
+                        payload: {
+                            show: true,
+                            info: groupInfo
+                        }
+                    });
+                }
             }).onFail((error) => {
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
+                count ++;
+                if (count === 2) {
+                    this.store$.dispatch({
+                        type: mainAction.searchPublicGroupSuccess,
+                        payload: {
+                            show: true,
+                            info: groupInfo
+                        }
+                    });
+                }
             }).onTimeout((timeout) => {
-                const error = { code: 910000 };
+                const error = { code: -2 };
                 this.store$.dispatch({
                     type: appAction.errorApiTip,
                     payload: error
                 });
+                count ++;
+                if (count === 2) {
+                    this.store$.dispatch({
+                        type: mainAction.searchPublicGroupSuccess,
+                        payload: {
+                            show: true,
+                            info: groupInfo
+                        }
+                    });
+                }
             });
             return Observable.of(watchGroupInfo)
                 .map(() => {

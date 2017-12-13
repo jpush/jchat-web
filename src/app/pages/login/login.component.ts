@@ -131,7 +131,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                 payload: error
             });
         }).onTimeout((data) => {
-            const error = { code: 910000 };
+            const error = { code: -2 };
             this.store$.dispatch({
                 type: appAction.errorApiTip,
                 payload: error
