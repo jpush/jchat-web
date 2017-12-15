@@ -36,9 +36,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {}
     public ngOnInit() {
         // 创建JIM 对象，退出登录后重新创建对象
-        global.JIM = new JMessage({
-            address: 'ws://183.232.25.91:9091'
-        });
+        global.JIM = new JMessage();
         if (this.username !== '' && this.password !== '') {
             this.isButtonAvailableAction();
         }
