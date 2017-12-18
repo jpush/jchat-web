@@ -13,9 +13,16 @@ export const contactReducer = (state: ContactStore = contactInit, { type, payloa
         case contactAction.init:
             state = Util.deepCopyObj(contactInit);
             break;
+        // 获取好友列表
+        case chatAction.getFriendList:
+            if (payload === 'first') {
+                state.groupLoading = true;
+            }
+            break;
         // 传递群列表
         case chatAction.dispatchGroupList:
             state.groupList = Util.sortByLetter(payload);
+            state.groupLoading = false;
             break;
         // 切换联系人或者会话的tab
         case mainAction.changeListTab:
@@ -45,9 +52,16 @@ export const contactReducer = (state: ContactStore = contactInit, { type, payloa
         case contactAction.addFriendError:
             isAgreeAddFriend(state, payload);
             break;
+        // 获取群组列表
+        case contactAction.getGroupList:
+            if (payload === 'first') {
+                state.friendLoading = true;
+            }
+            break;
         // 传递好友列表的数据
         case chatAction.dispatchFriendList:
             state.friendList = Util.sortByLetter(payload);
+            state.friendLoading = false;
             break;
         // 添加好友的应答事件
         case chatAction.friendReplyEventSuccess:

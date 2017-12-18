@@ -12,4 +12,6 @@ export interface ContactStore {
     listTab: number;
     verifyTab: number;
     verifyGroupList: any[];
+    groupLoading: boolean;
+    friendLoading: boolean;
 }

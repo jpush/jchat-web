@@ -1,11 +1,12 @@
 import { Component, OnInit, AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
-import { global, authPayload, StorageService } from '../../services/common';
+import { global, authPayload, StorageService, ApiService } from '../../services/common';
 import { AppStore } from '../../app.store';
 import { registerAction } from './actions';
 import { Util } from '../../services/util';
 import { appAction } from '../../actions';
+import { mainAction } from '../main/actions';
 declare function JMessage(obj?: Object): void;
 
 @Component({
@@ -35,16 +36,19 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         private store$: Store<AppStore>,
         private router: Router,
         private storageService: StorageService,
-        private elementRef: ElementRef
-    ) {
-        // pass
-    }
+        private elementRef: ElementRef,
+        private apiService: ApiService
+    ) {}
     public ngOnInit() {
         this.store$.dispatch({
             type: registerAction.init,
             payload: null
         });
-        this.JIMInit();
+        // JIM初始化
+        this.store$.dispatch({
+            type: mainAction.jimInit,
+            payload: null
+        });
         this.registerStream$ = this.store$.select((state) => {
             const registerState = state['registerReducer'];
             switch (registerState.actionType) {
@@ -70,30 +74,6 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     public ngOnDestroy() {
         this.registerStream$.unsubscribe();
-    }
-    private JIMInit() {
-        const timestamp = new Date().getTime();
-        const signature = Util.createSignature(timestamp);
-        global.JIM.init({
-            appkey: authPayload.appKey,
-            random_str: authPayload.randomStr,
-            signature: authPayload.signature || signature,
-            timestamp: authPayload.timestamp || timestamp,
-            flag: authPayload.flag
-        }).onSuccess((data) => {
-            // pass
-        }).onFail((error) => {
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        }).onTimeout((data) => {
-            const error = { code: -2 };
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        });
     }
     private register() {
         this.store$.dispatch({

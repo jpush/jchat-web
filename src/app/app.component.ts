@@ -24,8 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // 创建JIM 对象
         global.JIM = new JMessage(
             {
-                debug: true,
-                //     address: 'ws://183.232.25.91:9091'
+                debug: true
             }
         );
         this.appStream$ = this.store$.select((state) => {

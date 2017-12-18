@@ -8,6 +8,8 @@ import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angula
 
 export class GroupListComponent implements OnInit, DoCheck {
     @Input()
+    private groupLoading;
+    @Input()
     private groupList;
     @Output()
     private selectGroupItemEmit: EventEmitter<any> = new EventEmitter();

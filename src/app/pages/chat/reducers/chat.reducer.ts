@@ -34,7 +34,7 @@ export const chatReducer = (state: ChatStore = chatInit, { type, payload }) => {
                 initNoDisturb(state, payload.noDisturb);
             }
             if (state.friendList.length > 0) {
-                filteConversationMemoName(state);
+                filterConversationMemoName(state);
             }
             conversationUnreadNum(state);
             break;
@@ -48,7 +48,7 @@ export const chatReducer = (state: ChatStore = chatInit, { type, payload }) => {
             }
             filterFriendList(state, payload);
             if (state.conversation.length > 0) {
-                filteConversationMemoName(state);
+                filterConversationMemoName(state);
             }
             break;
         // 登陆后，离线消息同步消息列表
@@ -1223,8 +1223,8 @@ function filterMsgFile(state: ChatStore, type: string) {
     }
     state.msgFile[type] = msgFile;
 }
-// 给会话列表添加备注名
-function filteConversationMemoName(state: ChatStore) {
+// 给会话列表和当前消息列表添加备注名
+function filterConversationMemoName(state: ChatStore) {
     for (let conversation of state.conversation) {
         for (let friend of state.friendList) {
             if (conversation.name === friend.name && conversation.type === 3) {
@@ -1233,6 +1233,16 @@ function filteConversationMemoName(state: ChatStore) {
             if (conversation.recentMsg && conversation.recentMsg.content.from_id === friend.name
                 && conversation.type === 4) {
                 conversation.recentMsg.content.memo_name = friend.memo_name;
+            }
+        }
+    }
+    if (state.activePerson.activeIndex >= 0 && state.activePerson.type === 4
+        && state.messageList[state.activePerson.activeIndex]) {
+        for (let message of state.messageList[state.activePerson.activeIndex].msgs) {
+            for (let friend of state.friendList) {
+                if (message.content.from_id === friend.name) {
+                    message.content.memo_name = friend.memo_name;
+                }
             }
         }
     }

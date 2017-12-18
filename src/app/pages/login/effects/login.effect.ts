@@ -5,7 +5,7 @@ import { Store, Action } from '@ngrx/store';
 import { AppStore } from '../../../app.store';
 import { loginAction } from '../actions';
 import { appAction } from '../../../actions';
-import { global } from '../../../services/common/global';
+import { global, ApiService } from '../../../services/common';
 
 @Injectable()
 export class LoginEffect {
@@ -14,36 +14,30 @@ export class LoginEffect {
     private login$: Observable<Action> = this.actions$
         .ofType(loginAction.login)
         .map(toPayload)
-        .switchMap((val) => {
-            const loginObj = global.JIM.login({
+        .switchMap(async (val) => {
+            const loginObj = {
                 username: val.username,
                 password: val.password,
                 is_md5: val.md5
-            }).onSuccess((data) => {
+            };
+            const data: any = await this.apiService.login(loginObj);
+            if (data.code) {
+                this.store$.dispatch({
+                    type: loginAction.loginFailed,
+                    payload: data
+                });
+            } else {
                 global.user = data.username;
                 this.store$.dispatch({
                     type: loginAction.loginSuccess,
                     payload: val
                 });
-            }).onFail((error) => {
-                this.store$.dispatch({
-                    type: loginAction.loginFailed,
-                    payload: error
-                });
-            }).onTimeout((data) => {
-                const error = { code: -2 };
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(loginObj)
-                .map((data) => {
-                    return { type: '[login] login useless', payload: null };
-                });
+            }
+            return { type: '[login] login useless' };
         });
     constructor(
         private actions$: Actions,
-        private store$: Store<AppStore>
+        private store$: Store<AppStore>,
+        private apiService: ApiService
     ) { }
 }

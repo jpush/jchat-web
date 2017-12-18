@@ -5,7 +5,7 @@ import { Store, Action } from '@ngrx/store';
 import { AppStore } from '../../../app.store';
 import { registerAction } from '../actions';
 import { appAction } from '../../../actions';
-import { global } from '../../../services/common/global';
+import { global, ApiService } from '../../../services/common';
 import { md5 } from '../../../services/tools';
 
 @Injectable()
@@ -49,12 +49,34 @@ export class RegisterEffect {
                 return false;
             }
             return val;
-        }).switchMap((val) => {
-            const registerObj = global.JIM.register({
+        }).switchMap(async (val) => {
+            const registerObj = {
                 username: val.username,
                 password: md5(val.password),
                 is_md5: true
-            }).onSuccess((data) => {
+            };
+            const data: any = await this.apiService.register(registerObj);
+            if (data.code) {
+                let usernameTip = '';
+                if (data.code === 882002) {
+                    usernameTip = '用户名已存在';
+                    this.store$.dispatch({
+                        type: registerAction.registerFailed,
+                        payload: usernameTip
+                    });
+                } else if (data.code === -2) {
+                    this.store$.dispatch({
+                        type: appAction.errorApiTip,
+                        payload: data
+                    });
+                } else {
+                    usernameTip = '注册失败';
+                    this.store$.dispatch({
+                        type: registerAction.registerFailed,
+                        payload: usernameTip
+                    });
+                }
+            } else {
                 this.store$.dispatch({
                     type: registerAction.registerSuccess,
                     payload: {
@@ -67,30 +89,10 @@ export class RegisterEffect {
                         }
                     }
                 });
-            }).onFail((data) => {
-                let usernameTip = '';
-                if (data.code === 882002) {
-                    usernameTip = '用户名已存在';
-                } else {
-                    usernameTip = '注册失败';
-                }
-                this.store$.dispatch({
-                    type: registerAction.registerFailed,
-                    payload: usernameTip
-                });
-            }).onTimeout((data) => {
-                const error = { code: -2 };
-                this.store$.dispatch({
-                    type: appAction.errorApiTip,
-                    payload: error
-                });
-            });
-            return Observable.of(registerObj)
-                .map(() => {
-                    return { type: '[register] register useless' };
-                });
+            }
+            return { type: '[register] register useless' };
         });
-    // 用户名是否被注册
+    // 用户名是否符合正则
     @Effect()
     private isUsernameAvailable$: Observable<Action> = this.actions$
         .ofType(registerAction.isUsernameAvailableAction)
@@ -112,22 +114,12 @@ export class RegisterEffect {
             }
             val.usernameTip = usernameTip;
             return val;
-        }).switchMap((val) => {
-            if (val.usernameTip !== '') {
-                this.store$.dispatch({
-                    type: registerAction.usernameTip,
-                    payload: val.usernameTip
-                });
-            } else {
-                this.store$.dispatch({
-                    type: registerAction.usernameTip,
-                    payload: ''
-                });
-            }
-            return Observable.of('usernameObj')
-                .map(() => {
-                    return { type: '[register] is username available useless' };
-                });
+        }).switchMap(async (val) => {
+            this.store$.dispatch({
+                type: registerAction.usernameTip,
+                payload: val.usernameTip
+            });
+            return { type: '[register] is username available useless' };
         });
     // 正则验证密码
     @Effect()
@@ -150,6 +142,7 @@ export class RegisterEffect {
         });
     constructor(
         private actions$: Actions,
-        private store$: Store<AppStore>
+        private store$: Store<AppStore>,
+        private apiService: ApiService
     ) { }
 }

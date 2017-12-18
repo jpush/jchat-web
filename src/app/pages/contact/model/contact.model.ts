@@ -10,5 +10,7 @@ export const contactInit = {
     verifyTab: 0,
     verifyGroupList: [],
     groupVerifyUnreadNum: 0,
-    singleVerifyUnreadNum: 0
+    singleVerifyUnreadNum: 0,
+    groupLoading: false,
+    friendLoading: false
 };

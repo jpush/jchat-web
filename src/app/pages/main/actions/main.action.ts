@@ -1,4 +1,6 @@
 export const mainAction = {
+    jimInit: '[main] jim init',
+    jimInitSuccess: '[main] jim init success',
     getSelfInfo: '[main] get self info',
     showSelfInfo: '[main] show self info',
     updateSelfInfo: '[main] update self info',

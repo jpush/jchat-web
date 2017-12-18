@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { global, authPayload } from '../../services/common';
 import { AppStore } from '../../app.store';
 import { contactAction } from './actions';
 import { mainAction } from '../main/actions';
@@ -23,6 +22,8 @@ export class ContactComponent implements OnInit, OnDestroy {
     private verifyTab = 0;
     private groupVerifyUnreadNum = 0;
     private singleVerifyUnreadNum = 0;
+    private groupLoading = false;
+    private friendLoading = false;
     constructor(
         private store$: Store<AppStore>
     ) {
@@ -57,6 +58,8 @@ export class ContactComponent implements OnInit, OnDestroy {
         this.verifyTab = 0;
         this.groupVerifyUnreadNum = 0;
         this.singleVerifyUnreadNum = 0;
+        this.groupLoading = false;
+        this.friendLoading = false;
     }
     private stateChanged(contactState) {
         console.log('contactState', contactState);
@@ -64,7 +67,11 @@ export class ContactComponent implements OnInit, OnDestroy {
             case contactAction.init:
                 this.init();
                 break;
+            case chatAction.getFriendList:
+                this.groupLoading = contactState.groupLoading;
+                break;
             case chatAction.dispatchGroupList:
+                this.groupLoading = contactState.groupLoading;
                 this.groupList = contactState.groupList;
                 break;
             case mainAction.changeListTab:
@@ -104,7 +111,11 @@ export class ContactComponent implements OnInit, OnDestroy {
                     payload: contactState.contactUnreadNum
                 });
                 break;
+            case contactAction.getGroupList:
+                this.friendLoading = contactState.friendLoading;
+                break;
             case chatAction.dispatchFriendList:
+                this.friendLoading = contactState.friendLoading;
                 this.friendList = contactState.friendList;
                 break;
             case contactAction.refuseAddFriendSuccess:

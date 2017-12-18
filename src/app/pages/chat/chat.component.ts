@@ -167,14 +167,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             type: chatAction.getVoiceState,
             payload: `voiceState-${authPayload.appKey}-${global.user}`
         });
-        this.store$.dispatch({
-            type: chatAction.getFriendList,
-            payload: null
-        });
-        this.store$.dispatch({
-            type: contactAction.getGroupList,
-            payload: null
-        });
         global.JIM.onMsgReceive((data) => {
             if (!this.isLoaded) {
                 this.noLoadedMessage.push(data);
@@ -866,8 +858,11 @@ export class ChatComponent implements OnInit, OnDestroy {
                     }
                 }
             });
+            this.transmitAllMsg.totalTransmitNum = 0;
         }
-        this.transmitAllMsg.totalTransmitNum = 0;
+        if (chatState.transmitSuccess === 0) {
+            this.transmitAllMsg.totalTransmitNum = 0;
+        }
     }
     // 事件消息
     private asyncEvent(data) {

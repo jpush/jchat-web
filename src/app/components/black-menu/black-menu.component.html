@@ -10,7 +10,7 @@
                     <img avatarLoad [avatarError]="3" [src]="item.avatarUrl | sanitize : 'url'" alt="">
                 </div>
                 <span class="flex-1" [title]="item.memo_name || item.nickname || item.username">{{item.memo_name || item.nickname || item.username}}</span>
-                <button *ngIf="item.loading !== false" type="button" (click)="delSingleBlackAction(item)" [ngClass]="{'loading': item.loading}">移出</button>
+                <button *ngIf="item.loading !== false" class="btn-white" type="button" (click)="delSingleBlackAction(item)" [ngClass]="{'loading': item.loading}">移出</button>
                 <span *ngIf="item.loading === false" class="black-menu-removed">已移出</span>
             </li>
         </ul>

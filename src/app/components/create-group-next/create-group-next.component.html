@@ -12,7 +12,7 @@
             <div class="create-group-next-name clearfix">
                 <span class="create-group-next-text float-left">群名称：</span>
                 <input #createGroupNextInput type="text" class="input-focus float-left" [class.error]="nameTip.length > 0" (keyup)="groupNameKeyup()" maxlength="20" #groupName placeholder="请输入群组名称">
-                <span class="create-group-next-number float-left">{{20 - groupName.value.length}}</span>
+                <span class="create-group-next-number float-left">{{20 - groupName.value.length < 0 ? 0 : 20 - groupName.value.length}}</span>
                 <span class="create-group-next-tip">{{nameTip}}</span>
             </div>
             <div class="create-group-next-type clearfix">

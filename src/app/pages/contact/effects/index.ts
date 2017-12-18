@@ -1,1 +1,1 @@
-export * from './contact.effects';
+export * from './contact.effect';

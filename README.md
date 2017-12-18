@@ -51,7 +51,12 @@ localhost:3000
 说明：
 * 如果使用的不是本地localhost服务器，则要在task/webpack.dev.js中的publicPath改成自己的ip和端口，在浏览器输入ip和端口去访问项目
 
-* 应用配置：appkey和masterKey在src/services/common/config.ts中配置，同时，将signature和timestamp改为空字符串'';
+* 应用配置：<br />
+前端生成签名：appkey和masterSecret在src/services/common/config.ts中配置，同时，将signature和timestamp改为空字符串''；<br />
+服务端生成签名：服务端提供接口，返回签名给前端开发者调用，并配置好appkey、randomStr、timestamp以及调用接口返回的signature，最后将masterSecret改为空字符串''；<br />
+* 注意：
+生产环境签名的生成需要在开发者服务端生成，不然存在 masterSecret 暴露的风险<br />
+前端接口的实现，参考： [angular http 模块](https://www.angular.cn/tutorial/toh-pt6)<br />
 
 * 项目压缩打包并发布(前提：已全局安装gulp (终端输入cnpm install gulp -g))：
 
@@ -62,7 +67,7 @@ localhost:3000
 ### 备注说明
 
 * 整个应用使用Angular2 + webpack + gulp的技术栈，使用了Angular2中的ngrx去管理应用状态
-* 浏览器兼容性: IE11+ ， Chrome ， Firefox ， Safari，后续考虑兼容IE10
+* 浏览器兼容性: IE11+ ， Chrome ， Firefox ， Safari
 
 ### JMessage 文档
 

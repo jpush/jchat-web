@@ -23,7 +23,7 @@ import { TipModalModule } from './components/tip-modal';
 import { HMR } from '../config/hmr';
 import { routing } from './app.router';
 import { AppComponent } from './app.component';
-import { StorageService, PreloadService } from './services/common';
+import { StorageService, PreloadService, ApiService } from './services/common';
 import '../assets/css/common.scss';
 
 @NgModule({
@@ -58,7 +58,8 @@ import '../assets/css/common.scss';
     providers: [
         MainCanActivate,
         StorageService,
-        PreloadService
+        PreloadService,
+        ApiService
     ]
 })
 export class AppModule extends HMR {

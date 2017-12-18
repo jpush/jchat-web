@@ -5,7 +5,6 @@
         color: #808080;
         font-size: 14px;
     }
-
     .room-detail-info{
         margin-bottom: 37px;
         .room-detail-name{
@@ -16,6 +15,7 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            padding-right: 10px;
         }
         .gray{
             line-height: 20px;
