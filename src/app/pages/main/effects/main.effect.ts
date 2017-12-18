@@ -22,7 +22,7 @@ export class MainEffect {
             const timestamp = new Date().getTime();
             const signature = Util.createSignature(timestamp);
             const initObj = {
-                appkey: authPayload.appKey,
+                appkey: authPayload.appkey,
                 random_str: authPayload.randomStr,
                 signature: authPayload.signature || signature,
                 timestamp: authPayload.timestamp || timestamp,
@@ -165,7 +165,7 @@ export class MainEffect {
                     }
                 });
                 const groupObj = {
-                    appkey: authPayload.appKey,
+                    appkey: authPayload.appkey,
                     desc: data.group_description,
                     gid: data.gid,
                     mtime: data.ctime,
@@ -392,7 +392,7 @@ export class MainEffect {
             const blackObj = {
                 member_usernames: [{
                     username: user.username,
-                    appkey: authPayload.appKey
+                    appkey: authPayload.appkey
                 }]
             };
             const blabkInfo: any = await this.apiService.delSingleBlacks(blackObj);
@@ -419,7 +419,7 @@ export class MainEffect {
             const blackObj = {
                 member_usernames: [{
                     username: active.name || active.username,
-                    appkey: authPayload.appKey
+                    appkey: authPayload.appkey
                 }]
             };
             const data: any = await this.apiService.addSingleBlacks(blackObj);
@@ -528,7 +528,7 @@ export class MainEffect {
             const timestamp = new Date().getTime();
             const signature = Util.createSignature(timestamp);
             const initObj = {
-                appkey: authPayload.appKey,
+                appkey: authPayload.appkey,
                 random_str: authPayload.randomStr,
                 signature: authPayload.signature || signature,
                 timestamp: authPayload.timestamp || timestamp,

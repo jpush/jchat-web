@@ -41,7 +41,7 @@ export class MainCanActivate implements CanActivate {
         const timestamp = new Date().getTime();
         const signature = Util.createSignature(timestamp);
         global.JIM.init({
-            appkey: authPayload.appKey,
+            appkey: authPayload.appkey,
             random_str: authPayload.randomStr,
             signature: authPayload.signature || signature,
             timestamp: authPayload.timestamp || timestamp,

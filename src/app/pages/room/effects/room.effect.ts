@@ -343,7 +343,7 @@ export class RoomEffect {
     private async requestCardInfo(data) {
         const userObj = {
             username: data.content.msg_body.extras.userName,
-            appkey: authPayload.appKey
+            appkey: authPayload.appkey
         };
         const otherInfo: any = await this.apiService.getUserInfo(userObj);
         if (!otherInfo.code) {

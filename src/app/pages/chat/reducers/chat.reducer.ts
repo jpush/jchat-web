@@ -1467,7 +1467,7 @@ function addNewFriendToConversation(state: ChatStore, payload, type) {
             msgs: [
                 msg
             ],
-            appkey: payload.appkey || authPayload.appKey,
+            appkey: payload.appkey || authPayload.appkey,
             name: payload.name,
             type: 3
         });
@@ -2355,7 +2355,7 @@ function transmitMessage(state: ChatStore, payload) {
                 msgs: [payload.msgs],
                 type: 3,
                 name: payload.select.name,
-                appkey: payload.select.appkey || authPayload.appKey
+                appkey: payload.select.appkey || authPayload.appkey
             });
         }
         state.newMessage = payload.msgs;
@@ -2530,7 +2530,7 @@ function addMyselfMesssge(state: ChatStore, payload) {
                 msgs: [payload.msgs],
                 type: 3,
                 name: payload.active.name,
-                appkey: payload.active.appkey || authPayload.appKey
+                appkey: payload.active.appkey || authPayload.appkey
             });
         } else if (flag && payload.active.type === 4) {
             state.messageList.push({
@@ -2854,7 +2854,7 @@ function selectUserResult(state: ChatStore, payload, type?: string) {
                 msgs: [],
                 type: 3,
                 name: payload.name,
-                appkey: payload.appkey || authPayload.appKey
+                appkey: payload.appkey || authPayload.appkey
             });
         } else if (payload.type === 4) {
             state.messageList.push({

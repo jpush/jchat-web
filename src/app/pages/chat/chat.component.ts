@@ -165,7 +165,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.subscribeStore();
         this.store$.dispatch({
             type: chatAction.getVoiceState,
-            payload: `voiceState-${authPayload.appKey}-${global.user}`
+            payload: `voiceState-${authPayload.appkey}-${global.user}`
         });
         global.JIM.onMsgReceive((data) => {
             if (!this.isLoaded) {
@@ -1587,7 +1587,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         if (this.active.type === 3) {
             const singlePicFormData = {
                 target_username: this.active.name,
-                appkey: authPayload.appKey,
+                appkey: authPayload.appkey,
                 image: data,
                 need_receipt: true
             };
@@ -1681,7 +1681,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             const singleFile = {
                 file: data.file,
                 target_username: this.active.name,
-                appkey: authPayload.appKey,
+                appkey: authPayload.appkey,
                 extras: {
                     fileSize: data.fileData.size,
                     fileType: ext

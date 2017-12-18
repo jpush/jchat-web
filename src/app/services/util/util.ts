@@ -481,7 +481,7 @@ export abstract class Util {
      * @returns {string} 签名
      */
     public static createSignature(timestamp: number): string {
-        return md5(`appkey=${authPayload.appKey}&timestamp=${timestamp}&random_str=${authPayload.randomStr}&key=${authPayload.masterkey}`);
+        return md5(`appkey=${authPayload.appkey}&timestamp=${timestamp}&random_str=${authPayload.randomStr}&key=${authPayload.masterSecret}`);
     }
     /**
      * 处理头像的大小

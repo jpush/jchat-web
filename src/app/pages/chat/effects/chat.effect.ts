@@ -1922,7 +1922,7 @@ export class ChatEffect {
             content.msg_body.extras.businessCard) {
             const userObj = {
                 username: info.data.messages[0].content.msg_body.extras.userName,
-                appkey: authPayload.appKey
+                appkey: authPayload.appkey
             };
             const data: any = await this.apiService.getUserInfo(userObj);
             info.data.messages[0].content.msg_body.extras.nickName = data.user_info.nickname;

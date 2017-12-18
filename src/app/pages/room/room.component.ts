@@ -52,7 +52,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
             type: roomAction.getRoomList,
             payload: {
                 start: this.start,
-                appkey: authPayload.appKey
+                appkey: authPayload.appkey
             }
         });
         // 获取自己目前所在的群聊列表
@@ -70,7 +70,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
     public ngAfterViewInit() {
-        const voiceStateKey = `voiceRoomState-${authPayload.appKey}-${global.user}`;
+        const voiceStateKey = `voiceRoomState-${authPayload.appkey}-${global.user}`;
         // 获取本地存储的语音已读状态
         this.store$.dispatch({
             type: roomAction.getRoomVoiceState,
@@ -201,7 +201,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
                 type: roomAction.getRoomList,
                 payload: {
                     start: this.start,
-                    appkey: authPayload.appKey
+                    appkey: authPayload.appkey
                 }
             });
         }
@@ -480,7 +480,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     private voiceHasPlayEmit(voice) {
         this.voiceState.push(voice);
-        const voiceStateKey = `voiceRoomState-${authPayload.appKey}-${global.user}`;
+        const voiceStateKey = `voiceRoomState-${authPayload.appkey}-${global.user}`;
         this.store$.dispatch({
             type: roomAction.storageVoiceState,
             payload: {
