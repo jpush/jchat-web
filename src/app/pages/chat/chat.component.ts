@@ -162,7 +162,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.subscribeStore();
         this.store$.dispatch({
             type: chatAction.getVoiceState,
-            payload: `voiceState-${authPayload.appKey}-${global.user}`
+            payload: `voiceState-${authPayload.appkey}-${global.user}`
         });
         this.store$.dispatch({
             type: chatAction.getFriendList,
@@ -331,7 +331,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.conversationList = chatState.conversation;
                 this.messageList = chatState.messageList;
                 // 如果是第一次登陆且有离线消息则存储当前msgId
-                this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
+                this.storageKey = `msgId-${authPayload.appkey}-${global.user}`;
                 if (chatState.msgId.length > 0 && !this.storageService.get(this.storageKey)) {
                     this.storageMsgId(chatState.msgId);
                 }
@@ -1123,7 +1123,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     // 存储消息id(用来计算消息未读数)
     private storageMsgId(msgId) {
-        this.storageKey = `msgId-${authPayload.appKey}-${global.user}`;
+        this.storageKey = `msgId-${authPayload.appkey}-${global.user}`;
         this.storageService.set(this.storageKey, JSON.stringify(msgId));
     }
     // 更新当前对话用户信息
@@ -1439,7 +1439,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         if (this.active.type === 3) {
             let singlePicFormData = {
                 target_username: this.active.name,
-                appkey: authPayload.appKey,
+                appkey: authPayload.appkey,
                 image: data,
                 need_receipt: true
             };
@@ -1534,7 +1534,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             let singleFile = {
                 file: data.file,
                 target_username: this.active.name,
-                appkey: authPayload.appKey,
+                appkey: authPayload.appkey,
                 extras: {
                     fileSize: data.fileData.size,
                     fileType: ext

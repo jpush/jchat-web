@@ -1223,7 +1223,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 };
                 this.voiceState.push(voiceState);
                 this.msg[index].content.havePlay = true;
-                const key = `voiceState-${authPayload.appKey}-${global.user}`;
+                const key = `voiceState-${authPayload.appkey}-${global.user}`;
                 const value = JSON.stringify(this.voiceState);
                 this.storageService.set(key, value);
             }

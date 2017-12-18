@@ -158,7 +158,7 @@ export class MainEffect {
                 group_description: groupInfo.groupDescription
             }).onSuccess((data) => {
                 let groupObj = {
-                    appkey: authPayload.appKey,
+                    appkey: authPayload.appkey,
                     desc: data.group_description,
                     gid: data.gid,
                     mtime: data.ctime,
@@ -468,7 +468,7 @@ export class MainEffect {
             const delSingleBlackObj = global.JIM.delSingleBlacks({
                 member_usernames: [{
                     username: user.username,
-                    appkey: authPayload.appKey
+                    appkey: authPayload.appkey
                 }]
             }).onSuccess((data) => {
                 this.store$.dispatch({
@@ -501,7 +501,7 @@ export class MainEffect {
             const addBlackListObj = global.JIM.addSingleBlacks({
                 member_usernames: [{
                     username: active.name || active.username,
-                    appkey: authPayload.appKey
+                    appkey: authPayload.appkey
                 }]
             }).onSuccess((data) => {
                 this.store$.dispatch({
@@ -645,7 +645,7 @@ export class MainEffect {
             const timestamp = new Date().getTime();
             const signature = util.createSignature(timestamp);
             const loginObj = global.JIM.init({
-                appkey: authPayload.appKey,
+                appkey: authPayload.appkey,
                 random_str: authPayload.randomStr,
                 signature: authPayload.signature || signature,
                 timestamp: authPayload.timestamp || timestamp,

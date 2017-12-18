@@ -96,7 +96,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         const timestamp = new Date().getTime();
         const signature = this.util.createSignature(timestamp);
         global.JIM.init({
-            appkey: authPayload.appKey,
+            appkey: authPayload.appkey,
             random_str: authPayload.randomStr,
             signature: authPayload.signature || signature,
             timestamp: authPayload.timestamp || timestamp,

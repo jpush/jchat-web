@@ -219,7 +219,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         for (let item of this.selectList) {
             memberUsernames.push({
                 username: item.name,
-                appkey: authPayload.appKey
+                appkey: authPayload.appkey
             });
         }
         let groupInfo: any = {

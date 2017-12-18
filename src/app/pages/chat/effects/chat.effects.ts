@@ -2582,7 +2582,7 @@ export class ChatEffect {
     // 获取会话列表
     private dispatchConversation (count, info, data) {
         if (count <= 0) {
-            let key = `msgId-${authPayload.appKey}-${global.user}`;
+            let key = `msgId-${authPayload.appkey}-${global.user}`;
             let msgId = JSON.parse(this.storageService.get(key));
             this.store$.dispatch({
                 type: chatAction.getConversationSuccess,
@@ -2635,7 +2635,7 @@ export class ChatEffect {
     private requestCardInfo(data, count) {
         global.JIM.getUserInfo({
             username: data.messages[0].content.msg_body.extras.userName,
-            appkey: authPayload.appKey
+            appkey: authPayload.appkey
         }).onSuccess((otherInfo) => {
             data.messages[0].content.msg_body.extras.nickName = otherInfo.user_info.nickname;
             if (otherInfo.user_info.avatar !== '') {

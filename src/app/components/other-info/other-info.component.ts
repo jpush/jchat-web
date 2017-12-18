@@ -119,7 +119,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
             name: this.otherInfo.info.username,
             nickName: this.otherInfo.info.nickname,
             type: 3,
-            appkey: this.otherInfo.info.appkey || authPayload.appKey
+            appkey: this.otherInfo.info.appkey || authPayload.appkey
         };
         this.isShow.emit(user);
     }
