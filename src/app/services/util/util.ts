@@ -433,6 +433,6 @@ export class Util {
      * @return string 签名
      */
     public createSignature(timestamp: number) {
-        return md5(`appkey=${authPayload.appKey}&timestamp=${timestamp}&random_str=${authPayload.randomStr}&key=${authPayload.masterkey}`);
+        return md5(`appkey=${authPayload.appKey}&timestamp=${timestamp}&random_str=${authPayload.randomStr}&key=${authPayload.masterSecret}`);
     }
 }
