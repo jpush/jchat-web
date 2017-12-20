@@ -168,6 +168,10 @@ export class ChatEffect {
             let resourceArray = [];
             const msgs = info.messageList[info.active.activeIndex].msgs;
             const end = msgs.length - (info.loadingCount - 1) * pageNumber;
+            this.store$.dispatch({
+                type: chatAction.getAllMessageSuccess,
+                payload: info.messageList
+            });
             // 滚动加载资源路径
             if (end >= 1) {
                 for (let i = end - 1; i >= end - pageNumber && i >= 0; i--) {
@@ -183,11 +187,11 @@ export class ChatEffect {
                                 msgs[i].content.msg_body.media_url = '';
                             } else {
                                 msgs[i].content.msg_body.media_url = urlInfo.url;
+                                this.store$.dispatch({
+                                    type: chatAction.getAllMessageSuccess,
+                                    payload: info.messageList
+                                });
                             }
-                            this.store$.dispatch({
-                                type: chatAction.getAllMessageSuccess,
-                                payload: info.messageList
-                            });
                         });
                     } else if (msgBody.extras && msgBody.extras.businessCard) {
                         const userObj = {
@@ -203,10 +207,6 @@ export class ChatEffect {
                                         if (!urlInfo.code) {
                                             msgBody.extras.media_url = urlInfo.url;
                                         }
-                                        this.store$.dispatch({
-                                            type: chatAction.getAllMessageSuccess,
-                                            payload: info.messageList
-                                        });
                                     });
                                 }
                             }
@@ -224,6 +224,10 @@ export class ChatEffect {
         .switchMap(async (info) => {
             const msgs = info.messageList[info.active.activeIndex].msgs;
             const end = msgs.length - (info.loadingCount - 1) * pageNumber;
+            this.store$.dispatch({
+                type: chatAction.getAllMessageSuccess,
+                payload: info.messageList
+            });
             for (let i = end - 1; i >= end - pageNumber && i >= 0 && end >= 1; i--) {
                 // 如果是已经加载过头像的用户
                 if (info.loadingCount !== 1) {
@@ -232,10 +236,6 @@ export class ChatEffect {
                         if (msgs[i].content.from_id === msgs[j].content.from_id) {
                             msgs[i].content.avatarUrl = msgs[j].content.avatarUrl;
                             flag = true;
-                            this.store$.dispatch({
-                                type: chatAction.getAllMessageSuccess,
-                                payload: info.messageList
-                            });
                             break;
                         }
                     }
@@ -255,17 +255,13 @@ export class ChatEffect {
                             if (!urlInfo.code) {
                                 msgs[i].content.avatarUrl = urlInfo.url;
                             }
-                            this.store$.dispatch({
-                                type: chatAction.getAllMessageSuccess,
-                                payload: info.messageList
-                            });
                         });
                     }
                 });
             }
             return { type: '[chat] get member avatar url useless' };
         });
-    // 获取所有漫游同步消息及资源路径
+    // 获取所有漫游同步消息、获取群屏蔽列表、获取免打扰列表
     @Effect()
     private getAllMessage$: Observable<Action> = this.actions$
         .ofType(chatAction.getAllMessage)
@@ -279,9 +275,8 @@ export class ChatEffect {
                                 Util.reducerDate(dataItem.msgs[j].ctime_ms);
                         }
                         if (j + 1 !== dataItem.msgs.length) {
-                            const timeGap =
-                                (dataItem.msgs[j + 1].ctime_ms - dataItem.msgs[j].ctime_ms) / 1000 / 60;
-                            if (timeGap > 5) {
+                            if (Util.fiveMinutes(dataItem.msgs[j].ctime_ms,
+                                dataItem.msgs[j + 1].ctime_ms)) {
                                 dataItem.msgs[j + 1].time_show =
                                     Util.reducerDate(dataItem.msgs[j + 1].ctime_ms);
                             }
@@ -402,6 +397,14 @@ export class ChatEffect {
                         }
                     });
                 });
+                this.store$.dispatch({
+                    type: chatAction.getFriendList,
+                    payload: 'first'
+                });
+                this.store$.dispatch({
+                    type: contactAction.getGroupList,
+                    payload: 'first'
+                });
                 // 加载会话头像
                 for (let conversation of info.conversations) {
                     if (conversation.avatar && conversation.avatar !== '') {
@@ -413,18 +416,10 @@ export class ChatEffect {
                         });
                     }
                 }
-                this.store$.dispatch({
-                    type: chatAction.getFriendList,
-                    payload: 'first'
-                });
-                this.store$.dispatch({
-                    type: contactAction.getGroupList,
-                    payload: 'first'
-                });
             }
             return { type: '[chat] get all messageList useless' };
         });
-    // 发送单人消息
+    // 发送单人文本消息
     @Effect()
     private sendMessage$: Observable<Action> = this.actions$
         .ofType(chatAction.sendSingleMessage)
@@ -465,7 +460,7 @@ export class ChatEffect {
             }
             return { type: '[chat] send single message useless' };
         });
-    // 转发单人消息
+    // 转发单人文本消息
     @Effect()
     private transmitMessage$: Observable<Action> = this.actions$
         .ofType(chatAction.transmitSingleMessage)
@@ -514,7 +509,7 @@ export class ChatEffect {
             }
             return { type: '[chat] transmit single message useless' };
         });
-    // 发送群组消息
+    // 发送群组文本消息
     @Effect()
     private sendGroupMessage$: Observable<Action> = this.actions$
         .ofType(chatAction.sendGroupMessage)
@@ -552,7 +547,7 @@ export class ChatEffect {
             }
             return { type: '[chat] send group message useless' };
         });
-    // 转发群组消息
+    // 转发群组文本消息
     @Effect()
     private transmitGroupMessage$: Observable<Action> = this.actions$
         .ofType(chatAction.transmitGroupMessage)
@@ -598,7 +593,7 @@ export class ChatEffect {
             }
             return { type: '[chat] transmit group message useless' };
         });
-    // 发送单聊图片
+    // 发送单聊图片消息
     @Effect()
     private sendSinglePic$: Observable<Action> = this.actions$
         .ofType(chatAction.sendSinglePic)
@@ -634,7 +629,7 @@ export class ChatEffect {
             }
             return { type: '[chat] send single picture useless' };
         });
-    // 转发单聊图片
+    // 转发单聊图片消息
     @Effect()
     private transmitSinglePic$: Observable<Action> = this.actions$
         .ofType(chatAction.transmitSinglePic)
@@ -688,7 +683,7 @@ export class ChatEffect {
             }
             return { type: '[chat] transmit single picture useless' };
         });
-    // 发送群组图片
+    // 发送群组图片消息
     @Effect()
     private sendGroupPic$: Observable<Action> = this.actions$
         .ofType(chatAction.sendGroupPic)
@@ -721,7 +716,7 @@ export class ChatEffect {
             }
             return { type: '[chat] send group pic useless' };
         });
-    // 转发群组图片
+    // 转发群组图片消息
     @Effect()
     private transmitGroupPic$: Observable<Action> = this.actions$
         .ofType(chatAction.transmitGroupPic)
@@ -772,7 +767,7 @@ export class ChatEffect {
             }
             return { type: '[chat] transmit group pic useless' };
         });
-    // 发送单聊文件
+    // 发送单聊文件消息
     @Effect()
     private sendSingleFile$: Observable<Action> = this.actions$
         .ofType(chatAction.sendSingleFile)
@@ -808,7 +803,7 @@ export class ChatEffect {
             }
             return { type: '[chat] send single file useless' };
         });
-    // 转发单聊文件
+    // 转发单聊文件消息
     @Effect()
     private transmitSingleFile$: Observable<Action> = this.actions$
         .ofType(chatAction.transmitSingleFile)
@@ -861,7 +856,7 @@ export class ChatEffect {
             }
             return { type: '[chat] transmit single file useless' };
         });
-    // 发送群组文件
+    // 发送群组文件消息
     @Effect()
     private sendGroupFile$: Observable<Action> = this.actions$
         .ofType(chatAction.sendGroupFile)
@@ -894,7 +889,7 @@ export class ChatEffect {
             }
             return { type: '[chat] send group file useless' };
         });
-    // 转发群组文件
+    // 转发群组文件消息
     @Effect()
     private transmitGroupFile$: Observable<Action> = this.actions$
         .ofType(chatAction.transmitGroupFile)
@@ -944,7 +939,7 @@ export class ChatEffect {
             }
             return { type: '[chat] transmit group file useless' };
         });
-    // 转发单聊位置
+    // 转发单聊位置消息
     @Effect()
     private transmitSingleLocation$: Observable<Action> = this.actions$
         .ofType(chatAction.transmitSingleLocation)
@@ -998,7 +993,7 @@ export class ChatEffect {
             }
             return { type: '[chat] transmit single location useless' };
         });
-    // 转发群组位置
+    // 转发群组位置消息
     @Effect()
     private transmitGroupLocation$: Observable<Action> = this.actions$
         .ofType(chatAction.transmitGroupLocation)
@@ -1573,7 +1568,7 @@ export class ChatEffect {
             }
             return { type: '[chat] msg file useless' };
         });
-    // 会话置顶
+    // 会话置顶和取消会话置顶
     @Effect()
     private conversationToTop$: Observable<Action> = this.actions$
         .ofType(chatAction.conversationToTop)
@@ -1880,7 +1875,7 @@ export class ChatEffect {
             payload: error
         });
     }
-    // 获取未读列表
+    // 获取未读和已读列表
     private getUnreadListInfo(list, unread) {
         if (unread.avatar && unread.avatar !== '') {
             const urlObj = { media_id: unread.avatar };
@@ -1943,6 +1938,7 @@ export class ChatEffect {
             }
         }
     }
+    // 获取新消息的用户头像url
     private async getMsgAvatarUrl(messages, promises) {
         const username = messages.content.from_id !== global.user ?
             messages.content.from_id : messages.content.target_id;

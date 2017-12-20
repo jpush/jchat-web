@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
     selector: 'linkman-list-component',
@@ -6,11 +6,15 @@ import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angula
     styleUrls: ['./linkman-list.component.scss']
 })
 
-export class LinkmanListComponent implements OnInit, DoCheck {
+export class LinkmanListComponent implements OnInit {
     @Input()
     private friendLoading;
     @Input()
     private friendList;
+    @Input()
+    private set friendFlag (value) {
+        this.checkFriendList();
+    }
     @Output()
     private selectLinkmanItemEmit: EventEmitter<any> = new EventEmitter();
     private isEmpty = false;
@@ -20,7 +24,7 @@ export class LinkmanListComponent implements OnInit, DoCheck {
     public ngOnInit() {
         // pass
     }
-    public ngDoCheck() {
+    private checkFriendList() {
         let flag = true;
         for (let item of this.friendList) {
             if (item.data.length > 0) {

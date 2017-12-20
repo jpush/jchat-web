@@ -56,7 +56,7 @@ localhost:3000
 服务端生成签名：服务端提供接口，返回签名给前端开发者调用，并配置好appkey、randomStr、timestamp以及调用接口返回的signature，最后将masterSecret改为空字符串''；<br />
 * 注意：
 生产环境签名的生成需要在开发者服务端生成，不然存在 masterSecret 暴露的风险<br />
-前端接口的实现，参考： [angular http 模块](https://www.angular.cn/tutorial/toh-pt6)<br />
+前端调用服务端接口的实现，参考： [angular http 模块](https://www.angular.cn/tutorial/toh-pt6)<br />
 
 * 项目压缩打包并发布(前提：已全局安装gulp (终端输入cnpm install gulp -g))：
 

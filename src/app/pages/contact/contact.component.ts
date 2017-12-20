@@ -24,11 +24,11 @@ export class ContactComponent implements OnInit, OnDestroy {
     private singleVerifyUnreadNum = 0;
     private groupLoading = false;
     private friendLoading = false;
+    private friendFlag = false;
+    private groupFlag = false;
     constructor(
         private store$: Store<AppStore>
-    ) {
-        // paa
-    }
+    ) {}
     public ngOnInit() {
         this.store$.dispatch({
             type: contactAction.init,
@@ -60,6 +60,8 @@ export class ContactComponent implements OnInit, OnDestroy {
         this.singleVerifyUnreadNum = 0;
         this.groupLoading = false;
         this.friendLoading = false;
+        this.friendFlag = false;
+        this.groupFlag = false;
     }
     private stateChanged(contactState) {
         console.log('contactState', contactState);
@@ -73,43 +75,32 @@ export class ContactComponent implements OnInit, OnDestroy {
             case chatAction.dispatchGroupList:
                 this.groupLoading = contactState.groupLoading;
                 this.groupList = contactState.groupList;
+                this.groupFlag = !this.groupFlag;
                 break;
             case mainAction.changeListTab:
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
                 this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
-                this.store$.dispatch({
-                    type: contactAction.dispatchContactUnreadNum,
-                    payload: contactState.contactUnreadNum
-                });
+                this.dispatchContactUnreadNum(contactState);
                 break;
             case contactAction.changeTab:
                 this.tab = contactState.tab;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
                 this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
-                this.store$.dispatch({
-                    type: contactAction.dispatchContactUnreadNum,
-                    payload: contactState.contactUnreadNum
-                });
+                this.dispatchContactUnreadNum(contactState);
                 break;
             case chatAction.friendInvitationEventSuccess:
                 this.verifyMessageList = contactState.verifyMessageList;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
                 this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
-                this.store$.dispatch({
-                    type: contactAction.dispatchContactUnreadNum,
-                    payload: contactState.contactUnreadNum
-                });
+                this.dispatchContactUnreadNum(contactState);
                 break;
             case chatAction.friendReplyEventSuccess:
                 this.verifyMessageList = contactState.verifyMessageList;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
-                this.store$.dispatch({
-                    type: contactAction.dispatchContactUnreadNum,
-                    payload: contactState.contactUnreadNum
-                });
+                this.dispatchContactUnreadNum(contactState);
                 break;
             case contactAction.getGroupList:
                 this.friendLoading = contactState.friendLoading;
@@ -117,6 +108,7 @@ export class ContactComponent implements OnInit, OnDestroy {
             case chatAction.dispatchFriendList:
                 this.friendLoading = contactState.friendLoading;
                 this.friendList = contactState.friendList;
+                this.friendFlag = !this.friendFlag;
                 break;
             case contactAction.refuseAddFriendSuccess:
 
@@ -128,10 +120,7 @@ export class ContactComponent implements OnInit, OnDestroy {
                 this.verifyMessageList = contactState.verifyMessageList;
                 break;
             case chatAction.dispatchReceiveGroupInvitationEvent:
-                this.store$.dispatch({
-                    type: contactAction.dispatchContactUnreadNum,
-                    payload: contactState.contactUnreadNum
-                });
+                this.dispatchContactUnreadNum(contactState);
                 this.verifyGroupList = contactState.verifyGroupList;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
@@ -144,10 +133,7 @@ export class ContactComponent implements OnInit, OnDestroy {
                 this.verifyGroupList = contactState.verifyGroupList;
                 break;
             case chatAction.dispatchReceiveGroupRefuseEvent:
-                this.store$.dispatch({
-                    type: contactAction.dispatchContactUnreadNum,
-                    payload: contactState.contactUnreadNum
-                });
+                this.dispatchContactUnreadNum(contactState);
                 this.verifyGroupList = contactState.verifyGroupList;
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
@@ -158,13 +144,17 @@ export class ContactComponent implements OnInit, OnDestroy {
                 this.verifyUnreadNum = contactState.verifyUnreadNum;
                 this.groupVerifyUnreadNum = contactState.groupVerifyUnreadNum;
                 this.singleVerifyUnreadNum = contactState.singleVerifyUnreadNum;
-                this.store$.dispatch({
-                    type: contactAction.dispatchContactUnreadNum,
-                    payload: contactState.contactUnreadNum
-                });
+                this.dispatchContactUnreadNum(contactState);
                 break;
             default:
         }
+    }
+    // 传递联系人未读数
+    private dispatchContactUnreadNum(contactState) {
+        this.store$.dispatch({
+            type: contactAction.dispatchContactUnreadNum,
+            payload: contactState.contactUnreadNum
+        });
     }
     // 点击联系人
     private selectContactItemEmit(item) {

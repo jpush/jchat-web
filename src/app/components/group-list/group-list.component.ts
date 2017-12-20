@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
     selector: 'group-list-component',
@@ -6,11 +6,15 @@ import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angula
     styleUrls: ['./group-list.component.scss']
 })
 
-export class GroupListComponent implements OnInit, DoCheck {
+export class GroupListComponent implements OnInit {
     @Input()
     private groupLoading;
     @Input()
     private groupList;
+    @Input()
+    private set groupFlag(value) {
+        this.checkGroupList();
+    }
     @Output()
     private selectGroupItemEmit: EventEmitter<any> = new EventEmitter();
     private isEmpty = false;
@@ -22,7 +26,7 @@ export class GroupListComponent implements OnInit, DoCheck {
             this.groupList = [];
         }
     }
-    public ngDoCheck() {
+    public checkGroupList() {
         let flag = true;
         for (let item of this.groupList) {
             if (item.data.length > 0) {

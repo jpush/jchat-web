@@ -579,7 +579,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 粘贴文本，将文本多余的样式代码去掉/粘贴图片
     private pasteMessage(event) {
-        const clipboardData = event.clipboardData || (<any>window).clipboardData;
+        const clipboardData = event.clipboardData || (<any> window).clipboardData;
         const items = clipboardData.items;
         const files = clipboardData.files;
         let item;
@@ -1040,7 +1040,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         range.setStart(textNode, range.endOffset - this.atDeleteNum);
         range.setEnd(textNode, range.endOffset);
         range.deleteContents();
-        // 输入框中插入@XXX
+        // 输入框中插入@xxx
         const content = `<input style="width: ${inputWidth + 'px'}"
                         type="text" class="chat-panel-at-input"
                         value="@${item.nickName || item.username} "

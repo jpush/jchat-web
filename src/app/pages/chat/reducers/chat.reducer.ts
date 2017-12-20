@@ -10,11 +10,11 @@ import { Util } from '../../../services/util';
 export const chatReducer = (state: ChatStore = chatInit, { type, payload }) => {
     state.actionType = type;
     switch (type) {
-        // 初始化satate
+        // 初始化state
         case chatAction.init:
             state = Util.deepCopyObj(chatInit);
             break;
-        // 初始化会话
+        // 初始化会话列表
         case chatAction.getConversationSuccess:
             if (payload.storage) {
                 state.conversation = payload.conversation;
@@ -88,7 +88,7 @@ export const chatReducer = (state: ChatStore = chatInit, { type, payload }) => {
                 state.sendBusinessCardSuccess = 0;
             }
             break;
-        // 发送消息成功（包括所有类型的消息）
+        // 发送消息完成（包括所有类型的消息）
         case chatAction.sendMsgComplete:
             sendMsgComplete(state, payload);
             if (payload.msgs) {
@@ -129,6 +129,7 @@ export const chatReducer = (state: ChatStore = chatInit, { type, payload }) => {
                 state.newMessage = payload.msgs;
             }
             break;
+        // 转发消息完成
         case chatAction.transmitMessageComplete:
             sendMsgComplete(state, payload);
             if (payload.success !== 2) {
@@ -1114,7 +1115,7 @@ function emptyUnreadText(conversation, payload) {
         }
     }
 }
-// 消息置顶和取消置顶
+// 会话置顶和取消置顶
 function conversationToTop(state: ChatStore, payload) {
     for (let i = 0; i < state.conversation.length; i++) {
         if (Number(state.conversation[i].key) === Number(payload.key)) {

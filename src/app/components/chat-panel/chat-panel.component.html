@@ -109,7 +109,7 @@
                             </div>
                             <div class="float-left clearfix">
                                 <div *ngIf="active.type === 4" class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
-                                <div class="float-left chat-panel-file-you">
+                                <div class="float-left chat-panel-file-you" [class.loading]="!i.content.msg_body.media_url">
                                     <div [ngSwitch]="i.content.msg_body?.extras?.fileType | fileType" class="display-flex chat-panel-file-icon chat-panel-file-icon-you" [title]="i.content.msg_body.fname">
                                         <div *ngSwitchCase="'image'" class="image"></div>
                                         <div *ngSwitchCase="'video'" class="video"></div>

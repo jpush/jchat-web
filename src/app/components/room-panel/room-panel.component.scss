@@ -607,6 +607,18 @@
                         border: 1px solid #E2E9F0;
                         border-radius: 0 5px 5px 5px;
                         position: relative;
+                        &.loading:before{
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            bottom: 0;
+                            left: 0;
+                            right: 0;
+                            display: block;
+                            background: url(../../../assets/images/app-loading.gif) center center no-repeat;
+                            background-size: 20px;
+                            z-index: 1;
+                        }
                         &:after{
                             content: '';
                             position: absolute;

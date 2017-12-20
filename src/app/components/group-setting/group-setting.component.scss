@@ -11,6 +11,7 @@
     z-index: 4;
     -webkit-transform: translateX(101%) translate3d(0, 0, 0);
             transform: translateX(101%) translate3d(0, 0, 0);
+    overflow: hidden;
     &.in{
         -webkit-transform: translateX(0) translate3d(0, 0, 0);
                 transform: translateX(0) translate3d(0, 0, 0);

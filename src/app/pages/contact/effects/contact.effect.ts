@@ -277,6 +277,7 @@ export class ContactEffect {
             payload: error
         });
     }
+    // 拼接群名
     private concatGroupName(groupObj, group) {
         return this.apiService.getGroupMembers(groupObj).then((result: any) => {
             if (result.code) {

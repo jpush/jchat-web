@@ -339,10 +339,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.getFriendListSuccess:
                 this.conversationList = chatState.conversation;
-                this.store$.dispatch({
-                    type: chatAction.dispatchFriendList,
-                    payload: chatState.friendList
-                });
+                this.dispatchFriendList(chatState);
                 if (chatState.activePerson.activeIndex > 0) {
                     this.active = chatState.activePerson;
                 }
@@ -350,10 +347,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.getConversationSuccess:
                 this.conversationList = chatState.conversation;
                 this.messageList = chatState.messageList;
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationUnreadNum,
-                    payload: chatState.conversationUnreadNum
-                });
+                this.dispatchConversationUnreadNum(chatState);
                 if (chatState.isLoaded) {
                     this.isLoaded = chatState.isLoaded;
                     this.isLoadedSubject$.next(this.isLoaded);
@@ -367,10 +361,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.messageList = chatState.messageList;
                 if (!chatState.newMessageIsDisturb && !this.isMySelf) {
                     this.notification(chatState.newMessage);
-                    this.store$.dispatch({
-                        type: chatAction.dispatchConversationUnreadNum,
-                        payload: chatState.conversationUnreadNum
-                    });
+                    this.dispatchConversationUnreadNum(chatState);
                 }
                 break;
             case chatAction.sendSingleMessage:
@@ -393,10 +384,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                         this.groupSetting, messageListActive.groupSetting);
                     this.groupSetting.active = this.active;
                 }
-                this.store$.dispatch({
-                    type: chatAction.dispatchGroupList,
-                    payload: chatState.groupList
-                });
+                this.dispatchGroupList(chatState);
                 // 触发滚动条向下滚动
                 if (chatState.newMessageIsActive) {
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
@@ -414,10 +402,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.emptyUnreadCount(chatState.unreadCount);
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationUnreadNum,
-                    payload: chatState.conversationUnreadNum
-                });
+                this.dispatchConversationUnreadNum(chatState);
                 break;
             case chatAction.addReceiptReportAction:
                 if (chatState.readObj && chatState.readObj.msg_id.length > 0) {
@@ -440,15 +425,9 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.deleteConversationItem:
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.closeGroupSettingEmit();
-                this.store$.dispatch({
-                    type: chatAction.dispatchFriendList,
-                    payload: chatState.friendList
-                });
+                this.dispatchFriendList(chatState);
                 this.active = chatState.activePerson;
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationUnreadNum,
-                    payload: chatState.conversationUnreadNum
-                });
+                this.dispatchConversationUnreadNum(chatState);
                 break;
             case chatAction.watchOtherInfoSuccess:
 
@@ -474,10 +453,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.messageList = chatState.messageList;
                 this.changeActivePerson(chatState);
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
-                this.store$.dispatch({
-                    type: chatAction.dispatchGroupList,
-                    payload: chatState.groupList
-                });
+                this.dispatchGroupList(chatState);
                 break;
             case chatAction.createOtherChat:
                 this.messageList = chatState.messageList;
@@ -486,24 +462,15 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.emptyUnreadCount(chatState.unreadCount);
                 this.unreadList.show = false;
                 this.closeGroupSettingEmit();
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationUnreadNum,
-                    payload: chatState.conversationUnreadNum
-                });
+                this.dispatchConversationUnreadNum(chatState);
                 break;
             case mainAction.exitGroupSuccess:
                 this.conversationList = chatState.conversation;
                 this.defaultPanelIsShow = chatState.defaultPanelIsShow;
                 this.closeGroupSettingEmit();
                 this.active = chatState.activePerson;
-                this.store$.dispatch({
-                    type: chatAction.dispatchGroupList,
-                    payload: chatState.groupList
-                });
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationUnreadNum,
-                    payload: chatState.conversationUnreadNum
-                });
+                this.dispatchGroupList(chatState);
+                this.dispatchConversationUnreadNum(chatState);
                 break;
             case mainAction.addBlackListSuccess:
                 this.conversationList = chatState.conversation;
@@ -539,16 +506,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                 if (chatState.currentIsActive) {
                     this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 }
-                this.store$.dispatch({
-                    type: chatAction.dispatchGroupList,
-                    payload: chatState.groupList
-                });
+                this.dispatchGroupList(chatState);
                 break;
             case chatAction.deleteGroupMembersEvent:
-                this.store$.dispatch({
-                    type: chatAction.dispatchGroupList,
-                    payload: chatState.groupList
-                });
+                this.dispatchGroupList(chatState);
                 if (activeIndex >= 0 && messageListActive && messageListActive.groupSetting) {
                     this.groupSetting = Object.assign({},
                         this.groupSetting, messageListActive.groupSetting);
@@ -570,10 +531,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.createGroupSuccessEvent:
                 this.conversationList = chatState.conversation;
-                this.store$.dispatch({
-                    type: chatAction.dispatchGroupList,
-                    payload: chatState.groupList
-                });
+                this.dispatchGroupList(chatState);
                 break;
             case chatAction.msgRetractEvent:
                 this.conversationList = chatState.conversation;
@@ -606,10 +564,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case chatAction.emptyUnreadNumSyncEvent:
                 this.conversationList = chatState.conversation;
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationUnreadNum,
-                    payload: chatState.conversationUnreadNum
-                });
+                this.dispatchConversationUnreadNum(chatState);
                 break;
             // 转发消息成功(如果全部成功则为成功，有一个用户失败则不成功，会提示相关信息)
             case chatAction.transmitMessageComplete:
@@ -617,19 +572,13 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             case contactAction.agreeAddFriendSuccess:
                 this.conversationList = chatState.conversation;
-                this.store$.dispatch({
-                    type: chatAction.dispatchFriendList,
-                    payload: chatState.friendList
-                });
+                this.dispatchFriendList(chatState);
                 this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 break;
             case chatAction.friendReplyEventSuccess:
                 this.otherInfo = chatState.otherInfo;
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
-                this.store$.dispatch({
-                    type: chatAction.dispatchFriendList,
-                    payload: chatState.friendList
-                });
+                this.dispatchFriendList(chatState);
                 this.otherOptionScrollBottom = !this.otherOptionScrollBottom;
                 break;
             case chatAction.showVerifyModal:
@@ -640,18 +589,12 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 break;
             case chatAction.changeGroupNoDisturbSuccess:
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationUnreadNum,
-                    payload: chatState.conversationUnreadNum
-                });
+                this.dispatchConversationUnreadNum(chatState);
                 break;
             case mainAction.addSingleNoDisturbSuccess:
 
             case chatAction.deleteSingleNoDisturbSuccess:
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationUnreadNum,
-                    payload: chatState.conversationUnreadNum
-                });
+                this.dispatchConversationUnreadNum(chatState);
                 this.otherInfo = chatState.otherInfo;
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 break;
@@ -662,23 +605,14 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.addFriendSyncEvent:
                 this.conversationList = chatState.conversation;
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
-                this.store$.dispatch({
-                    type: chatAction.dispatchFriendList,
-                    payload: chatState.friendList
-                });
+                this.dispatchFriendList(chatState);
                 break;
             case chatAction.userInfUpdateEventSuccess:
-                this.store$.dispatch({
-                    type: chatAction.dispatchFriendList,
-                    payload: chatState.friendList
-                });
+                this.dispatchFriendList(chatState);
                 this.otherInfo.info = chatState.otherInfo.info;
                 break;
             case mainAction.deleteFriendSuccess:
-                this.store$.dispatch({
-                    type: chatAction.dispatchFriendList,
-                    payload: chatState.friendList
-                });
+                this.dispatchFriendList(chatState);
                 this.otherInfo = chatState.otherInfo;
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 this.conversationList = chatState.conversation;
@@ -697,10 +631,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             case chatAction.addGroupNoDisturbSyncEvent:
 
             case chatAction.deleteGroupNoDisturbSyncEvent:
-                this.store$.dispatch({
-                    type: chatAction.dispatchConversationUnreadNum,
-                    payload: chatState.conversationUnreadNum
-                });
+                this.dispatchConversationUnreadNum(chatState);
                 this.changeOtherInfoFlag = !this.changeOtherInfoFlag;
                 break;
             case chatAction.conversationToTopSuccess:
@@ -719,10 +650,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                 this.sendCardEmit();
                 break;
             case contactAction.getGroupListSuccess:
-                this.store$.dispatch({
-                    type: chatAction.dispatchGroupList,
-                    payload: chatState.groupList
-                });
+                this.dispatchGroupList(chatState);
                 break;
             case roomAction.transmitAllMsg:
                 this.msgTransmitEmit(chatState.roomTransmitMsg);
@@ -755,6 +683,27 @@ export class ChatComponent implements OnInit, OnDestroy {
                 break;
             default:
         }
+    }
+    // 传递会话列表总未读数
+    private dispatchConversationUnreadNum(chatState) {
+        this.store$.dispatch({
+            type: chatAction.dispatchConversationUnreadNum,
+            payload: chatState.conversationUnreadNum
+        });
+    }
+    // 传递群组列表
+    private dispatchGroupList(chatState) {
+        this.store$.dispatch({
+            type: chatAction.dispatchGroupList,
+            payload: chatState.groupList
+        });
+    }
+    // 传递好友列表
+    private dispatchFriendList(chatState) {
+        this.store$.dispatch({
+            type: chatAction.dispatchFriendList,
+            payload: chatState.friendList
+        });
     }
     // 清空未读数
     private emptyUnreadCount(unread) {

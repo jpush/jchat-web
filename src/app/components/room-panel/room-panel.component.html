@@ -48,8 +48,8 @@
                                 </div>
                                 <div class="float-left clearfix room-panel-business-card">
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
-                                    <div class="float-left room-panel-card room-panel-card-you">
-                                        <div class="display-flex room-panel-card-icon room-panel-card-icon-you" (click)="watchBusinessCardInfo(i.content.msg_body.extras)">
+                                    <div class="float-left room-panel-card room-panel-card-you" (click)="watchBusinessCardInfo(i.content.msg_body.extras)">
+                                        <div class="display-flex room-panel-card-icon room-panel-card-icon-you">
                                             <div class="room-panel-card-icon-avatar">
                                                 <img avatarLoad [avatarError]="3" [src]="i.content.msg_body.extras.media_url | sanitize: 'url'" alt="">
                                             </div>
@@ -94,7 +94,7 @@
                                 </div>
                                 <div class="float-left clearfix">
                                     <div class="group-username" [title]="i.content.memo_name || i.content.from_name || i.content.from_id">{{i.content.memo_name || i.content.from_name || i.content.from_id}}</div>
-                                    <div class="float-left room-panel-file-you">
+                                    <div class="float-left room-panel-file-you" [class.loading]="!i.content.msg_body.media_url">
                                         <div [ngSwitch]="i.content.msg_body?.extras?.fileType | fileType" class="display-flex room-panel-file-icon room-panel-file-icon-you" [title]="i.content.msg_body.fname">
                                             <div *ngSwitchCase="'image'" class="image"></div>
                                             <div *ngSwitchCase="'video'" class="video"></div>
