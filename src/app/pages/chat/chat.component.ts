@@ -192,7 +192,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 监听在线事件消息
         global.JIM.onEventNotification((data) => {
-            console.log('event', data);
             data.isOffline = false;
             if (!this.isLoaded) {
                 this.eventArr.push(data);
@@ -202,7 +201,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         // 监听离线事件消息
         global.JIM.onSyncEvent((data) => {
-            console.log('syncEvent', data);
             if (!this.isLoaded) {
                 this.eventArr = data;
             } else {
@@ -332,7 +330,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     private stateChanged(chatState, mainState) {
         const activeIndex = chatState.activePerson.activeIndex;
         const messageListActive = chatState.messageList[activeIndex];
-        console.log('chatState', chatState);
         switch (chatState.actionType) {
             case chatAction.init:
                 this.init();

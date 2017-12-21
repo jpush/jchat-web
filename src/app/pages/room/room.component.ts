@@ -81,7 +81,6 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
         this.roomStream$.unsubscribe();
     }
     private stateChanged(roomState, mainState) {
-        console.log('roomState', roomState);
         switch (roomState.actionType) {
             case roomAction.init:
                 this.init();

@@ -64,7 +64,6 @@ export class ContactComponent implements OnInit, OnDestroy {
         this.groupFlag = false;
     }
     private stateChanged(contactState) {
-        console.log('contactState', contactState);
         switch (contactState.actionType) {
             case contactAction.init:
                 this.init();

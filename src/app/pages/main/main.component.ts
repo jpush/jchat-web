@@ -221,7 +221,6 @@ export class MainComponent implements OnInit, OnDestroy {
         });
     }
     private stateChanged(mainState, contactState) {
-        console.log('mainState', mainState);
         switch (mainState.actionType) {
             case mainAction.init:
                 this.init();
