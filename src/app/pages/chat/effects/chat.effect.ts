@@ -385,17 +385,16 @@ export class ChatEffect {
                 });
                 promises.push(pro1);
                 promises.push(pro2);
-                await Promise.all(promises).then(() => {
-                    this.store$.dispatch({
-                        type: chatAction.getConversationSuccess,
-                        payload: {
-                            conversation: info.conversations,
-                            storage: true,
-                            messageList: data,
-                            noDisturb,
-                            shield
-                        }
-                    });
+                await Promise.all(promises);
+                this.store$.dispatch({
+                    type: chatAction.getConversationSuccess,
+                    payload: {
+                        conversation: info.conversations,
+                        storage: true,
+                        messageList: data,
+                        noDisturb,
+                        shield
+                    }
                 });
                 this.store$.dispatch({
                     type: chatAction.getFriendList,

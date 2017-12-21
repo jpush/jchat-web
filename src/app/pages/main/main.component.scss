@@ -18,7 +18,7 @@
             border-bottom-left-radius: 3px;
             border-top-left-radius: 3px;
             position: relative;
-            z-index: 1;
+            z-index: 2;
             .main-self-avatar{
                 margin: 61px 0 57px 13px;
                 width: 44px;
@@ -122,6 +122,19 @@
                         background: url(../../../assets/images/menu-active.svg) center center no-repeat;
                     }
                 }
+            }
+        }
+        .main-right-container{
+            .hidden{
+                position: absolute !important;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+            .active{
+                position: relative;
+                z-index: 1;
             }
         }
     }

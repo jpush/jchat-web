@@ -128,6 +128,9 @@
             span{
                 color: #2DD0CF;
                 cursor: pointer;
+                &:hover{
+                    color: #02BDBC;
+                }
             }
         }
         li{

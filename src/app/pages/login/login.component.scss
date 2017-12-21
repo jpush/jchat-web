@@ -165,6 +165,9 @@
                 letter-spacing: 0;
                 line-height: 17px;
                 cursor: pointer;
+                &:hover{
+                    color: #02BDBC;
+                }
             }
         }
     }

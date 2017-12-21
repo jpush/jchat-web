@@ -275,7 +275,7 @@ export class ApiService {
         return this.msgCallback(global.JIM.sendGroupLocation(groupLocation), success, error, timeout);
     }
     // 回调函数
-    private callback(obj, ...args) {
+    private callback(obj, ...args): Promise<any> {
         return new Promise((resolve) => {
             if (obj && obj.onSuccess) {
                 obj.onSuccess((successData) => {
@@ -301,7 +301,7 @@ export class ApiService {
         });
     }
     // 发送消息回调函数
-    private msgCallback(obj, ...args) {
+    private msgCallback(obj, ...args): Promise<any> {
         return new Promise((resolve) => {
             if (obj && obj.onSuccess) {
                 obj.onSuccess((successData, msgs) => {
