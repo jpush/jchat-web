@@ -1,7 +1,8 @@
 import {
     Component, OnInit, Input, Output,
     EventEmitter, ElementRef, OnDestroy,
-    HostListener, OnChanges, SimpleChanges, ViewChild
+    HostListener, OnChanges, SimpleChanges, ViewChild,
+    Renderer
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { PerfectScrollbarComponent, PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
@@ -126,7 +127,8 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
     constructor(
         private elementRef: ElementRef,
         private store$: Store<any>,
-        private storageService: StorageService
+        private storageService: StorageService,
+        private renderer: Renderer
     ) { }
     public ngOnInit() {
         this.roomPanelStream$ = this.store$.select((state) => {
@@ -277,6 +279,11 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.imageViewer.show = true;
         this.viewer = this.imageViewer;
+        document.getElementById('mainMenu').style.zIndex = '3';
+    }
+    // 关闭图片预览
+    private closeImageViewerEmit() {
+        document.getElementById('mainMenu').style.zIndex = '4';
     }
     // 点击更多列表的元素
     private selectMoreMenuItemEmit(item) {

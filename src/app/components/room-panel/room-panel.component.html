@@ -343,7 +343,7 @@
         </div>
     </div>
 </div>
-<image-viewer-component *ngIf="viewer.show" [imageViewer]="viewer"></image-viewer-component>
+<image-viewer-component *ngIf="viewer.show" [imageViewer]="viewer" (closeImageViewer)="closeImageViewerEmit()"></image-viewer-component>
 <div [hidden]="!moreMenu.show" [ngStyle]="{'top': moreMenu.top + 'px', 'left': moreMenu.left + 'px'}" class="room-panel-operation-board">
     <message-menu-component class="room-panel-operation-component" [menu]="moreMenu" (menuItemEnter)="menuItemEnterEmit()" (menuItemLeave)="menuItemLeaveEmit()" (selectMenuItem)="selectMoreMenuItemEmit($event)"></message-menu-component>
 </div>

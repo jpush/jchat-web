@@ -17,6 +17,8 @@ export class ImageViewerComponent implements OnInit, OnDestroy {
     @ViewChild('viewerWrap') private viewerWrap;
     @Input()
     private imageViewer;
+    @Output()
+    private closeImageViewer: EventEmitter<any> = new EventEmitter();
     private imageStream$;
     private ratio = 1;
     private ratioTip = '';
@@ -206,6 +208,7 @@ export class ImageViewerComponent implements OnInit, OnDestroy {
     }
     private closeViewerAction(event) {
         this.imageViewer.show = false;
+        this.closeImageViewer.emit();
         event.stopPropagation();
     }
     private imgLoad() {

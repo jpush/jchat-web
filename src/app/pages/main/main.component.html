@@ -1,6 +1,6 @@
 <div class="main-wrap display-flex align-items-center" id="main">
     <div class="main-container display-flex">
-        <div class="main-menu">
+        <div class="main-menu" id="mainMenu">
             <div class="main-self-avatar">
                 <img avatarLoad [avatarError]="3" [src]="selfInfo.info.avatarUrl | sanitize : 'url'" (click)="getSelfInfo($event)" alt="">
             </div>

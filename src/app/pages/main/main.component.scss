@@ -18,7 +18,7 @@
             border-bottom-left-radius: 3px;
             border-top-left-radius: 3px;
             position: relative;
-            z-index: 2;
+            z-index: 4;
             .main-self-avatar{
                 margin: 61px 0 57px 13px;
                 width: 44px;
@@ -134,7 +134,7 @@
             }
             .active{
                 position: relative;
-                z-index: 1;
+                z-index: 3;
             }
         }
     }
