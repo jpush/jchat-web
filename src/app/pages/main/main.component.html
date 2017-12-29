@@ -1,8 +1,8 @@
 <div class="main-wrap display-flex align-items-center" id="main">
     <div class="main-container display-flex">
-        <div class="main-menu">
+        <div class="main-menu" id="mainMenu">
             <div class="main-self-avatar">
-                <img (load)="avatarLoad($event)" [src]="selfInfo.info.avatarUrl | sanitize : 'url'" (click)="getSelfInfo($event)" (error)="avatarErrorIcon($event)" alt="">
+                <img avatarLoad [avatarError]="3" [src]="selfInfo.info.avatarUrl | sanitize : 'url'" (click)="getSelfInfo($event)" alt="">
             </div>
             <div class="main-tab">
                 <div (click)="changeListTab(0)" class="main-chat">
@@ -16,6 +16,10 @@
                         <jui-badge *ngIf="badge.contact > 0" class="main-badge" displayType="no-wrapper" [badgeNum]="badge.contact" showZero="false" maxNum="1000"></jui-badge>
                     </div>
                     <hover-tip-component [hidden]="!contactHover.show" [hoverInfo]="contactHover"></hover-tip-component>
+                </div>
+                <div (click)="changeListTab(2)" class="main-chat">
+                    <div class="main-room-icon" [ngClass]="{active: listTab === 2}" [hoverEvent]="roomHover"></div>
+                    <hover-tip-component [hidden]="!roomHover.show" [hoverInfo]="roomHover"></hover-tip-component>
                 </div>
             </div>
             <div class="main-add-container">
@@ -32,20 +36,26 @@
             </div>
         </div>
         <div class="main-right-container flex-1 display-flex flex-direction-vertical">
-            <search-user-component [searchUserResult]="searchUserResult" (searchUser)="searchUserEmit($event)" (selectUserResult)="selectUserResultEmit($event)"></search-user-component>
+            <search-user-component [searchUserResult]="searchUserResult" (searchUser)="searchUserEmit($event)" (selectUserResult)="selectUserResultEmit($event)" (selectUserRoomResult)="selectUserRoomResultEmit($event)"></search-user-component>
             <div class="display-flex main-center-container flex-1" style="position: relative;">
-                <chat-component [hideAll]="listTab === 0" [ngClass]="{'flex-1': listTab === 0}" style="position: relative;"></chat-component>
-                <contact-component [hidden]="listTab === 0" class="flex-1"></contact-component>
+                <chat-component [hideAll]="listTab" [ngClass]="{'flex-1': listTab === 0, 'hidden': listTab !== 0}" style="position: relative;"></chat-component>
+                <contact-component [hidden]="listTab !== 1" [ngClass]="{'active': listTab === 1}" class="flex-1"></contact-component>
+                <room-component [hidden]="listTab !== 2" [ngClass]="{'active': listTab === 2}" class="flex-1" style="position: relative;"></room-component>
             </div>
         </div>
     </div>
-    <self-info-component *ngIf="selfInfo.show" [selfInfo]="selfInfo" [updateSelfInfoFlag]="updateSelfInfoFlag" (isShow)="selfInfoEmit($event)" (selectIsNotImage)="selectIsNotImageEmit()" (sendCard)="sendCardEmit($event)"></self-info-component>    
-    <create-group-component *ngIf="createGroup.show" [createGroup]="createGroup" (isCreateGroup)="createGroupEmit($event)"></create-group-component>
-    <modify-password-component [hidden]="!isModifyPasswordShow" (modifyPassword)="modifyPasswordEmit($event)"></modify-password-component>
+    <self-info-component *ngIf="selfInfo.show" [selfInfo]="selfInfo" [updateSelfInfoFlag]="updateSelfInfoFlag" (isShow)="selfInfoEmit($event)" (selectImageError)="selectImageErrorEmit($event)" (sendCard)="sendCardEmit($event)"></self-info-component>    
+    <create-group-component *ngIf="createGroup.show" [hidden]="!createGroup.display" [createGroup]="createGroup" (isCreateGroup)="createGroupEmit($event)" (nextCreateGroup)="nextCreateGroupEmit($event)"></create-group-component>
+    <create-group-next-component *ngIf="createGroupNext.show" [hidden]="!createGroupNext.display" [groupAvatarInfo]="groupAvatarInfo" [createGroupNext]="createGroupNext" (createGroupPrev)="createGroupPrevEmit()" (closeCreateGroupNext)="closeCreateGroupNextEmit()" (completeCreateGroup)="completeCreateGroupEmit($event)" (changeCreateGroupAvatar)="changeCreateGroupAvatarEmit($event)"></create-group-next-component>
+    <modify-password-component *ngIf="isModifyPasswordShow" (modifyPassword)="modifyPasswordEmit($event)"></modify-password-component>
     <tip-modal-component *ngIf="tipModal.show" [info]="tipModal.info" (modalTipEmit)="modalTipEmit($event)"></tip-modal-component>
     <create-single-chat-component *ngIf="createSingleChat.show" [createSingleOption]="createSingleOption" [info]="createSingleChat.info" (emptySingleChatTip)="emptySingleChatTipEmit()" (createSingleChat)="createSingleChatEmit($event)"></create-single-chat-component>
     <black-menu-component [hidden]="!blackMenu.show" [menuInfo]="blackMenu.menu" (blockMenuConfirm)="blackMenuConfirmEmit()" (delSingleBlack)="delSingleBlackEmit($event)"></black-menu-component>
     <logout-kick-component *ngIf="logoutKick.show" [info]="logoutKick.info" (modalTipEmit)="logoutKickEmit($event)"></logout-kick-component>
+    <enter-group-component [enterPublicGroup]="enterPublicGroup" *ngIf="enterPublicGroup.show" (enterGroupComfirm)="enterGroupComfirmEmit($event)" (emptyEnterGroupTip)="emptyEnterGroupTipEmit($event)"></enter-group-component>
+    <group-info-component *ngIf="groupInfo.show" [groupInfo]="groupInfo" (changeGroupConversation)="changeGroupConversationEmit($event)" (applyEnterGroup)="applyEnterGroupEmit($event)"></group-info-component>
+    <verify-modal-component *ngIf="groupVerifyModal.show" [verifyModal]="groupVerifyModal" (verifyModalBtn)="groupVerifyModalBtnEmit($event)"></verify-modal-component>
+    <group-avatar-component *ngIf="groupAvatarInfo.show" [groupAvatarInfo]="groupAvatarInfo" (groupAvatar)="groupAvatarEmit($event)"></group-avatar-component>
 </div>
 <div class="copyright-container">
     <img src="../../../assets/images/copyright.svg" alt="">

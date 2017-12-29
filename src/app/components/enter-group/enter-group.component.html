@@ -1,0 +1,13 @@
+<div class="modal-shadow enter-group-wrap">
+    <div class="modal-content">
+        <h2 class="modal-title">
+            加入公开群
+            <span class="modal-close" (click)="closeEnterGroup()"></span>
+        </h2>
+        <div class="modal-input">
+            <input spellcheck="false" [class.error]="enterPublicGroup.info.text?.length > 0" #enterGroupContent class="input-focus" (keyup)="inputKeyup($event, enterGroupContent)" #enterGroupInput type="text" placeholder="输入公开群的群组ID">
+            <span (click)="confirmEnterGroup(enterGroupContent)"></span>
+        </div>
+        <p class="modal-info" *ngIf="enterPublicGroup.info.text">{{enterPublicGroup.info.text}}</p>
+    </div>
+</div>

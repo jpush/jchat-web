@@ -23,5 +23,7 @@ export const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 // js中静态资源的路径
 export const imgRouter = '../../../assets/images/emoji/';
 
+export const jpushRouter = '../../../assets/images/jpush/';
+
 // 消息列表中滚动加载的每页消息的条数
 export const pageNumber = 20;

@@ -8,10 +8,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export class HoverTipComponent implements OnInit {
     @Input()
-        private hoverInfo;
+    private hoverInfo;
     constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }

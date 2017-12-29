@@ -3,17 +3,19 @@ import { Store } from '@ngrx/store';
 import { loginAction } from './actions';
 import { appAction } from '../../actions';
 import { AppStore } from '../../app.store';
-import { global, authPayload, StorageService } from '../../services/common';
+import { global, StorageService } from '../../services/common';
 import { md5 } from '../../services/tools';
 import { Util } from '../../services/util';
 import { ActivatedRoute, Router } from '@angular/router';
-declare function JMessage(obj ?: Object): void;
+import { mainAction } from '../main/actions';
+declare function JMessage(obj?: Object): void;
 
 @Component({
     selector: 'app-login',
     styleUrls: ['./login.component.scss'],
     templateUrl: './login.component.html'
 })
+
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private username = '';
     private password = '';
@@ -22,7 +24,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private loginTip = '';
     private loginStream$;
     private isButtonAvailable = false;
-    private util: Util = new Util();
     private emptyPassword = false;
     private loginLoading = false;
     // 为了解决safari下记住密码时placeholder依然存在的bug
@@ -33,7 +34,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         private storageService: StorageService,
         private router: Router,
         private elementRef: ElementRef
-    ) {}
+    ) { }
     public ngOnInit() {
         // 创建JIM 对象，退出登录后重新创建对象
         global.JIM = new JMessage();
@@ -41,28 +42,15 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
             this.isButtonAvailableAction();
         }
         // JIM 初始化
-        this.JIMInit();
+        this.store$.dispatch({
+            type: mainAction.jimInit,
+            payload: null
+        });
         this.loginStream$ = this.store$.select((state) => {
-            let loginState = state['loginReducer'];
+            const loginState = state['loginReducer'];
             switch (loginState.actionType) {
                 case loginAction.loginSuccess:
-                    const md5Username = md5('jchat-remember-username');
-                    const md5Password = md5('jchat-remember-password');
-                    // 是否记住密码
-                    if (loginState.loginRemember) {
-                        this.storageService.set(md5Username, loginState.userInfo.username, true);
-                        this.storageService.set(md5Password, loginState.userInfo.password, true);
-                    } else {
-                        // 不记住密码移除cookie
-                        const rememberUsername = this.storageService.get(md5Username, true);
-                        if (this.username === rememberUsername) {
-                            this.storageService.remove(md5Username);
-                            this.storageService.remove(md5Password);
-                        }
-                    }
-                    global.password = loginState.userInfo.password;
-                    this.router.navigate(['main']);
-                    this.loginLoading = false;
+                    this.loginSuccess(loginState);
                     break;
                 case loginAction.isButtonAvailableAction:
                     this.isButtonAvailable = loginState.isButtonAvailable;
@@ -74,6 +62,9 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.loginTip = loginState.loginTip;
                         this.loginLoading = false;
                     }
+                    break;
+                case mainAction.jimInitSuccess:
+                    this.jimInitSuccess();
                     break;
                 default:
             }
@@ -89,49 +80,47 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
             this.elementRef.nativeElement.querySelector('#loginUsername').focus();
         }
     }
-    public ngOnDestroy () {
+    public ngOnDestroy() {
         this.loginStream$.unsubscribe();
     }
-    private JIMInit() {
-        const timestamp = new Date().getTime();
-        const signature = this.util.createSignature(timestamp);
-        global.JIM.init({
-            appkey: authPayload.appkey,
-            random_str: authPayload.randomStr,
-            signature: authPayload.signature || signature,
-            timestamp: authPayload.timestamp || timestamp,
-            flag: authPayload.flag
-        }).onSuccess((data) => {
-            const username = this.storageService.get(md5('jchat-remember-username'), true);
-            const password = this.storageService.get(md5('jchat-remember-password'), true);
-            if (username && password) {
-                this.username = username;
-                this.rememberPassword = password;
-                this.password = password.substring(0, 6);
-                this.loginRemember = true;
-                this.emptyPassword = true;
-                this.usernamePlaceholderText = '';
-                this.passwordPlaceholderText = '';
+    private loginSuccess(loginState) {
+        const md5Username = md5('jchat-remember-username');
+        const md5Password = md5('jchat-remember-password');
+        // 是否记住密码
+        if (loginState.loginRemember) {
+            this.storageService.set(md5Username, loginState.userInfo.username, true);
+            this.storageService.set(md5Password, loginState.userInfo.password, true);
+        } else {
+            // 不记住密码移除cookie
+            const rememberUsername = this.storageService.get(md5Username, true);
+            if (this.username === rememberUsername) {
+                this.storageService.remove(md5Username);
+                this.storageService.remove(md5Password);
             }
-            if (this.storageService.get('register-username')) {
-                this.username = this.storageService.get('register-username');
-                this.usernamePlaceholderText = '';
-                this.storageService.remove('register-username');
-                this.password = '';
-                this.passwordPlaceholderText = '请输入密码';
-            }
-        }).onFail((error) => {
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        }).onTimeout((data) => {
-            const error = {code: 910000};
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        });
+        }
+        global.password = loginState.userInfo.password;
+        this.router.navigate(['main']);
+        this.loginLoading = false;
+    }
+    private jimInitSuccess() {
+        const username = this.storageService.get(md5('jchat-remember-username'), true);
+        const password = this.storageService.get(md5('jchat-remember-password'), true);
+        if (username && password) {
+            this.username = username;
+            this.rememberPassword = password;
+            this.password = password.substring(0, 6);
+            this.loginRemember = true;
+            this.emptyPassword = true;
+            this.usernamePlaceholderText = '';
+            this.passwordPlaceholderText = '';
+        }
+        if (this.storageService.get('register-username')) {
+            this.username = this.storageService.get('register-username');
+            this.usernamePlaceholderText = '';
+            this.storageService.remove('register-username');
+            this.password = '';
+            this.passwordPlaceholderText = '请输入密码';
+        }
     }
     // 点击登陆、keyup.enter登陆、keyup, change判断button是否可用
     private login(event) {
@@ -158,7 +147,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
     }
-    private isButtonAvailableAction(type ?: string) {
+    private isButtonAvailableAction(type?: string) {
         this.rememberPassword = '';
         this.store$.dispatch({
             type: loginAction.isButtonAvailableAction,

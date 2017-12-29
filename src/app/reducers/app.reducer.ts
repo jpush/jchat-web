@@ -4,12 +4,12 @@ interface AppStore {
     errorApiTip: object;
     tipModal: object;
 }
-let appInit = {
+const appInit = {
     actionType: '',
     errorApiTip: {},
     tipModal: {}
 };
-export const appReducer = (state: AppStore = appInit, {type, payload}) => {
+export const appReducer = (state: AppStore = appInit, { type, payload }) => {
     state.actionType = type;
     switch (type) {
         case appAction.errorApiTip:

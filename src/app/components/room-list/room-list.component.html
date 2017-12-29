@@ -1,0 +1,16 @@
+<div class="room-list">
+    <div *ngIf="roomList.length === 0" class="list-no-data">暂无聊天室</div>
+    <perfect-scrollbar (ps-y-reach-end)="scrollBottomEvent()">
+        <ul>
+            <li *ngFor="let room of roomList" class="display-flex room-list-item" [class.active]="room.id === active.id" (click)="changeRoomAction(room)">
+                <div class="room-list-avatar">
+                    <img src="../../../assets/images/room-avatar.svg" alt="">
+                </div>
+                <div class="flex-1 room-list-info">
+                    <p class="room-list-name">{{room.name}}</p>
+                    <p class="room-list-description" [title]="room.description">{{room.description}}</p>
+                </div>
+            </li>
+        </ul>
+    </perfect-scrollbar>
+</div>

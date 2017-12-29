@@ -6,15 +6,18 @@ import { authPayload } from './config';
 import { md5 } from '../../services/tools';
 import { Util } from '../../services/util';
 
+/**
+ * main路由的路由守卫服务
+ */
+
 @Injectable()
 export class MainCanActivate implements CanActivate {
-    private util: Util = new Util();
     private username = '';
     private password = '';
     constructor(
         private router: Router,
         private storageService: StorageService
-    ) {}
+    ) { }
     public canActivate(): boolean | Promise<boolean> {
         // 如果是从登陆界面跳转过来的就直接return true
         if (window.location.href.match(/\/login$/g)) {
@@ -36,7 +39,7 @@ export class MainCanActivate implements CanActivate {
     }
     private JIMInit(resolve) {
         const timestamp = new Date().getTime();
-        const signature = this.util.createSignature(timestamp);
+        const signature = Util.createSignature(timestamp);
         global.JIM.init({
             appkey: authPayload.appkey,
             random_str: authPayload.randomStr,

@@ -1,17 +1,24 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-    HostListener, ElementRef } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    HostListener, ViewChild, OnDestroy
+} from '@angular/core';
 import { Store, Action } from '@ngrx/store';
 import { chatAction } from '../../pages/chat/actions';
 import * as download from 'downloadjs';
+import { Util } from '../../services/util';
+
 @Component({
     selector: 'image-viewer-component',
     templateUrl: './image-viewer.component.html',
     styleUrls: ['./image-viewer.component.scss']
 })
 
-export class ImageViewerComponent implements OnInit {
+export class ImageViewerComponent implements OnInit, OnDestroy {
+    @ViewChild('viewerWrap') private viewerWrap;
     @Input()
-        private imageViewer;
+    private imageViewer;
+    @Output()
+    private closeImageViewer: EventEmitter<any> = new EventEmitter();
     private imageStream$;
     private ratio = 1;
     private ratioTip = '';
@@ -33,11 +40,8 @@ export class ImageViewerComponent implements OnInit {
     private imgHidden = false;
     private index;
     constructor(
-        private elementRef: ElementRef,
         private store$: Store<any>
-    ) {
-
-    }
+    ) { }
     public ngOnInit() {
         if (!this.imageViewer) {
             this.imageViewer = {
@@ -59,6 +63,9 @@ export class ImageViewerComponent implements OnInit {
             // pass
         });
     }
+    public ngOnDestroy() {
+        this.imageStream$.unsubscribe();
+    }
     private stateChanged(chatState) {
         switch (chatState.actionType) {
             case chatAction.loadViewerImageSuccess:
@@ -71,19 +78,17 @@ export class ImageViewerComponent implements OnInit {
         for (let img of this.imageViewer.result) {
             if (img.index === viewerImageUrl.index && img.src === viewerImageUrl.src) {
                 img.src = viewerImageUrl.src;
-                this.imageViewer.active = Object.assign({},
-                    this.imageViewer.result[this.index], {});
+                this.imageViewer.active = Util.deepCopyObj(this.imageViewer.result[this.index]);
                 this.imageViewer.active.index = this.index;
                 break;
             }
         }
     }
     private initImgviewer() {
-        const viewerWrap = this.elementRef.nativeElement.querySelector('#viewerWrap');
-        let activeWidth = this.imageViewer.active.width;
-        let activeHeight = this.imageViewer.active.height;
-        let offsetWidth = viewerWrap.offsetWidth;
-        let offsetHeight = viewerWrap.offsetHeight;
+        const activeWidth = this.imageViewer.active.width;
+        const activeHeight = this.imageViewer.active.height;
+        const offsetWidth = this.viewerWrap.nativeElement.offsetWidth;
+        const offsetHeight = this.viewerWrap.nativeElement.offsetHeight;
         if (activeWidth / offsetWidth > activeHeight / offsetHeight &&
             activeWidth > offsetWidth * 0.6) {
             this.position.width = this.initPosition.width = offsetWidth * 0.6;
@@ -141,7 +146,7 @@ export class ImageViewerComponent implements OnInit {
             this.position.left = this.position.left +
                 (this.position.width - this.initPosition.width * ratio) / 2;
             this.position.top = this.position.top +
-            (this.position.height - this.initPosition.height * ratio) / 2;
+                (this.position.height - this.initPosition.height * ratio) / 2;
             this.position.width = this.initPosition.width * ratio;
             this.position.height = this.initPosition.height * ratio;
         }
@@ -159,8 +164,8 @@ export class ImageViewerComponent implements OnInit {
         this.zoomTo(this.ratio - 0.2);
     }
     private prev() {
-        let activeIndex = this.imageViewer.active.index;
-        let index = activeIndex > 0 ? activeIndex - 1 : activeIndex;
+        const activeIndex = this.imageViewer.active.index;
+        const index = activeIndex > 0 ? activeIndex - 1 : activeIndex;
         this.index = index;
         if (index !== activeIndex) {
             // 如果该图片的url尚未加载，则去请求url
@@ -185,9 +190,9 @@ export class ImageViewerComponent implements OnInit {
         }
     }
     private next() {
-        let activeIndex = this.imageViewer.active.index;
-        let index = activeIndex < this.imageViewer.result.length - 1 ?
-                    activeIndex + 1 : activeIndex;
+        const activeIndex = this.imageViewer.active.index;
+        const index = activeIndex < this.imageViewer.result.length - 1 ?
+            activeIndex + 1 : activeIndex;
         if (index !== activeIndex) {
             // 为了解决相邻两张相同的base64图片不触发onload事件
             if (this.imageViewer.active.src === this.imageViewer.result[index].src) {
@@ -203,6 +208,7 @@ export class ImageViewerComponent implements OnInit {
     }
     private closeViewerAction(event) {
         this.imageViewer.show = false;
+        this.closeImageViewer.emit();
         event.stopPropagation();
     }
     private imgLoad() {

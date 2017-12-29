@@ -5,7 +5,7 @@
             <span class="modal-close" (click)="closeModal()"></span>
         </h2>
         <div class="verify-modal-textarea">
-            <textarea spellcheck="false" [(ngModel)]="modelText" class="input-focus" maxlength="80"></textarea>
+            <textarea #verifyModalTextarea spellcheck="false" [(ngModel)]="modelText" class="input-focus" maxlength="80"></textarea>
         </div>
         <p class="modal-btn">
             <button type="button" class="btn-cancel btn-white" (click)="closeModal()">取消</button>

@@ -1,0 +1,11 @@
+<div class="display-flex room-container">
+    <div class="room-list-container">
+        <room-list-component [roomList]="roomList" [active]="active" (changeRoom)="changeRoomEmit($event)" [loadMoreRoomsFlag]="loadMoreRoomsFlag" (loadMoreRooms)="loadMoreRoomsEmit()"></room-list-component>    
+    </div>
+    <div class="flex-1" style="position: relative;">
+        <default-panel-component [hidden]="showPanel !== 0"></default-panel-component>
+        <room-detail-component [roomDetail]="roomDetail" [enterRoomLoading]="enterRoomLoading" (enterRoom)="enterRoomEmit($event)" [hidden]="showPanel !== 1"></room-detail-component>
+        <room-panel-component [enter]="enter" [messageList]="messageList" [scrollToBottom]="scrollToBottom" [otherScrollTobottom]="otherScrollTobottom" [selfInfo]="selfInfo" (voiceHasPlay)="voiceHasPlayEmit($event)" (showRoomInfomation)="showRoomInfomationEmit()" (sendMsg)="sendMsgEmit($event)" (sendFile)="sendFileEmit($event)" (sendPic)="sendPicEmit($event)" (msgTransmit)="msgTransmitEmit($event)" (selfInfoEmit)="watchSelfInfoEmit()" (otherInfo)="watchOtherInfoEmit($event)" (businessCardSend)="businessCardSendEmit($event)" [hidden]="showPanel !== 2" (videoPlay)="playVideoEmit($event)"></room-panel-component>
+    </div>
+</div>
+<room-infomation-component [roomInfomation]="roomInfomation" (hideRoomInfomation)="hideRoomInfomationEmit()"></room-infomation-component>

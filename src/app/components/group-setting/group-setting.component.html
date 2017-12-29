@@ -1,23 +1,31 @@
 <div class="group-setting-container" id="groupSettingContainer" [ngClass]="{'in': groupSetting.show, 'void': !groupSetting.show, 'loading': groupSetting.loading}" (click)="stopPropagation($event)">
     <div class="group-setting-wrap">
         <span class="group-setting-close" (click)="closeGroupSettingAction()"></span>
-        <div class="group-setting-header" id="groupSettingHeader">
+        <div class="group-setting-header" #groupSettingHeader>
             <div class="group-setting-title">群设置</div>
             <div class="display-flex group-avatar-info">
                 <label class="group-avatar" for="groupAvatar">
-                    <img [src]="groupSetting.groupInfo.avatarUrl | sanitize : 'url'" (load)="avatarLoad($event)" (error)="groupAvatarErrorIcon($event)" alt="">
+                    <img avatarLoad [avatarError]="4" [src]="groupSetting.groupInfo.avatarUrl | sanitize : 'url'" alt="">
                 </label>
                 <input type="file" id="groupAvatar" (change)="groupAvatarChange($event)" class="group-avatar-file">
                 <div class="flex-1">
-                    <p class="clearfix group-setting-text group-setting-name">
+                    <p class="clearfix group-setting-name">
                         <span class="group-setting-name-text" [hidden]="modifyGroupNameShow" (click)="modifyGroupNameAction()" [title]="groupSetting.groupInfo.name">{{groupSetting.groupInfo.name}}</span>
                         <input spellcheck="false" maxlength="20" class="group-setting-name-input input-focus" id="groupSettingNameInput" [hidden]="!modifyGroupNameShow" type="text" [ngModel]="groupSetting.groupInfo.name" (blur)="modifyGroupNameBlur($event)">
                     </p>
-                    <div class="clearfix group-setting-text group-setting-desc">
-                        <span class="float-left">群描述&nbsp;:&nbsp;</span>
-                        <span class="group-setting-desc-text" id="groupSettingDec" [title]="groupSetting.groupInfo.desc ? groupSetting.groupInfo.desc : ''" (click)="modifyGroupDescriptionAction()">{{groupSetting.groupInfo.desc ? (groupSetting.groupInfo.desc | ellipsis: 16) : '未填写'}}</span>
+                    <div class="clearfix group-setting-gray">
+                        <span class="float-left">群ID&nbsp;:&nbsp;</span>
+                        <span>{{groupSetting.groupInfo.gid}}</span>
+                    </div>
+                    <div class="clearfix group-setting-gray">
+                        <span class="float-left">群类型&nbsp;:&nbsp;</span>
+                        <span>{{groupSetting.groupInfo.group_type === 2 ? '公开群' : '私有群'}}</span>
                     </div>
                 </div>
+            </div>
+            <div class="clearfix group-setting-text group-setting-desc clearfix">
+                <span class="float-left">群描述&nbsp;:&nbsp;</span>
+                <span class="group-setting-desc-text float-left" [title]="groupSetting.groupInfo.desc ? groupSetting.groupInfo.desc : ''" id="groupSettingDec" (click)="modifyGroupDescriptionAction()">{{groupSetting.groupInfo.desc ? (groupSetting.groupInfo.desc | ellipsis: 22) : '未填写'}}</span>
             </div>
             <div class="clearfix group-setting-text">
                 <span class="float-left">消息免打扰&nbsp;:&nbsp;</span>
@@ -31,7 +39,7 @@
                 <search-member-component [searchResult]="searchResult" (searchKeyup)="seachKeyupEmit($event)" (searchItem)="searchItemEmit($event)" (clearInput)="clearInputEmit()"></search-member-component>
             </div>
         </div>
-        <div class="group-setting-list">
+        <div class="group-setting-list" [style.top]="listTop + 10 + 'px'">
             <p class="clearfix group-setting-add">
                 <span class="float-left">群成员&nbsp;:&nbsp;</span>
                 <span class="float-left">{{groupSetting.memberList.length}}人</span>
@@ -41,11 +49,19 @@
                 <ul>
                     <li class="clearfix display-flex" *ngFor="let item of groupSetting.memberList">
                         <div class="group-setting-avatar" (click)="watchInfoAction(item)">
-                            <img [src]="item.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                            <img avatarLoad [avatarError]="3" [src]="item.avatarUrl | sanitize: 'url'" alt="">
                         </div>
                         <span class="flex-1" [title]="item.memo_name || item.nickName || item.username">{{item.memo_name || item.nickName || item.username}}</span>
                         <div class="group-setting-host" *ngIf="item.flag === 1" [hoverEvent]="hostHover">
                             <hover-tip-component [hidden]="!hostHover.show" [hoverInfo]="hostHover"></hover-tip-component>
+                        </div>
+                        <div class="group-setting-keep-silence" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user && !item.keep_silence" (click)="keepSilenceAction(item)">禁言</div>
+                        <div class="group-setting-silence-icon group-setting-delete-silence" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user && item.keep_silence" (click)="keepSilenceAction(item)">
+                            <img src="../../../assets/images/keep-silence.svg" alt="">
+                            <span>解除禁言</span>
+                        </div>
+                        <div class="group-setting-silence-icon" *ngIf="item.flag === 0 && groupSetting.memberList[0].username !== global.user && item.keep_silence">
+                            <img src="../../../assets/images/keep-silence.svg" alt="">
                         </div>
                         <span (click)="deleteMemberAction(item)" class="group-setting-delete" *ngIf="item.flag === 0 && groupSetting.memberList[0].username === global.user">×</span>
                     </li>

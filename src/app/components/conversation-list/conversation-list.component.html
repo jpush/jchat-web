@@ -1,11 +1,11 @@
-<div class="conversation-no-data" *ngIf="!conversationList || conversationList.length === 0">暂无联系人</div>
+<div class="list-no-data" *ngIf="!conversationList || conversationList.length === 0">暂无联系人</div>
 <perfect-scrollbar class="conversation-container">
     <ul class="conversation-list">
         <li *ngFor="let item of conversationList;let i = index;" (contextmenu)="contextmenu($event, item)" (click)="selectTarget(item)" [ngClass]="{'active': (active.type === 4 && (item.key == active.key || item.gid == active.key)) || (active.type === 3 && (item.name == active.name)), 'isTop': item?.extras?.top_time_ms}" class="display-flex">
             <div class="conversation-avatar">
                 <div>
-                    <img *ngIf="item.type == 3" (load)="avatarLoad($event)" [src]="item.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
-                    <img class="group-avatar" *ngIf="item.type == 4" [src]="item.avatarUrl | sanitize: 'url'" (error)="groupAvatarErrorIcon($event)" (load)="avatarLoad($event)" alt="">
+                    <img *ngIf="item.type == 3" avatarLoad [avatarError]="3" [src]="item.avatarUrl | sanitize: 'url'" alt="">
+                    <img *ngIf="item.type == 4" avatarLoad [avatarError]="4" [src]="item.avatarUrl | sanitize: 'url'" alt="">
                 </div>
                 <jui-badge *ngIf="item.unreadNum && !item.noDisturb" class="conversation-badge" displayType="no-wrapper" [badgeNum]="item.unreadNum" showZero="false" maxNum="100"></jui-badge>
                 <span *ngIf="item.unreadNum && item.noDisturb" class="conversation-dot"></span>
@@ -23,11 +23,13 @@
                     </p>
                 </div>
                 <p class="conversation-recentMsg" *ngIf="item?.recentMsg?.content?.msg_type && !item.draft" [ngSwitch]="item?.recentMsg?.content?.msg_type">
-                    <span class="float-left conversation-at" *ngIf="item.atUser">[{{item.atUser}}]</span>
-                    <span class="float-left" [ngClass]="{'conversation-unread-text': item.recentMsg.unread_count}" *ngIf="item.recentMsg.msg_type === 3 && item.recentMsg.content.from_id === global.user && ((item.recentMsg.success && item.recentMsg.success === 2) || !item.recentMsg.success)">{{item.recentMsg.unread_count ? '[未读]' : '[已读]'}}</span>
-                    <span class="float-left" *ngIf="item.recentMsg.msg_type === 4 && item.recentMsg.content.msg_type !== 'event'">{{item.recentMsg.content.from_id === global.user ? '我' : (item.recentMsg.content.memo_name || item.recentMsg.content.from_name || item.recentMsg.content.from_id)}}&nbsp;:&nbsp;</span>
+                    <span class="conversation-at" *ngIf="item.atUser">[{{item.atUser}}]</span>
+                    <span [ngClass]="{'conversation-unread-text': item.recentMsg.unread_count}" *ngIf="item.recentMsg.msg_type === 3 && item.recentMsg.content.from_id === global.user && ((item.recentMsg.success && item.recentMsg.success === 2) || !item.recentMsg.success)">{{item.recentMsg.unread_count ? '[未读]' : '[已读]'}}</span>
+                    <span *ngIf="item.recentMsg.msg_type === 4 && item.recentMsg.content.msg_type !== 'event'">{{item.recentMsg.content.from_id === global.user ? '我' : (item.recentMsg.content.memo_name || item.recentMsg.content.from_name || item.recentMsg.content.from_id)}}&nbsp;:&nbsp;</span>
+                    <span class="conversation-send-error" *ngIf="item.recentMsg.success === 3"></span>
                     <span *ngSwitchCase="'text'" [innerHTML]="item.recentMsg.content.msg_body.text | emoji: {nbsp: true, href: false, fontSize: 18} | sanitize: 'html'"></span>
-                    <span *ngSwitchCase="'image'">[图片]</span>
+                    <span *ngIf="item.recentMsg.content.msg_type === 'image' && item.recentMsg.content.msg_body?.extras?.kLargeEmoticon !== 'kLargeEmoticon'">[图片]</span>
+                    <span *ngIf="item.recentMsg.content.msg_type === 'image' && item.recentMsg.content.msg_body?.extras?.kLargeEmoticon === 'kLargeEmoticon'">[表情]</span>
                     <span *ngIf="item.recentMsg.content.msg_type === 'file' && !item.recentMsg.content.msg_body?.extras?.video">[文件]</span>
                     <span *ngIf="item.recentMsg.content.msg_type === 'file' && item.recentMsg.content.msg_body?.extras?.video">[视频]</span>
                     <span *ngSwitchCase="'video'">[视频]</span>                    

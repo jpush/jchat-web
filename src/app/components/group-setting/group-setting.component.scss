@@ -5,20 +5,22 @@
     position: absolute;
     top: 0;
     right: 0;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+    -webkit-box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
     border-bottom-right-radius: 3px;
     z-index: 4;
-    -webkit-transform: translateX(101%);
-            transform: translateX(101%);
+    -webkit-transform: translateX(101%) translate3d(0, 0, 0);
+            transform: translateX(101%) translate3d(0, 0, 0);
+    overflow: hidden;
     &.in{
-        -webkit-transform: translateX(0);
-                transform: translateX(0);
+        -webkit-transform: translateX(0) translate3d(0, 0, 0);
+                transform: translateX(0) translate3d(0, 0, 0);
         -webkit-transition: all 0.5s;
         transition: all 0.5s;
     }
     &.void{
-        -webkit-transform: translateX(101%);
-                transform: translateX(101%);
+        -webkit-transform: translateX(101%) translate3d(0, 0, 0);
+                transform: translateX(101%) translate3d(0, 0, 0);
         -webkit-transition: all 0.5s;
         transition: all 0.5s;
     }
@@ -32,6 +34,7 @@
         background: rgba(0, 0, 0, 0.3) url(../../../assets/images/app-loading.gif) center center no-repeat;
         background-size: 30px;
         content: '';
+        z-index: 3;
     }
     .group-setting-close{
         position: absolute;
@@ -42,6 +45,9 @@
         height: 14px;
         background: url(../../../assets/images/modal-close.svg) center center no-repeat;
         background-size: 14px;
+        &:hover{
+            background-image: url(../../../assets/images/modal-close-active2.svg);
+        }
     }
     .group-setting-header{
         padding-left: 20px;
@@ -74,20 +80,23 @@
                     right: 0;
                     bottom: 0;
                 }
+                img{
+                    width: 100%;
+                }
             }
             .group-avatar-file{
                 display: none;
             }
             .group-setting-name{
-                line-height: 25px;
+                line-height: 20px;
                 font-size: 14px;
+                margin: 0 0 3px 5px;
                 .group-setting-name-text{
                     white-space: nowrap;
                     max-width: 150px;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     cursor: pointer;
-                    margin-left: 5px;
                     float: left;
                     &:hover{
                         color: #2dd0cf;
@@ -99,23 +108,16 @@
                     border: 1px solid #E3E6EB;
                     border-radius: 3px;
                     padding-left: 5px;
-                    box-sizing: border-box;
+                    -webkit-box-sizing: border-box;
+                            box-sizing: border-box;
                     font-size: 14px;
                 }
             }
-            .group-setting-desc{
+            .group-setting-gray{
                 line-height: 17px;
                 font-size: 12px;
                 color: #999;
-                margin-left: 5px;
-                .group-setting-desc-text{
-                    cursor: pointer;
-                    max-width: 170px;
-                    word-break: break-all;
-                    &:hover{
-                        color: #2dd0cf;
-                    }
-                }
+                margin:  0 0 1px 5px;
             }
         }
         .group-setting-text{
@@ -130,14 +132,26 @@
         .group-setting-search{
             margin: 6px 20px 10px 0;
         }
+        .group-setting-desc{
+            margin-top: 10px;
+            .group-setting-desc-text{
+                cursor: pointer;
+                line-height: 18px;
+                margin-top: 8px;
+                max-width: 170px;
+                color: #999;
+                &:hover{
+                    color: #2dd0cf;
+                }
+            }
+        }
     }
     .group-setting-list{
         position: absolute;
-        top: 203px;
         bottom: 0;
         left: 0;
         right: 0;
-        top: 215px;
+        top: 267px;
         .group-setting-add{
             line-height: 34px;
             height: 34px;
@@ -149,6 +163,9 @@
                 font-size: 12px;
                 color: #2DD0CF;
                 margin-right: 20px;
+                &:hover{
+                    color: #02BDBC;
+                }
             }
         }
         .group-setting-scroll{
@@ -170,8 +187,10 @@
                     height: 30px;
                     margin: 10px 10px 0 0;
                     overflow: hidden;
+                    position: relative;
                     img{
                         cursor: pointer;
+                        width: 100%;
                     }
                 }
                 .flex-1{
@@ -188,10 +207,47 @@
                     position: relative;
                     cursor: pointer;
                 }
+                .group-setting-keep-silence{
+                    font-size: 12px;
+                    color: #2DD0CF;
+                    margin-right: 20px;
+                    cursor: pointer;
+                    margin-left: 5px;
+                    display: none;
+                }
+                &:hover .group-setting-keep-silence{
+                    display: block;
+                    &:hover{
+                        color: #02BDBC;
+                    }
+                }
+                .group-setting-silence-icon{
+                    font-size: 12px;
+                    margin-right: 20px;
+                    margin-left: 5px;
+                    img{
+                        display: block;
+                        position: relative;
+                        top: 17px;
+                    }
+                }
+                .group-setting-delete-silence{
+                    color: #2DD0CF;                    
+                    cursor: pointer;
+                    span{
+                        display: none;
+                    }
+                    &:hover img{
+                        display: none;
+                    }
+                    &:hover span{
+                        display: block;
+                    }
+                }
                 .group-setting-delete{
                     font-weight: 700;
                     display: none;
-                    color: #EB424D;
+                    color: #808080;
                     cursor: pointer;
                     position: absolute;
                     line-height: 25px;
@@ -203,6 +259,9 @@
                 }
                 &:hover .group-setting-delete{
                     display: block;
+                    &:hover{
+                        color: #02BDBC;
+                    }
                 }
             }
         }

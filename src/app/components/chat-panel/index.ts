@@ -1,2 +1,2 @@
-// 消息面板组件
+// 会话消息面板组件
 export * from './chat-panel.module';

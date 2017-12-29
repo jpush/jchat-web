@@ -1,5 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnChanges, ElementRef } from '@angular/core';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
+import {
+    Component, Input, Output, EventEmitter,
+    OnChanges, AfterViewInit, ViewChild
+} from '@angular/core';
 import { Util } from '../../services/util';
 
 @Component({
@@ -9,18 +11,19 @@ import { Util } from '../../services/util';
 })
 
 export class SelfInfoComponent implements OnChanges {
-    private util: Util = new Util();
+    @ViewChild('selfAvatarImg') private selfAvatarImg;
+    @ViewChild('selfAvatarInput') private selfAvatarInput;
     @Input()
-        private selfInfo;
+    private selfInfo;
     // 用来标识更新个人信息成功
     @Input()
-        private updateSelfInfoFlag;
+    private updateSelfInfoFlag;
     @Output()
-        private isShow: EventEmitter<any> = new EventEmitter();
+    private isShow: EventEmitter<any> = new EventEmitter();
     @Output()
-        private selectIsNotImage: EventEmitter<any> = new EventEmitter();
+    private selectImageError: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendCard: EventEmitter<any> = new EventEmitter();
+    private sendCard: EventEmitter<any> = new EventEmitter();
     private isEdit = false;
     private sexList = {
         active: {
@@ -51,7 +54,6 @@ export class SelfInfoComponent implements OnChanges {
         url: ''
     };
     private cameraShadow = true;
-    // private saveLoading = false;
     private infoMenu = {
         info: [
             {
@@ -63,9 +65,22 @@ export class SelfInfoComponent implements OnChanges {
         ],
         show: false
     };
-    constructor(
-        private elementRef: ElementRef
-    ) {}
+    private avatarConfig = {
+        info: {
+            src: '',
+            width: 0,
+            height: 0,
+            pasteFile: {}
+        },
+        show: false,
+        formData: {},
+        src: '',
+        filename: '',
+        title: '个人头像'
+    };
+    constructor() {
+        // pass
+    }
     public ngOnChanges(change) {
         this.newInfo.signature = this.selfInfo.info.signature;
         this.newInfo.nickname = this.selfInfo.info.nickname;
@@ -78,22 +93,19 @@ export class SelfInfoComponent implements OnChanges {
     }
     private sexActive() {
         switch (this.selfInfo.info.gender) {
-            case 0 :
-                // this.selfInfo.info.gender = '保密';
+            case 0:
                 this.sexList.active = {
                     key: 0,
                     name: '保密'
                 };
                 break;
-            case 1 :
-                // this.selfInfo.info.gender = '男';
+            case 1:
                 this.sexList.active = {
                     key: 1,
                     name: '男'
                 };
                 break;
             case 2:
-                // this.selfInfo.info.gender = '女';
                 this.sexList.active = {
                     key: 2,
                     name: '女'
@@ -114,12 +126,8 @@ export class SelfInfoComponent implements OnChanges {
     private selectMenuItemEmit() {
         this.sendCard.emit(this.selfInfo.info);
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     private selfCancel() {
-        const selfAvatarInput = this.elementRef.nativeElement.querySelector('#selfAvatarInput');
-        selfAvatarInput.value = '';
+        this.selfAvatarInput.nativeElement.value = '';
         this.isEdit = false;
         this.sexActive();
     }
@@ -137,48 +145,44 @@ export class SelfInfoComponent implements OnChanges {
         this.newInfo.region = event.target.value;
     }
     private selfConfirm() {
-        let newInfo = {
-            info: Object.assign({}, this.newInfo, {gender: this.sexList.active.key}),
+        const newInfo = {
+            info: Object.assign({}, this.newInfo, { gender: this.sexList.active.key }),
             avatar: this.newAvatar
         };
-        // this.saveLoading = true;
         this.isShow.emit(newInfo);
-        // setTimeout(() => {
-        //     this.saveLoading = false;
-        //     this.isEdit = false;
-        // }, 800);
     }
     private selfAvatarChange() {
-        const selfAvatarImg = this.elementRef.nativeElement.querySelector('#selfAvatarImg');
-        const selfAvatarInput = this.elementRef.nativeElement.querySelector('#selfAvatarInput');
-        const that = this;
-        if (!selfAvatarInput.files[0]) {
-            return;
-        }
-        let imgFile = this.util.fileReader(selfAvatarInput, () => {
-            that.selectIsNotImage.emit();
-        });
-        if (imgFile) {
-            imgFile.then((url: string) => {
-                selfAvatarImg.src = url;
-                this.newAvatar.url = url;
-                this.cameraShadow = false;
-            }).catch(() => {
-                console.log('Promise Rejected');
-            });
-        }
-        this.newAvatar.formData = this.util.getFileFormData(selfAvatarInput);
+        this.getImgObj(this.selfAvatarInput.nativeElement.files[0]);
+        this.selfAvatarInput.nativeElement.value = '';
+    }
+    // 获取图片对象
+    private getImgObj(file) {
+        const isNotImage = '选择的文件必须是图片';
+        const imageTooSmall = '选择的图片宽或高的尺寸太小，请重新选择图片';
+        Util.getAvatarImgObj(file,
+            () => this.selectImageError.emit(isNotImage),
+            () => this.selectImageError.emit(imageTooSmall),
+            (that, pasteFile, img) => {
+                this.avatarConfig.info = {
+                    src: that.result,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    pasteFile
+                };
+                this.avatarConfig.src = that.result;
+                this.avatarConfig.show = true;
+                this.avatarConfig.filename = file.name;
+            }
+        );
+    }
+    private avatarConfirmEmit(avatarConfig) {
+        this.newAvatar.formData = avatarConfig.formData;
+        this.selfAvatarImg.nativeElement.src = avatarConfig.src;
+        this.newAvatar.url = avatarConfig.src;
+        this.cameraShadow = false;
     }
     private toEdit() {
         this.isEdit = true;
-    }
-    private avatarLoad(event) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        }else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+        this.selfAvatarImg.nativeElement.src = this.selfInfo.info.avatarUrl;
     }
 }

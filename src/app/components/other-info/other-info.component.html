@@ -1,11 +1,11 @@
 <div class="modal-shadow" (click)="stopPropagation($event)">
     <div class="other-info-container modal-content">
-        <span *ngIf="otherInfo.info.infoType === 'watchOtherInfo' || (otherInfo.info.infoType === 'verifyUser' && otherInfo.info.stateType === 4) || (otherInfo.info.infoType === 'createSingleChat' && otherInfo.info.isFriend) || (otherInfo.info.infoType === 'addFriend' && otherInfo.info.isFriend)" class="other-info-more" (click)="showMenu($event)"></span>
+        <span *ngIf="otherInfo.info.infoType === 'watchOtherInfo' || (otherInfo.info.infoType === 'createSingleChat' && otherInfo.info.isFriend) || (otherInfo.info.infoType === 'addFriend' && otherInfo.info.isFriend)" class="other-info-more" (click)="showMenu($event)"></span>
         <info-menu-component *ngIf="infoMenu.show && (otherInfo.info.infoType === 'watchOtherInfo' || (otherInfo.info.infoType === 'createSingleChat' && otherInfo.info.isFriend) || (otherInfo.info.infoType === 'addFriend' && otherInfo.info.isFriend))" [menu]="infoMenu" (selectMenuItem)="selectMenuItemEmit($event)"></info-menu-component>
         <span class="modal-close" (click)="otherClose($event)"></span>
         <div class="other-info-avatar">
             <div class="other-info-show-avatar">
-                <img (load)="avatarLoad($event)" [src]="otherInfo.info.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                <img avatarLoad [avatarError]="3" [src]="otherInfo.info.avatarUrl | sanitize: 'url'" alt="">
             </div>
             <div class="other-info-avatar-username" [title]="otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username">
                 {{otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username}}
@@ -29,7 +29,7 @@
                 <div class="other-info-edit float-left" *ngIf="!isEdit" (click)="editBtn()" [hoverEvent]="editRmark">
                     <hover-tip-component [hidden]="!editRmark.show" [hoverInfo]="editRmark"></hover-tip-component>
                 </div>
-                <input class="other-info-edit-input input-focus" id="editMemoName" [ngModel]="otherInfo.info.memo_name" (blur)="saveMemoNameAction($event)" type="text" [hidden]="!isEdit">
+                <input class="other-info-edit-input input-focus" #editMemoName [ngModel]="otherInfo.info.memo_name" (blur)="saveMemoNameAction($event)" type="text" [hidden]="!isEdit">
             </span>
         </div>
         <p class="other-info-p display-flex">
@@ -43,14 +43,14 @@
         <p class="modal-btn modal-btn-1" *ngIf="otherInfo.info.isFriend">        
             <button type="button" class="btn-active" (click)="sendMsgBtn()">发消息</button>
         </p>
-        <p class="modal-btn modal-btn-1" *ngIf="!otherInfo.info.isFriend && (otherInfo.info.infoType === 'addFriend' || otherInfo.info.stateType === 3 ||otherInfo.info.stateType === 6 || otherInfo.info.stateType === 7) ">        
+        <p class="modal-btn modal-btn-1" *ngIf="!otherInfo.info.isFriend && (otherInfo.info.infoType === 'addFriend' || (otherInfo.info.infoType === 'verifyFriend' && (otherInfo.info.stateType === 3 || otherInfo.info.stateType === 6 || otherInfo.info.stateType === 7)))">        
             <button type="button" class="btn-active" (click)="addFriendBtn()">添加好友</button>
         </p>
         <p class="modal-btn modal-btn-2 clearfix" *ngIf="(otherInfo.info.infoType === 'createSingleChat' && !otherInfo.info.isFriend) || (otherInfo.info.infoType === 'watchOtherInfo' && !otherInfo.info.isFriend)">        
             <button type="button" class="btn-white float-left" (click)="addFriendBtn()">加好友</button>
             <button type="button" class="btn-active float-left" (click)="sendMsgBtn()">发消息</button>
         </p>
-        <p class="modal-btn modal-btn-2 clearfix" *ngIf="otherInfo.info.infoType === 'verifyUser' && !otherInfo.info.isFriend && (otherInfo.info.stateType === 0 || otherInfo.info.stateType === 1 || otherInfo.info.stateType === 2)">        
+        <p class="modal-btn modal-btn-2 clearfix" *ngIf="otherInfo.info.infoType === 'verifyFriend' && !otherInfo.info.isFriend && (otherInfo.info.stateType === 0 || otherInfo.info.stateType === 1 || otherInfo.info.stateType === 2)">        
             <button type="button" class="btn-white float-left" (click)="verifyBtn(1)">拒绝</button>
             <button type="button" class="btn-active float-left" (click)="verifyBtn(2)">同意</button>
         </p>

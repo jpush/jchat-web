@@ -10,5 +10,11 @@ export const contactAction = {
     dispatchContactUnreadNum: '[contact] dispatch contact unread num',
     watchVerifyUser: '[contact] watch verify user',
     watchVerifyUserSuccess: '[contact] watch verify user success',
-    addFriendError: '[contact] add friend error'
+    addFriendError: '[contact] add friend error',
+    isAgreeEnterGroup: '[contact] is ggree enter group',
+    isAgreeEnterGroupSuccess: '[contact] is ggree enter group success',
+    isAgreeEnterGroupError: '[contact] is ggree enter group error',
+    watchGroupInfo: '[contact] watch group info',
+    changeVerifyTab: '[contact] change verify tab',
+    watchGroupVerifyUser: '[contact] watch group verify user'
 };

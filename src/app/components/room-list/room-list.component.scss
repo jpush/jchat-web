@@ -1,0 +1,50 @@
+.room-list{
+    perfect-scrollbar{
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        .room-list-item{
+            padding: 14px 20px;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
+            cursor: pointer;
+            &:hover{
+                background-color: #f1f1f2;
+            }
+            &.active{
+                background-color: #E7EDF1 !important;
+            }
+            .room-list-avatar{
+                width: 40px;
+                height: 40px;
+                overflow: hidden;
+                margin-right: 9px;
+                img{
+                    display: block;
+                    width: 100%;
+                }
+            }
+            .room-list-info{
+                .room-list-name{
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    line-height: 20px;
+                    margin-bottom: 3px;
+                    font-size: 14px;
+                    color: #2C2C2C;
+                }
+                .room-list-description{
+                    color: #999;
+                    font-size: 12px;
+                    line-height: 17px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+    }
+}

@@ -1,47 +1,51 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild,
-    HostListener, ElementRef } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter, ViewChild,
+    HostListener, ElementRef, DoCheck
+} from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-
 import { AppStore } from '../../app.store';
 import { chatAction } from '../../pages/chat/actions';
 import { global } from '../../services/common';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
+import { SearchMemberComponent } from '../search-member/search-member.component';
+
 @Component({
     selector: 'group-setting-component',
     templateUrl: './group-setting.component.html',
     styleUrls: ['./group-setting.component.scss']
 })
 
-export class GroupSettingComponent implements OnInit {
+export class GroupSettingComponent implements OnInit, DoCheck {
+    @ViewChild('groupSettingHeader') private groupSettingHeader;
+    @ViewChild(SearchMemberComponent) private SearchMemberComponent;
     @Input()
-        private groupSetting;
+    private groupSetting;
     @Output()
-        private closeGroupSetting: EventEmitter<any> = new EventEmitter();
+    private closeGroupSetting: EventEmitter<any> = new EventEmitter();
     @Output()
-        private exitGroup: EventEmitter<any> = new EventEmitter();
+    private exitGroup: EventEmitter<any> = new EventEmitter();
     @Output()
-        private modifyGroupDescription: EventEmitter<any> = new EventEmitter();
+    private modifyGroupDescription: EventEmitter<any> = new EventEmitter();
     @Output()
-        private addMember: EventEmitter<any> = new EventEmitter();
+    private addMember: EventEmitter<any> = new EventEmitter();
     @Output()
-        private searchGroupMember: EventEmitter<any> = new EventEmitter();
+    private searchGroupMember: EventEmitter<any> = new EventEmitter();
     @Output()
-        private watchOtherInfo: EventEmitter<any> = new EventEmitter();
+    private watchOtherInfo: EventEmitter<any> = new EventEmitter();
     @Output()
-        private watchSelfInfo: EventEmitter<any> = new EventEmitter();
+    private watchSelfInfo: EventEmitter<any> = new EventEmitter();
     @Output()
-        private deleteMember: EventEmitter<any> = new EventEmitter();
+    private deleteMember: EventEmitter<any> = new EventEmitter();
     @Output()
-        private modifyGroupName: EventEmitter<any> = new EventEmitter();
+    private modifyGroupName: EventEmitter<any> = new EventEmitter();
     @Output()
-        private updateGroupAvatar: EventEmitter<any> = new EventEmitter();
+    private updateGroupAvatar: EventEmitter<any> = new EventEmitter();
+    @Output()
+    private keepSilence: EventEmitter<any> = new EventEmitter();
     private global = global;
     private searchResult = {
         result: [],
         show: false,
-        id: 'searchGroupMember',
         keywords: '',
         placeholder: '搜索群成员'
     };
@@ -54,16 +58,19 @@ export class GroupSettingComponent implements OnInit {
         show: false
     };
     private modifyGroupNameShow = false;
-    private dec = '';
     private listTop = 203;
     constructor(
         private store$: Store<AppStore>,
         private elementRef: ElementRef
-    ) {
-
-    }
+    ) { }
     public ngOnInit() {
         // pass
+    }
+    public ngDoCheck() {
+        // 修改群描述时，调整群成员列表的位置
+        if (this.groupSettingHeader.nativeElement) {
+            this.listTop = this.groupSettingHeader.nativeElement.offsetHeight;
+        }
     }
     private stopPropagation(event) {
         event.stopPropagation();
@@ -75,7 +82,7 @@ export class GroupSettingComponent implements OnInit {
         this.searchResult.result = [];
         this.searchResult.show = false;
         this.closeGroupSetting.emit();
-        this.elementRef.nativeElement.querySelector('#' + this.searchResult.id).value = '';
+        this.SearchMemberComponent.clearKeyWords();
     }
     private clearInputEmit() {
         this.searchResult.result = [];
@@ -87,12 +94,12 @@ export class GroupSettingComponent implements OnInit {
             this.searchResult.show = true;
             let result = [];
             for (let member of this.groupSetting.memberList) {
-                let memoNameExist = member.memo_name &&
-                        member.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-                let usernameExist = member.username &&
-                        member.username.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-                let nickNameExist = member.nickName &&
-                        member.nickName.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                const memoNameExist = member.memo_name &&
+                    member.memo_name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                const usernameExist = member.username &&
+                    member.username.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+                const nickNameExist = member.nickName &&
+                    member.nickName.toLowerCase().indexOf(value.toLowerCase()) !== -1;
                 if (memoNameExist || nickNameExist || usernameExist) {
                     result.push(member);
                 }
@@ -119,7 +126,7 @@ export class GroupSettingComponent implements OnInit {
         this.modifyGroupNameShow = true;
         setTimeout(() => {
             this.elementRef.nativeElement.querySelector('#groupSettingNameInput').focus();
-        }, 0);
+        });
     }
     private modifyGroupNameBlur(event) {
         if (this.groupSetting.groupInfo.name !== event.target.value) {
@@ -166,22 +173,10 @@ export class GroupSettingComponent implements OnInit {
     private deleteMemberAction(item) {
         this.deleteMember.emit(item);
     }
-    private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
-    }
     private groupAvatarChange(event) {
         this.updateGroupAvatar.emit(event.target);
+    }
+    private keepSilenceAction(item) {
+        this.keepSilence.emit(item);
     }
 }

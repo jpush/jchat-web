@@ -12,37 +12,53 @@ export interface MainStore {
     createGroup: {
         show: boolean;
         info: object;
+        display: boolean;
     };
     logoutShow: boolean;
     modifyPasswordShow: object;
     searchUserResult: {
         result: {
-            groupArr: Array<any>;
-            singleArr: Array<any>;
+            groupArr: any[];
+            singleArr: any[];
+            roomArr: any[];
         },
         isSearch: boolean;
     };
     actionType: string;
     tipModal: object;
     createSingleChat: {
-        show: boolean,
-        info: string
+        show: boolean;
+        info: string;
     };
     blackMenu: {
-        menu: Array<any>;
+        menu: any[];
         show: boolean;
-    };
-    createGroupSearch: {
-        info: object;
     };
     errorApiTip: object;
     logoutKick: {
         show: boolean,
         info: {
-            title: string,
-            tip: string
+            title: string;
+            tip: string;
         }
     };
     contactUnreadNum: number;
-    friendList: Array<any>;
+    conversationUnreadNum: number;
+    friendList: any[];
+    enterPublicGroup: {
+        show: boolean;
+        info: object;
+    };
+    groupInfo: {
+        show: boolean;
+        info: object;
+    };
+    groupVerifyModal: {
+        show: boolean;
+    };
+    createGroupNext: {
+        show: boolean;
+        display: boolean;
+        info: object;
+    };
 }

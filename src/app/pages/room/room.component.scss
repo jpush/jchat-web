@@ -1,0 +1,17 @@
+.room-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    .room-list-container{
+        width: 270px;
+        min-height: 100%;
+        background-color: #fff;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+        position: relative;
+        border-right: 1px solid #d8dfe4;
+    }
+}

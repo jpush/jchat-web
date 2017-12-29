@@ -18,14 +18,15 @@
             border-bottom-left-radius: 3px;
             border-top-left-radius: 3px;
             position: relative;
-            z-index: 1;
+            z-index: 4;
             .main-self-avatar{
-                margin: 61px 0 88px 13px;
+                margin: 61px 0 57px 13px;
                 width: 44px;
                 height: 44px;
                 overflow: hidden;
                 img{
                     cursor: pointer;
+                    width: 100%;
                 }
             }
             .main-tab{
@@ -58,6 +59,16 @@
                         }
                         &.active{
                             background-image: url(../../../assets/images/contact-active.svg);
+                        }
+                    }
+                    .main-room-icon{
+                        background: url(../../../assets/images/room-normal.svg) center center no-repeat;
+                        position: relative;          
+                        &:hover{
+                            background-image: url(../../../assets/images/room-active.svg);
+                        }
+                        &.active{
+                            background-image: url(../../../assets/images/room-active.svg);
                         }
                     }
                 }
@@ -111,6 +122,19 @@
                         background: url(../../../assets/images/menu-active.svg) center center no-repeat;
                     }
                 }
+            }
+        }
+        .main-right-container{
+            .hidden{
+                position: absolute !important;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+            .active{
+                position: relative;
+                z-index: 3;
             }
         }
     }

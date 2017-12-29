@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-        AfterViewInit, ChangeDetectorRef, ElementRef, OnDestroy } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter, ViewChild,
+    AfterViewInit, ChangeDetectorRef, OnDestroy
+} from '@angular/core';
 
 @Component({
     selector: 'video-component',
@@ -8,25 +10,21 @@ import { Component, OnInit, Input, Output, EventEmitter,
 })
 
 export class VideoComponent implements OnInit, AfterViewInit, OnDestroy {
+    @ViewChild('videoTag') private videoTag;
     @Input()
-        private url;
+    private url;
     @Output()
-        private closeVideo: EventEmitter<any> = new EventEmitter();
+    private closeVideo: EventEmitter<any> = new EventEmitter();
     private state = 'play';
-    private video;
     private timer = null;
     private currentTime = 0;
     constructor(
-        private cdr: ChangeDetectorRef,
-        private elementRef: ElementRef
-    ) {
-
-    }
+        private cdr: ChangeDetectorRef
+    ) { }
     public ngOnInit() {
         // pass
     }
     public ngAfterViewInit() {
-        this.video = this.elementRef.nativeElement.querySelector('#videoTag');
         this.cdr.detectChanges();
     }
     public ngOnDestroy() {
@@ -36,14 +34,14 @@ export class VideoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.closeVideo.emit();
     }
     private play() {
-        this.video.play();
+        this.videoTag.nativeElement.play();
         this.state = 'play';
         this.timer = setInterval(() => {
-            this.currentTime = this.video.currentTime;
+            this.currentTime = this.videoTag.nativeElement.currentTime;
         }, 100);
     }
     private pause() {
-        this.video.pause();
+        this.videoTag.nativeElement.pause();
         this.state = 'pause';
         clearInterval(this.timer);
     }
@@ -52,11 +50,12 @@ export class VideoComponent implements OnInit, AfterViewInit, OnDestroy {
         clearInterval(this.timer);
     }
     private changeCurrentTime(event) {
-        this.currentTime = this.video.currentTime = event.offsetX / 438 * this.video.duration;
+        this.currentTime = this.videoTag.nativeElement.currentTime =
+            event.offsetX / 438 * this.videoTag.nativeElement.duration;
     }
     private videoCanplay() {
         this.timer = setInterval(() => {
-            this.currentTime = this.video.currentTime;
+            this.currentTime = this.videoTag.nativeElement.currentTime;
         }, 100);
     }
 }

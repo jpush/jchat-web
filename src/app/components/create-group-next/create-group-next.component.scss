@@ -1,0 +1,123 @@
+.create-group-next-wrap{
+    .modal-content{
+        width: 476px;
+    }
+    .create-group-next-avatar{
+        width: 80px;
+        height: 80px;
+        margin: 80px auto 40px;
+        overflow: hidden;
+        position: relative;
+        display: block;
+        cursor: pointer;
+        img{
+            width: 100%;
+        }
+        input{
+            display: none;
+        }
+        &:hover:after{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: rgba(0, 0, 0, 0.6) url(../../../assets/images/camera.svg) center center no-repeat;
+            background-size: 32px;
+        }
+    }
+    .create-group-next-container{
+        width: 310px;
+        margin: 0 auto;
+        .create-group-next-name{
+            line-height: 26px;
+            height: 26px;
+            position: relative;
+            .create-group-next-text{
+                font-size: 14px;
+                color: #2C2C2C;
+                letter-spacing: 5px;
+            }
+            input{
+                width: 200px;
+                height: 26px;
+                border: 1px solid #D9DEE4;
+                border-radius: 2px;
+                padding-left: 12px;
+                font-size: 12px;
+                -webkit-box-sizing: border-box;
+                        box-sizing: border-box;
+                margin-right: 8px;
+                &.error{
+                    border-color: #EB424C;
+                }
+            }
+            .create-group-next-number{
+                opacity: 0.8;
+                font-size: 12px;
+                color: #808080;
+            }
+            .create-group-next-tip{
+                position: absolute;
+                bottom: -20px;
+                left: 75px;
+                font-size: 12px;
+                line-height: 20px;
+                color: #EB424C;
+            }
+        }
+        .create-group-next-type{
+            line-height: 21px;
+            margin: 28px 0 17px 0;
+            font-size: 14px;
+            color: #2C2C2C;
+            .create-group-next-type-text{
+                width: 76px;
+                font-size: 14px;
+                color: #2C2C2C;
+            }
+            label{
+                cursor: pointer;
+                &.create-group-next-private-input{
+                    margin-right: 30px;
+                }
+                position: relative;
+                input{
+                    visibility: hidden;
+                    margin-right: 5px;
+                }
+                input + span{
+                    width: 14px;
+                    height: 14px;
+                    position: absolute;
+                    top: 3px;
+                    left: 0;
+                    display: block;
+                    background-color: #fff;
+                    border: 1px solid #E3E6EB;
+                    border-radius: 8px;
+                }
+                input:checked + span{
+                    width: 5px;
+                    height: 5px;
+                    border: 5px solid #2DD0CF;
+                }
+            }
+        }
+        .gray{
+            font-size: 12px;
+            color: #808080;
+            margin-bottom: 84px;
+        }
+    }
+    .modal-btn{
+        button{
+            width: 90px;
+        }
+        .btn-white{
+            margin-right: 20px;
+        }
+    }
+}

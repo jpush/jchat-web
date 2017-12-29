@@ -235,6 +235,14 @@ ul,li,ol{
     display: block;
     visibility: hidden;
 }
+.list-no-data{
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    color: #808080;
+    font-size: 14px;
+    opacity: 0.4;
+}
 /* 百度地图*/
 .BMap_cpyCtrl{  
     display: none;   
@@ -283,6 +291,9 @@ ul,li,ol{
             right: 4px;
             background: url(../images/modal-close.svg) center center no-repeat;
             cursor: pointer;
+            &:hover{
+                background-image: url(../images/modal-close-active2.svg);
+            }
         }
         .modal-input{
             text-align: center;
@@ -319,10 +330,7 @@ ul,li,ol{
 }
 
 /* 模拟滚动条*/
-perfect-scrollbar {
-    height: auto !important;
-}
-.chat-panel-scroll .ps-content{
+.chat-panel-scroll .ps-content, .room-panel-scroll .ps-content{
     padding-right: 20px;
     padding-left: 20px;
     box-sizing: border-box;
@@ -351,18 +359,18 @@ perfect-scrollbar {
     position: relative;
     top: -1px;
 }
-.chat-panel-jpush-emoji{
+.chat-panel-jpush-emoji, .room-panel-jpush-emoji{
     img{
         width: 100%;
     }
 }
-.chat-panel-content-text .emoji, .conversation-draft .emoji{
+.chat-panel-content-text .emoji, .room-panel-content-text .emoji, .conversation-draft .emoji{
     position: relative;
     top: -1px;
     vertical-align: middle;
 }
 // menu
-.chat-panel-operation-board .menu-wrap{
+.chat-panel-operation-board .menu-wrap, .room-panel-operation-board .menu-wrap{
     position: static !important;
 }
 // @xxx

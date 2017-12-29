@@ -1,6 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
-
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
     selector: 'linkman-list-component',
@@ -8,11 +6,17 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
     styleUrls: ['./linkman-list.component.scss']
 })
 
-export class LinkmanListComponent implements OnInit, DoCheck {
+export class LinkmanListComponent implements OnInit {
     @Input()
-        private friendList;
+    private friendLoading;
+    @Input()
+    private friendList;
+    @Input()
+    private set friendFlag (value) {
+        this.checkFriendList();
+    }
     @Output()
-        private selectLinkmanItemEmit: EventEmitter<any> = new EventEmitter();
+    private selectLinkmanItemEmit: EventEmitter<any> = new EventEmitter();
     private isEmpty = false;
     constructor() {
         // pass
@@ -20,7 +24,7 @@ export class LinkmanListComponent implements OnInit, DoCheck {
     public ngOnInit() {
         // pass
     }
-    public ngDoCheck() {
+    private checkFriendList() {
         let flag = true;
         for (let item of this.friendList) {
             if (item.data.length > 0) {
@@ -33,20 +37,8 @@ export class LinkmanListComponent implements OnInit, DoCheck {
             this.isEmpty = false;
         }
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     private selectLinkmanItem(item) {
         item.type = 3;
         this.selectLinkmanItemEmit.emit(item);
-    }
-    private avatarLoad(event) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
     }
 }

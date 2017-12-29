@@ -19,7 +19,7 @@
                 </label>
             </p>
             <p class="login-btn" [ngClass]="{'loading': loginLoading}">
-                <button [ngClass]="{'disabled': !isButtonAvailable && !rememberPassword}" class="btn-active" type="button" (click)="login()">登录</button>
+                <button [disabled]="!isButtonAvailable && !rememberPassword" class="btn-active" type="button" (click)="login()">登录</button>
             </p>
             <p class="login-to-register">
                 没有账号？

@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-    AfterViewInit, ElementRef } from '@angular/core';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    AfterViewInit, ViewChild, OnDestroy
+} from '@angular/core';
 import { Observable } from 'rxjs';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'search-member-component',
@@ -9,42 +10,40 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
     styleUrls: ['./search-member.component.scss']
 })
 
-export class SearchMemberComponent implements OnInit, AfterViewInit {
+export class SearchMemberComponent implements OnInit, AfterViewInit, OnDestroy {
+    @ViewChild('searchInput') private searchInput;
     @Input()
-        private searchResult;
+    private searchResult;
     @Output()
-        private searchItem: EventEmitter<any> = new EventEmitter();
+    private searchItem: EventEmitter<any> = new EventEmitter();
     @Output()
-        private searchBtn: EventEmitter<any> = new EventEmitter();
+    private searchBtn: EventEmitter<any> = new EventEmitter();
     @Output()
-        private clearInput: EventEmitter<any> = new EventEmitter();
+    private clearInput: EventEmitter<any> = new EventEmitter();
     @Output()
-        private searchKeyup: EventEmitter<any> = new EventEmitter();
+    private searchKeyup: EventEmitter<any> = new EventEmitter();
     @Output()
-        private changeChecked: EventEmitter<any> = new EventEmitter();
-    private fileDom;
-    constructor(
-        private elementRef: ElementRef
-    ) {
-
-     }
+    private changeChecked: EventEmitter<any> = new EventEmitter();
+    private inputStream$;
+    constructor() {
+        // pass
+    }
     public ngOnInit() {
         // pass
     }
     public ngAfterViewInit() {
-        this.fileDom = this.elementRef.nativeElement.querySelector('#' + this.searchResult.id);
-        Observable.fromEvent(this.fileDom, 'keyup')
+        this.inputStream$ = Observable.fromEvent(this.searchInput.nativeElement, 'keyup')
             .subscribe((event: any) => {
                 if (event.keyCode !== 13) {
                     this.searchKeyup.emit(event.target.value);
                 }
             });
     }
+    public ngOnDestroy() {
+        this.inputStream$.unsubscribe();
+    }
     private stopPropagation(event) {
         event.stopPropagation();
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
     }
     private searchItemAction(item) {
         if (!this.searchResult.checkbox) {
@@ -53,7 +52,7 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
         this.searchItem.emit(item);
     }
     private clearInputAction() {
-        this.fileDom.focus();
+        this.searchInput.nativeElement.focus();
         this.searchResult.keywords = '';
         this.clearInput.emit();
     }
@@ -65,13 +64,7 @@ export class SearchMemberComponent implements OnInit, AfterViewInit {
     private changeCheckedAction(item) {
         this.changeChecked.emit(item);
     }
-    private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+    private clearKeyWords() {
+        this.searchInput.nativeElement.value = '';
     }
 }

@@ -1,19 +1,21 @@
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit,
-        OnChanges, AfterViewInit, OnDestroy, HostListener,
-        ElementRef, SimpleChanges } from '@angular/core';
+import {
+    Component, Input, Output, EventEmitter, ViewChild, OnInit,
+    OnChanges, AfterViewInit, OnDestroy, HostListener,
+    ElementRef, SimpleChanges
+} from '@angular/core';
 import { PerfectScrollbarComponent, PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
 import { Store } from '@ngrx/store';
 import { AppStore } from '../../app.store';
 import { chatAction } from '../../pages/chat/actions';
 import { contactAction } from '../../pages/contact/actions';
 import { mainAction } from '../../pages/main/actions';
-import { global, emojiConfig, jpushConfig, imgRouter,
-        pageNumber, authPayload, StorageService } from '../../services/common';
+import {
+    global, emojiConfig, jpushConfig, imgRouter,
+    pageNumber, authPayload, StorageService
+} from '../../services/common';
 import { Util } from '../../services/util';
 import { Emoji } from '../../services/tools';
 import * as download from 'downloadjs';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-const imageError = '../../../assets/images/image-error.svg';
 
 @Component({
     selector: 'chat-panel-component',
@@ -22,48 +24,49 @@ const imageError = '../../../assets/images/image-error.svg';
 })
 
 export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-    private util: Util = new Util();
     @ViewChild(PerfectScrollbarComponent) private componentScroll;
+    @ViewChild('contentDiv') private contentDiv;
+    @ViewChild('chatPanelContainer') private chatPanelContainer;
     @Input()
-        private messageList;
+    private messageList;
     @Input()
-        private active;
+    private active;
     @Input()
-        private selfInfo;
+    private selfInfo;
     @Input()
-        private otherOptionScrollBottom;
+    private otherOptionScrollBottom;
     @Input()
-        private changeActiveScrollBottom;
+    private changeActiveScrollBottom;
     @Output()
-        private sendMsg: EventEmitter<any> = new EventEmitter();
+    private sendMsg: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendPic: EventEmitter<any> = new EventEmitter();
+    private sendPic: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendFile: EventEmitter<any> = new EventEmitter();
+    private sendFile: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendLocation: EventEmitter<any> = new EventEmitter();
+    private sendLocation: EventEmitter<any> = new EventEmitter();
     @Output()
-        private saveDraft: EventEmitter<any> = new EventEmitter();
+    private saveDraft: EventEmitter<any> = new EventEmitter();
     @Output()
-        private otherInfo: EventEmitter<any> = new EventEmitter();
+    private otherInfo: EventEmitter<any> = new EventEmitter();
     @Output()
-        private selfInfoEmit: EventEmitter<any> = new EventEmitter();
+    private selfInfoEmit: EventEmitter<any> = new EventEmitter();
     @Output()
-        private groupSetting: EventEmitter<any> = new EventEmitter();
+    private groupSetting: EventEmitter<any> = new EventEmitter();
     @Output()
-        private addGroup: EventEmitter<any> = new EventEmitter();
+    private addGroup: EventEmitter<any> = new EventEmitter();
     @Output()
-        private videoPlay: EventEmitter<any> = new EventEmitter();
+    private videoPlay: EventEmitter<any> = new EventEmitter();
     @Output()
-        private loadMore: EventEmitter<any> = new EventEmitter();
+    private loadMore: EventEmitter<any> = new EventEmitter();
     @Output()
-        private retract: EventEmitter<any> = new EventEmitter();
+    private retract: EventEmitter<any> = new EventEmitter();
     @Output()
-        private msgTransmit: EventEmitter<any> = new EventEmitter();
+    private msgTransmit: EventEmitter<any> = new EventEmitter();
     @Output()
-        private businessCardSend: EventEmitter<any> = new EventEmitter();
-    // @Output()
-    //     private msgFile: EventEmitter<any> = new EventEmitter();
+    private businessCardSend: EventEmitter<any> = new EventEmitter();
+    @Output()
+    private inputMessage: EventEmitter<any> = new EventEmitter();
     private global = global;
     private change;
     private flag = false;
@@ -77,10 +80,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         },
         emojiAlias: emojiConfig,
         jpushAlias: jpushConfig,
-        content: '',
         contentId: 'contentDiv'
     };
-    private contentDiv;
     private chatStream$;
     private msg = [];
     private groupConversationHover = {
@@ -186,6 +187,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         show: false,
         info: []
     };
+    private messageContent = '';
+    private isInput = false;
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -218,20 +221,19 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     public ngAfterViewInit() {
         this.allPointerToMap();
-        this.contentDiv = this.elementRef.nativeElement.querySelector('#contentDiv');
     }
     public ngOnDestroy() {
         this.chatStream$.unsubscribe();
     }
-    private scrollBottom (timeout, changeActive ? ) {
+    private scrollBottom(timeout, changeActive?) {
         if (changeActive) {
             this.loadFlag = false;
         }
         setTimeout(() => {
             this.componentScroll.directiveRef.update();
             this.componentScroll.directiveRef.scrollToBottom();
-            this.contentDiv.focus();
-            this.util.focusLast(this.contentDiv);
+            this.contentDiv.nativeElement.focus();
+            Util.focusLast(this.contentDiv.nativeElement);
             if (changeActive) {
                 this.loadFlag = true;
             }
@@ -243,7 +245,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     @HostListener('document:dragleave', ['$event']) private onDragleave(event) {
         event.preventDefault();
     }
-    @HostListener('document:dragenter', ['$event']) private ondDagenter(event) {
+    @HostListener('document:dragenter', ['$event']) private onDragenter(event) {
         event.preventDefault();
     }
     @HostListener('document:dragover', ['$event']) private onDragover(event) {
@@ -321,59 +323,56 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 this.imageViewer.result = chatState.imageViewer;
                 this.voiceState = chatState.voiceState;
                 break;
-                // 发送群组文件消息
+            // 发送群组文件消息
             case chatAction.sendGroupFile:
 
-                // 发送单聊文本消息
+            // 发送单聊文本消息
             case chatAction.sendSingleMessage:
 
-                // 发送群组文本消息
+            // 发送群组文本消息
             case chatAction.sendGroupMessage:
 
-                // 发送单聊图片消息
+            // 发送单聊图片消息
             case chatAction.sendSinglePic:
 
-                // 发送群组图片消息
+            // 发送群组图片消息
             case chatAction.sendGroupPic:
 
-                // 发送单聊文件消息
+            // 发送单聊文件消息
             case chatAction.sendSingleFile:
 
-                // 发送群组文件消息
+            // 发送群组文件消息
             case chatAction.sendGroupFile:
                 this.updateMsg(chatState);
                 this.imageViewer.result = chatState.imageViewer;
                 break;
             case chatAction.transmitSingleMessage:
 
-                // 转发单聊图片消息
+            // 转发单聊图片消息
             case chatAction.transmitSinglePic:
 
-                // 转发单聊文件消息
+            // 转发单聊文件消息
             case chatAction.transmitSingleFile:
 
-                // 转发群聊文本消息
+            // 转发群聊文本消息
             case chatAction.transmitGroupMessage:
 
-                // 转发单聊图片消息
+            // 转发单聊图片消息
             case chatAction.transmitGroupPic:
 
-                // 转发单聊文件消息
+            // 转发单聊文件消息
             case chatAction.transmitGroupFile:
 
-                // 转发单聊位置
+            // 转发单聊位置
             case chatAction.transmitSingleLocation:
 
-                // 转发群聊位置
+            // 转发群聊位置
             case chatAction.transmitGroupLocation:
-                if (this.active.type === 3 &&
-                    chatState.newMessage.content.target_id === this.active.name) {
-                    this.updateMsg(chatState);
-                    this.pointerToMap(chatState);
-                    this.scrollBottom(0);
-                    this.imageViewer.result = chatState.imageViewer;
-                } else if (this.active.type === 4 &&
-                    Number(chatState.newMessage.key) === Number(this.active.key)) {
+                const single = this.active.type === 3 &&
+                    chatState.newMessage.content.target_id === this.active.name;
+                const group = this.active.type === 4 &&
+                    Number(chatState.newMessage.key) === Number(this.active.key);
+                if (single || group) {
                     this.updateMsg(chatState);
                     this.pointerToMap(chatState);
                     this.scrollBottom(0);
@@ -410,6 +409,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.exitGroupEvent:
 
             case chatAction.createGroupSuccessEvent:
+
+            // 添加群成员禁言事件
+            case chatAction.addGroupMemberSilenceEvent:
+
+            // 移除群成员禁言事件
+            case chatAction.deleteGroupMemberSilenceEvent:
                 this.updateMsg(chatState);
                 break;
             case chatAction.msgFile:
@@ -421,14 +426,17 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             case chatAction.dispatchFriendList:
                 this.businessCard.info = contactState.friendList;
                 break;
+            case chatAction.receiveInputMessage:
+                this.isInput = chatState.isInput;
+                break;
             default:
         }
     }
     private updateMsg(chatState) {
         if (chatState.activePerson.activeIndex < 0) {
-            return ;
+            return;
         }
-        let list = chatState.messageList[chatState.activePerson.activeIndex];
+        const list = chatState.messageList[chatState.activePerson.activeIndex];
         if (list.msgs.length > pageNumber) {
             this.msg = list.msgs.slice(list.msgs.length - this.msg.length);
         } else {
@@ -469,47 +477,44 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private showYouMoreText(event, item, more) {
         const showArr = [false, true, true];
         const isFirstArr = [false, true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showYouMoreOther(event, item, more) {
+    private showYouMoreOther(event, item) {
         const showArr = [false, true, false];
         const isFirstArr = [false, true, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showMeMoreText(event, item, more) {
+    private showMeMoreText(event, item) {
         const showArr = [true, true, true];
         const isFirstArr = [true, false, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showMeMoreOther(event, item, more) {
+    private showMeMoreOther(event, item) {
         const showArr = [true, true, false];
         const isFirstArr = [true, false, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
-    private showMeMoreVoice(event, item, more) {
+    private showMeMoreVoice(event, item) {
         const showArr = [true, false, false];
         const isFirstArr = [true, false, false];
-        this.menuOption(this.moreMenu.info, showArr, isFirstArr);
-        this.moreOperation(event, item, more);
+        this.menuOption(showArr, isFirstArr);
+        this.moreOperation(event, item);
     }
     // 更多列表的配置
-    private menuOption (info, showArr, isFirstArr) {
+    private menuOption(showArr, isFirstArr) {
         for (let i = 0; i < showArr.length; i++) {
-            info[i].show = showArr[i];
+            this.moreMenu.info[i].show = showArr[i];
         }
         for (let i = 0; i < isFirstArr.length; i++) {
-            info[i].isFirst = isFirstArr[i];
+            this.moreMenu.info[i].isFirst = isFirstArr[i];
         }
     }
     // 更多列表的位置
-    private moreOperation(event, item, more) {
-        let result = this.moreMenu.info.filter((info) => {
-            return info.show === true;
-        });
+    private moreOperation(event, item) {
         this.moreMenu.show = !this.moreMenu.show;
         if (this.moreMenu.show) {
             this.moreMenu.top = event.clientY - event.offsetY + 20;
@@ -518,12 +523,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         }
     }
     // 图片预览
-    private imageViewerShow(src, item) {
+    private imageViewerShow(item) {
         for (let i = 0; i < this.imageViewer.result.length; i++) {
-            let msgIdFlag = this.imageViewer.result[i].msg_id === item.msg_id && item.msg_id;
-            let msgKeyFlag = this.imageViewer.result[i].msgKey === item.msgKey && item.msgKey;
+            const msgIdFlag = item.msg_id && this.imageViewer.result[i].msg_id === item.msg_id;
+            const msgKeyFlag = item.msgKey && this.imageViewer.result[i].msgKey === item.msgKey;
             if (msgIdFlag || msgKeyFlag) {
-                this.imageViewer.active = Object.assign({}, this.imageViewer.result[i], {});
+                this.imageViewer.active = Util.deepCopyObj(this.imageViewer.result[i]);
                 this.imageViewer.active.index = i;
                 break;
             }
@@ -532,24 +537,26 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         this.viewer = this.imageViewer;
     }
     // 切换会话人渲染地图
-    private allPointerToMap(index ?: number) {
+    private allPointerToMap(index?: number) {
         const num = index ? index : this.msg.length;
-        for (let i = 0 ; i < num; i++) {
+        for (let i = 0; i < num; i++) {
             if (this.msg[i].content.msg_type === 'location') {
                 const that = this;
                 ((indexNum) => {
                     setTimeout(function () {
                         if (!that.msg[indexNum] || !that.msg[indexNum].content ||
                             !that.msg[indexNum].content.msg_body.longitude) {
-                                clearInterval(this);
-                                return ;
+                            clearTimeout(this);
+                            return;
                         }
-                        that.util.theLocation({
+                        const msgBody = that.msg[indexNum].content.msg_body;
+                        Util.theLocation({
                             id: 'allmap' + indexNum,
-                            longitude: that.msg[indexNum].content.msg_body.longitude,
-                            latitude: that.msg[indexNum].content.msg_body.latitude
+                            longitude: msgBody.longitude,
+                            latitude: msgBody.latitude,
+                            scale: msgBody.scale
                         });
-                    }, 0);
+                    });
                 })(i);
             }
         }
@@ -557,25 +564,27 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 接收到地图消息渲染地图
     private pointerToMap(chatState) {
         if (chatState.newMessage.content.msg_type === 'location') {
+            const length = this.msg.length;
+            const newMessage = Util.deepCopyObj(chatState.newMessage);
+            const msgBody = newMessage.content.msg_body;
             setTimeout(() => {
-                this.util.theLocation({
-                    id: 'allmap' + (this.msg.length - 1).toString(),
-                    longitude: chatState.newMessage.content.msg_body.longitude,
-                    latitude: chatState.newMessage.content.msg_body.latitude
+                Util.theLocation({
+                    id: 'allmap' + (length - 1).toString(),
+                    longitude: msgBody.longitude,
+                    latitude: msgBody.latitude,
+                    scale: msgBody.scale
                 });
             }, 100);
         }
     }
     // 粘贴文本，将文本多余的样式代码去掉/粘贴图片
     private pasteMessage(event) {
-        let clipboardData = event.clipboardData || (<any> window).clipboardData;
-        let items = clipboardData.items;
-        let files = clipboardData.files;
+        const clipboardData = event.clipboardData || (<any> window).clipboardData;
+        const items = clipboardData.items;
+        const files = clipboardData.files;
         let item;
         // 粘贴图片不兼容safari
-        let userAgent = navigator.userAgent;
-        let isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1;
-        if (!isSafari) {
+        if (!Util.isSafari()) {
             if (files && files.length) {
                 this.getImgObj(files[0]);
             } else if (items) {
@@ -596,7 +605,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         pastedData = pastedData.replace(/\n/g, '<br>');
         pastedData = pastedData.replace(/ /g, '&nbsp;');
         pastedData = Emoji.emoji(pastedData, 18);
-        this.util.insertAtCursor(this.contentDiv, pastedData, false);
+        Util.insertAtCursor(this.contentDiv.nativeElement, pastedData, false);
         return false;
     }
     // 粘贴图片发送
@@ -612,7 +621,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 拖拽预览文件或者图片
     private dropArea(event) {
         event.preventDefault();
-        let fileList = event.dataTransfer.files;
+        const fileList = event.dataTransfer.files;
         if (fileList.length === 0) {
             return false;
         }
@@ -639,10 +648,10 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         let pasteFile = file;
         let reader = new FileReader();
         reader.readAsDataURL(pasteFile);
-        reader.onload = function(e){
+        reader.onload = function (e) {
             img.src = this.result;
             const _this = this;
-            img.onload = function(){
+            img.onload = function () {
                 that.pasteImage.info = {
                     src: _this.result,
                     width: img.naturalWidth,
@@ -655,7 +664,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 发送文本
     private sendMsgAction() {
-        let draft = this.contentDiv.innerHTML;
+        let draft = this.contentDiv.nativeElement.innerHTML;
         if (draft) {
             draft = draft.replace(/^(<br>){1,}$/g, '');
             draft = draft.replace(/&nbsp;/g, ' ');
@@ -692,8 +701,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     }
                 }
                 if (!isAtAll) {
-                    for (let item of usernameArr){
-                        let result = atList.filter((atItem) => {
+                    for (let item of usernameArr) {
+                        const result = atList.filter((atItem) => {
                             return atItem.username === item.username;
                         });
                         if (result.length === 0) {
@@ -711,7 +720,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             });
             this.messageList[this.active.activeIndex].draft = '';
             this.flag = true;
-            this.contentDiv.innerHTML = '';
+            this.contentDiv.nativeElement.innerHTML = '';
         }
     }
     // 发送图片
@@ -720,13 +729,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         if (!event.target.files[0]) {
             return;
         }
-        let img = this.util.getFileFormData(event.target);
+        let img = Util.getFileFormData(event.target);
         this.sendPic.emit({
             img,
             type: 'send'
         });
-        this.contentDiv.focus();
-        this.util.focusLast(this.contentDiv);
+        this.contentDiv.nativeElement.focus();
+        Util.focusLast(this.contentDiv.nativeElement);
         event.target.value = '';
     }
     // 发送文件
@@ -735,17 +744,17 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         if (!event.target.files[0]) {
             return;
         }
-        let file = this.util.getFileFormData(event.target);
+        let file = Util.getFileFormData(event.target);
         this.sendFile.emit({
             file,
             fileData: event.target.files[0]
         });
-        this.contentDiv.focus();
-        this.util.focusLast(this.contentDiv);
+        this.contentDiv.nativeElement.focus();
+        Util.focusLast(this.contentDiv.nativeElement);
         event.target.value = '';
     }
     private msgContentChange(event) {
-        let active = Object.assign({}, this.active, {});
+        const active = Util.deepCopyObj(this.active);
         let value = event.target.innerHTML;
         const atInputReg = new RegExp(`<input.+?class="chat-panel-at-input".+?>`, 'g');
         if (value.match(atInputReg)) {
@@ -773,7 +782,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 查看对方用户资料
     private watchOtherInfo(content) {
-        let username = content.from_id ? content.from_id : content.name;
+        const username = content.from_id ? content.from_id : content.name;
         let info: any = {
             username
         };
@@ -809,19 +818,16 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     private showEmojiPanel(event) {
         this.inputNoBlur = false;
         event.stopPropagation();
-        this.contentDiv.focus();
+        this.contentDiv.nativeElement.focus();
         if (this.inputToLast) {
-            this.util.focusLast(this.contentDiv);
+            Util.focusLast(this.contentDiv.nativeElement);
         }
-        this.emojiInfo.content = this.messageList[this.active.activeIndex];
-        if (this.emojiInfo.show === true) {
-            this.emojiInfo.show = false;
+        if (this.emojiInfo.show) {
             setTimeout(() => {
                 this.inputNoBlur = true;
             }, 200);
-        } else {
-            this.emojiInfo.show = true;
         }
+        this.emojiInfo.show = !this.emojiInfo.show;
     }
     private msgContentClick(event) {
         this.inputToLast = false;
@@ -840,11 +846,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             }
         });
     }
-    // 输入框keydown，ctrl + enter换行，enter发送消息，@用户
+    // 输入框keydown，ctrl + enter换行，enter发送消息
     private preKeydown(event) {
         if (event.keyCode === 13 && event.ctrlKey) {
-            const contentId =
-                this.elementRef.nativeElement.querySelector('#' + this.emojiInfo.contentId);
             let insertHtml = '<br>';
             if (window.getSelection) {
                 let next = window.getSelection().focusNode.nextSibling;
@@ -862,12 +866,9 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                     insertHtml += insertHtml;
                 }
             }
-            let userAgent = navigator.userAgent;
-            let isSafari = userAgent.indexOf('Safari') > -1 &&
-                            userAgent.indexOf('Chrome') === -1;
             // safari自身可以换行，不用处理
-            if (!isSafari) {
-                this.util.insertAtCursor(contentId, insertHtml, false);
+            if (!Util.isSafari()) {
+                Util.insertAtCursor(this.contentDiv.nativeElement, insertHtml, false);
             }
         } else if (event.keyCode === 13) {
             this.sendMsgAction();
@@ -877,17 +878,27 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 输入框keyup
     private preKeyup(event) {
         if (this.active.type === 3) {
-            return ;
+            // 单聊正在输入
+            if (this.messageContent !== event.target.innerHTML) {
+                this.messageContent = event.target.innerHTML;
+                this.inputMessage.emit({
+                    type: 'input',
+                    content: {
+                        message: this.messageContent
+                    }
+                });
+            }
+            return;
         }
-        let selection = window.getSelection();
-        let range = selection.getRangeAt(0);
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
         let groupSetting = this.messageList[this.active.activeIndex].groupSetting;
         let memberList;
         if (groupSetting) {
             memberList = groupSetting.memberList;
         }
         if (!groupSetting || !memberList) {
-            return ;
+            return;
         }
         if (event.code === 'Digit2' && event.shiftKey) {
             this.showAtList(range, memberList, true);
@@ -940,33 +951,33 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 item.memo_name.toUpperCase().indexOf(letter) !== -1) {
                 item.match = 'memo_name';
                 newList.push(item);
-                continue ;
+                continue;
             }
             if (item.nickName &&
                 item.nickName.toUpperCase().indexOf(letter) !== -1) {
                 item.match = 'nickName';
                 newList.push(item);
-                continue ;
+                continue;
             }
             if (item.username.toUpperCase().indexOf(letter) !== -1) {
                 item.match = 'username';
                 newList.push(item);
-                continue ;
+                continue;
             }
             if (item.memo_nameFirstLetter && item.memo_nameFirstLetter === letter) {
                 item.match = 'memo_name';
                 newList.push(item);
-                continue ;
+                continue;
             }
             if (item.nickNameFirstLetter && item.nickNameFirstLetter === letter) {
                 item.match = 'nickName';
                 newList.push(item);
-                continue ;
+                continue;
             }
             if (item.usernameFirstLetter === letter) {
                 item.match = 'username';
                 newList.push(item);
-                continue ;
+                continue;
             }
             item.match = '';
         }
@@ -977,18 +988,18 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 item.memo_name.toUpperCase().indexOf(letter) !== -1) {
                 item.match = 'memo_name';
                 newList.push(item);
-                continue ;
+                continue;
             }
             if (item.nickName &&
                 item.nickName.toUpperCase().indexOf(letter) !== -1) {
                 item.match = 'nickName';
                 newList.push(item);
-                continue ;
+                continue;
             }
             if (item.username.toUpperCase().indexOf(letter) !== -1) {
                 item.match = 'username';
                 newList.push(item);
-                continue ;
+                continue;
             }
             item.match = '';
         }
@@ -1002,7 +1013,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 break;
             }
         }
-        const position = this.util.getOffset(this.contentDiv);
+        const position = Util.getOffset(this.contentDiv.nativeElement);
         this.atList = {
             show: true,
             left: position.left,
@@ -1014,27 +1025,27 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 选择@列表
     private selectAtItemEmit(item) {
-        let selection = window.getSelection();
-        let range = selection.getRangeAt(0);
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
         this.inputNoBlur = false;
         // 计算@xxx的宽度
-        let span = document.createElement('span');
+        const span = document.createElement('span');
         span.innerHTML = `@${item.nickName || item.username}&nbsp;`;
         span.style.fontSize = '14px';
         document.body.appendChild(span);
         const inputWidth = span.offsetWidth;
         document.body.removeChild(span);
         // 删除原来的@ 或者 @xxx
-        let textNode = range.startContainer;
+        const textNode = range.startContainer;
         range.setStart(textNode, range.endOffset - this.atDeleteNum);
         range.setEnd(textNode, range.endOffset);
         range.deleteContents();
-        // 输入框中插入@XXX
+        // 输入框中插入@xxx
         const content = `<input style="width: ${inputWidth + 'px'}"
                         type="text" class="chat-panel-at-input"
                         value="@${item.nickName || item.username} "
                         username="${item.username} " appkey="${item.appkey} "/>`;
-        this.util.insertAtCursor(this.contentDiv, content, false);
+        Util.insertAtCursor(this.contentDiv.nativeElement, content, false);
         this.atList.show = false;
         setTimeout(() => {
             this.inputNoBlur = true;
@@ -1043,18 +1054,18 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 给@xxx绑定事件
     private inputAtEvent() {
-        let inputArray: any = document.getElementsByClassName('chat-panel-at-input');
+        const inputArray: any = document.getElementsByClassName('chat-panel-at-input');
         for (let input of inputArray) {
             input.onclick = null;
             input.addEventListener('click', (event) => {
                 event.stopPropagation();
                 this.inputNoBlur = false;
-                let selection = window.getSelection();
-                let range = selection.getRangeAt(0);
-                let textNode = range.startContainer;
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+                const textNode = range.startContainer;
                 range.setStart(textNode, range.endOffset);
                 range.setEnd(textNode, range.endOffset);
-                this.contentDiv.focus();
+                this.contentDiv.nativeElement.focus();
             }, false);
         }
     }
@@ -1079,9 +1090,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         item.repeatSend = true;
         this.sendLocation.emit(item);
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     // 向上滚动加载更多消息
     private scrollTopEvent() {
         if (!this.loadFlag) {
@@ -1096,7 +1104,7 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             this.loadingFlag = 2;
             const oldContentHeight = this.componentScroll.directiveRef.geometry().h;
             const activeKey = this.active.key;
-            this.loadingCount ++;
+            this.loadingCount++;
             this.loadMore.emit({
                 loadingCount: this.loadingCount
             });
@@ -1115,22 +1123,22 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                         this.msg = msgs;
                         setTimeout(() => {
                             this.loadingFlag = 3;
-                        }, 0);
+                        });
                     } else {
                         this.msg = msgs.slice(msgs.length - pageNumber * this.loadingCount);
                         setTimeout(() => {
                             this.loadingFlag = 1;
-                        }, 0);
+                        });
                     }
                     const newLength = this.msg.length;
                     this.allPointerToMap(newLength - oldLength);
-                    return new Promise ((resolve, reject) => {
+                    return new Promise((resolve, reject) => {
                         setTimeout(() => {
                             const newContentHeight = this.componentScroll.directiveRef.geometry().h;
                             const gap = newContentHeight - oldContentHeight;
                             this.componentScroll.directiveRef.scrollTo(0, gap);
                             resolve();
-                        }, 0);
+                        });
                     }).catch(() => {
                         console.log('Promise Rejected');
                     });
@@ -1140,10 +1148,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     // 触发滚动事件，上报已读回执
     private scrollY() {
-        let domArr = document.getElementsByClassName('msg-dom');
-        let offsetHeight = this.elementRef.nativeElement.querySelector('#imgViewer').offsetHeight;
-        let scrollTop = this.componentScroll.directiveRef.geometry().y;
-        let scrollHeight = this.componentScroll.directiveRef.geometry().h;
+        if (this.msg.length === 0) {
+            return;
+        }
+        const domArr = document.getElementsByClassName('msg-dom');
+        const offsetHeight = this.chatPanelContainer.nativeElement.offsetHeight;
+        const scrollTop = this.componentScroll.directiveRef.geometry().y;
+        const scrollHeight = this.componentScroll.directiveRef.geometry().h;
         let readObj;
         if (this.active.type === 3) {
             readObj = {
@@ -1159,8 +1170,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
                 type: 4
             };
         }
-        for (let i = 0; i < domArr.length; i ++) {
-            let offsetTop = (domArr[i] as HTMLDivElement).offsetTop;
+        for (let i = 0; i < domArr.length; i++) {
+            const offsetTop = (domArr[i] as HTMLDivElement).offsetTop;
             if (scrollTop <= offsetTop && offsetTop <= scrollTop + offsetHeight) {
                 if (this.msg[i].content.from_id !== global.user) {
                     readObj.msg_id.push(this.msg[i].msg_id);
@@ -1178,7 +1189,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 显示聊天文件的侧边栏
     private msgFileAction(event) {
         event.stopPropagation();
-        // this.msgFile.emit();
         this.msgFile.show = true;
         this.store$.dispatch({
             type: chatAction.msgFile,
@@ -1192,8 +1202,8 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     private contentFocus(event) {
         event.stopPropagation();
-        this.contentDiv.focus();
-        this.util.focusLast(this.contentDiv);
+        this.contentDiv.nativeElement.focus();
+        Util.focusLast(this.contentDiv.nativeElement);
         this.emojiInfo.show = false;
         this.store$.dispatch({
             type: chatAction.msgFile,
@@ -1235,12 +1245,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 清除语音播放
     private clearVoicePlay(index) {
         for (let i = 0; i < this.msg.length; i++) {
-            if (this.msg[i].content.msg_type === 'voice' &&
-                this.msg[i].content.playing && i !== index) {
+            let content = this.msg[i].content;
+            if (content.msg_type === 'voice' && content.playing && i !== index) {
                 const otherAudio = this.elementRef.nativeElement.querySelector('#audio' + i);
                 otherAudio.pause();
                 otherAudio.currentTime = 0;
-                this.msg[i].content.playing = false;
+                content.playing = false;
             }
         }
     }
@@ -1262,10 +1272,12 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         this.msg[index].content.timer4 = setInterval(function () {
             if (!that.msg[index] || !that.msg[index].content) {
                 clearInterval(this);
-                return ;
+                return;
             }
             if (that.msg[index].content.range < 90) {
-                that.msg[index].content.range ++;
+                that.msg[index].content.range++;
+            } else {
+                clearInterval(this);
             }
         }, 100);
     }
@@ -1279,18 +1291,6 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     }
     private playVideo(url) {
         this.videoPlay.emit(url);
-    }
-    private avatarLoad(event) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
-    }
-    private stopPropagation(event) {
-        event.stopPropagation();
     }
     private fileDownload(url) {
         // 为了兼容火狐下a链接下载，引入downloadjs
@@ -1314,12 +1314,13 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
     // 预览聊天文件中的图片
     private showMsgFileImageViewerEmit(item) {
         for (let i = 0; i < this.msgFileImageViewer.result.length; i++) {
-            let msgIdFlag = this.msgFileImageViewer.result[i].msg_id === item.msg_id && item.msg_id;
-            let msgKeyFlag = this.msgFileImageViewer.result[i].msgKey === item.msgKey &&
-                            item.msgKey;
+            const msgIdFlag = this.msgFileImageViewer.result[i].msg_id === item.msg_id &&
+                item.msg_id;
+            const msgKeyFlag = this.msgFileImageViewer.result[i].msgKey === item.msgKey &&
+                item.msgKey;
             if (msgIdFlag || msgKeyFlag) {
                 this.msgFileImageViewer.active =
-                    Object.assign({}, this.msgFileImageViewer.result[i], {});
+                    Util.deepCopyObj(this.msgFileImageViewer.result[i]);
                 this.msgFileImageViewer.active.index = i;
                 break;
             }
@@ -1339,14 +1340,23 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
         if (message.unread_count > 0 && this.active.type === 4) {
             this.store$.dispatch({
                 type: chatAction.watchUnreadList,
-                payload: message
+                payload: {
+                    show: true,
+                    message
+                }
             });
         }
     }
-     private showBusinessCardModal() {
-         this.businessCard.show = true;
-     }
-     private businessCardSendEmit(user) {
+    private showBusinessCardModal() {
+        this.businessCard.show = true;
+    }
+    private businessCardSendEmit(user) {
         this.businessCardSend.emit(user);
-     }
+    }
+    private jpushEmojiSelectEmit(jpushEmoji) {
+        this.sendPic.emit({
+            jpushEmoji,
+            type: 'jpushEmoji'
+        });
+    }
 }

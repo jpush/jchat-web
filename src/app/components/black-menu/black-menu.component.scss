@@ -9,6 +9,9 @@
             height: 30px;
             margin-right: 10px;
             overflow: hidden;
+            img{
+                width: 100%;
+            }
         }
         .flex-1{
             text-overflow: ellipsis;
@@ -48,12 +51,4 @@
     li:last-of-type{
         margin-bottom: 0;
     }
-}
-.black-menu-nomore{
-    line-height: 51px;
-    height: 51px;
-    text-align: center;
-    font-size: 14px;
-    color: #808080;
-    opacity: 0.4;
 }

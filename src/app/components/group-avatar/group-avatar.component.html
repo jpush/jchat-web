@@ -1,12 +1,12 @@
 <div class="modal-shadow" (click)="stopPropagation($event)">
     <div class="group-avatar-image-content">
         <span class="modal-close" (click)="modalAction($event)"></span>
-        <h2>群组头像</h2>
+        <h2>{{groupAvatarInfo.title}}</h2>
         <div class="group-avatar-img-container">
-            <img [src]="groupAvatarInfo.info.src" alt="">
+            <img #cropperImg [src]="groupAvatarInfo.info.src" (load)="cropperImgLoad()" alt="">
         </div>
         <p class="modal-btn clearfix">
-            <button type="button" class="btn-cancel btn-white float-left" (click)="modalAction($event)">取消</button>
+            <button type="button" class="btn-cancel btn-white float-left" (click)="modalAction($event, 'cancel')">取消</button>
             <button type="button" class="btn-confirm btn-active float-right" (click)="modalAction($event, 'confirm')">确定</button>            
         </p>
     </div>

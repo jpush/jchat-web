@@ -26,7 +26,7 @@
             -webkit-box-sizing: border-box;
                     box-sizing: border-box;      
             .chat-panel-name{
-                max-width: 80%;
+                max-width: 50%;
                 float: left;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -39,6 +39,11 @@
                 &:hover{
                     color: #2dd0cf;
                 }
+            }
+            .chat-panel-is-input{
+                font-size: 12px;
+                color: #2C2C2C;
+                margin-left: 8px;
             }
             .chat-panel-setting-btn, .chat-panel-group-setting, .chat-panel-record-btn{
                 height: 20px;
@@ -53,15 +58,19 @@
                 width: 20px;                
                 background: #fff url(../../../assets/images/msg-record.svg) center center no-repeat;
                 background-size: 20px;
+                &:hover{
+                    background-image: url(../../../assets/images/msg-record-active.svg);
+                    background-size: 20px;
+                }
             }
             .chat-panel-setting-btn{
                 width: 20px;                
                 background: #fff url(../../../assets/images/add-group-normal.svg) center center no-repeat;
                 background-size: 20px;
-            }
-            .chat-panel-setting-btn.active{
-                background-image: url(../../../assets/images/add-group-active.svg);
-                background-size: 20px;
+                &:hover{
+                    background-image: url(../../../assets/images/add-group-active.svg);
+                    background-size: 20px;
+                }
             }
             .chat-panel-group-setting{
                 width: 24px;                
@@ -85,10 +94,14 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
+                .chat-panel-wrap{
+                    overflow: hidden;
+                }
             }
             .group-username{
-                line-height: 20px;
-                height: 20px;
+                line-height: 12px;
+                height: 14px;
+                margin-bottom: 2px;
                 font-size: 12px;
                 color: #999;
                 max-width: 400px;
@@ -251,9 +264,11 @@
                 height: 40px;
                 cursor: pointer;
                 overflow: hidden;
+                img{
+                    width: 100%;
+                }
             }
             .chat-panel-business-card{
-                cursor: pointer;
                 position: relative;
             }
             .chat-panel-video{
@@ -338,11 +353,20 @@
                     width: 230px;
                     height: 150px;
                     border-radius: 5px;
-                    overflow: hidden;
                     .chat-panel-allmap{
+                        border-radius: 5px;
                         width: 100%;
                         height: 100%;
                         cursor: pointer;
+                        &:after{
+                            content: '';
+                            display: block;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            position: absolute;
+                        }
                     }
                     .chat-panel-address{
                         position: absolute;
@@ -360,6 +384,8 @@
                         white-space: nowrap;
                         color: #fff;
                         font-size: 14px;
+                        border-bottom-left-radius: 5px;
+                        border-bottom-right-radius: 5px;
                     }   
                 }
             }
@@ -504,6 +530,7 @@
                 background: #F2F6FB;
                 border: 1px solid #E2E9F0;
                 position: relative;
+                cursor: pointer;
                 &.chat-panel-card-you{
                     border-radius: 0 5px 5px 5px;                
                     &:after{
@@ -631,6 +658,18 @@
                     border: 1px solid #E2E9F0;
                     border-radius: 0 5px 5px 5px;
                     position: relative;
+                    &.loading:before{
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        display: block;
+                        background: url(../../../assets/images/app-loading.gif) center center no-repeat;
+                        background-size: 20px;
+                        z-index: 1;
+                    }
                     &:after{
                         content: '';
                         position: absolute;
@@ -686,16 +725,6 @@
                     padding: 9px 11px;
                     text-align: left;
                     position: relative;
-                    &:after{
-                        content: '';
-                        position: absolute;
-                        top: -1px;
-                        right: -6px;
-                        width: 6px;
-                        height: 10px;
-                        display: block;
-                        background: url(../../../assets/images/pao-me.svg) right top no-repeat;
-                    }
                     &.jpush-emoji-container{
                         background: none;
                         border: none;
@@ -720,7 +749,16 @@
                         min-height: 20px;
                         word-break: break-all;
                         word-break: break-word;
+                        position: relative;
                     }
+                }
+                .chat-panel-text-arror{
+                    width: 6px;
+                    min-height: 20px;
+                    background: url(../../../assets/images/pao-me.svg) right top no-repeat;
+                    position: relative;
+                    right: 1px;
+                    z-index: 1;
                 }
                 .chat-panel-fromId-me{
                     margin-left: 12px;
@@ -746,6 +784,9 @@
                     }
                 }
                 .chat-panel-img-me{
+                    .chat-panel-jpush-emoji{
+                        position: relative;
+                    }
                     .chat-panel-message-img-wrap{
                         border-radius: 5px;
                         position: relative;

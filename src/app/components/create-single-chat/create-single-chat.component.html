@@ -5,7 +5,7 @@
             <span class="modal-close" (click)="createSingleChatEmit()"></span>
         </h2>
         <div class="modal-input">
-            <input spellcheck="false" (keyup)="emptyTip()" class="input-focus" [(ngModel)]="singleName" id="singleChatInput" type="text" [placeholder]="createSingleOption.placeholder" (keyup.enter)="createSingleChatEmit(singleName)">
+            <input spellcheck="false" [class.error]="info?.length > 0" (keyup)="inputKeyup($event)" class="input-focus" [(ngModel)]="singleName" #singleChatInput type="text" [placeholder]="createSingleOption.placeholder">
             <p class="modal-info" *ngIf="info">{{info}}</p>            
         </div>
         <p class="modal-btn">

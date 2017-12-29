@@ -1,29 +1,28 @@
 import { mainAction } from '../../main/actions';
 import { chatAction } from '../actions';
+import { roomAction } from '../../room/actions';
 import { ChatStore } from '../stores/chat.store';
 import { chatInit } from '../model';
 import { contactAction } from '../../contact/actions';
 import { global, authPayload } from '../../../services/common';
 import { Util } from '../../../services/util';
-let util = new Util();
 
-export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
+export const chatReducer = (state: ChatStore = chatInit, { type, payload }) => {
     state.actionType = type;
     switch (type) {
-            // 初始化satate
+        // 初始化state
         case chatAction.init:
-            state = Object.assign({}, chatInit, {});
+            state = Util.deepCopyObj(chatInit);
             break;
-            // 初始化会话
+        // 初始化会话列表
         case chatAction.getConversationSuccess:
             if (payload.storage) {
                 state.conversation = payload.conversation;
                 if (payload.messageList.length > 0) {
                     state.messageList = payload.messageList;
-                    unreadNum(state, payload);
-                    state.msgId = initFilterMsgId(state);
                 }
                 filterRecentMsg(state);
+                filterAtList(state);
                 state.isLoaded = true;
                 completionMessageList(state);
             }
@@ -35,10 +34,11 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 initNoDisturb(state, payload.noDisturb);
             }
             if (state.friendList.length > 0) {
-                filteConversationMemoName(state);
+                filterConversationMemoName(state);
             }
+            conversationUnreadNum(state);
             break;
-            // 获取好友列表
+        // 获取好友列表
         case chatAction.getFriendListSuccess:
             if (payload && payload.type) {
                 compareFriendList(state, payload.friendList);
@@ -48,86 +48,80 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             filterFriendList(state, payload);
             if (state.conversation.length > 0) {
-                filteConversationMemoName(state);
+                filterConversationMemoName(state);
             }
             break;
-            // 登陆后，离线消息同步消息列表
+        // 登陆后，离线消息同步消息列表
         case chatAction.getAllMessageSuccess:
             state.messageList = payload;
             state.imageViewer = filterImageViewer(state);
             break;
-            // 接收消息
+        // 接收消息
         case chatAction.receiveMessageSuccess:
             addMessage(state, payload);
-            newMessageFilterMsgId(state, payload);
+            newMessageIsActive(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 发送单聊文本消息
+        // 发送单聊文本消息
         case chatAction.sendSingleMessage:
 
-            // 发送群组文本消息
+        // 发送群组文本消息
         case chatAction.sendGroupMessage:
 
-            // 发送单聊图片消息
+        // 发送单聊图片消息
         case chatAction.sendSinglePic:
 
-            // 发送群组图片消息
+        // 发送群组图片消息
         case chatAction.sendGroupPic:
 
-            // 发送单聊文件消息
+        // 发送单聊文件消息
         case chatAction.sendSingleFile:
 
-            // 发送群组文件消息
+        // 发送群组文件消息
         case chatAction.sendGroupFile:
             // 判断是否是重发消息
             if (!payload.msgs.repeatSend) {
                 addMessage(state, payload);
             }
-            let extras = payload.msgs.content.msg_body.extras;
+            const extras = payload.msgs.content.msg_body.extras;
             if (extras && extras.businessCard) {
                 state.sendBusinessCardSuccess = 0;
             }
             break;
-            // 发送消息成功（包括所有类型的消息）
+        // 发送消息完成（包括所有类型的消息）
         case chatAction.sendMsgComplete:
             sendMsgComplete(state, payload);
-            if (payload.success === 2) {
-                state.msgId = updateFilterMsgId(state, [{
-                    key: payload.key,
-                    name: payload.name,
-                    type: payload.type
-                }]);
-            }
             if (payload.msgs) {
-                let bussinessExtras = payload.msgs.content.msg_body.extras;
+                const bussinessExtras = payload.msgs.content.msg_body.extras;
                 if (bussinessExtras && bussinessExtras.businessCard && payload.success !== 2) {
                     state.sendBusinessCardSuccess = 0;
                 } else {
-                    state.sendBusinessCardSuccess ++;
+                    state.sendBusinessCardSuccess++;
                 }
             }
             break;
-            // 转发单聊文本消息
+        // 转发单聊文本消息
         case chatAction.transmitSingleMessage:
 
-            // 转发单聊图片消息
+        // 转发单聊图片消息
         case chatAction.transmitSinglePic:
 
-            // 转发单聊文件消息
+        // 转发单聊文件消息
         case chatAction.transmitSingleFile:
 
-            // 转发群聊文本消息
+        // 转发群聊文本消息
         case chatAction.transmitGroupMessage:
 
-            // 转发单聊图片消息
+        // 转发单聊图片消息
         case chatAction.transmitGroupPic:
 
-            // 转发单聊文件消息
+        // 转发单聊文件消息
         case chatAction.transmitGroupFile:
 
-            // 转发单聊位置
+        // 转发单聊位置
         case chatAction.transmitSingleLocation:
 
-            // 转发群聊位置
+        // 转发群聊位置
         case chatAction.transmitGroupLocation:
             if (!payload.msgs.repeatSend) {
                 state.transmitSuccess = 0;
@@ -135,54 +129,52 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 state.newMessage = payload.msgs;
             }
             break;
-            // 转发消息发送成功（包括所有类型的转发消息）
+        // 转发消息完成
         case chatAction.transmitMessageComplete:
             sendMsgComplete(state, payload);
             if (payload.success !== 2) {
                 state.transmitSuccess = 0;
             } else {
-                state.transmitSuccess ++;
-                state.msgId = updateFilterMsgId(state, [{
-                    key: payload.key,
-                    name: payload.name,
-                    type: payload.type
-                }]);
+                state.transmitSuccess++;
             }
             break;
-            // 切换当前会话用户
+        // 切换当前会话用户
         case chatAction.changeActivePerson:
             clearVoiceTimer(state);
-            state.activePerson = Object.assign({}, payload.item, {});
+            state.activePerson = Util.deepCopyObj(payload.item);
             state.defaultPanelIsShow = payload.defaultPanelIsShow;
             emptyUnreadNum(state, payload.item);
-            state.msgId = updateFilterMsgId(state, [{
+            state.unreadCount = {
                 key: state.activePerson.key,
                 name: state.activePerson.name,
                 type: state.activePerson.type
-            }]);
+            };
             changeActivePerson(state);
+            conversationUnreadNum(state);
             break;
-            // 选择联系人
+        // 选择联系人
         case contactAction.selectContactItem:
-            // 选择搜索出来的本地用户
+        // 选择搜索出来的本地用户
         case mainAction.selectSearchUser:
             state.defaultPanelIsShow = false;
             clearVoiceTimer(state);
             selectUserResult(state, payload, 'search');
             changeActivePerson(state);
             emptyUnreadNum(state, payload);
-            state.msgId = updateFilterMsgId(state, [{
+            state.unreadCount = {
                 key: state.activePerson.key,
                 name: state.activePerson.name,
                 type: state.activePerson.type
-            }]);
+            };
+            conversationUnreadNum(state);
             break;
-            // 删除本地会话列表
+        // 删除本地会话列表
         case chatAction.deleteConversationItem:
             showGroupSetting(state, false);
             deleteConversationItem(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 保存草稿
+        // 保存草稿
         case chatAction.saveDraft:
             if (state.messageList[payload[1].activeIndex]) {
                 state.messageList[payload[1].activeIndex].draft = payload[0];
@@ -193,15 +185,18 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 }
             }
             break;
-            // 搜索本地用户
-        case mainAction.searchUser:
-            state.searchUserResult = searchUser(state, payload);
+        // 搜索本地用户
+        case mainAction.searchUserSuccess:
+            state.searchUserResult = searchUser(state, payload.keywords);
+            if (payload.room) {
+                state.searchUserResult.result.roomArr.push(payload.room);
+            }
             break;
-            // 消息转发的搜索用户
+        // 消息转发的搜索用户
         case chatAction.searchMessageTransmit:
             state.messageTransmit.searchResult = searchUser(state, payload);
             break;
-            // 成功查看别人的信息
+        // 成功查看别人的信息
         case chatAction.watchOtherInfoSuccess:
             payload.info.isFriend = filterFriend(state, payload.info);
             filterSingleBlack(state, payload.info);
@@ -209,20 +204,20 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.otherInfo.info = payload.info;
             state.otherInfo.show = payload.show;
             break;
-            // 隐藏别人的信息框
+        // 隐藏别人的信息框
         case chatAction.hideOtherInfo:
             state.otherInfo = payload;
             break;
-            // 获取群组信息
+        // 获取群组信息
         case chatAction.groupInfo:
             initGroupInfo(state, payload);
             break;
-            // 显示隐藏群组设置
+        // 显示隐藏群组设置
         case chatAction.groupSetting:
-            let msg = state.messageList[state.activePerson.activeIndex];
+            const msg = state.messageList[state.activePerson.activeIndex];
             if (msg && !msg.groupSetting) {
                 state.messageList[state.activePerson.activeIndex] = Object.assign({}, msg,
-                    {groupSetting: {}});
+                    { groupSetting: {} });
             }
             if (msg && payload.loading &&
                 (!msg.groupSetting || (msg.groupSetting && !msg.groupSetting.groupInfo))) {
@@ -230,7 +225,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             showGroupSetting(state, payload.show);
             break;
-            // 创建单聊/添加好友
+        // 创建单聊/添加好友
         case mainAction.createSingleChatSuccess:
             /**
              * info.showType
@@ -249,7 +244,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.otherInfo.info = payload;
             state.otherInfo.show = true;
             break;
-            // 从验证消息列表中查看对方的资料
+        // 从验证消息列表中查看对方的资料
         case contactAction.watchVerifyUserSuccess:
             payload.isFriend = filterFriend(state, payload);
             filterSingleBlack(state, payload);
@@ -257,16 +252,16 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.otherInfo.info = payload;
             state.otherInfo.show = true;
             break;
-            // 创建群组成功
+        // 创建群组成功
         case mainAction.createGroupSuccess:
             clearVoiceTimer(state);
-            state.activePerson = Object.assign({}, payload, {});
+            state.activePerson = Util.deepCopyObj(payload);
             state.defaultPanelIsShow = false;
             selectUserResult(state, payload);
             changeActivePerson(state);
             state.groupList.push(payload);
             break;
-            // 从用户的个人资料创建单聊联系人会话
+        // 从用户的个人资料创建单聊联系人会话
         case chatAction.createOtherChat:
             showGroupSetting(state, false);
             clearVoiceTimer(state);
@@ -279,68 +274,71 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             state.defaultPanelIsShow = false;
             filterFriend(state, payload);
             selectUserResult(state, payload);
-            state.activePerson = Object.assign({}, payload, {});
+            state.activePerson = Util.deepCopyObj(payload);
             changeActivePerson(state);
             emptyUnreadNum(state, payload);
-            state.msgId = updateFilterMsgId(state, [{
+            state.unreadCount = {
                 key: state.activePerson.key,
                 name: state.activePerson.name,
                 type: state.activePerson.type
-            }]);
+            };
+            conversationUnreadNum(state);
             break;
-            // 获取群组列表成功
+        // 获取群组列表成功
         case contactAction.getGroupListSuccess:
             state.groupList = payload;
             break;
-            // 退群成功
+        // 退群成功
         case mainAction.exitGroupSuccess:
-            let isActive = (payload.item.name === state.activePerson.name &&
+            const isActive = (payload.item.name === state.activePerson.name &&
                 payload.item.type === 3 && state.activePerson.type === 3) ||
                 (payload.item.type === 4 &&
-                Number(payload.item.key) === Number(state.activePerson.key));
+                    Number(payload.item.key) === Number(state.activePerson.key));
             if (isActive) {
                 showGroupSetting(state, false);
                 state.defaultPanelIsShow = true;
             }
             exitGroup(state, payload.item);
             deleteConversationItem(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 加入黑名单成功
+        // 加入黑名单成功
         case mainAction.addBlackListSuccess:
             state.otherInfo.info.black = true;
             updateBlackMenu(state, payload.deleteItem.item);
             break;
-            // 更新群描述
+        // 更新群描述
         case chatAction.groupDescription:
             state.groupDeacriptionShow = payload.show;
             break;
-            // 显示个人信息
+        // 显示个人信息
         case mainAction.showSelfInfo:
             if (payload.info) {
-                state.selfInfo.info = Object.assign({}, state.selfInfo.info , payload.info);
+                state.selfInfo.info = Object.assign({}, state.selfInfo.info, payload.info);
             }
             if (payload.avatar) {
                 state.selfInfo.info.avatarUrl = payload.avatar.url;
             }
             break;
-            // 获取用户信息头像url
+        // 获取用户信息头像url
         case chatAction.getSingleAvatarUrl:
-            let msgs = state.messageList[state.activePerson.activeIndex].msgs;
+            const msgs = state.messageList[state.activePerson.activeIndex].msgs;
             for (let item of msgs) {
                 if (item.content.from_id !== global.user) {
                     item.content.avatarUrl = state.activePerson.avatarUrl;
                 }
             }
             break;
-            // 切换群屏蔽
+        // 切换群屏蔽
         case chatAction.changeGroupShieldSuccess:
             changeGroupShield(state, payload);
             break;
-            // 切换群组免打扰
+        // 切换群组免打扰
         case chatAction.changeGroupNoDisturbSuccess:
             changeGroupNoDisturb(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 群聊事件
+        // 群聊事件
         case chatAction.addGroupMembersEventSuccess:
             groupMembersEvent(state, payload, '被添加进群聊了');
             state.currentIsActive = currentIsActive(state, payload);
@@ -351,11 +349,11 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 }
             }
             break;
-            // 更新群组成员事件
+        // 更新群组成员事件
         case chatAction.updateGroupMembersEvent:
             updateGroupMembers(state, payload.eventData);
             break;
-            // 删除群组成员
+        // 删除群组成员
         case chatAction.deleteGroupMembersEvent:
             groupMembersEvent(state, payload, '被移出群聊了');
             state.currentIsActive = currentIsActive(state, payload);
@@ -367,110 +365,98 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 }
             }
             break;
-            // 退群事件
+        // 退群事件
         case chatAction.exitGroupEvent:
             groupMembersEvent(state, payload, '退出群聊了');
             state.currentIsActive = currentIsActive(state, payload);
             deleteGroupMembersEvent(state, payload);
             break;
-            // 更新群组信息成功事件
+        // 更新群组信息成功事件
         case chatAction.updateGroupInfoEventSuccess:
             updateGroupInfoEventSuccess(state, payload);
             break;
-            // 从localstorage获取已经播放的voice的列表
+        // 从localstorage获取已经播放的voice的列表
         case chatAction.getVoiceStateSuccess:
             state.voiceState = payload;
             break;
-            // 显示视频模态框
+        // 显示视频模态框
         case chatAction.playVideoShow:
             state.playVideoShow = payload;
             break;
-            // 创建群聊事件消息
+        // 创建群聊事件消息
         case chatAction.createGroupSuccessEvent:
             createGroupSuccessEvent(state, payload);
             break;
-            // 消息撤回
+        // 消息撤回
         case chatAction.msgRetractEvent:
             msgRetract(state, payload);
             break;
-            // 转发消息模态框搜索用户成功
-        case mainAction.messageTransmitSearchComplete:
-            state.messageTransmit.searchResult = {
-                result: {
-                    groupArr: [],
-                    singleArr: payload ? [payload] : []
-                },
-                isSearch: true
-            };
-            break;
-            // 名片模态框搜索完成
-        case mainAction.businessCardSearchComplete:
-            state.businessCardSearch = payload;
-            break;
-            // 显示验证消息模态框
+        // 显示验证消息模态框
         case chatAction.showVerifyModal:
             state.verifyModal = payload;
             break;
-            // 在黑名单列表中删除黑名单
+        // 在黑名单列表中删除黑名单
         case mainAction.delSingleBlackSuccess:
             updateBlackMenu(state, payload);
             break;
-            // 获取黑名单成功
+        // 获取黑名单成功
         case mainAction.blackMenuSuccess:
             state.blackMenu = payload.menu;
             break;
-            // 在个人资料中删除黑名单
+        // 在个人资料中删除黑名单
         case chatAction.deleteSingleBlackSuccess:
             updateBlackMenu(state, payload);
             state.otherInfo.info.black = false;
             break;
-            // 添加单聊用户免打扰成功
+        // 添加单聊用户免打扰成功
         case mainAction.addSingleNoDisturbSuccess:
             state.otherInfo.info.noDisturb = true;
             changeSingleNoDisturb(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 删除单聊用户免打扰成功
+        // 删除单聊用户免打扰成功
         case chatAction.deleteSingleNoDisturbSuccess:
             state.otherInfo.info.noDisturb = false;
             changeSingleNoDisturb(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 好友资料中保存备注名及备注名同步
+        // 好友资料中保存备注名及备注名同步
         case chatAction.saveMemoNameSuccess:
             saveMemoNameSuccess(state, payload);
             break;
-            // 删除好友同步事件
+        // 删除好友同步事件
         case chatAction.deleteFriendSyncEvent:
             deleteFriendSyncEvent(state, payload);
             break;
-            // 添加好友同步事件
+        // 添加好友同步事件
         case chatAction.addFriendSyncEvent:
             for (let user of payload.to_usernames) {
                 friendSyncEvent(state, user, true);
             }
             break;
-            // 删除好友
+        // 删除好友
         case mainAction.deleteFriendSuccess:
             otherInfoDeleteFriend(state, payload);
             break;
-            // 同意添加好友
+        // 同意添加好友
         case contactAction.agreeAddFriendSuccess:
             addNewFriendToConversation(state, payload, 'agree');
             break;
-            // 好友应答成功事件
+        // 好友应答成功事件
         case chatAction.friendReplyEventSuccess:
             // 如果在好友应答时正好打开了该好友的资料
             updateOtherInfo(state, payload);
             addNewFriendToConversation(state, payload, 'reply');
             break;
-            // 加载图片预览没有加载的图片url
+        // 加载图片预览没有加载的图片url
         case chatAction.loadViewerImageSuccess:
             state.viewerImageUrl = payload;
             break;
-            // 聊天文件模态框显示隐藏
+        // 聊天文件模态框显示隐藏
         case chatAction.msgFile:
             state.msgFile.show = payload.show;
             break;
-            // 聊天文件显示成功
+        // 聊天文件显示成功
         case chatAction.msgFileSuccess:
             if (payload.isFirst) {
                 state.messageList = payload.messageList;
@@ -478,18 +464,18 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             filterMsgFileImageViewer(state, payload.type);
             break;
-            // 聊天文件中的文件中的图片加载成功
+        // 聊天文件中的文件中的图片加载成功
         case chatAction.fileImageLoad:
             fileImageLoad(state, payload);
             break;
-            // 置顶成功
+        // 置顶成功
         case chatAction.conversationToTopSuccess:
             conversationToTop(state, payload);
             break;
-            // 显示未读列表
+        // 显示未读列表
         case chatAction.watchUnreadList:
             state.unreadList = {
-                show: true,
+                show: payload.show,
                 info: {
                     read: [],
                     unread: []
@@ -497,7 +483,7 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
                 loading: true
             };
             break;
-            // 加载未读列表成功
+        // 加载未读列表成功
         case chatAction.watchUnreadListSuccess:
             if (payload.info) {
                 filterUnreadListMemoName(state, payload);
@@ -506,66 +492,130 @@ export const chatReducer = (state: ChatStore = chatInit, {type, payload}) => {
             }
             state.unreadList.loading = payload.loading;
             break;
-            // 已读消息回执事件
+        // 已读消息回执事件
         case chatAction.msgReceiptChangeEvent:
             msgReceiptChangeEvent(state, payload);
             break;
-            // 上报消息已读
+        // 上报消息已读
         case chatAction.addReceiptReportAction:
             state.readObj = filterReceiptReport(state, payload);
             break;
-            // 清空未读数的同步事件
+        // 清空未读数的同步事件
         case chatAction.emptyUnreadNumSyncEvent:
             emptyUnreadNumSyncEvent(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 添加单聊免打扰同步事件
+        // 添加单聊免打扰同步事件
         case chatAction.addSingleNoDisturbSyncEvent:
             addSingleNoDisturbSyncEvent(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 删除单聊免打扰同步事件
+        // 删除单聊免打扰同步事件
         case chatAction.deleteSingleNoDisturbSyncEvent:
             deleteSingleNoDisturbSyncEvent(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 添加群组免打扰同步事件
+        // 添加群组免打扰同步事件
         case chatAction.addGroupNoDisturbSyncEvent:
             addGroupNoDisturbSyncEvent(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 删除群组免打扰同步事件
+        // 删除群组免打扰同步事件
         case chatAction.deleteGroupNoDisturbSyncEvent:
             deleteGroupNoDisturbSyncEvent(state, payload);
+            conversationUnreadNum(state);
             break;
-            // 添加群组屏蔽同步事件
+        // 添加群组屏蔽同步事件
         case chatAction.addGroupShieldSyncEvent:
             addGroupShieldSyncEvent(state, payload);
             break;
-            // 删除群组屏蔽同步事件
+        // 删除群组屏蔽同步事件
         case chatAction.deleteGroupShieldSyncEvent:
             deleteGroupShieldSyncEvent(state, payload);
             break;
-            //  添加单聊黑名单同步事件
+        //  添加单聊黑名单同步事件
         case chatAction.addSingleBlackSyncEvent:
             singleBlackSyncEvent(state, payload, true);
             break;
-            // 删除单聊黑名单同步事件
+        // 删除单聊黑名单同步事件
         case chatAction.deleteSingleBlackSyncEvent:
             singleBlackSyncEvent(state, payload, false);
             break;
-            // 用户信息更新事件
+        // 用户信息更新事件
         case chatAction.userInfUpdateEventSuccess:
             userInfUpdateEventSuccess(state, payload);
+            break;
+        // 创建群聊、多人会话、添加群成员搜索成功
+        case chatAction.createGroupSearchComplete:
+            state.createGroupSearch = searchSingleUser(state, payload);
+            break;
+        // 转发聊天室的消息
+        case roomAction.transmitAllMsg:
+            state.roomTransmitMsg = payload;
+            break;
+        // 收到正在输入的透传消息
+        case chatAction.receiveInputMessage:
+            state.isInput = payload;
+            break;
+        // 添加群成员禁言事件
+        case chatAction.addGroupMemberSilenceEvent:
+            addGroupMemberSilenceEvent(state, payload);
+            state.currentIsActive = currentIsActive(state, payload);
+            break;
+        // 移除群成员禁言事件
+        case chatAction.deleteGroupMemberSilenceEvent:
+            deleteGroupMemberSilenceEvent(state, payload);
+            state.currentIsActive = currentIsActive(state, payload);
+            break;
+        // 收到入群邀请事件
+        case chatAction.receiveGroupInvitationEventSuccess:
+            filterInvitationEventMeMoName(state, payload);
+            state.receiveGroupInvitationEventObj = payload;
+            break;
+        // 收到被拒绝入群事件
+        case chatAction.receiveGroupRefuseEventSuccess:
+            filterInvitationEventMeMoName(state, payload);
+            state.receiveGroupRefuseEventObj = payload;
             break;
         default:
     }
     return state;
 };
+// 登录时处理会话at提示
+function filterAtList(state: ChatStore) {
+    if (state.messageList.length > 0) {
+        for (let conversation of state.conversation) {
+            let num = conversation.unreadNum;
+            if (num > 0) {
+                for (let messageList of state.messageList) {
+                    let group = messageList.type === 4 && conversation.type === 4 &&
+                        Number(messageList.key) === Number(conversation.key);
+                    if (messageList.msgs && messageList.msgs.length > 0 && group) {
+                        let length = messageList.msgs.length;
+                        for (let i = length - 1; i >= length - 1 - num && i >= 0; i--) {
+                            let atUser = messageHasAtList(messageList.msgs[i].content.at_list);
+                            if (atUser !== '') {
+                                conversation.atUser = atUser;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 // 上报已读回执，防止漏报
-function filterReceiptReport(state, payload) {
+function filterReceiptReport(state: ChatStore, payload) {
     if (payload.msg_id.length === 0) {
         return payload;
     }
     for (let messageList of state.messageList) {
-        let group = messageList.type === 4 && Number(messageList.key) === Number(payload.gid);
-        let single = messageList.type === 3 && messageList.name === payload.username;
+        const group = messageList.type === 4 && payload.type === 4 &&
+            Number(messageList.key) === Number(payload.gid);
+        const single = messageList.type === 3 && payload.type === 3 &&
+            messageList.name === payload.username;
         if (group || single) {
             for (let msgId of payload.msg_id) {
                 for (let message of messageList.msgs) {
@@ -577,7 +627,7 @@ function filterReceiptReport(state, payload) {
             }
             for (let message of messageList.msgs) {
                 if (message.msg_id === payload.msg_id[0]) {
-                    for (let i = messageList.msgs.length - 1; i >= 0; i --) {
+                    for (let i = messageList.msgs.length - 1; i >= 0; i--) {
                         if (messageList.msgs[i].msg_id &&
                             messageList.msgs[i].msg_id !== payload.msg_id[0] &&
                             !messageList.msgs[i].hasRead &&
@@ -598,7 +648,7 @@ function filterReceiptReport(state, payload) {
     return payload;
 }
 // 处理好友列表数据
-function filterFriendList(state, payload) {
+function filterFriendList(state: ChatStore, payload) {
     for (let friend of payload) {
         if (friend.username && !friend.name) {
             friend.name = friend.username;
@@ -610,9 +660,9 @@ function filterFriendList(state, payload) {
     }
 }
 // 客户端修改好友关系，对比删除了哪个好友，将整个应用中该好友的备注名换成昵称或者用户名
-function compareFriendList(state, payload) {
+function compareFriendList(state: ChatStore, payload) {
     for (let friend of state.friendList) {
-        let result = payload.filter((newFriend) => {
+        const result = payload.filter((newFriend) => {
             return newFriend.username === friend.username && newFriend.appkey === friend.appkey;
         });
         if (result.length === 0 && friend.memo_name) {
@@ -628,7 +678,7 @@ function compareFriendList(state, payload) {
     }
 }
 // 添加群到群组列表
-function addToGroupList(state, payload) {
+function addToGroupList(state: ChatStore, payload) {
     state.groupList.push({
         appkey: payload.from_appkey,
         name: payload.group_name,
@@ -637,25 +687,16 @@ function addToGroupList(state, payload) {
         avatarUrl: payload.avatarUrl || ''
     });
 }
-// 收到新消息，如果是当前会话，需要更新用来计算未读数的msgId
-function newMessageFilterMsgId(state, payload) {
-    let singleFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
-        && state.newMessage.msg_type === 3;
-    let groupFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
-        && state.newMessage.msg_type === 4;
+// 收到新消息，如果是当前会话，需要标识是否是当前会话
+function newMessageIsActive(state, payload) {
+    const singleFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
+        && state.newMessage.msg_type === 3 && state.activePerson.type === 3;
+    const groupFlag = Number(state.activePerson.key) === Number(state.newMessage.key)
+        && state.newMessage.msg_type === 4 && state.activePerson.type === 4;
     state.newMessageIsActive = (singleFlag || groupFlag) ? true : false;
-    if (state.newMessageIsActive) {
-        let newMsgKey = [];
-        newMsgKey.push({
-            key: payload.messages[0].key,
-            name: payload.messages[0].content.from_id,
-            type: payload.messages[0].msg_type
-        });
-        state.msgId = updateFilterMsgId(state, newMsgKey);
-    }
 }
 // 保存备注名成功
-function saveMemoNameSuccess(state, payload) {
+function saveMemoNameSuccess(state: ChatStore, payload) {
     for (let user of payload.to_usernames) {
         if (user.username) {
             user.name = user.username;
@@ -673,7 +714,7 @@ function saveMemoNameSuccess(state, payload) {
     }
 }
 // 删除好友同步事件
-function deleteFriendSyncEvent(state, payload) {
+function deleteFriendSyncEvent(state: ChatStore, payload) {
     for (let user of payload.to_usernames) {
         user.name = user.username;
         user.nickName = user.nickname;
@@ -685,7 +726,7 @@ function deleteFriendSyncEvent(state, payload) {
     }
 }
 // 用户信息更新事件
-function userInfUpdateEventSuccess(state, payload) {
+function userInfUpdateEventSuccess(state: ChatStore, payload) {
     for (let friend of state.friendList) {
         if (payload.name === friend.name) {
             friend.nickName = payload.nickName;
@@ -723,14 +764,14 @@ function userInfUpdateEventSuccess(state, payload) {
     }
 }
 // 好友关系同步事件
-function friendSyncEvent(state, user, bool) {
+function friendSyncEvent(state: ChatStore, user, bool) {
     if (state.otherInfo.info.name === user.username &&
         state.otherInfo.info.appkey === user.appkey) {
         state.otherInfo.info.isFriend = bool;
     }
 }
 // 单聊黑名单同步事件
-function singleBlackSyncEvent(state, payload, bool) {
+function singleBlackSyncEvent(state: ChatStore, payload, bool) {
     for (let addUser of payload.to_usernames) {
         if (addUser.username === state.otherInfo.info.name &&
             addUser.appkey === state.otherInfo.info.appkey) {
@@ -739,7 +780,7 @@ function singleBlackSyncEvent(state, payload, bool) {
     }
 }
 // 添加群组屏蔽同步事件
-function addGroupShieldSyncEvent(state, payload) {
+function addGroupShieldSyncEvent(state: ChatStore, payload) {
     state.groupShield = state.groupShield.concat(payload.to_groups);
     for (let addGroup of payload.to_groups) {
         for (let conversation of state.conversation) {
@@ -755,7 +796,7 @@ function addGroupShieldSyncEvent(state, payload) {
     }
 }
 // 删除群组屏蔽同步事件
-function deleteGroupShieldSyncEvent(state, payload) {
+function deleteGroupShieldSyncEvent(state: ChatStore, payload) {
     for (let deleteGroup of payload.to_groups) {
         for (let conversation of state.conversation) {
             if (conversation.type === 4 && Number(deleteGroup.gid) === Number(conversation.key)) {
@@ -763,7 +804,7 @@ function deleteGroupShieldSyncEvent(state, payload) {
                 break;
             }
         }
-        for (let i = 0; i < state.groupShield; i++) {
+        for (let i = 0; i < state.groupShield.length; i++) {
             if (Number(state.groupShield[i].gid) === Number(deleteGroup.gid)) {
                 state.groupShield.splice(i, 1);
                 break;
@@ -776,7 +817,7 @@ function deleteGroupShieldSyncEvent(state, payload) {
     }
 }
 //  添加群组免打扰同步事件
-function addGroupNoDisturbSyncEvent(state, payload) {
+function addGroupNoDisturbSyncEvent(state: ChatStore, payload) {
     state.noDisturb.groups = state.noDisturb.groups.concat(payload.to_groups);
     for (let addGroup of payload.to_groups) {
         addGroup.key = addGroup.gid;
@@ -793,7 +834,7 @@ function addGroupNoDisturbSyncEvent(state, payload) {
     }
 }
 // 删除群组免打扰同步事件
-function deleteGroupNoDisturbSyncEvent(state, payload) {
+function deleteGroupNoDisturbSyncEvent(state: ChatStore, payload) {
     for (let deleteGroup of payload.to_groups) {
         for (let i = 0; i < state.noDisturb.groups.length; i++) {
             if (Number(state.noDisturb.groups[i].gid) === Number(deleteGroup.gid)) {
@@ -815,7 +856,7 @@ function deleteGroupNoDisturbSyncEvent(state, payload) {
     }
 }
 // 删除单聊免打扰同步事件
-function deleteSingleNoDisturbSyncEvent(state, payload) {
+function deleteSingleNoDisturbSyncEvent(state: ChatStore, payload) {
     for (let deleteUser of payload.to_usernames) {
         for (let i = 0; i < state.noDisturb.users.length; i++) {
             if (deleteUser.appkey === state.noDisturb.users[i].appkey &&
@@ -842,7 +883,7 @@ function deleteSingleNoDisturbSyncEvent(state, payload) {
     }
 }
 // 添加单聊免打扰同步事件
-function addSingleNoDisturbSyncEvent(state, payload) {
+function addSingleNoDisturbSyncEvent(state: ChatStore, payload) {
     state.noDisturb.users = state.noDisturb.users.concat(payload.to_usernames);
     for (let addUser of payload.to_usernames) {
         for (let conversation of state.conversation) {
@@ -863,25 +904,20 @@ function addSingleNoDisturbSyncEvent(state, payload) {
     }
 }
 // 清空未读数同步事件
-function emptyUnreadNumSyncEvent(state, payload) {
+function emptyUnreadNumSyncEvent(state: ChatStore, payload) {
     for (let conversation of state.conversation) {
-        let group = conversation.type === 4 && payload.type === 4 &&
-                (Number(conversation.key) === Number(payload.gid));
-        let single = conversation.type === 3 && payload.type === 3 &&
-                conversation.name === payload.name;
+        const group = conversation.type === 4 && payload.type === 4 &&
+            (Number(conversation.key) === Number(payload.gid));
+        const single = conversation.type === 3 && payload.type === 3 &&
+            conversation.name === payload.name;
         if (group || single) {
             conversation.unreadNum = 0;
-            state.msgId = updateFilterMsgId(state, [{
-                key: conversation.key,
-                name: conversation.name,
-                type: conversation.type
-            }]);
             break;
         }
     }
 }
 // 获取群组信息
-function initGroupInfo(state, payload) {
+function initGroupInfo(state: ChatStore, payload) {
     if (payload.groupInfo) {
         if (payload.groupInfo.name === '') {
             for (let conversation of state.conversation) {
@@ -913,7 +949,7 @@ function initGroupInfo(state, payload) {
                     for (let friend of state.friendList) {
                         if (friend.name === member.username) {
                             member.memo_name = friend.memo_name;
-                            util.getMemo_nameFirstLetter(member);
+                            Util.getMemo_nameFirstLetter(member);
                             break;
                         }
                     }
@@ -928,7 +964,7 @@ function initGroupInfo(state, payload) {
     }
 }
 // 处理未读列表备注名
-function filterUnreadListMemoName(state, payload) {
+function filterUnreadListMemoName(state: ChatStore, payload) {
     for (let read of payload.info.read_list) {
         filterFriend(state, read);
     }
@@ -937,7 +973,7 @@ function filterUnreadListMemoName(state, payload) {
     }
 }
 // 更新群组信息事件
-function updateGroupInfoEventSuccess(state, payload) {
+function updateGroupInfoEventSuccess(state: ChatStore, payload) {
     payload.eventData.key = payload.eventData.gid;
     payload.eventData.name = payload.eventData.username = payload.eventData.from_username;
     payload.eventData.nickName = payload.eventData.nickname = payload.eventData.from_nickname;
@@ -967,7 +1003,7 @@ function updateGroupInfoEventSuccess(state, payload) {
     for (let list of state.messageList) {
         if (list.type === 4 && Number(list.key) === Number(payload.eventData.key)) {
             if (list.msgs.length > 0) {
-                if (util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
+                if (Util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
                     payload.eventData.ctime_ms)) {
                     msg.time_show = 'today';
                 }
@@ -1026,7 +1062,7 @@ function updateGroupInfoEventSuccess(state, payload) {
     filterTopConversation(state, item);
 }
 // 已读事件监听
-function msgReceiptChangeEvent(state, payload) {
+function msgReceiptChangeEvent(state: ChatStore, payload) {
     if (payload instanceof Array) {
         for (let item of payload) {
             msgReceiptChange(state, item);
@@ -1035,14 +1071,21 @@ function msgReceiptChangeEvent(state, payload) {
         msgReceiptChange(state, payload);
     }
 }
-function msgReceiptChange(state, payload) {
+function msgReceiptChange(state: ChatStore, payload) {
     for (let messageList of state.messageList) {
         if (payload.type === 3) {
             if (messageList.type === 3 && payload.username === messageList.name
                 && payload.appkey === messageList.appkey) {
                 updateUnreadCount(state, messageList, payload);
+                for (let conversation of state.conversation) {
+                    if (payload.type === 3 && conversation.type === 3 &&
+                        payload.username === conversation.name &&
+                        payload.appkey === conversation.appkey) {
+                        emptyUnreadText(conversation, payload);
+                    }
+                }
             }
-        } else {
+        } else if (payload.type === 4) {
             if (messageList.type === 4 && Number(payload.gid) === Number(messageList.key)) {
                 updateUnreadCount(state, messageList, payload);
             }
@@ -1050,22 +1093,15 @@ function msgReceiptChange(state, payload) {
     }
 }
 // 更新未读数
-function updateUnreadCount(state, messageList, payload) {
+function updateUnreadCount(state: ChatStore, messageList, payload) {
     for (let receipt of payload.receipt_msgs) {
-        for (let i = messageList.msgs.length - 1; i >= 0; i --) {
+        for (let i = messageList.msgs.length - 1; i >= 0; i--) {
             if (messageList.msgs[i].msg_id === receipt.msg_id) {
                 if (messageList.msgs[i].unread_count > receipt.unread_count) {
                     messageList.msgs[i].unread_count = receipt.unread_count;
                 }
                 break;
             }
-        }
-    }
-    for (let conversation of state.conversation) {
-        if (payload.type === 3 && conversation.type === 3 &&
-            payload.username === conversation.name &&
-            payload.appkey === conversation.appkey) {
-            emptyUnreadText(conversation, payload);
         }
     }
 }
@@ -1079,13 +1115,13 @@ function emptyUnreadText(conversation, payload) {
         }
     }
 }
-// 消息置顶和取消置顶
-function conversationToTop(state, payload) {
+// 会话置顶和取消置顶
+function conversationToTop(state: ChatStore, payload) {
     for (let i = 0; i < state.conversation.length; i++) {
         if (Number(state.conversation[i].key) === Number(payload.key)) {
             let item = state.conversation.splice(i, 1)[0];
             if (item.extras && item.extras.top_time_ms) {
-                delete  item.extras.top_time_ms;
+                delete item.extras.top_time_ms;
             } else {
                 item.extras.top_time_ms = new Date().getTime();
             }
@@ -1095,10 +1131,10 @@ function conversationToTop(state, payload) {
     }
 }
 // 聊天文件中的文件中的图片加载成功
-function fileImageLoad(state, payload) {
+function fileImageLoad(state: ChatStore, payload) {
     for (let message of state.msgFileImageViewer) {
-        let msgIdFlag = payload.msg_id && message.msg_id === payload.msg_id;
-        let msgKeyFlag = payload.msgKey && message.msgKey === payload.msgKey;
+        const msgIdFlag = payload.msg_id && message.msg_id === payload.msg_id;
+        const msgKeyFlag = payload.msgKey && message.msgKey === payload.msgKey;
         if (msgIdFlag || msgKeyFlag) {
             message.width = payload.content.msg_body.width;
             message.height = payload.content.msg_body.height;
@@ -1107,7 +1143,7 @@ function fileImageLoad(state, payload) {
     }
 }
 // 处理聊天文件中的图片预览对象
-function filterMsgFileImageViewer(state, type: string) {
+function filterMsgFileImageViewer(state: ChatStore, type: string) {
     state.msgFileImageViewer = [];
     for (let message of state.messageList[state.activePerson.activeIndex].msgs) {
         let fileType = '';
@@ -1116,7 +1152,7 @@ function filterMsgFileImageViewer(state, type: string) {
                 if (message.content.msg_body.extras.video) {
                     fileType = 'video';
                 } else if (message.content.msg_body.extras.fileType) {
-                    fileType = util.sortByExt(message.content.msg_body.extras.fileType);
+                    fileType = Util.sortByExt(message.content.msg_body.extras.fileType);
                 } else {
                     fileType = 'other';
                 }
@@ -1137,7 +1173,7 @@ function filterMsgFileImageViewer(state, type: string) {
     state.msgFileImageViewer.reverse();
 }
 // 处理聊天文件中的文件列表
-function filterMsgFile(state, type: string) {
+function filterMsgFile(state: ChatStore, type: string) {
     let fileArr = [];
     let msgFile = [];
     for (let message of state.messageList[state.activePerson.activeIndex].msgs) {
@@ -1147,7 +1183,7 @@ function filterMsgFile(state, type: string) {
                 if (message.content.msg_body.extras.video) {
                     fileType = 'video';
                 } else if (message.content.msg_body.extras.fileType) {
-                    fileType = util.sortByExt(message.content.msg_body.extras.fileType);
+                    fileType = Util.sortByExt(message.content.msg_body.extras.fileType);
                 } else {
                     fileType = 'other';
                 }
@@ -1167,9 +1203,9 @@ function filterMsgFile(state, type: string) {
         }
     }
     for (let i = fileArr.length - 1; i >= 0; i--) {
-        const time = new Date (fileArr[i].ctime_ms);
+        const time = new Date(fileArr[i].ctime_ms);
         const year = time.getFullYear();
-        const month = util.doubleNumber(time.getMonth() + 1);
+        const month = Util.doubleNumber(time.getMonth() + 1);
         let flag = true;
         const showTime = year + '年' + month + '月';
         for (let item of msgFile) {
@@ -1188,8 +1224,8 @@ function filterMsgFile(state, type: string) {
     }
     state.msgFile[type] = msgFile;
 }
-// 给会话列表添加备注名
-function filteConversationMemoName(state) {
+// 给会话列表和当前消息列表添加备注名
+function filterConversationMemoName(state: ChatStore) {
     for (let conversation of state.conversation) {
         for (let friend of state.friendList) {
             if (conversation.name === friend.name && conversation.type === 3) {
@@ -1201,15 +1237,25 @@ function filteConversationMemoName(state) {
             }
         }
     }
+    if (state.activePerson.activeIndex >= 0 && state.activePerson.type === 4
+        && state.messageList[state.activePerson.activeIndex]) {
+        for (let message of state.messageList[state.activePerson.activeIndex].msgs) {
+            for (let friend of state.friendList) {
+                if (message.content.from_id === friend.name) {
+                    message.content.memo_name = friend.memo_name;
+                }
+            }
+        }
+    }
 }
 // 更新其他用户资料
-function updateOtherInfo(state, payload) {
+function updateOtherInfo(state: ChatStore, payload) {
     if (payload.return_code === 0 && state.otherInfo.info.name === payload.from_username) {
         state.otherInfo.info.isFriend = true;
     }
 }
 // 用户资料中删除好友
-function otherInfoDeleteFriend(state, payload) {
+function otherInfoDeleteFriend(state: ChatStore, payload) {
     if (state.otherInfo.info.name === payload.name) {
         state.otherInfo.info.isFriend = false;
         state.otherInfo.show = false;
@@ -1261,7 +1307,7 @@ function otherInfoDeleteFriend(state, payload) {
     }
 }
 // 修改会话列表的备注名
-function modifyConversationMemoName(state, payload) {
+function modifyConversationMemoName(state: ChatStore, payload) {
     for (let conversation of state.conversation) {
         if (conversation.name === payload.name && conversation.type === 3) {
             conversation.memo_name = payload.memo_name;
@@ -1271,12 +1317,12 @@ function modifyConversationMemoName(state, payload) {
             conversation.recentMsg.content.memo_name = payload.memo_name;
         }
     }
-    if (state.activePerson.name === payload.name) {
+    if (state.activePerson.type === 3 && state.activePerson.name === payload.name) {
         state.activePerson.memo_name = payload.memo_name;
     }
 }
 // 修改好友列表的备注名
-function modifyFriendListMemoName(state, payload) {
+function modifyFriendListMemoName(state: ChatStore, payload) {
     for (let friend of state.friendList) {
         if (friend.name === payload.name) {
             friend.memo_name = payload.memo_name;
@@ -1285,13 +1331,13 @@ function modifyFriendListMemoName(state, payload) {
     }
 }
 // 修改用户信息的备注名
-function modifyOtherInfoMemoName(state, payload) {
+function modifyOtherInfoMemoName(state: ChatStore, payload) {
     if (payload.name === state.otherInfo.info.name) {
         state.otherInfo.info.memo_name = payload.memo_name;
     }
 }
 // 当前会话有修改了备注的用户时，修改消息列表的备注和群成员的备注
-function modifyActiveMessageList(state, payload) {
+function modifyActiveMessageList(state: ChatStore, payload) {
     if (state.activePerson.activeIndex > 0 && state.activePerson.type === 4) {
         let messageList = state.messageList[state.activePerson.activeIndex];
         let msgs = messageList.msgs;
@@ -1301,16 +1347,18 @@ function modifyActiveMessageList(state, payload) {
                 message.content.memo_name = payload.memo_name;
             }
         }
-        for (let member of messageList.groupSetting.memberList) {
-            if (member.username === payload.name || member.username === payload.username) {
-                member.memo_name = payload.memo_name;
-                util.getMemo_nameFirstLetter(member);
+        if (messageList.groupSetting && messageList.groupSetting.memberList) {
+            for (let member of messageList.groupSetting.memberList) {
+                if (member.username === payload.name || member.username === payload.username) {
+                    member.memo_name = payload.memo_name;
+                    Util.getMemo_nameFirstLetter(member);
+                }
             }
         }
     }
 }
 // 更新（增加或删除）黑名单列表里的用户
-function updateBlackMenu(state, payload) {
+function updateBlackMenu(state: ChatStore, payload) {
     let flag = true;
     for (let i = 0; i < state.blackMenu.length; i++) {
         if (state.blackMenu[i].username === payload.username) {
@@ -1327,7 +1375,7 @@ function updateBlackMenu(state, payload) {
     }
 }
 // 判断用户是否是黑名单
-function filterSingleBlack(state, payload) {
+function filterSingleBlack(state: ChatStore, payload) {
     for (let black of state.blackMenu) {
         if (black.username === payload.name) {
             payload.black = true;
@@ -1336,7 +1384,7 @@ function filterSingleBlack(state, payload) {
     }
 }
 // 判断用户是否是免打扰
-function filterSingleNoDisturb(state, payload) {
+function filterSingleNoDisturb(state: ChatStore, payload) {
     for (let user of state.noDisturb.users) {
         if (user.username === payload.name) {
             payload.noDisturb = true;
@@ -1345,10 +1393,10 @@ function filterSingleNoDisturb(state, payload) {
     }
 }
 // 判断是否是好友
-function filterFriend(state, payload) {
+function filterFriend(state: ChatStore, payload) {
     const result = state.friendList.filter((friend) => {
         return friend.name === payload.name || friend.name === payload.username
-                || friend.name === payload.from_username;
+            || friend.name === payload.from_username;
     });
     if (result.length > 0) {
         payload.memo_name = result[0].memo_name;
@@ -1356,20 +1404,20 @@ function filterFriend(state, payload) {
     return result.length > 0 ? true : false;
 }
 // 同意添加好友后添加好友到会话列表
-function addNewFriendToConversation(state, payload, type) {
+function addNewFriendToConversation(state: ChatStore, payload, type) {
     if (payload.return_code !== 0 && type !== 'agree') {
-        return ;
+        return;
     }
     if (payload.from_username) {
-        payload.name  = payload.from_username;
+        payload.name = payload.from_username;
         payload.username = payload.from_username;
-        payload.nickName  = payload.from_nickname;
+        payload.nickName = payload.from_nickname;
         payload.nickname = payload.from_nickname;
     }
     if (state.activePerson.type === 3 && payload.from_username === state.activePerson.name) {
         state.newMessageIsActive = true;
     }
-    let result = state.friendList.filter((friend) => {
+    const result = state.friendList.filter((friend) => {
         return friend.name === payload.name;
     });
     if (result.length === 0) {
@@ -1386,7 +1434,7 @@ function addNewFriendToConversation(state, payload, type) {
             msg_type: 'event'
         },
         time_show: '',
-        conversation_time_show: util.reducerDate(payload.ctime_ms)
+        conversation_time_show: Util.reducerDate(payload.ctime_ms)
     };
     for (let i = 0; i < state.conversation.length; i++) {
         if (state.conversation[i].type === 3 && state.conversation[i].name === payload.name) {
@@ -1394,12 +1442,12 @@ function addNewFriendToConversation(state, payload, type) {
                 if (state.conversation[i].name === list.name &&
                     state.conversation[i].appkey === list.appkey) {
                     if (list.msgs.length > 0) {
-                        if (util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
+                        if (Util.fiveMinutes(list.msgs[list.msgs.length - 1].ctime_ms,
                             payload.ctime_ms)) {
-                            msg.time_show = util.reducerDate(payload.ctime_ms);
+                            msg.time_show = Util.reducerDate(payload.ctime_ms);
                         }
                     } else {
-                        msg.time_show = util.reducerDate(payload.ctime_ms);
+                        msg.time_show = Util.reducerDate(payload.ctime_ms);
                     }
                     list.msgs.push(msg);
                     break;
@@ -1409,7 +1457,7 @@ function addNewFriendToConversation(state, payload, type) {
                 item = state.conversation.splice(i, 1)[0];
             } else {
                 state.conversation[i].recentMsg = msg;
-                return ;
+                return;
             }
             break;
         }
@@ -1424,13 +1472,13 @@ function addNewFriendToConversation(state, payload, type) {
             name: payload.name,
             type: 3
         });
-        msg.time_show = util.reducerDate(payload.ctime_ms);
+        msg.time_show = Util.reducerDate(payload.ctime_ms);
     }
     item.recentMsg = msg;
     filterTopConversation(state, item);
 }
 // 退群
-function exitGroup (state, item) {
+function exitGroup(state: ChatStore, item) {
     if (item.gid) {
         item.key = item.gid;
     }
@@ -1442,7 +1490,7 @@ function exitGroup (state, item) {
     }
 }
 // 隐藏群设置
-function showGroupSetting(state, show) {
+function showGroupSetting(state: ChatStore, show) {
     if (state.activePerson.activeIndex >= 0) {
         let groupSetting = state.messageList[state.activePerson.activeIndex].groupSetting;
         if (groupSetting) {
@@ -1451,11 +1499,12 @@ function showGroupSetting(state, show) {
     }
 }
 // 判断当前用户是否是目标用户
-function currentIsActive(state, payload) {
-    return Number(state.activePerson.key) === Number(payload.gid) ? true : false;
+function currentIsActive(state: ChatStore, payload) {
+    return state.activePerson.type === 4 &&
+        Number(state.activePerson.key) === Number(payload.gid) ? true : false;
 }
 // 消息撤回
-function msgRetract(state, payload) {
+function msgRetract(state: ChatStore, payload) {
     let name = '';
     let recentMsg = {};
     let index;
@@ -1466,9 +1515,10 @@ function msgRetract(state, payload) {
         singleSendName = payload.from_username;
     }
     for (let i = 0; i < state.conversation.length; i++) {
-        const isGroup = payload.type === 1 &&
+        const isGroup = payload.type === 1 && state.conversation[i].type === 4 &&
             Number(payload.from_gid) === Number(state.conversation[i].key);
-        const isSingle =  state.conversation[i].name === singleSendName;
+        const isSingle = payload.type === 0 && state.conversation[i].type === 3 &&
+            state.conversation[i].name === singleSendName;
         if (isGroup || isSingle) {
             const msgType = isGroup ? 4 : 3;
             if (payload.from_username === global.user) {
@@ -1493,7 +1543,7 @@ function msgRetract(state, payload) {
                     },
                     msg_type: 'event'
                 },
-                conversation_time_show: util.reducerDate(payload.ctime_ms),
+                conversation_time_show: Util.reducerDate(payload.ctime_ms),
                 msg_type: msgType
             };
             payload.key = state.conversation[i].key;
@@ -1505,11 +1555,14 @@ function msgRetract(state, payload) {
             break;
         }
     }
-    for (let list of state.messageList) {
-        if ((payload.type === 1 && Number(payload.key) === Number(list.key)) ||
-            (payload.type === 0 && singleSendName === list.name)) {
-            for (let i = 0; i < list.msgs.length; i++) {
-                if (Number(list.msgs[i].msg_id) === Number(payload.msg_ids[0])) {
+    for (let messageList of state.messageList) {
+        const group = payload.type === 1 && messageList.type === 4 &&
+            Number(payload.key) === Number(messageList.key);
+        const single = payload.type === 0 && messageList.type === 3 &&
+            singleSendName === messageList.name;
+        if (single || group) {
+            for (let i = 0; i < messageList.msgs.length; i++) {
+                if (Number(messageList.msgs[i].msg_id) === Number(payload.msg_ids[0])) {
                     let eventMsg = {
                         ctime_ms: payload.ctime_ms,
                         msg_type: 5,
@@ -1520,16 +1573,11 @@ function msgRetract(state, payload) {
                         },
                         time_show: ''
                     };
-                    let item = list.msgs.splice(i, 1);
+                    let item = messageList.msgs.splice(i, 1);
                     eventMsg.ctime_ms = item[0].ctime_ms;
-                    list.msgs.splice(i, 0, eventMsg);
-                    if (i === list.msgs.length - 1) {
+                    messageList.msgs.splice(i, 0, eventMsg);
+                    if (i === messageList.msgs.length - 1) {
                         state.conversation[index].recentMsg = recentMsg;
-                        state.msgId = updateFilterMsgId(state, [{
-                            key: state.conversation[index].key,
-                            name: state.conversation[index].name,
-                            type: state.conversation[index].type
-                        }]);
                     }
                     break;
                 }
@@ -1539,16 +1587,29 @@ function msgRetract(state, payload) {
     }
 }
 // 删除群成员事件
-function deleteGroupMembersEvent(state, payload) {
+function deleteGroupMembersEvent(state: ChatStore, payload) {
     for (let messageList of state.messageList) {
         if (messageList.type === 4 && Number(messageList.key) === Number(payload.gid)) {
             if (messageList.groupSetting && messageList.groupSetting.memberList) {
-                messageList.groupSetting.memberList =
-                messageList.groupSetting.memberList.filter((item1) => {
-                    return payload.to_usernames.every((item2) => {
-                        return item2.username !== item1.username;
-                    });
-                });
+                let memberList = messageList.groupSetting.memberList;
+                for (let user of payload.to_usernames) {
+                    for (let i = 0; i < memberList.length; i++) {
+                        if (user.username === memberList[i].username) {
+                            memberList.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+                if (payload.new_owner) {
+                    for (let i = 0; i < memberList.length; i++) {
+                        if (payload.new_owner.username === memberList[i].username) {
+                            let item = memberList.splice(i, 1)[0];
+                            item.flag = 1;
+                            memberList.unshift(item);
+                            break;
+                        }
+                    }
+                }
             }
             break;
         }
@@ -1576,15 +1637,17 @@ function updateGroupMembers(state: ChatStore, eventData) {
                 for (let user of eventData.to_usernames) {
                     user.flag = 0;
                 }
-                for (let user of eventData.to_usernames) {
-                    let flag = true;
-                    for (let member of messageList.groupSetting.memberList) {
-                        if (user.username === member.username) {
-                            flag = false;
+                if (messageList.groupSetting.memberList) {
+                    for (let user of eventData.to_usernames) {
+                        let flag = true;
+                        for (let member of messageList.groupSetting.memberList) {
+                            if (user.username === member.username) {
+                                flag = false;
+                            }
                         }
-                    }
-                    if (flag) {
-                        messageList.groupSetting.memberList.push(user);
+                        if (flag) {
+                            messageList.groupSetting.memberList.push(user);
+                        }
                     }
                 }
             }
@@ -1593,12 +1656,12 @@ function updateGroupMembers(state: ChatStore, eventData) {
     }
 }
 // 接收到管理员建群时自动添加会话和消息
-function createGroupSuccessEvent(state, payload) {
+function createGroupSuccessEvent(state: ChatStore, payload) {
     let item = {
         key: payload.gid,
         name: payload.name,
         type: 4,
-        unreadNum: 1,
+        unreadNum: 0,
         recentMsg: {
             ctime_ms: payload.ctime_ms,
             content: {
@@ -1607,7 +1670,7 @@ function createGroupSuccessEvent(state, payload) {
                 },
                 msg_type: 'event'
             },
-            conversation_time_show: util.reducerDate(payload.ctime_ms),
+            conversation_time_show: Util.reducerDate(payload.ctime_ms),
             msg_type: 4
         }
     };
@@ -1630,7 +1693,7 @@ function createGroupSuccessEvent(state, payload) {
                         text: '创建群聊'
                     }
                 },
-                time_show: util.reducerDate(payload.ctime_ms)
+                time_show: Util.reducerDate(payload.ctime_ms)
             }
         ],
         type: 4
@@ -1640,7 +1703,7 @@ function createGroupSuccessEvent(state, payload) {
     }
 }
 // 给群聊事件添加最近一条聊天消息
-function isRecentmsg(state, payload, addGroupOther, operation, index) {
+function isRecentmsg(state: ChatStore, payload, addGroupOther, operation, index) {
     let flag = false;
     for (let messageList of state.messageList) {
         if (state.conversation[index].type === 4 &&
@@ -1656,7 +1719,7 @@ function isRecentmsg(state, payload, addGroupOther, operation, index) {
                         },
                         msg_type: 'event'
                     },
-                    conversation_time_show: util.reducerDate(payload.ctime_ms),
+                    conversation_time_show: Util.reducerDate(payload.ctime_ms),
                     msg_type: 4
                 };
             }
@@ -1672,13 +1735,13 @@ function isRecentmsg(state, payload, addGroupOther, operation, index) {
                 },
                 msg_type: 'event'
             },
-            conversation_time_show: util.reducerDate(payload.ctime_ms),
+            conversation_time_show: Util.reducerDate(payload.ctime_ms),
             msg_type: 4
         };
     }
 }
 // 通过recentMsg去对conversation排序
-function sortConversationByRecentMsg(state) {
+function sortConversationByRecentMsg(state: ChatStore) {
     for (let conversation of state.conversation) {
         if (conversation.recentMsg) {
             conversation.lastMsgTime = conversation.recentMsg.ctime_ms;
@@ -1704,13 +1767,18 @@ function sortConversationByRecentMsg(state) {
                 maxIndex = j;
             }
         }
-        temp = Object.assign({}, state.conversation[i], {});
-        state.conversation[i] = Object.assign({}, state.conversation[maxIndex], {});
+        temp = Util.deepCopyObj(state.conversation[i]);
+        state.conversation[i] = Util.deepCopyObj(state.conversation[maxIndex]);
         state.conversation[maxIndex] = temp;
     }
 }
 // 被添加进群、移出群、退出群的事件
 function groupMembersEvent(state: ChatStore, payload, operation) {
+    for (let shield of state.groupShield) {
+        if (Number(shield.gid) === Number(payload.gid)) {
+            return;
+        }
+    }
     let usernames = payload.to_usernames;
     let addGroupOther = '';
     for (let user of usernames) {
@@ -1742,17 +1810,11 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
     for (let i = 0; i < state.conversation.length; i++) {
         if (state.conversation[i].type === 4 &&
             Number(payload.gid) === Number(state.conversation[i].key)) {
-            if (state.conversation[i].shield) {
-                return ;
-            }
             flag1 = false;
             let index = i;
             if (!state.conversation[i].extras || !state.conversation[i].extras.top_time_ms) {
                 let item = state.conversation.splice(i, 1);
                 index = filterTopConversation(state, item[0]);
-            }
-            if (Number(state.activePerson.key) !== Number(state.conversation[index].key)) {
-                state.conversation[index].unreadNum ++;
             }
             isRecentmsg(state, payload, addGroupOther, operation, index);
             break;
@@ -1761,13 +1823,17 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
     if (flag1) {
         for (let group of state.groupList) {
             if (Number(group.gid) === Number(payload.gid)) {
-                if (group.shield) {
-                    return ;
+                let conversation = Util.deepCopyObj(group);
+                conversation.type = 4;
+                conversation.key = group.gid;
+                conversation.unreadNum = 0;
+                for (let noDisturbGroup of state.noDisturb.groups) {
+                    if (Number(noDisturbGroup.gid) === Number(payload.gid)) {
+                        conversation.noDisturb = true;
+                        break;
+                    }
                 }
-                group.type = 4;
-                group.key = group.gid;
-                group.unreadNum = 1;
-                let index = filterTopConversation(state, group);
+                const index = filterTopConversation(state, conversation);
                 flag1 = false;
                 isRecentmsg(state, payload, addGroupOther, operation, index);
                 break;
@@ -1776,14 +1842,14 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
     }
     // 对群组列表和会话列表中没有的群，并且是离线的事件消息，不做任何处理
     if (flag1 && payload.isOffline) {
-        return ;
+        return;
     }
     if (flag1) {
         let conversation = {
             key: payload.gid,
             name: payload.name,
             type: 4,
-            unreadNum: 1,
+            unreadNum: 0,
             avatarUrl: payload.avatarUrl,
             recentMsg: {
                 ctime_ms: payload.ctime_ms,
@@ -1793,7 +1859,7 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
                     },
                     msg_type: 'event'
                 },
-                conversation_time_show: util.reducerDate(payload.ctime_ms),
+                conversation_time_show: Util.reducerDate(payload.ctime_ms),
                 msg_type: 4
             }
         };
@@ -1818,7 +1884,7 @@ function groupMembersEvent(state: ChatStore, payload, operation) {
     addEventMsgToMessageList(state, payload, addGroupOther, operation);
 }
 // 将群聊事件消息添加到消息列表
-function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
+function addEventMsgToMessageList(state: ChatStore, payload, addGroupOther, operation) {
     let message = {
         ctime_ms: payload.ctime_ms,
         msg_type: 5,
@@ -1830,27 +1896,27 @@ function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
         time_show: ''
     };
     let flag2 = true;
-    for (let messageList of state.messageList){
+    for (let messageList of state.messageList) {
         if (Number(payload.gid) === Number(messageList.key)) {
             flag2 = false;
             let msgs = messageList.msgs;
             if (payload.isOffline) {
                 if (msgs.length === 0) {
-                    message.time_show = util.reducerDate(payload.ctime_ms);
+                    message.time_show = Util.reducerDate(payload.ctime_ms);
                     msgs.push(message);
                 } else if (msgs[msgs.length - 1].ctime_ms < payload.ctime_ms) {
-                    if (util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.ctime_ms)) {
-                        message.time_show = util.reducerDate(payload.ctime_ms);
+                    if (Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.ctime_ms)) {
+                        message.time_show = Util.reducerDate(payload.ctime_ms);
                     }
                     msgs.push(message);
                 } else {
                     for (let j = 0; j < msgs.length - 1; j++) {
                         if (msgs[j].ctime_ms < payload.ctime_ms &&
                             payload.ctime_ms < msgs[j + 1].ctime_ms) {
-                            if (util.fiveMinutes(msgs[j].ctime_ms, payload.ctime_ms)) {
-                                message.time_show = util.reducerDate(payload.ctime_ms);
+                            if (Util.fiveMinutes(msgs[j].ctime_ms, payload.ctime_ms)) {
+                                message.time_show = Util.reducerDate(payload.ctime_ms);
                             }
-                            if (!util.fiveMinutes(payload.ctime_ms, msgs[j + 1].ctime_ms)) {
+                            if (!Util.fiveMinutes(payload.ctime_ms, msgs[j + 1].ctime_ms)) {
                                 messageList.msgs[j + 1].time_show = '';
                             }
                             messageList.msgs.splice(j + 1, 0, message);
@@ -1860,8 +1926,8 @@ function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
                 }
             } else {
                 if (msgs.length === 0 ||
-                    util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.ctime_ms)) {
-                    message.time_show = util.reducerDate(payload.ctime_ms);
+                    Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.ctime_ms)) {
+                    message.time_show = Util.reducerDate(payload.ctime_ms);
                 }
                 msgs.push(message);
             }
@@ -1869,7 +1935,7 @@ function addEventMsgToMessageList(state, payload, addGroupOther, operation) {
         }
     }
     if (flag2) {
-        message.time_show = util.reducerDate(payload.ctime_ms);
+        message.time_show = Util.reducerDate(payload.ctime_ms);
         state.messageList.push({
             key: payload.gid,
             msgs: [message],
@@ -1882,7 +1948,11 @@ function completionMessageList(state: ChatStore) {
     for (let conversation of state.conversation) {
         let flag = false;
         for (let messageList of state.messageList) {
-            if (Number(conversation.key) === Number(messageList.key)) {
+            const group = messageList.type === 4 &&
+                Number(conversation.key) === Number(messageList.key);
+            const single = messageList.type === 3 &&
+                conversation.name === messageList.name;
+            if (group || single) {
                 flag = true;
                 break;
             }
@@ -1907,7 +1977,7 @@ function completionMessageList(state: ChatStore) {
     }
 }
 // 切换单聊用户免打扰
-function changeSingleNoDisturb(state, payload) {
+function changeSingleNoDisturb(state: ChatStore, payload) {
     let flag = true;
     for (let i = 0; i < state.noDisturb.users.length; i++) {
         if (payload.name === state.noDisturb.users[i].username) {
@@ -1932,11 +2002,11 @@ function changeSingleNoDisturb(state, payload) {
         }
     }
 }
-// 初始化群免打扰
-function initNoDisturb(state, noDisturb) {
+// 初始化免打扰
+function initNoDisturb(state: ChatStore, noDisturb) {
     for (let user of noDisturb.users) {
         for (let conversation of state.conversation) {
-            if (user.username === conversation.name) {
+            if (conversation.type === 3 && user.username === conversation.name) {
                 conversation.noDisturb = true;
                 break;
             }
@@ -1945,7 +2015,7 @@ function initNoDisturb(state, noDisturb) {
     for (let group of noDisturb.groups) {
         group.key = group.gid;
         for (let conversation of state.conversation) {
-            if (Number(group.key) === Number(conversation.key)) {
+            if (conversation.type === 4 && Number(group.key) === Number(conversation.key)) {
                 conversation.noDisturb = true;
                 break;
             }
@@ -1953,15 +2023,17 @@ function initNoDisturb(state, noDisturb) {
     }
 }
 // 切换群免打扰
-function changeGroupNoDisturb(state, payload) {
-    for (let item of state.conversation) {
-        if (Number(payload.key) === Number(item.key)) {
-            item.noDisturb = !item.noDisturb;
+function changeGroupNoDisturb(state: ChatStore, payload) {
+    for (let conversation of state.conversation) {
+        const group = conversation.type === 4 && payload.type === 4 &&
+            Number(payload.key) === Number(conversation.key);
+        if (group) {
+            conversation.noDisturb = !conversation.noDisturb;
             break;
         }
     }
     let flag = true;
-    for (let i = 0; i < state.noDisturb.groups.length; i ++) {
+    for (let i = 0; i < state.noDisturb.groups.length; i++) {
         if (Number(state.noDisturb.groups[i].key) === Number(payload.key)) {
             state.noDisturb.groups.splice(i, 1);
             flag = false;
@@ -1980,7 +2052,7 @@ function changeGroupNoDisturb(state, payload) {
 function initGroupShield(state: ChatStore, shield) {
     for (let shieldItem of shield) {
         for (let conversation of state.conversation) {
-            if (Number(shieldItem.gid) === Number(conversation.key)) {
+            if (conversation.type === 4 && Number(shieldItem.gid) === Number(conversation.key)) {
                 conversation.shield = true;
                 break;
             }
@@ -1989,9 +2061,9 @@ function initGroupShield(state: ChatStore, shield) {
     state.groupShield = shield;
 }
 // 切换群屏蔽
-function changeGroupShield(state, payload) {
+function changeGroupShield(state: ChatStore, payload) {
     for (let item of state.conversation) {
-        if (Number(payload.key) === Number(item.key)) {
+        if (item.type === 4 && Number(payload.key) === Number(item.key)) {
             item.shield = !item.shield;
             if (item.shield) {
                 state.groupShield.push({
@@ -2000,7 +2072,7 @@ function changeGroupShield(state, payload) {
                 });
             } else {
                 for (let i = 0; i < state.groupShield.length; i++) {
-                    if (Number(state.groupShield[i].gid) === Number(item.key)) {
+                    if (item.type === 4 && Number(state.groupShield[i].gid) === Number(item.key)) {
                         state.groupShield.splice(i, 1);
                         break;
                     }
@@ -2020,7 +2092,7 @@ function filterImageViewer(state: ChatStore) {
     let msgs = messageList.msgs;
     for (let message of msgs) {
         let content = message.content;
-        let jpushEmoji = (!content.msg_body.extras || !content.msg_body.extras.kLargeEmoticon
+        const jpushEmoji = (!content.msg_body.extras || !content.msg_body.extras.kLargeEmoticon
             || content.msg_body.extras.kLargeEmoticon !== 'kLargeEmoticon');
         if (content.msg_type === 'image' && jpushEmoji) {
             imgResult.push({
@@ -2040,10 +2112,10 @@ function changeActivePerson(state: ChatStore) {
         state.activePerson.key = state.activePerson.gid;
     }
     for (let i = 0; i < state.messageList.length; i++) {
-        let group = state.activePerson.type === 4 &&
-                Number(state.messageList[i].key) === Number(state.activePerson.key);
-        let single = state.activePerson.type === 3 && state.messageList[i].type === 3 &&
-                    state.messageList[i].name === state.activePerson.name;
+        const group = state.activePerson.type === 4 && state.messageList[i].type === 4 &&
+            Number(state.messageList[i].key) === Number(state.activePerson.key);
+        const single = state.activePerson.type === 3 && state.messageList[i].type === 3 &&
+            state.messageList[i].name === state.activePerson.name;
         if (group || single) {
             state.activePerson.activeIndex = i;
             break;
@@ -2051,7 +2123,7 @@ function changeActivePerson(state: ChatStore) {
     }
     let list = state.messageList[state.activePerson.activeIndex];
     for (let msg of list.msgs) {
-        let video = (msg.content.msg_body.extras && msg.content.msg_body.extras.video);
+        const video = (msg.content.msg_body.extras && msg.content.msg_body.extras.video);
         if (msg.content.msg_type === 'file' && video) {
             // audio 0 正在加载  1 加载完成  2 正在播放
             msg.content.load = 0;
@@ -2081,7 +2153,7 @@ function changeActivePerson(state: ChatStore) {
             for (let friend of state.friendList) {
                 if (friend.name === member.username) {
                     member.memo_name = friend.memo_name;
-                    util.getMemo_nameFirstLetter(member);
+                    Util.getMemo_nameFirstLetter(member);
                     break;
                 }
             }
@@ -2109,15 +2181,15 @@ function changeActivePerson(state: ChatStore) {
 function filterRecentMsg(state: ChatStore) {
     for (let conversation of state.conversation) {
         for (let messageList of state.messageList) {
-            let group = conversation.type === 4 &&
-                        Number(conversation.key) === Number(messageList.key);
-            let single = conversation.type === 3 && messageList.type === 3 &&
-                        conversation.name === messageList.name;
-            if ( group || single) {
+            const group = conversation.type === 4 && messageList.type === 4 &&
+                Number(conversation.key) === Number(messageList.key);
+            const single = conversation.type === 3 && messageList.type === 3 &&
+                conversation.name === messageList.name;
+            if (group || single) {
                 let msgs = messageList.msgs;
                 if (msgs.length > 0) {
                     msgs[msgs.length - 1].conversation_time_show =
-                    util.reducerDate(msgs[msgs.length - 1].ctime_ms);
+                        Util.reducerDate(msgs[msgs.length - 1].ctime_ms);
                     conversation.recentMsg = msgs[msgs.length - 1];
                 }
                 break;
@@ -2126,159 +2198,12 @@ function filterRecentMsg(state: ChatStore) {
     }
     sortConversationByRecentMsg(state);
 }
-// 初始化msgId(用来判断消息未读数量)
-function initFilterMsgId (state) {
-    let msgId = [];
-    for (let conversation of state.conversation) {
-        for (let messageList of state.messageList) {
-            let group = conversation.type === 4 &&
-                        Number(conversation.key) === Number(messageList.key);
-            let single = conversation.type === 3 && messageList.type === 3 &&
-                        conversation.name === messageList.name;
-            if (group || single) {
-                let msgs = messageList.msgs;
-                if (!conversation.unreadNum && msgs.length > 0) {
-                    msgId.push({
-                        key: messageList.key,
-                        msgId: msgs[msgs.length - 1].msg_id
-                    });
-                } else {
-                    if (conversation.unreadNum !== msgs.length && msgs.length > 0) {
-                        let id = msgs[msgs.length - 1 - conversation.unreadNum].msg_id;
-                        msgId.push({
-                            key: messageList.key,
-                            msgId: id
-                        });
-                    }
-                }
-                break;
-            }
-        }
-    }
-    return msgId;
-}
-// 更新msgId
-function updateFilterMsgId(state: ChatStore, payload ? ) {
-    let msgId;
-    for (let messageList of state.messageList) {
-        for (let pay of payload) {
-            let group = pay.type === 4 && Number(messageList.key) === Number(pay.key);
-            let single = pay.type === 3 && messageList.type === 3 &&
-                        messageList.name === pay.name;
-            if (group || single) {
-                if (messageList.msgs.length > 0) {
-                    for (let i = messageList.msgs.length - 1; i >= 0; i--) {
-                        if (messageList.msgs[i].msg_id) {
-                            msgId = messageList.msgs[i].msg_id;
-                            break;
-                        }
-                    }
-                }
-                let flag = true;
-                if (msgId) {
-                    for (let a = 0; a < state.msgId.length; a++) {
-                        if (Number(state.msgId[a].key) === Number(pay.key)) {
-                            flag = false;
-                            state.msgId[a] = {
-                                key: pay.key,
-                                msgId
-                            };
-                            break;
-                        }
-                    }
-                }
-                if (flag && msgId) {
-                    state.msgId.push({
-                        key: pay.key,
-                        msgId
-                    });
-                }
-                break;
-            }
-        }
-    }
-    return state.msgId;
-}
 // 将群主放在第一位
 function sortGroupMember(memberList) {
     for (let i = 0; i < memberList.length; i++) {
         if (memberList[i].flag === 1) {
             let temp = memberList.splice(i, 1);
             memberList.unshift(temp[0]);
-            break;
-        }
-    }
-}
-// 初始化消息未读数量
-function unreadNum(state: ChatStore, payload) {
-    if (!payload.msgId) {
-        return ;
-    }
-    for (let messageList of state.messageList) {
-        let flag = false;
-        // 当localstorage里面存储了该会话人的msgId
-        for (let msgId of payload.msgId) {
-            if (Number(messageList.key) === Number(msgId.key)) {
-                flag = true;
-                let idFlag = false;
-                for (let j = 0; j < messageList.msgs.length; j++) {
-                    let memberListId = Number(messageList.msgs[j].msg_id);
-                    let payloadId = Number(msgId.msgId);
-                    if (memberListId === payloadId) {
-                        idFlag = true;
-                        let unreadNum = 0;
-                        let atUser = '';
-                        for (let c = j + 1; c < messageList.msgs.length; c++) {
-                            if (messageList.msgs[c].content.from_id !== global.user) {
-                                unreadNum ++;
-                                let atList = messageList.msgs[c].content.at_list;
-                                if (messageHasAtList(atList) !== '') {
-                                    atUser = messageHasAtList(atList);
-                                }
-                            }
-                        }
-                        for (let conversation of state.conversation) {
-                            let memberListKey = Number(messageList.key);
-                            let conversationLey = Number(conversation.key);
-                            if (memberListKey === conversationLey) {
-                                conversation.unreadNum = unreadNum;
-                                conversation.atUser = atUser;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-                // 当localstorage里面存储该会话人，但是没有储存对应的msgId
-                if (!idFlag) {
-                    hasNoMsgId(state, messageList);
-                }
-                break;
-            }
-        }
-        // 当localstorage里面没有存储该会话人的msgId
-        if (!flag) {
-            hasNoMsgId(state, messageList);
-        }
-    }
-}
-// 会话没有存储该msgId
-function hasNoMsgId(state, messageList) {
-    let unreadNum = 0;
-    let atUser = '';
-    for (let msg of messageList.msgs) {
-        if (msg.content.from_id !== global.user) {
-            unreadNum ++;
-            const text = messageHasAtList(msg.content.at_list);
-            if (text !== '') {
-                atUser = text;
-            }
-        }
-    }
-    for (let conversation of state.conversation) {
-        if (Number(messageList.key) === Number(conversation.key)) {
-            conversation.unreadNum = unreadNum;
-            conversation.atUser = atUser;
             break;
         }
     }
@@ -2294,7 +2219,7 @@ function sendMsgComplete(state: ChatStore, payload) {
                     payload.key = conversation.key;
                     conversation.key = payload.msgs.key;
                 }
-            // 转发或者发送消息时key < 0
+                // 转发或者发送消息时key < 0
             } else if (Number(payload.key) < 0) {
                 if (Number(payload.key) === Number(conversation.key)) {
                     conversation.key = payload.msgs.key;
@@ -2312,9 +2237,10 @@ function sendMsgComplete(state: ChatStore, payload) {
         }
     }
     for (let messageList of state.messageList) {
-        let group = payload.type === 4 && Number(messageList.key) === Number(payload.key);
-        let single = payload.type === 3 && messageList.type === 3 &&
-                    messageList.name === payload.name;
+        const group = payload.type === 4 && messageList.type === 4 &&
+            Number(messageList.key) === Number(payload.key);
+        const single = payload.type === 3 && messageList.type === 3 &&
+            messageList.name === payload.name;
         if (group || single) {
             if (Number(payload.key) < 0 && payload.success === 2) {
                 messageList.key = payload.msgs.key;
@@ -2362,8 +2288,10 @@ function deleteConversationItem(state: ChatStore, payload) {
             break;
         }
     }
-    let group = state.activePerson.type === 4 && itemKey === Number(state.activePerson.key);
-    let single = state.activePerson.type === 3 && payload.item.name === state.activePerson.name;
+    const group = state.activePerson.type === 4 && payload.item.type === 4 &&
+        itemKey === Number(state.activePerson.key);
+    const single = state.activePerson.type === 3 && payload.item.type === 3 &&
+        payload.item.name === state.activePerson.name;
     if (group || single) {
         state.defaultPanelIsShow = true;
         state.activePerson = {
@@ -2373,20 +2301,22 @@ function deleteConversationItem(state: ChatStore, payload) {
             activeIndex: -1,
             noDisturb: false,
             avatarUrl: '',
-            shield: ''
+            shield: false,
+            memo_name: '',
+            appkey: ''
         };
     }
 }
 // 转发消息
-function transmitMessage (state, payload) {
+function transmitMessage(state: ChatStore, payload) {
     payload.msgs.key = payload.select.key;
     let flag1 = true;
     let flag2 = true;
     for (let a = 0; a < state.conversation.length; a++) {
-        let groupExist = Number(state.conversation[a].key) === Number(payload.select.key) &&
-                        payload.select.type === 4;
-        let singleExist = payload.select.type === 3 && state.conversation[a].type === 3 &&
-                        state.conversation[a].name === payload.select.name;
+        const groupExist = payload.select.type === 4 && state.conversation[a].type === 4 &&
+            Number(state.conversation[a].key) === Number(payload.select.key);
+        const singleExist = payload.select.type === 3 && state.conversation[a].type === 3 &&
+            state.conversation[a].name === payload.select.name;
         if (groupExist || singleExist) {
             flag1 = false;
             payload.select.conversation_time_show = 'today';
@@ -2399,20 +2329,20 @@ function transmitMessage (state, payload) {
         }
     }
     for (let messageList of state.messageList) {
-        let group = messageList.key && payload.select.type === 4 &&
-                    Number(messageList.key) === Number(payload.select.key);
-        let single = payload.select.type === 3 && messageList.type === 3 &&
-                    messageList.name === payload.select.name;
+        const group = payload.select.type === 4 && messageList.type === 4 &&
+            Number(messageList.key) === Number(payload.select.key);
+        const single = payload.select.type === 3 && messageList.type === 3 &&
+            messageList.name === payload.select.name;
         if (group || single) {
             flag2 = false;
             let msgs = messageList.msgs;
             if (msgs.length === 0 ||
-                util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
+                Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
                 payload.msgs.time_show = 'today';
             }
             msgs.push(payload.msgs);
             state.newMessage = payload.msgs;
-            break ;
+            break;
         }
     }
     if (flag1 && payload.select.type === 3) {
@@ -2447,10 +2377,10 @@ function transmitMessage (state, payload) {
     }
     // 更新imageViewer的数组
     if (payload.msgs.content.msg_type === 'image') {
-        let isSingleMessage = payload.select.type === 3 && state.activePerson.type === 3 &&
-                payload.select.name === state.activePerson.name;
-        let isGroupMessage = payload.select.type === 4 &&
-                Number(payload.select.key) === Number(state.activePerson.key);
+        const isSingleMessage = payload.select.type === 3 && state.activePerson.type === 3 &&
+            payload.select.name === state.activePerson.name;
+        const isGroupMessage = payload.select.type === 4 && state.activePerson.type === 4 &&
+            Number(payload.select.key) === Number(state.activePerson.key);
         if (isSingleMessage || isGroupMessage) {
             state.imageViewer.push({
                 src: payload.msgs.content.msg_body.media_url,
@@ -2467,12 +2397,12 @@ function addMessage(state: ChatStore, payload) {
     if (payload.messages && payload.messages[0]) {
         let message = payload.messages[0];
         if (message.msg_type === 3) {
-            message.content.name = message.content.from_id !== global.user ?
-                        message.content.from_id : message.content.target_id;
-            message.content.nickName = message.content.from_id !== global.user ?
-                        message.content.from_name : message.content.target_name;
-            message.content.appkey = message.content.from_id !== global.user ?
-                        message.content.from_appkey : message.content.target_appkey;
+            const isMySelf = message.content.from_id !== global.user;
+            message.content.name = isMySelf ? message.content.from_id : message.content.target_id;
+            message.content.nickName =
+                isMySelf ? message.content.from_name : message.content.target_name;
+            message.content.appkey =
+                isMySelf ? message.content.from_appkey : message.content.target_appkey;
         } else {
             message.content.name = message.content.from_id;
             message.content.nickName = message.content.from_name;
@@ -2482,26 +2412,25 @@ function addMessage(state: ChatStore, payload) {
         filterNewMessage(state, payload, message);
         let flag = false;
         // 如果发送人在会话列表里
-        for (let a = 0; a < state.conversation.length; a ++) {
-            let groupMsg = message.msg_type === 4 &&
-                    Number(state.conversation[a].key) === Number(message.key);
-            let singleMsg = message.msg_type === 3 && state.conversation[a].type &&
-                    state.conversation[a].type === 3 &&
-                    state.conversation[a].name === message.content.name;
+        for (let a = 0; a < state.conversation.length; a++) {
+            const groupMsg = message.msg_type === 4 && state.conversation[a].type === 4 &&
+                Number(state.conversation[a].key) === Number(message.key);
+            const singleMsg = message.msg_type === 3 && state.conversation[a].type === 3 &&
+                state.conversation[a].name === message.content.name;
             if (groupMsg || singleMsg) {
                 if (groupMsg && message.content.target_name === '') {
                     message.content.target_name = state.conversation[a].name;
                 }
-                let groupNoActive = message.msg_type === 4 &&
-                        Number(state.activePerson.key) !== Number(message.key);
-                let singleNoActive = message.msg_type === 3 &&
-                        state.activePerson.name !== message.content.name;
+                const groupNoActive = message.msg_type === 4 &&
+                    Number(state.activePerson.key) !== Number(message.key);
+                const singleNoActive = message.msg_type === 3 &&
+                    state.activePerson.name !== message.content.name;
                 if (groupNoActive || singleNoActive) {
                     if (message.content.from_id !== global.user) {
                         if (!state.conversation[a].unreadNum) {
                             state.conversation[a].unreadNum = 1;
                         } else {
-                            state.conversation[a].unreadNum ++;
+                            state.conversation[a].unreadNum++;
                         }
                     }
                     const atList = messageHasAtList(payload.messages[0].content.at_list);
@@ -2511,7 +2440,7 @@ function addMessage(state: ChatStore, payload) {
                 }
                 flag = true;
                 if (state.conversation[a].key < 0) {
-                    let oldKey = Number(state.conversation[a].key);
+                    const oldKey = Number(state.conversation[a].key);
                     if (oldKey === Number(state.activePerson.key)) {
                         state.activePerson.key = message.key;
                     }
@@ -2535,14 +2464,14 @@ function addMessage(state: ChatStore, payload) {
             }
         }
         for (let messageList of state.messageList) {
-            let groupMsg = message.msg_type === 4 &&
-                    Number(messageList.key) === Number(message.key);
-            let singleMsg = message.msg_type === 3 && messageList.type === 3 &&
-                    messageList.name === message.content.name;
+            const groupMsg = message.msg_type === 4 && messageList.type === 4 &&
+                Number(messageList.key) === Number(message.key);
+            const singleMsg = message.msg_type === 3 && messageList.type === 3 &&
+                messageList.name === message.content.name;
             if (groupMsg || singleMsg) {
                 let msgs = messageList.msgs;
                 if (msgs.length === 0 ||
-                    util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, message.ctime_ms)) {
+                    Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, message.ctime_ms)) {
                     payload.messages[0].time_show = 'today';
                 }
                 msgs.push(payload.messages[0]);
@@ -2559,7 +2488,11 @@ function addMessage(state: ChatStore, payload) {
         addMyselfMesssge(state, payload);
         // 清空会话草稿标志
         for (let conversation of state.conversation) {
-            if ((Number(payload.key) === Number(conversation.key))) {
+            const single = payload.active.type === 3 && conversation.type === 3 &&
+                payload.active.name === conversation.name;
+            const group = payload.active.type === 4 && conversation.type === 4 &&
+                Number(payload.active.key) === Number(conversation.key);
+            if (single || group) {
                 if (payload.msgs.content.msg_type === 'text') {
                     conversation.draft = '';
                 }
@@ -2570,10 +2503,12 @@ function addMessage(state: ChatStore, payload) {
 }
 // 添加自己发的消息到消息面板
 function addMyselfMesssge(state: ChatStore, payload) {
-    let result = state.conversation.filter((item) => {
-        return (item.type === 3 && payload.active.type === 3 &&
-                item.name === payload.active.name) ||
-                (item.type === 4 && Number(item.key) === Number(payload.active.key));
+    const result = state.conversation.filter((item) => {
+        const single = item.type === 3 && payload.active.type === 3 &&
+            item.name === payload.active.name;
+        const group = item.type === 4 && payload.active.type === 4 &&
+            Number(item.key) === Number(payload.active.key);
+        return single || group;
     });
     if (result.length === 0) {
         payload.active.extras = {};
@@ -2581,10 +2516,10 @@ function addMyselfMesssge(state: ChatStore, payload) {
         payload.active.recentMsg = payload.msgs;
         let flag = true;
         for (let message of state.messageList) {
-            let group = payload.active.type === 4 &&
-                        Number(payload.active.key) === Number(message.key);
-            let single = payload.active.type === 3 && message.type === 3 &&
-                        payload.active.name === message.name;
+            const group = payload.active.type === 4 && message.type === 4 &&
+                Number(payload.active.key) === Number(message.key);
+            const single = payload.active.type === 3 && message.type === 3 &&
+                payload.active.name === message.name;
             if (group || single) {
                 message.msgs.push(payload.msgs);
                 flag = false;
@@ -2610,7 +2545,11 @@ function addMyselfMesssge(state: ChatStore, payload) {
         // 更新imageViewer的数组
         if (payload.msgs && payload.msgs.content.from_id === global.user
             && payload.msgs.content.msg_type === 'image') {
-            if (Number(payload.key) === Number(state.activePerson.key)) {
+            const single = payload.active.type === 3 && state.activePerson.type === 3 &&
+                payload.active.name === state.activePerson.name;
+            const group = payload.active.type === 4 && state.activePerson.type === 4 &&
+                Number(payload.active.key) === Number(state.activePerson.key);
+            if (single || group) {
                 state.imageViewer.push({
                     src: payload.msgs.content.msg_body.media_url,
                     width: payload.msgs.content.msg_body.width,
@@ -2620,25 +2559,27 @@ function addMyselfMesssge(state: ChatStore, payload) {
             }
         }
         for (let messageList of state.messageList) {
-            if ((messageList.key && payload.active.type === 4 &&
-                Number(messageList.key) === Number(payload.key)) ||
-                (payload.active.type === 3 && messageList.name === payload.active.name)) {
+            const single = payload.active.type === 3 && messageList.type === 3 &&
+                messageList.name === payload.active.name;
+            const group = messageList.type === 4 && payload.active.type === 4 &&
+                Number(messageList.key) === Number(payload.key);
+            if (single || group) {
                 let msgs = messageList.msgs;
                 if (msgs.length === 0 ||
-                    util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
+                    Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms, payload.msgs.ctime_ms)) {
                     payload.msgs.time_show = 'today';
                 }
                 msgs.push(payload.msgs);
                 state.newMessage = payload.msgs;
-                break ;
+                break;
             }
         }
         // 将当前会话放在第一位
         for (let a = 0; a < state.conversation.length; a++) {
-            let group = payload.active.type === 4 &&
-                    Number(state.conversation[a].key) === Number(payload.key);
-            let single = payload.active.type === 3 && state.conversation[a].type === 3 &&
-                    state.conversation[a].name === payload.active.name;
+            const group = payload.active.type === 4 && state.conversation[a].type === 4 &&
+                Number(state.conversation[a].key) === Number(payload.key);
+            const single = payload.active.type === 3 && state.conversation[a].type === 3 &&
+                state.conversation[a].name === payload.active.name;
             if (group || single) {
                 payload.msgs.conversation_time_show = 'today';
                 if (payload.msgs.msg_type === 3) {
@@ -2655,14 +2596,13 @@ function addMyselfMesssge(state: ChatStore, payload) {
     }
 }
 // 处理新消息
-function filterNewMessage(state, payload, message) {
+function filterNewMessage(state: ChatStore, payload, message) {
     // 更新imageViewer的数组
-    let isGroupMessage = message.msg_type === 4 &&
-            Number(message.key) === Number(state.activePerson.key);
-    let isSingleMessage = message.msg_type === 3 && state.activePerson.type === 3 &&
-            message.content.from_id === state.activePerson.name;
-    let isImage = message.content.msg_type === 'image';
-
+    const isGroupMessage = message.msg_type === 4 && state.activePerson.type === 4 &&
+        Number(message.key) === Number(state.activePerson.key);
+    const isSingleMessage = message.msg_type === 3 && state.activePerson.type === 3 &&
+        message.content.from_id === state.activePerson.name;
+    const isImage = message.content.msg_type === 'image';
     if ((isGroupMessage || isSingleMessage) && isImage) {
         state.imageViewer.push({
             src: message.content.msg_body.media_url,
@@ -2672,14 +2612,14 @@ function filterNewMessage(state, payload, message) {
         });
     }
     // 接收到语音初始化播放动画
-    let isVoice = message.content.msg_type === 'voice';
+    const isVoice = message.content.msg_type === 'voice';
     if (isVoice) {
         payload.messages[0].content.playing = false;
         payload.messages[0].content.havePlay = false;
         payload.messages[0].content.load = 0;
     }
     // 接收到小视频初始化loading
-    let isVideo = message.content.msg_type === 'file' &&
+    const isVideo = message.content.msg_type === 'file' &&
         message.content.msg_body.extras &&
         message.content.msg_body.extras.video;
     if (isVideo) {
@@ -2688,16 +2628,7 @@ function filterNewMessage(state, payload, message) {
     }
 }
 // 新消息用户不在会话列表中
-function addMessageUserNoConversation(state, payload, message) {
-    if (message.msg_type === 4) {
-        // 如果新消息没群名，从群列表中获取
-        for (let group of state.groupList) {
-            if (Number(group.gid) === Number(message.key) && message.content.target_name === '') {
-                message.content.target_name = group.name;
-                break;
-            }
-        }
-    }
+function addMessageUserNoConversation(state: ChatStore, payload, message) {
     let msg;
     let conversationItem;
     if (message.msg_type === 3) {
@@ -2732,6 +2663,15 @@ function addMessageUserNoConversation(state, payload, message) {
             }
         }
     } else {
+        // 如果新消息没群名，从群列表中获取
+        if (!message.content.target_name || message.content.target_name.length === 0) {
+            for (let group of state.groupList) {
+                if (Number(group.gid) === Number(message.key)) {
+                    message.content.target_name = group.name;
+                    break;
+                }
+            }
+        }
         msg = {
             key: message.key,
             msgs: [
@@ -2774,7 +2714,7 @@ function addMessageUserNoConversation(state, payload, message) {
     payload.messages[0].time_show = 'today';
     state.newMessage = msg;
     state.messageList.push(msg);
-    let index = filterTopConversation(state, conversationItem);
+    const index = filterTopConversation(state, conversationItem);
     state.conversation[index].recentMsg = payload.messages[0];
     const atList = messageHasAtList(payload.messages[0].content.at_list);
     if (atList !== '') {
@@ -2796,13 +2736,35 @@ function messageHasAtList(atList) {
     }
     return atUser;
 }
+// 搜索单聊或者好友
+function searchSingleUser(state: ChatStore, payload) {
+    let singleArr = [];
+    // 查找最近联系人
+    for (let item of state.conversation) {
+        searchSingle(payload.keywords, singleArr, item);
+    }
+    // 查找好友
+    for (let item of state.friendList) {
+        searchSingle(payload.keywords, singleArr, item);
+    }
+    if (payload.result) {
+        const item = singleArr.filter((single) => {
+            return single.name === payload.result.name;
+        });
+        if (item.length === 0) {
+            singleArr.push(payload.result);
+        }
+    }
+    return singleArr;
+}
 // 搜索用户、群组
 function searchUser(state: ChatStore, payload) {
     if (payload === '') {
         return {
             result: {
                 groupArr: [],
-                singleArr: []
+                singleArr: [],
+                roomArr: []
             },
             isSearch: false
         };
@@ -2819,7 +2781,7 @@ function searchUser(state: ChatStore, payload) {
     }
     // 查找群组
     for (let item of state.groupList) {
-        let existGroup = (item.name.toLowerCase().indexOf(payload.toLowerCase()) !== -1);
+        const existGroup = (item.name.toLowerCase().indexOf(payload.toLowerCase()) !== -1);
         if (existGroup) {
             groupArr.push(item);
         }
@@ -2827,21 +2789,22 @@ function searchUser(state: ChatStore, payload) {
     return {
         result: {
             singleArr,
-            groupArr
+            groupArr,
+            roomArr: []
         },
         isSearch: true
     };
 }
 // 搜索单聊用户或好友
 function searchSingle(payload, singleArr, item) {
-    let existMemoName = item.memo_name &&
+    const existMemoName = item.memo_name &&
         item.memo_name.toLowerCase().indexOf(payload.toLowerCase()) !== -1;
-    let existNickName = item.nickName &&
+    const existNickName = item.nickName &&
         item.nickName.toLowerCase().indexOf(payload.toLowerCase()) !== -1;
-    let existName = item.name &&
+    const existName = item.name &&
         item.name.toLowerCase().indexOf(payload.toLowerCase()) !== -1;
-    let existSingle = item.type === 3;
-    let isExist = singleArr.filter((single) => {
+    const existSingle = item.type === 3;
+    const isExist = singleArr.filter((single) => {
         return single.name === item.name;
     });
     if (isExist.length > 0) {
@@ -2852,18 +2815,18 @@ function searchSingle(payload, singleArr, item) {
     }
 }
 // 选择搜索的用户、发起单聊
-function selectUserResult(state, payload, type?: string) {
+function selectUserResult(state: ChatStore, payload, type?: string) {
     if (payload.gid) {
         payload.key = payload.gid;
     }
     let conversation = state.conversation;
     let flag = false;
     let index;
-    for (let i = 0; i < conversation.length; i ++) {
-        let group = payload.key && payload.type === 4 &&
-                Number(conversation[i].key) === Number(payload.key);
-        let single = payload.type === 3 && conversation[i].type === 3 &&
-                conversation[i].name === payload.name;
+    for (let i = 0; i < conversation.length; i++) {
+        const group = payload.type === 4 && conversation[i].type === 4 &&
+            Number(conversation[i].key) === Number(payload.key);
+        const single = payload.type === 3 && conversation[i].type === 3 &&
+            conversation[i].name === payload.name;
         if (group || single) {
             index = i;
             payload.key = conversation[i].key;
@@ -2879,9 +2842,11 @@ function selectUserResult(state, payload, type?: string) {
             break;
         }
     }
-    let result = state.messageList.filter((item) => {
-        return (item.key && payload.type === 4 && Number(item.key) === Number(payload.key)) ||
-                (payload.type === 3 && item.type === 3 && payload.name === item.name);
+    const result = state.messageList.filter((item) => {
+        const group = item.type === 4 && payload.type === 4 &&
+            Number(item.key) === Number(payload.key);
+        const single = payload.type === 3 && item.type === 3 && payload.name === item.name;
+        return group || single;
     });
     if (result.length === 0) {
         if (payload.type === 3) {
@@ -2908,29 +2873,29 @@ function selectUserResult(state, payload, type?: string) {
         filterTopConversation(state, payload);
     }
     if (type === 'search' && index) {
-        state.activePerson = Object.assign({}, state.conversation[index], {});
+        state.activePerson = Util.deepCopyObj(state.conversation[index]);
     } else if (type === 'search') {
-        state.activePerson = Object.assign({}, payload, {});
+        state.activePerson = Util.deepCopyObj(payload);
     }
 }
 // 创建会话时初始化会话
-function initConversation(state, payload) {
+function initConversation(state: ChatStore, payload) {
     payload.extras = {};
     if (payload.type === 3) {
-        let single = state.noDisturb.users.filter((item) => {
+        const single = state.noDisturb.users.filter((item) => {
             return payload.name === item.username;
         });
         if (single.length !== 0) {
             payload.noDisturb = true;
         }
     } else if (payload.type === 4) {
-        let group = state.noDisturb.groups.filter((item) => {
+        const group = state.noDisturb.groups.filter((item) => {
             return Number(payload.key) === Number(item.gid);
         });
         if (group.length !== 0) {
             payload.noDisturb = true;
         }
-        let shield = state.groupShield.filter((item) => {
+        const shield = state.groupShield.filter((item) => {
             return Number(item.gid) === Number(payload.key);
         });
         if (shield.length !== 0) {
@@ -2942,8 +2907,9 @@ function initConversation(state, payload) {
 function emptyUnreadNum(state: ChatStore, payload) {
     state.readObj = [];
     for (let item of state.conversation) {
-        let group = payload.type === 4 && Number(item.key) === Number(payload.key);
-        let single = payload.type === 3 && item.type === 3 && item.name === payload.name;
+        const group = payload.type === 4 && item.type === 4 &&
+            Number(item.key) === Number(payload.key);
+        const single = payload.type === 3 && item.type === 3 && item.name === payload.name;
         if (group || single) {
             item.atUser = '';
             if (item.unreadNum) {
@@ -2954,7 +2920,7 @@ function emptyUnreadNum(state: ChatStore, payload) {
     }
 }
 // 将会话插入到置顶会话之后
-function filterTopConversation(state, item) {
+function filterTopConversation(state: ChatStore, item) {
     let flag = true;
     let index;
     for (let i = 0; i < state.conversation.length; i++) {
@@ -2970,4 +2936,164 @@ function filterTopConversation(state, item) {
         index = state.conversation.length - 1;
     }
     return index;
+}
+// 添加群成员禁言事件
+function addGroupMemberSilenceEvent(state: ChatStore, payload) {
+    changeGroupMemberSilence(state, payload, true, '被禁言');
+}
+// 取消群成员禁言事件
+function deleteGroupMemberSilenceEvent(state: ChatStore, payload) {
+    changeGroupMemberSilence(state, payload, false, '被解除禁言');
+}
+// 切换群成员禁言
+function changeGroupMemberSilence(state: ChatStore, payload, silence: boolean, text: string) {
+    for (let shield of state.groupShield) {
+        if (Number(shield.gid) === Number(payload.gid)) {
+            return;
+        }
+    }
+    for (let messageList of state.messageList) {
+        if (Number(payload.gid) === Number(messageList.key)) {
+            if (messageList.groupSetting && messageList.groupSetting.memberList) {
+                for (let user of payload.to_usernames) {
+                    for (let member of messageList.groupSetting.memberList) {
+                        if (member.username === user.username) {
+                            member.keep_silence = silence;
+                            break;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+    }
+    for (let user of payload.to_usernames) {
+        let name = user.nickname || user.username;
+        for (let friend of state.friendList) {
+            if (friend.name === user.username) {
+                if (friend.memo_name) {
+                    name = friend.memo_name;
+                }
+                break;
+            }
+        }
+        let msg = {
+            ctime_ms: payload.ctime_ms,
+            msg_type: 5,
+            content: {
+                msg_body: {
+                    text: `${name} ${text}`
+                },
+                msg_type: 'event'
+            },
+            time_show: '',
+            conversation_time_show: Util.reducerDate(payload.ctime_ms)
+        };
+        let flag = false;
+        for (let i = 0; i < state.conversation.length; i++) {
+            if (state.conversation[i].type === 4 &&
+                Number(state.conversation[i].key) === Number(payload.gid)) {
+                state.conversation[i].recentMsg = msg;
+                let item = state.conversation.splice(i, 1)[0];
+                filterTopConversation(state, item);
+                flag = true;
+                for (let messageList of state.messageList) {
+                    if (messageList.type === 4 &&
+                        Number(messageList.key) === Number(payload.gid)) {
+                        let msgs = messageList.msgs;
+                        if (msgs.length > 0) {
+                            if (Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms,
+                                payload.ctime_ms)) {
+                                msg.time_show = Util.reducerDate(payload.ctime_ms);
+                            }
+                        } else {
+                            msg.time_show = Util.reducerDate(payload.ctime_ms);
+                        }
+                        msgs.push(msg);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        if (!flag) {
+            for (let group of state.groupList) {
+                if (Number(group.gid) === Number(payload.gid)) {
+                    let conversation = Util.deepCopyObj(group);
+                    for (let noDisturbGroup of state.noDisturb.groups) {
+                        if (Number(noDisturbGroup.gid) === Number(payload.gid)) {
+                            conversation.noDisturb = true;
+                            break;
+                        }
+                    }
+                    conversation.type = 4;
+                    conversation.recentMsg = msg;
+                    if (conversation.gid) {
+                        conversation.key = conversation.gid;
+                    }
+                    filterTopConversation(state, conversation);
+                    let flag2 = false;
+                    for (let messageList of state.messageList) {
+                        if (messageList.type === 4 &&
+                            Number(messageList.key) === Number(payload.gid)) {
+                            let msgs = messageList.msgs;
+                            if (msgs.length > 0) {
+                                if (Util.fiveMinutes(msgs[msgs.length - 1].ctime_ms,
+                                    payload.ctime_ms)) {
+                                    msg.time_show = Util.reducerDate(payload.ctime_ms);
+                                }
+                            } else {
+                                msg.time_show = Util.reducerDate(payload.ctime_ms);
+                            }
+                            flag2 = true;
+                            msgs.push(msg);
+                            break;
+                        }
+                    }
+                    if (!flag2) {
+                        msg.time_show = Util.reducerDate(payload.ctime_ms);
+                        state.messageList.push({
+                            key: payload.gid,
+                            msgs: [
+                                msg
+                            ],
+                            type: 4
+                        });
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}
+// 更新会话的未读总数
+function conversationUnreadNum(state: ChatStore) {
+    let count = 0;
+    for (let conversation of state.conversation) {
+        if (!conversation.noDisturb && conversation.unreadNum) {
+            count += conversation.unreadNum;
+        }
+    }
+    state.conversationUnreadNum = count;
+}
+//  给入群邀请的邀请者和被邀请者添加备注名
+function filterInvitationEventMeMoName(state: ChatStore, payload) {
+    for (let friend of state.friendList) {
+        if (payload.from_username === friend.username && payload.from_appkey === friend.appkey) {
+            if (friend.memo_name) {
+                payload.from_memo_name = friend.memo_name;
+            }
+            break;
+        }
+    }
+    for (let user of payload.to_usernames) {
+        for (let friend of state.friendList) {
+            if (user.username === friend.username && user.appkey === friend.appkey) {
+                if (friend.memo_name) {
+                    user.memo_name = friend.memo_name;
+                }
+                break;
+            }
+        }
+    }
 }

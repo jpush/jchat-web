@@ -1,22 +1,24 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-
 import { BlackMenuComponent } from './black-menu.component';
-import { SanitizePipeModule } from '../../pipes';
+import { SharedPipeModule } from '../../pipes';
+import { SharedDirectiveModule } from '../../directives';
 
 @NgModule({
-  declarations: [
-    BlackMenuComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    SanitizePipeModule
-  ],
-  exports: [
-      BlackMenuComponent
-  ],
-  providers: []
+    declarations: [
+        BlackMenuComponent
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        SharedPipeModule,
+        SharedDirectiveModule
+    ],
+    exports: [
+        BlackMenuComponent
+    ],
+    providers: []
 })
-export class BlackMenuModule {}
+
+export class BlackMenuModule { }

@@ -1,8 +1,9 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-    HostListener, ElementRef } from '@angular/core';
-
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    HostListener, ElementRef
+} from '@angular/core';
 import { Util } from '../../services/util';
-import { imgRouter } from '../../services/common';
+import { imgRouter, jpushRouter } from '../../services/common';
 
 @Component({
     selector: 'emoji-component',
@@ -12,23 +13,20 @@ import { imgRouter } from '../../services/common';
 
 export class EmojiComponent implements OnInit {
     @Input()
-        private emojiInfo;
+    private emojiInfo;
     @Output()
-        private jpushEmojiSelect: EventEmitter<any> = new EventEmitter();
-    private util = new Util();
+    private jpushEmojiSelect: EventEmitter<any> = new EventEmitter();
     private imgRouter = imgRouter;
+    private jpushRouter = jpushRouter;
     private tab = 0;
-
     constructor(
         private elementRef: ElementRef
-    ) {
-
-    }
+    ) { }
     public ngOnInit() {
         // pass
     }
     @HostListener('window:click') private onClick() {
-        if (this.emojiInfo.show === true) {
+        if (this.emojiInfo.show) {
             this.emojiInfo.show = false;
         }
     }
@@ -36,13 +34,17 @@ export class EmojiComponent implements OnInit {
         event.stopPropagation();
     }
     private emojiSelectAction(idName) {
-        let contentId = document.getElementById(this.emojiInfo.contentId);
+        const contentId = document.getElementById(this.emojiInfo.contentId);
         let insertHtml = this.elementRef.nativeElement.querySelector('#' + idName).innerHTML;
         insertHtml = insertHtml.replace('width="22', 'width="18');
-        this.util.insertAtCursor(contentId, insertHtml, false);
+        Util.insertAtCursor(contentId, insertHtml, false);
         this.emojiInfo.show = false;
     }
     private changeTab(event, index) {
         this.tab = index;
+    }
+    private jpushEmojiSelectAction(jpushEmoji) {
+        this.emojiInfo.show = false;
+        this.jpushEmojiSelect.emit(jpushEmoji);
     }
 }

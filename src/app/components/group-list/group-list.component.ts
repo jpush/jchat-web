@@ -1,5 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
     selector: 'group-list-component',
@@ -7,11 +6,17 @@ const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
     styleUrls: ['./group-list.component.scss']
 })
 
-export class GroupListComponent implements OnInit, DoCheck {
+export class GroupListComponent implements OnInit {
     @Input()
-        private groupList;
+    private groupLoading;
+    @Input()
+    private groupList;
+    @Input()
+    private set groupFlag(value) {
+        this.checkGroupList();
+    }
     @Output()
-        private selectGroupItemEmit: EventEmitter<any> = new EventEmitter();
+    private selectGroupItemEmit: EventEmitter<any> = new EventEmitter();
     private isEmpty = false;
     constructor() {
         // pass
@@ -21,28 +26,21 @@ export class GroupListComponent implements OnInit, DoCheck {
             this.groupList = [];
         }
     }
-    public ngDoCheck() {
+    public checkGroupList() {
+        let flag = true;
         for (let item of this.groupList) {
             if (item.data.length > 0) {
                 this.isEmpty = true;
+                flag = false;
                 break;
             }
+        }
+        if (flag) {
+            this.isEmpty = false;
         }
     }
     private selectGroupItem(item) {
         item.type = 4;
         this.selectGroupItemEmit.emit(item);
-    }
-    private avatarLoad(event, item) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
     }
 }

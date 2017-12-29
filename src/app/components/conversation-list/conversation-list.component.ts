@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { global } from '../../services/common';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
+
 @Component({
     selector: 'conversation-list-component',
     templateUrl: './conversation-list.component.html',
@@ -10,15 +9,15 @@ const groupAvatarErrorIcon = '../../../assets/images/group-avatar.svg';
 
 export class ConversationListComponent implements OnInit {
     @Input()
-        private conversationList;
+    private conversationList;
     @Input()
-        private active;
+    private active;
     @Output()
-        private changeActive: EventEmitter<any> = new EventEmitter();
+    private changeActive: EventEmitter<any> = new EventEmitter();
     @Output()
-        private deleteConversationItem: EventEmitter<any> = new EventEmitter();
+    private deleteConversationItem: EventEmitter<any> = new EventEmitter();
     @Output()
-        private conversationToTop: EventEmitter<any> = new EventEmitter();
+    private conversationToTop: EventEmitter<any> = new EventEmitter();
     private global = global;
     private topPosition = {
         left: 0,
@@ -38,12 +37,6 @@ export class ConversationListComponent implements OnInit {
     private selectTarget(item) {
         this.changeActive.emit(item);
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private groupAvatarErrorIcon(event) {
-        event.target.src = groupAvatarErrorIcon;
-    }
     private deleteThis(event, item) {
         event.stopPropagation();
         this.deleteConversationItem.emit(item);
@@ -59,14 +52,5 @@ export class ConversationListComponent implements OnInit {
     }
     private conversationToTopAction() {
         this.conversationToTop.emit(this.topPosition.item);
-    }
-    private avatarLoad(event, item) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
     }
 }

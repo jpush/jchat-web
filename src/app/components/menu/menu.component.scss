@@ -4,7 +4,8 @@
     left: 24px;
     width: 115px;
     background-color: #fff;
-    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
+    -webkit-box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
+            box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
     border-radius: 2px;
     ul{
         cursor: pointer;
@@ -15,7 +16,8 @@
         border-radius: 2px;
         li{
             padding-left: 22px;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             .menu-arror{
                 width: 14px;
                 height: 8px;

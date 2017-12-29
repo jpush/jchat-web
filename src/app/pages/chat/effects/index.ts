@@ -1,1 +1,1 @@
-export * from './chat.effects';
+export * from './chat.effect';

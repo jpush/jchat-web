@@ -1,5 +1,5 @@
 # JChat-web
-![Release](https://img.shields.io/badge/release-1.1.0-blue.svg?style=flat)
+![Release](https://img.shields.io/badge/release-1.2.0-blue.svg?style=flat)
 ![Support](https://img.shields.io/badge/support-IE11+-blue.svg?style=flat)
 ![Language](http://img.shields.io/badge/language-Angular2-brightgreen.svg?style=flat)
 
@@ -8,7 +8,7 @@
 
 JChat 是基于 JMessage SDK 带有完整 UI 界面的即时通讯应用。 演示了完整的即时通讯功能，包括：
 
-* 单聊、群聊、会话列表、通讯录；
+* 单聊、群聊、会话列表、通讯录、聊天室；
 * 支持发送文本、图片、文件、表情、名片；
 * 提供好友管理、群组管理、黑名单、群屏蔽、消息免打扰、通知栏、消息漫游、消息已读未读、会话置顶、群聊@XXX、多端在线等功能；
 
@@ -55,7 +55,8 @@ localhost:3000
 前端生成签名：appkey和masterSecret在src/services/common/config.ts中配置，同时，将signature和timestamp改为空字符串''；<br />
 服务端生成签名：服务端提供接口，返回签名给前端开发者调用，并配置好appkey、randomStr、timestamp以及调用接口返回的signature，最后将masterSecret改为空字符串''；<br />
 * 注意：
-生产环境签名的生成需要在开发者服务端生成，不然存在 masterSecret 暴露的风险
+生产环境签名的生成需要在开发者服务端生成，不然存在 masterSecret 暴露的风险<br />
+前端调用服务端接口的实现，参考： [angular http 模块](https://www.angular.cn/tutorial/toh-pt6)<br />
 
 * 项目压缩打包并发布(前提：已全局安装gulp (终端输入cnpm install gulp -g))：
 

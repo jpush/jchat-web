@@ -4,7 +4,8 @@
 .self-info-container{
     width: 320px;
     overflow: hidden;
-    box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+    -webkit-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+            box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
     border-radius: 0;
     padding: 0 30px;
     color: #808080;
@@ -36,8 +37,10 @@
         margin-bottom: 14px;
         text-align: center;
         border-bottom: 1px solid #e3e6eb;
+        img{
+            width: 100%;
+        }
         .self-info-show-avatar{
-            display: block;
             width: 60px;
             height: 60px;
             margin: 0 auto;
@@ -91,7 +94,8 @@
                 border-radius: 2px;
                 font-size: 14px;
                 padding-left: 12px;
-                box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                        box-sizing: border-box;
             }
         }
     }
@@ -116,7 +120,8 @@
             border-radius: 2px;
             width: 160px;
             height: 26px;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             padding-left: 12px;
             font-size: 14px;
             color: #000C0A;

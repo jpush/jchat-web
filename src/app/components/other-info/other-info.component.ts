@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter,
-    OnChanges, DoCheck, HostListener, ElementRef } from '@angular/core';
-import { authPayload} from '../../services/common';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
+import {
+    Component, OnInit, Input, Output, EventEmitter,
+    OnChanges, DoCheck, HostListener, ViewChild
+} from '@angular/core';
+import { authPayload } from '../../services/common';
 
 @Component({
     selector: 'other-info-component',
@@ -10,26 +11,27 @@ const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 })
 
 export class OtherInfoComponent implements OnInit, OnChanges {
+    @ViewChild('editMemoName') private editMemoName;
     @Input()
-        private otherInfo;
+    private otherInfo;
     @Input()
-        private changeOtherInfoFlag;
+    private changeOtherInfoFlag;
     @Output()
-        private isShow: EventEmitter<any> = new EventEmitter();
+    private isShow: EventEmitter<any> = new EventEmitter();
     @Output()
-        private changeSingleBlack: EventEmitter<any> = new EventEmitter();
+    private changeSingleBlack: EventEmitter<any> = new EventEmitter();
     @Output()
-        private sendCard: EventEmitter<any> = new EventEmitter();
+    private sendCard: EventEmitter<any> = new EventEmitter();
     @Output()
-        private changeSingleNoDisturb: EventEmitter<any> = new EventEmitter();
+    private changeSingleNoDisturb: EventEmitter<any> = new EventEmitter();
     @Output()
-        private addFriend: EventEmitter<any> = new EventEmitter();
+    private addFriend: EventEmitter<any> = new EventEmitter();
     @Output()
-        private saveMemoName: EventEmitter<any> = new EventEmitter();
+    private saveMemoName: EventEmitter<any> = new EventEmitter();
     @Output()
-        private deleteFriend: EventEmitter<any> = new EventEmitter();
+    private deleteFriend: EventEmitter<any> = new EventEmitter();
     @Output()
-        private verifyUserBtn: EventEmitter<any> = new EventEmitter();
+    private verifyUserBtn: EventEmitter<any> = new EventEmitter();
     private editRmark = {
         tip: '修改备注名',
         position: {
@@ -68,7 +70,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         show: false
     };
     private isEdit = false;
-    constructor(private elementRef: ElementRef) {
+    constructor() {
         // pass
     }
     public ngOnInit() {
@@ -77,18 +79,6 @@ export class OtherInfoComponent implements OnInit, OnChanges {
     public ngOnChanges() {
         this.infoMenu.info[1].isRight = this.otherInfo.info.noDisturb ? true : false;
         this.infoMenu.info[2].isRight = this.otherInfo.info.black ? true : false;
-        // switch (this.otherInfo.info.gender) {
-        //     case 0:
-        //         this.otherInfo.info.gender = '保密';
-        //         break;
-        //     case 1:
-        //         this.otherInfo.info.gender = '男';
-        //         break;
-        //     case 2:
-        //         this.otherInfo.info.gender = '女';
-        //         break;
-        //     default:
-        // }
         if (this.otherInfo.info.infoType === 'watchOtherInfo' && !this.otherInfo.info.isFriend) {
             this.infoMenu.info[3].show = false;
         } else {
@@ -96,7 +86,7 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         }
     }
     private saveMemoNameAction(event) {
-        let value = event.target.value;
+        const value = event.target.value;
         this.saveMemoName.emit({
             name: this.otherInfo.info.name,
             memo_name: value,
@@ -108,11 +98,8 @@ export class OtherInfoComponent implements OnInit, OnChanges {
         event.stopPropagation();
         this.infoMenu.show = false;
     }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
     private sendMsgBtn() {
-        let user = {
+        const user = {
             avatar: this.otherInfo.info.avatar,
             avatarUrl: this.otherInfo.info.avatarUrl,
             mtime: this.otherInfo.info.mtime,
@@ -157,17 +144,8 @@ export class OtherInfoComponent implements OnInit, OnChanges {
     private editBtn() {
         this.isEdit = true;
         setTimeout(() => {
-            this.elementRef.nativeElement.querySelector('#editMemoName').focus();
-        }, 0);
-    }
-    private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
+            this.editMemoName.nativeElement.focus();
+        });
     }
     private verifyBtn(num) {
         this.otherInfo.info.stateType = num;

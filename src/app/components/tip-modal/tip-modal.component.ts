@@ -8,9 +8,9 @@ import { Component, OnInit, Input, Output, EventEmitter, DoCheck } from '@angula
 
 export class TipModalComponent implements OnInit, DoCheck {
     @Input()
-        private info;
+    private info;
     @Output()
-        private modalTipEmit: EventEmitter<any> = new EventEmitter();
+    private modalTipEmit: EventEmitter<any> = new EventEmitter();
     constructor() {
         // pass
     }

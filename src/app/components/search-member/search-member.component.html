@@ -1,5 +1,5 @@
 <div class="search-member-search" (click)="stopPropagation($event)">
-    <input [placeholder]="searchResult.placeholder" spellcheck="false" (keyup.enter)="searchBtnAction()" type="text" [(ngModel)]="searchResult.keywords" class="input-focus" [id]="searchResult.id">
+    <input [placeholder]="searchResult.placeholder" #searchInput spellcheck="false" (keyup.enter)="searchBtnAction()" type="text" [(ngModel)]="searchResult.keywords" class="input-focus">
     <span (click)="searchBtnAction()"></span>
     <p (click)="clearInputAction()" *ngIf="searchResult.show"></p>
     <div class="search-member-no-serach-data" *ngIf="searchResult.result.length === 0 && searchResult.show">找不到匹配的结果</div>
@@ -7,7 +7,7 @@
         <ul>
             <li class="display-flex search-member-search-result" (click)="searchItemAction(item)" *ngFor="let item of searchResult.result">
                 <div>
-                    <img (load)="avatarLoad($event)" [src]="item.avatarUrl | sanitize: 'url'" (error)="avatarErrorIcon($event)" alt="">
+                    <img avatarLoad [avatarError]="3" [src]="item.avatarUrl | sanitize: 'url'" alt="">
                 </div>
                 <p class="flex-1 search-member-username" [title]="item.memo_name && item.memo_name.toLowerCase().indexOf(searchResult.keywords.toLowerCase()) !== -1 ? item.memo_name : (item.nickName && item.nickName.toLowerCase().indexOf(searchResult.keywords.toLowerCase()) !== -1 ? item.nickName : (item.username ? item.username : item.name))">{{item.memo_name && item.memo_name.indexOf(searchResult.keywords) !== -1 ? item.memo_name : (item.nickName && item.nickName.indexOf(searchResult.keywords) !== -1 ? item.nickName : (item.username ? item.username : item.name))}}</p>
                 <label class="search-member-label" *ngIf="searchResult.checkbox">

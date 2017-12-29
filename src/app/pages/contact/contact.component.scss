@@ -8,13 +8,15 @@
         width: 270px;
         height: 100%;
         background-color: #fff;
-        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
         position: relative;
         border-right: 1px solid #D9DEE4;
     }
     .contact-conversation{
         position: relative;
         height: 100%;
+        background-color: #fff;
     }
 }
 

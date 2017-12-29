@@ -9,7 +9,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class DefaultPanelComponent implements OnInit {
     constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
     }

@@ -11,20 +11,30 @@ export const chatInit = {
         activeIndex: -1,
         noDisturb: false,
         avatarUrl: '',
-        shield: ''
+        shield: false,
+        memo_name: '',
+        appkey: ''
     },
     defaultPanelIsShow: true,
     actionType: '',
     otherInfo: {
         info: {
             black: false,
-            noDisturb: false
+            noDisturb: false,
+            memo_name: '',
+            name: '',
+            isFriend: false,
+            appkey: ''
         },
         show: false
     },
     blackMenu: [],
     searchUserResult: {
-        result: {},
+        result: {
+            singleArr: [],
+            groupArr: [],
+            roomArr: []
+        },
         isSearch: false
     },
     recentMsg: [],
@@ -79,5 +89,11 @@ export const chatInit = {
     },
     readObj: {},
     groupShield: [],
-    businessCardSearch: {}
+    createGroupSearch: [],
+    unreadCount: {},
+    roomTransmitMsg: {},
+    isInput: false,
+    conversationUnreadNum: 0,
+    receiveGroupInvitationEventObj: {},
+    receiveGroupRefuseEventObj: {}
 };

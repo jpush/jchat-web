@@ -1,5 +1,6 @@
 import { registerAction } from '../actions';
 import { RegisterStore } from '../stores';
+import { Util } from '../../../services/util';
 const registerInit = {
     actionType: '',
     isRegisterSuccess: false,
@@ -13,11 +14,11 @@ const registerInit = {
     }
 };
 
-export const registerReducer = (state: RegisterStore = registerInit, {type, payload}) => {
+export const registerReducer = (state: RegisterStore = registerInit, { type, payload }) => {
     state.actionType = type;
     switch (type) {
         case registerAction.init:
-            state = Object.assign({}, registerInit, {});
+            state = Util.deepCopyObj(registerInit);
             break;
         case registerAction.register:
             break;
@@ -60,7 +61,7 @@ export const registerReducer = (state: RegisterStore = registerInit, {type, payl
     }
     return state;
 };
-function isButtonAvailable(state, payload) {
+function isButtonAvailable(state: RegisterStore, payload) {
     if (payload.username.length > 0 &&
         payload.password.length > 0 && payload.repeatPassword.length > 0) {
         state.isButtonAvailable = true;

@@ -1,25 +1,21 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import { global, authPayload, StorageService } from '../../services/common';
 import { AppStore } from '../../app.store';
 import { mainAction } from './actions';
 import { contactAction } from '../contact/actions';
 import { chatAction } from '../chat/actions';
 import { md5 } from '../../services/tools';
-
 import { Util } from '../../services/util';
-
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
 
 @Component({
     selector: 'app-main',
     styleUrls: ['./main.component.scss'],
     templateUrl: './main.component.html'
 })
+
 export class MainComponent implements OnInit, OnDestroy {
-    private util: Util = new Util();
     private mainStream$;
     private global = global;
     private listTab = 0;
@@ -34,7 +30,13 @@ export class MainComponent implements OnInit, OnDestroy {
     private updateSelfInfoFlag = false;
     private createGroup = {
         show: false,
+        display: false,
         list: []
+    };
+    private createGroupNext = {
+        show: false,
+        display: false,
+        info: {}
     };
     private islogoutShow = false;
     private isModifyPasswordShow = false;
@@ -74,6 +76,10 @@ export class MainComponent implements OnInit, OnDestroy {
             {
                 key: 2,
                 name: '添加好友'
+            },
+            {
+                key: 3,
+                name: '加入公开群'
             }
         ]
     };
@@ -104,6 +110,14 @@ export class MainComponent implements OnInit, OnDestroy {
     };
     private contactHover = {
         tip: '通讯录',
+        position: {
+            left: 56,
+            top: 4
+        },
+        show: false
+    };
+    private roomHover = {
+        tip: '聊天室',
         position: {
             left: 56,
             top: 4
@@ -141,6 +155,23 @@ export class MainComponent implements OnInit, OnDestroy {
         title: '发起单聊',
         placeholder: '输入用户名查找'
     };
+    private enterPublicGroup = {
+        show: false,
+        info: {}
+    };
+    private groupInfo = {
+        show: false,
+        info: {}
+    };
+    private groupVerifyModal = {
+        show: false
+    };
+    private groupAvatarInfo = {
+        show: false,
+        info: {},
+        src: '',
+        filename: ''
+    };
     constructor(
         private store$: Store<AppStore>,
         private storageService: StorageService,
@@ -175,12 +206,9 @@ export class MainComponent implements OnInit, OnDestroy {
     }
     // 关闭窗口时存cookie，五分钟之内进入页面还可以免登陆
     @HostListener('window:beforeunload') private onBeforeunloadWindow() {
-        let time = 5 * 60 * 1000;
+        const time = 5 * 60 * 1000;
         this.storageService.set(md5('afterFiveMinutes-username'), global.user, true, time);
         this.storageService.set(md5('afterFiveMinutes-password'), global.password, true, time);
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
     }
     private subscribeStore() {
         this.mainStream$ = this.store$.select((state) => {
@@ -213,11 +241,6 @@ export class MainComponent implements OnInit, OnDestroy {
                 break;
             case mainAction.changeListTab:
                 this.listTab = mainState.listTab;
-                if (this.listTab === 0) {
-                    this.badge.conversation = 0;
-                } else {
-                    this.badge.contact = 0;
-                }
                 break;
             case mainAction.createGroupShow:
                 this.createGroup = mainState.createGroup;
@@ -227,6 +250,17 @@ export class MainComponent implements OnInit, OnDestroy {
                 this.listTab = mainState.listTab;
                 this.createGroup = mainState.createGroup;
                 break;
+            case mainAction.createGroupNextShow:
+                this.createGroupNext = mainState.createGroupNext;
+                if (!this.createGroupNext.show) {
+                    this.groupAvatarInfo = {
+                        show: false,
+                        info: {},
+                        src: '',
+                        filename: ''
+                    };
+                }
+                break;
             case mainAction.modifyPasswordShow:
                 this.isModifyPasswordShow = mainState.modifyPasswordShow.show;
                 if (mainState.modifyPasswordShow.repeatLogin !== '') {
@@ -234,9 +268,13 @@ export class MainComponent implements OnInit, OnDestroy {
                 }
                 break;
             case chatAction.searchUserSuccess:
-                this.searchUserResult =  mainState.searchUserResult;
+                this.searchUserResult = mainState.searchUserResult;
                 break;
             case mainAction.selectSearchUser:
+                this.listTab = mainState.listTab;
+                this.searchUserResult = mainState.searchUserResult;
+                break;
+            case mainAction.selectSearchRoomUser:
                 this.listTab = mainState.listTab;
                 this.searchUserResult = mainState.searchUserResult;
                 break;
@@ -274,16 +312,27 @@ export class MainComponent implements OnInit, OnDestroy {
             case mainAction.logoutKickShow:
                 this.logoutKick = mainState.logoutKick;
                 break;
-            case chatAction.dispatchMessageUnread:
-                if (this.listTab === 1) {
-                    this.badge.conversation ++;
-                }
-                break;
             case contactAction.dispatchContactUnreadNum:
                 this.badge.contact = mainState.contactUnreadNum;
                 break;
+            case chatAction.dispatchConversationUnreadNum:
+                this.badge.conversation = mainState.conversationUnreadNum;
+                break;
             case chatAction.createOtherChat:
                 this.listTab = mainState.listTab;
+                break;
+            case chatAction.changeHideAll:
+                this.listTab = mainState.listTab;
+                break;
+            case mainAction.enterPublicGroupShow:
+                this.enterPublicGroup = mainState.enterPublicGroup;
+                break;
+            case mainAction.searchPublicGroupSuccess:
+                this.enterPublicGroup = mainState.enterPublicGroup;
+                this.groupInfo = mainState.groupInfo;
+                break;
+            case mainAction.groupVerifyModal:
+                this.groupVerifyModal = mainState.groupVerifyModal;
                 break;
             default:
         }
@@ -307,10 +356,12 @@ export class MainComponent implements OnInit, OnDestroy {
     }
     // 切换聊天面板和联系人面板
     private changeListTab(index) {
-        this.store$.dispatch({
-            type: mainAction.changeListTab,
-            payload: index
-        });
+        if (this.listTab !== index) {
+            this.store$.dispatch({
+                type: mainAction.changeListTab,
+                payload: index
+            });
+        }
     }
     // 获取个人信息
     private getSelfInfo(event) {
@@ -340,7 +391,7 @@ export class MainComponent implements OnInit, OnDestroy {
             });
         }
     }
-    // 创建群聊
+    // 显示创建群聊第一步
     private createGroupEmit(info) {
         if (info && info.add) {
             this.store$.dispatch({
@@ -357,10 +408,86 @@ export class MainComponent implements OnInit, OnDestroy {
                 type: mainAction.createGroupShow,
                 payload: {
                     show: false,
+                    display: false,
+                    info: {}
+                }
+            });
+            this.store$.dispatch({
+                type: mainAction.createGroupNextShow,
+                payload: {
+                    show: false,
+                    display: false,
                     info: {}
                 }
             });
         }
+    }
+    // 创建群聊第一步点击下一步
+    private nextCreateGroupEmit(groupInfo) {
+        this.store$.dispatch({
+            type: mainAction.createGroupShow,
+            payload: {
+                show: true,
+                display: false,
+                info: {}
+            }
+        });
+        this.store$.dispatch({
+            type: mainAction.createGroupNextShow,
+            payload: {
+                show: true,
+                display: true,
+                info: groupInfo
+            }
+        });
+    }
+    // 创建群聊第二步点击上一步
+    private createGroupPrevEmit() {
+        this.store$.dispatch({
+            type: mainAction.createGroupShow,
+            payload: {
+                show: true,
+                display: true,
+                info: {}
+            }
+        });
+        this.store$.dispatch({
+            type: mainAction.createGroupNextShow,
+            payload: {
+                show: true,
+                display: false
+            }
+        });
+    }
+    // 关闭创建群聊第二步的模态框
+    private closeCreateGroupNextEmit() {
+        this.store$.dispatch({
+            type: mainAction.createGroupNextShow,
+            payload: {
+                show: false,
+                display: false,
+                info: {}
+            }
+        });
+        this.store$.dispatch({
+            type: mainAction.createGroupShow,
+            payload: {
+                show: false,
+                display: false,
+                info: {}
+            }
+        });
+    }
+    // 创建群聊点击完成
+    private completeCreateGroupEmit(groupInfo) {
+        this.store$.dispatch({
+            type: mainAction.createGroup,
+            payload: groupInfo
+        });
+        this.store$.dispatch({
+            type: mainAction.changeListTab,
+            payload: 0
+        });
     }
     // 修改密码
     private modifyPasswordEmit(info) {
@@ -398,6 +525,12 @@ export class MainComponent implements OnInit, OnDestroy {
             payload: item
         });
     }
+    private selectUserRoomResultEmit(item) {
+        this.store$.dispatch({
+            type: mainAction.selectSearchRoomUser,
+            payload: item
+        });
+    }
     // 创建单聊/添加好友模态框确定取消按钮
     private createSingleChatEmit(info) {
         // 点击取消
@@ -409,7 +542,7 @@ export class MainComponent implements OnInit, OnDestroy {
                     info: ''
                 }
             });
-        // 点击确定 输入为空
+            // 点击确定 输入为空
         } else if (info.singleName === '') {
             const text = info.type === 'addFriend' ? '请输入要添加好友的用户名' : '请输入要单聊的用户名';
             this.store$.dispatch({
@@ -419,7 +552,7 @@ export class MainComponent implements OnInit, OnDestroy {
                     info: text
                 }
             });
-        // 点击确定 如果单聊搜索到自己
+            // 点击确定 如果单聊搜索到自己
         } else if (info.singleName === global.user) {
             this.store$.dispatch({
                 type: mainAction.showSelfInfo,
@@ -435,7 +568,7 @@ export class MainComponent implements OnInit, OnDestroy {
                     info: ''
                 }
             });
-        // 点击确定
+            // 点击确定
         } else if (info.singleName) {
             this.store$.dispatch({
                 type: mainAction.createSingleChatAction,
@@ -473,25 +606,25 @@ export class MainComponent implements OnInit, OnDestroy {
         // 提示模态框点击确定按钮
         if (info) {
             switch (info.actionType) {
-                case '[main] logout show':
+                case mainAction.logoutShowConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.logoutAction,
                         payload: null
                     });
                     break;
-                case '[chat] add black list':
+                case mainAction.addBlackListConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.addBlackListAction,
                         payload: info.active
                     });
                     break;
-                case '[chat] exit group':
+                case mainAction.exitGroupConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.exitGroupAction,
                         payload: info.groupInfo.gid
                     });
                     break;
-                case '[chat] delete member':
+                case mainAction.deleteMemberConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.deleteMemberAction,
                         payload: {
@@ -500,13 +633,13 @@ export class MainComponent implements OnInit, OnDestroy {
                         }
                     });
                     break;
-                case '[chat] add single no disturb modal':
+                case mainAction.addSingleNoDisturbConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.addSingleNoDisturbAction,
                         payload: info.active
                     });
                     break;
-                case '[chat] delete friend modal':
+                case mainAction.deleteFriendConfirmModal:
                     this.store$.dispatch({
                         type: mainAction.deleteFriend,
                         payload: info.active
@@ -521,7 +654,7 @@ export class MainComponent implements OnInit, OnDestroy {
                         }
                     });
             }
-        // 模态框点击取消按钮
+            // 模态框点击取消按钮
         } else {
             this.store$.dispatch({
                 type: mainAction.hideModalTip,
@@ -536,52 +669,65 @@ export class MainComponent implements OnInit, OnDestroy {
     private chatMenuShow(event) {
         event.stopPropagation();
         this.settingMenu.show = false;
-        if (this.chatMenu.show === true) {
-            this.chatMenu.show = false;
-        } else {
-            this.chatMenu.show = true;
-        }
+        this.chatMenu.show = !this.chatMenu.show;
     }
     private selectChatMenuItemEmit(item) {
         let type = '';
         switch (item.key) {
             case 0:
-                type = mainAction.createSingleChatShow;
                 this.createSingleOption = {
                     title: '发起单聊',
                     placeholder: '输入用户名查找'
                 };
+                this.store$.dispatch({
+                    type: mainAction.createSingleChatShow,
+                    payload: {
+                        show: true,
+                        info: ''
+                    }
+                });
                 break;
             case 1:
-                type = mainAction.createGroupShow;
+                this.store$.dispatch({
+                    type: mainAction.createGroupShow,
+                    payload: {
+                        show: true,
+                        display: true,
+                        info: {}
+                    }
+                });
                 break;
             case 2:
-                type = mainAction.createSingleChatShow;
                 this.createSingleOption = {
                     title: '添加好友',
                     placeholder: '输入用户名'
                 };
+                this.store$.dispatch({
+                    type: mainAction.createSingleChatShow,
+                    payload: {
+                        show: true,
+                        info: ''
+                    }
+                });
+                break;
+            case 3:
+                this.store$.dispatch({
+                    type: mainAction.enterPublicGroupShow,
+                    payload: {
+                        show: true,
+                        info: ''
+                    }
+                });
                 break;
             default:
         }
-        this.store$.dispatch({
-            type,
-            payload: {
-                show: true,
-                info: item.key !== 1 ? '' : {}
-            }
-        });
         this.chatMenu.show = false;
     }
     // 点击左下角设置按钮
     private settingMenuShow(event) {
         event.stopPropagation();
         this.chatMenu.show = false;
-        if (this.settingMenu.show === true) {
-            this.settingMenu.show = false;
-        } else {
-            this.settingMenu.show = true;
-        }
+        this.settingMenu.show = !this.settingMenu.show;
     }
     private selectSettingItemEmit(item) {
         switch (item.key) {
@@ -611,7 +757,7 @@ export class MainComponent implements OnInit, OnDestroy {
                         info: {
                             title: '退出',          // 模态框标题
                             tip: '确定要退出web jchat吗？',   // 模态框内容
-                            actionType: '[main] logout show'// 哪种操作，点击确定时可以执行对应操作
+                            actionType: mainAction.logoutShowConfirmModal// 哪种操作，点击确定时可以执行对应操作
                             // success: 1 / 2               // 成功的提示框/失败的提示框，1.5s后会自动消失
                         }
                     }
@@ -620,15 +766,6 @@ export class MainComponent implements OnInit, OnDestroy {
             default:
         }
         this.settingMenu.show = false;
-    }
-    private avatarLoad(event) {
-        if (event.target.naturalHeight > event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
-        }
     }
     // 被其他设备登录踢
     private logoutKickEmit(info) {
@@ -643,20 +780,20 @@ export class MainComponent implements OnInit, OnDestroy {
                     reload: true
                 }
             });
-        // 去登录页面
+            // 去登录页面
         } else {
             this.router.navigate(['/login']);
         }
     }
-    // 选择的不是图片
-    private selectIsNotImageEmit() {
+    // 选择图片出错
+    private selectImageErrorEmit(tip: string) {
         this.store$.dispatch({
             type: mainAction.showModalTip,
             payload: {
                 show: true,
                 info: {
                     title: '提示',
-                    tip: '选择的文件必须是图片',
+                    tip,
                     actionType: '[main] must be image',
                     cancel: true
                 }
@@ -669,6 +806,81 @@ export class MainComponent implements OnInit, OnDestroy {
             payload: info
         });
     }
+    private enterGroupComfirmEmit(value) {
+        this.store$.dispatch({
+            type: mainAction.searchPublicGroup,
+            payload: value
+        });
+    }
+    // 显示群组验证模态框
+    private applyEnterGroupEmit(groupInfo) {
+        this.store$.dispatch({
+            type: mainAction.groupVerifyModal,
+            payload: {
+                show: true
+            }
+        });
+    }
+    // 发送群组验证信息
+    private groupVerifyModalBtnEmit(verifyText) {
+        this.store$.dispatch({
+            type: mainAction.sendGroupVerifyMessage,
+            payload: {
+                info: this.groupInfo.info,
+                text: verifyText
+            }
+        });
+    }
+    // 创建群聊选择头像
+    private changeCreateGroupAvatarEmit(file) {
+        this.getImgObj(file.files[0]);
+    }
+    // 获取图片对象
+    private getImgObj(file) {
+        const isNotImage = '选择的文件必须是图片';
+        const imageTooSmall = '选择的图片宽或高的尺寸太小，请重新选择图片';
+        Util.getAvatarImgObj(file,
+            () => this.selectImageErrorEmit(isNotImage),
+            () => this.selectImageErrorEmit(imageTooSmall),
+            (that, pasteFile, img) => {
+                this.groupAvatarInfo.info = {
+                    src: that.result,
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    pasteFile
+                };
+                this.groupAvatarInfo.src = that.result;
+                this.groupAvatarInfo.show = true;
+                this.groupAvatarInfo.filename = file.name;
+            }
+        );
+    }
+    private groupAvatarEmit(groupInfo) {
+        this.groupAvatarInfo = groupInfo;
+    }
+    // 搜索到已经在群里的群聊，点击发消息进入会话
+    private changeGroupConversationEmit(group) {
+        this.store$.dispatch({
+            type: contactAction.selectContactItem,
+            payload: group
+        });
+        this.store$.dispatch({
+            type: mainAction.changeListTab,
+            payload: 0
+        });
+    }
+    // 清空加入公开群的错误提示
+    private emptyEnterGroupTipEmit() {
+        this.store$.dispatch({
+            type: mainAction.enterPublicGroupShow,
+            payload: {
+                show: true,
+                info: {
+                    text: ''
+                }
+            }
+        });
+    }
     private init() {
         this.listTab = 0;
         this.selfInfo = {
@@ -678,10 +890,17 @@ export class MainComponent implements OnInit, OnDestroy {
             },
             loading: false
         };
+        // 用来标识更新信息成功
         this.updateSelfInfoFlag = false;
         this.createGroup = {
             show: false,
+            display: false,
             list: []
+        };
+        this.createGroupNext = {
+            show: false,
+            display: false,
+            info: {}
         };
         this.islogoutShow = false;
         this.isModifyPasswordShow = false;
@@ -721,6 +940,10 @@ export class MainComponent implements OnInit, OnDestroy {
                 {
                     key: 2,
                     name: '添加好友'
+                },
+                {
+                    key: 3,
+                    name: '加入公开群'
                 }
             ]
         };
@@ -757,6 +980,14 @@ export class MainComponent implements OnInit, OnDestroy {
             },
             show: false
         };
+        this.roomHover = {
+            tip: '聊天室',
+            position: {
+                left: 56,
+                top: 4
+            },
+            show: false
+        };
         this.createHover = {
             tip: '创建',
             position: {
@@ -787,6 +1018,23 @@ export class MainComponent implements OnInit, OnDestroy {
         this.createSingleOption = {
             title: '发起单聊',
             placeholder: '输入用户名查找'
+        };
+        this.enterPublicGroup = {
+            show: false,
+            info: {}
+        };
+        this.groupInfo = {
+            show: false,
+            info: {}
+        };
+        this.groupVerifyModal = {
+            show: false
+        };
+        this.groupAvatarInfo = {
+            show: false,
+            info: {},
+            src: '',
+            filename: ''
         };
     }
 }

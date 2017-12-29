@@ -1,11 +1,17 @@
 
 export interface ContactStore {
     actionType: string;
-    groupList: Array<any>;
-    friendList: Array<any>;
-    verifyMessageList: Array<any>;
+    groupList: any[];
+    friendList: any[];
+    verifyMessageList: any[];
     verifyUnreadNum: number;
     contactUnreadNum: number;
+    groupVerifyUnreadNum: number;
+    singleVerifyUnreadNum: number;
     tab: number;
     listTab: number;
+    verifyTab: number;
+    verifyGroupList: any[];
+    groupLoading: boolean;
+    friendLoading: boolean;
 }

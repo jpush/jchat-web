@@ -1,20 +1,21 @@
 import { Component, OnInit, AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
-import { global, authPayload, StorageService } from '../../services/common';
+import { global, authPayload, StorageService, ApiService } from '../../services/common';
 import { AppStore } from '../../app.store';
 import { registerAction } from './actions';
 import { Util } from '../../services/util';
 import { appAction } from '../../actions';
-declare function JMessage(obj ?: Object): void;
+import { mainAction } from '../main/actions';
+declare function JMessage(obj?: Object): void;
 
 @Component({
     selector: 'app-register',
     styleUrls: ['./register.component.scss'],
     templateUrl: './register.component.html'
 })
+
 export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
-    private util: Util = new Util();
     private info = {
         username: '',
         password: '',
@@ -25,7 +26,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         passwordTip: '',
         repeatPasswordTip: ''
     };
-    private registerStream;
+    private registerStream$;
     private isButtonAvailable = false;
     private tipModal = {
         show: false,
@@ -35,17 +36,20 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         private store$: Store<AppStore>,
         private router: Router,
         private storageService: StorageService,
-        private elementRef: ElementRef
-    ) {
-        // pass
-    }
+        private elementRef: ElementRef,
+        private apiService: ApiService
+    ) {}
     public ngOnInit() {
         this.store$.dispatch({
             type: registerAction.init,
             payload: null
         });
-        this.JIMInit();
-        this.registerStream = this.store$.select((state) => {
+        // JIM初始化
+        this.store$.dispatch({
+            type: mainAction.jimInit,
+            payload: null
+        });
+        this.registerStream$ = this.store$.select((state) => {
             const registerState = state['registerReducer'];
             switch (registerState.actionType) {
                 case registerAction.init:
@@ -69,31 +73,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         this.elementRef.nativeElement.querySelector('#registerUsername').focus();
     }
     public ngOnDestroy() {
-        this.registerStream.unsubscribe();
-    }
-    private JIMInit() {
-        const timestamp = new Date().getTime();
-        const signature = this.util.createSignature(timestamp);
-        global.JIM.init({
-            appkey: authPayload.appkey,
-            random_str: authPayload.randomStr,
-            signature: authPayload.signature || signature,
-            timestamp: authPayload.timestamp || timestamp,
-            flag: authPayload.flag
-        }).onSuccess((data) => {
-            // pass
-        }).onFail((error) => {
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        }).onTimeout((data) => {
-            const error = {code: 910000};
-            this.store$.dispatch({
-                type: appAction.errorApiTip,
-                payload: error
-            });
-        });
+        this.registerStream$.unsubscribe();
     }
     private register() {
         this.store$.dispatch({

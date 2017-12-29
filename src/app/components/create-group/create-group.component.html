@@ -9,7 +9,7 @@
         <div class="create-group-main">
             <div class="create-group-list">
                 <div class="craete-group-search">
-                    <search-member-component [searchResult]="searchResult" (searchKeyup)="searchKeyupEmit($event)" (clearInput)="clearInputEmit()" (searchBtn)="searchBtnEmit($event)" (changeChecked)="changeCheckedEmit($event)"></search-member-component>
+                    <search-member-component [searchResult]="searchResult" (searchKeyup)="searchKeyupEmit()" (clearInput)="clearInputEmit()" (searchBtn)="searchBtnEmit($event)" (changeChecked)="changeCheckedEmit($event)"></search-member-component>
                 </div>
                 <perfect-scrollbar class="create-group-scroll">
                     <div *ngFor="let item of createGroup.list">
@@ -18,7 +18,7 @@
                             <div *ngFor="let user of item.data; let num = index" class="create-group-item">
                                 <div class="display-flex" *ngIf="user.show">
                                     <div class="create-group-avatar">
-                                        <img [src]="user.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                        <img [src]="user.avatarUrl | sanitize: 'url'" avatarLoad [avatarError]="3" alt="">
                                     </div>
                                     <div class="flex-1 create-group-username">{{user.memo_name || user.nickName || user.name}}</div>
                                     <label class="create-group-select-label">
@@ -37,7 +37,7 @@
                     <div *ngFor="let user of selectList" class="create-group-item">
                         <div class="display-flex">
                             <div class="create-group-avatar">
-                                <img [src]="user.avatarUrl | sanitize: 'url'" (load)="avatarLoad($event)" (error)="avatarErrorIcon($event)" alt="">
+                                <img [src]="user.avatarUrl | sanitize: 'url'" avatarLoad [avatarError]="3" alt="">
                             </div>
                             <div class="flex-1 create-group-username">{{user.memo_name || user.nickName || user.name}}</div>
                             <div class="create-group-cancel-select" *ngIf="!createGroup.info.activeSingle || (createGroup.info.activeSingle.key && user.key != createGroup.info.activeSingle.key)" (click)="cancelSelect(user)"></div>
@@ -47,10 +47,8 @@
             </div>
         </div>
         <p class="modal-btn modal-input create-group-name">
-            <span class="float-left" *ngIf="!createGroup.info.action">群名称：</span>
-            <input [ngClass]="{'input-error': nameTip}" spellcheck="false" *ngIf="!createGroup.info.action" (keyup)="emptyTip()" type="text" maxlength="20" class="input-focus float-left" [(ngModel)]="groupName" placeholder="请输入群组名称">
-            <span *ngIf="nameTip" class="float-left error">群名称不能为空</span>
-            <button type="button" (click)="confirmCreateGroup()" class="btn-confirm btn-active float-right">确定</button>                     
+            <button type="button" *ngIf="!createGroup.info.action" (click)="nextCreateGroupAction()" class="btn-confirm btn-active float-right">下一步</button>  
+            <button type="button" *ngIf="createGroup.info.action" (click)="confirmCreateGroup()" class="btn-confirm btn-active float-right">确定</button>                     
             <button type="button" (click)="cancelCreateGroup($event)" class="btn-cancel btn-white float-right">取消</button>         
         </p>
     </div>

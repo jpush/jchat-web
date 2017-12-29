@@ -32,8 +32,22 @@
         height: 30px;
         border-radius: 4px;
         top: 10px;
-        right: -240px;
+        right: 0;
         z-index: 1;
+        -webkit-transform: translateX(260px) translate3d(0, 0, 0);
+                transform: translateX(260px) translate3d(0, 0, 0);
+        &.in{
+            -webkit-transform: translateX(-20px) translate3d(0, 0, 0);
+                    transform: translateX(-20px) translate3d(0, 0, 0);
+            -webkit-transition: all 0.2s;
+                    transition: all 0.2s;
+        }
+        &.out{
+            -webkit-transform: translateX(260px) translate3d(0, 0, 0);
+                    transform: translateX(260px) translate3d(0, 0, 0);
+            -webkit-transition: all 0.2s;
+                    transition: all 0.2s;
+        }
         span{
             position: absolute;
             top: 9px;
@@ -58,10 +72,9 @@
             width: 100%;
             height: 30px;
             padding-left: 12px;
-            box-sizing: border-box;
-            border-radius: 5px;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             font-size: 12px;
-            color: #2C2C2C;
             border-radius: 4px;
             background: #E8EDF3;
             float: left;
@@ -74,11 +87,12 @@
         height: 80px;
         background-color: #fff;
         position: absolute;
-        z-index: 4;
+        z-index: 5;
         width: 240px;
         top: 46px;
         right: 20px;
-        box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+        -webkit-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+                box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
         border-radius: 4px;
         font-size: 14px;
         color: #2C2C2C;
@@ -88,11 +102,12 @@
         position: absolute;
         top: 46px;
         right: 20px;
-        z-index: 4;
+        z-index: 5;
         line-height: 50px;
         background-color: #fff;
         width: 240px;
-        box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+        -webkit-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
+                box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.20);
         border-radius: 4px;
         max-height: 452px;
         .search-user-single{
@@ -106,28 +121,36 @@
             line-height: 26px;
             margin: 0 8px;
             border-bottom: 1px solid #D9DEE4;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             font-size: 12px;
             color: #808080;
             span{
-                font-size: 10px;
                 color: #2DD0CF;
                 cursor: pointer;
+                &:hover{
+                    color: #02BDBC;
+                }
             }
         }
         li{
             padding: 0 8px;
-            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
             .search-user-avatar-container{
                 width: 30px;
                 height: 30px;
                 margin: 10px 10px 0 0;
                 overflow: hidden;
+                img{
+                    width: 100%;
+                }
             }
             .search-user-name{
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 overflow: hidden;
+                cursor: default;
             }
             &:hover{
                 background-color: #F2F6FB;

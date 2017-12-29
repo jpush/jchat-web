@@ -11,6 +11,7 @@ export const mainInit = {
     listTab: 0,
     createGroup: {
         show: false,
+        display: false,
         info: {}
     },
     logoutShow: false,
@@ -21,7 +22,8 @@ export const mainInit = {
     searchUserResult: {
         result: {
             singleArr: [],
-            groupArr: []
+            groupArr: [],
+            roomArr: []
         },
         isSearch: false
     },
@@ -38,9 +40,6 @@ export const mainInit = {
         menu: [],
         show: false
     },
-    createGroupSearch: {
-        info: null
-    },
     errorApiTip: {},
     logoutKick: {
         show: false,
@@ -50,5 +49,22 @@ export const mainInit = {
         }
     },
     contactUnreadNum: 0,
-    friendList: []
+    conversationUnreadNum: 0,
+    friendList: [],
+    enterPublicGroup: {
+        show: false,
+        info: {}
+    },
+    groupInfo: {
+        show: false,
+        info: {}
+    },
+    groupVerifyModal: {
+        show: false
+    },
+    createGroupNext: {
+        show: false,
+        display: false,
+        info: {}
+    }
 };

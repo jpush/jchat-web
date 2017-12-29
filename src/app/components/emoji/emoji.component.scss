@@ -8,7 +8,8 @@
     .emoji-normal{
         padding:  15px 20px 0 20px;
         overflow: hidden;
-        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
         width: 476px;
         height: 217px;
         position: relative;
@@ -78,7 +79,8 @@
         height: 30px;
         padding-left: 11px;
         background-color: #F2F6FB;
-        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
         >button{
             width: 30px;
             height: 30px;

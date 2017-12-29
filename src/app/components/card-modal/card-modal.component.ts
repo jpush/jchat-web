@@ -1,8 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-const avatarErrorIcon = '../../../assets/images/single-avatar.svg';
-import { Store } from '@ngrx/store';
-import { chatAction } from '../../pages/chat/actions';
-import { mainAction } from '../../pages/main/actions';
 import { global } from '../../services/common';
 
 @Component({
@@ -13,9 +9,11 @@ import { global } from '../../services/common';
 
 export class CardModalComponent implements OnInit {
     @Input()
-        private businessCard;
+    private businessCard;
     @Output()
-        private businessCardSend: EventEmitter<any> = new EventEmitter();
+    private closeBusinessCard: EventEmitter<any> = new EventEmitter();
+    @Output()
+    private businessCardSend: EventEmitter<any> = new EventEmitter();
     private selectList = null;
     private searchResult = {
         result: [],
@@ -23,40 +21,15 @@ export class CardModalComponent implements OnInit {
         keywords: ''
     };
     private businessCardStream$;
-    constructor(
-        private store$: Store<any>
-    ) {
+    constructor() {
         // pass
-     }
+    }
     public ngOnInit() {
         // pass
-        this.businessCardStream$ = this.store$.select((state) => {
-            let chatState = state['chatReducer'];
-            this.stateChanged(chatState);
-            return state;
-        }).subscribe((state) => {
-            // pass
-        });
-    }
-    private stateChanged(chatState) {
-        switch (chatState.actionType) {
-            case  mainAction.businessCardSearchComplete:
-                if (chatState.businessCardSearch) {
-                    if (chatState.businessCardSearch.name === global.user) {
-                        chatState.businessCardSearch.disabled = true;
-                    }
-                    this.searchResult.result = [chatState.businessCardSearch];
-                    this.searchResult.show = true;
-                } else {
-                    this.searchResult.result = [];
-                    this.searchResult.show = true;
-                }
-                break;
-            default:
-        }
     }
     private cancelBusinessCard() {
         this.businessCard.show = false;
+        this.closeBusinessCard.emit();
         for (let list of this.businessCard.info) {
             for (let item of list.data) {
                 item.checked = false;
@@ -64,11 +37,13 @@ export class CardModalComponent implements OnInit {
         }
     }
     private confirmBusinessCard() {
-        this.businessCardSend.emit(this.selectList);
-        this.businessCard.show = false;
-        for (let list of this.businessCard.info) {
-            for (let item of list.data) {
-                item.checked = false;
+        if (this.selectList) {
+            this.businessCardSend.emit(this.selectList);
+            this.businessCard.show = false;
+            for (let list of this.businessCard.info) {
+                for (let item of list.data) {
+                    item.checked = false;
+                }
             }
         }
     }
@@ -99,19 +74,18 @@ export class CardModalComponent implements OnInit {
         if (keywords === '') {
             this.searchResult.result = [];
             this.searchResult.show = false;
-            return ;
+            return;
         }
         let result = [];
         for (let item of this.businessCard.info) {
             for (let friend of item.data) {
-                if (friend.memo_name &&
-                    friend.memo_name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1) {
-                    result.push(friend);
-                } else if (friend.nickName &&
-                    friend.nickName.toLowerCase().indexOf(keywords.toLowerCase()) !== -1) {
-                    result.push(friend);
-                } else if (friend.name &&
-                    friend.name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1) {
+                const memoName = friend.memo_name &&
+                    friend.memo_name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
+                const nickName = friend.nickName &&
+                    friend.nickName.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
+                const name = friend.name &&
+                    friend.name.toLowerCase().indexOf(keywords.toLowerCase()) !== -1;
+                if (memoName || nickName || name) {
                     result.push(friend);
                 }
             }
@@ -123,15 +97,6 @@ export class CardModalComponent implements OnInit {
         this.searchResult.show = false;
         this.searchResult.result = [];
         this.searchResult.keywords = '';
-    }
-    private searchBtnEmit(keywords) {
-        this.store$.dispatch({
-            type: mainAction.createGroupSearchAction,
-            payload: {
-                keywords,
-                type: 'businessCard'
-            }
-        });
     }
     private hideSearch() {
         this.searchResult.show = false;
@@ -146,7 +111,6 @@ export class CardModalComponent implements OnInit {
                 for (let item of list.data) {
                     if (user.name === item.name) {
                         item.checked = true;
-
                     } else {
                         item.checked = false;
                     }
@@ -159,18 +123,6 @@ export class CardModalComponent implements OnInit {
                     item.checked = false;
                 }
             }
-        }
-    }
-    private avatarErrorIcon(event) {
-        event.target.src = avatarErrorIcon;
-    }
-    private avatarLoad(event) {
-        if (event.target.naturalHeight >= event.target.naturalWidth) {
-            event.target.style.width = '100%';
-            event.target.style.height = 'auto';
-        } else {
-            event.target.style.height = '100%';
-            event.target.style.width = 'auto';
         }
     }
 }

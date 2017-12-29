@@ -1,5 +1,7 @@
-import { Component, Input, Output, EventEmitter, ElementRef,
-    AfterViewInit, OnInit } from '@angular/core';
+import {
+    Component, Input, Output, EventEmitter,
+    AfterViewInit, OnInit, ViewChild
+} from '@angular/core';
 
 @Component({
     selector: 'create-single-chat-component',
@@ -8,25 +10,24 @@ import { Component, Input, Output, EventEmitter, ElementRef,
 })
 
 export class CreateSingleChatComponent implements OnInit, AfterViewInit {
+    @ViewChild('singleChatInput') private singleChatInput;
     @Input()
-        private info;
+    private info;
     @Input()
-        private createSingleOption;
+    private createSingleOption;
     private singleName = '';
     @Output()
-        private createSingleChat: EventEmitter<any> = new EventEmitter();
+    private createSingleChat: EventEmitter<any> = new EventEmitter();
     @Output()
-        private emptySingleChatTip: EventEmitter<any> = new EventEmitter();
-    constructor(
-        private elementRef: ElementRef
-    ) {
-
+    private emptySingleChatTip: EventEmitter<any> = new EventEmitter();
+    constructor() {
+        // pass
     }
     public ngOnInit() {
         // pass
     }
     public ngAfterViewInit() {
-        this.elementRef.nativeElement.querySelector('#singleChatInput').focus();
+        this.singleChatInput.nativeElement.focus();
     }
     private createSingleChatEmit(singleName) {
         let type = '';
@@ -44,8 +45,10 @@ export class CreateSingleChatComponent implements OnInit, AfterViewInit {
             this.createSingleChat.emit();
         }
     }
-    private emptyTip() {
-        if (this.info !== '') {
+    private inputKeyup(event) {
+        if (event.keyCode === 13) {
+            this.createSingleChatEmit(this.singleName);
+        } else if (this.info !== '') {
             this.emptySingleChatTip.emit();
         }
     }

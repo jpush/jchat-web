@@ -3,7 +3,8 @@
     line-height: 36px;
     width: 150px;
     background-color: #fff;
-    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
+    -webkit-box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
+            box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.20);
     font-size: 12px;
     color: #2C2C2C;
     cursor: pointer;
@@ -24,8 +25,7 @@
         overflow: hidden;
         margin: 6px 8px 0 10px;
         img{
-            max-height: 100%;
-            max-width: 100%;
+            width: 100%;
         }
     }
     .at-list-text{

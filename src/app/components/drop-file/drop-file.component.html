@@ -2,8 +2,12 @@
     <div class="paste-image-content">
         <span class="modal-close" (click)="dropFileAction()"></span>
         <h2>发送文件</h2>
-        <div class="drop-file-container">
-            <div class="drop-file-icon" [ngClass]="{'image': (dropFileInfo.info.ext | fileType) === 'image', 'video': (dropFileInfo.info.ext | fileType) === 'video', 'audio': (dropFileInfo.info.ext | fileType) === 'audio', 'document': (dropFileInfo.info.ext | fileType) === 'document'}"></div>
+        <div class="drop-file-container" [ngSwitch]="dropFileInfo.info.ext | fileType">
+            <div class="drop-file-icon image" *ngSwitchCase="'image'"></div>
+            <div class="drop-file-icon video" *ngSwitchCase="'video'"></div>
+            <div class="drop-file-icon audio" *ngSwitchCase="'audio'"></div>
+            <div class="drop-file-icon document" *ngSwitchCase="'document'"></div>
+            <div class="drop-file-icon" *ngSwitchDefault></div>
             <div class="drop-file-name">
                 {{dropFileInfo.info.name}}
             </div>
