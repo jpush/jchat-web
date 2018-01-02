@@ -2,7 +2,7 @@
     <div [hidden]="tab === 1" class="emoji-normal clearfix">
         <ul class="clearfix">
             <li *ngFor="let item of emojiInfo.emojiAlias; let num = index;" [title]="item.text">
-                <a [id]="'emoji-face' + num" href="javascript:;" (click)="emojiSelectAction('emoji-face' + num)" [innerHTML]="item.unicode | emoji: {nbsp: false, href: false, fontSize: 22} | sanitize: 'html'"></a>
+                <a [id]="'emoji-face' + num" href="javascript:;" (click)="emojiSelectAction('emoji-face' + num)" [innerHTML]="item.unicode | emoji: {nbsp: false, href: false, fontSize: 22}"></a>
             </li>
         </ul>
     </div>

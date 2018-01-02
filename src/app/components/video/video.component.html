@@ -1,7 +1,7 @@
 <div class="modal-shadow">
     <div class="video-container">
         <span class="video-close" (click)="closeModal()"></span>
-        <video #videoTag [src]="url | sanitize: 'url'" (canplay)="videoCanplay()" (ended)="videoEnd()" autoplay></video>
+        <video #videoTag [src]="url" (canplay)="videoCanplay()" (ended)="videoEnd()" autoplay></video>
         <div class="video-toolbar">
             <div class="video-play float-left play" (click)="pause()" *ngIf="state === 'play'"></div>
             <div class="video-play float-left pause" (click)="play()" *ngIf="state === 'pause'"></div>

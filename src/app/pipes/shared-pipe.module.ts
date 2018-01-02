@@ -7,7 +7,6 @@ import { FileNamePipe } from './file-name.pipe';
 import { FileSizePipe } from './file-size.pipe';
 import { FileTypePipe } from './file-type.pipe';
 import { FloorPipe } from './floor.pipe';
-import { SanitizePipe } from './sanitize.pipe';
 import { TimePipe } from './time.pipe';
 import { VideoTimePipe } from './video-time.pipe';
 
@@ -25,7 +24,6 @@ import { VideoTimePipe } from './video-time.pipe';
         FileSizePipe,
         FileTypePipe,
         FloorPipe,
-        SanitizePipe,
         TimePipe,
         VideoTimePipe
     ],
@@ -41,7 +39,6 @@ import { VideoTimePipe } from './video-time.pipe';
         FileSizePipe,
         FileTypePipe,
         FloorPipe,
-        SanitizePipe,
         TimePipe,
         VideoTimePipe
     ],

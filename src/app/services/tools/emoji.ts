@@ -30,7 +30,7 @@ export abstract class Emoji {
         let el;
 
         text = text.replace(this.reg, (code) => {
-            return '<img width=' + fontSize + ' class="emoji" style="vertical-align: middle" src="'
+            return '<img width=' + fontSize + ' class="emoji" src="'
                 + imgRouter + this._escapeToUtf32(code) + '.png">';
         });
 

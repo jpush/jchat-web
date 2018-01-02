@@ -5,7 +5,7 @@
         <span class="modal-close" (click)="otherClose($event)"></span>
         <div class="other-info-avatar">
             <div class="other-info-show-avatar">
-                <img avatarLoad [avatarError]="3" [src]="otherInfo.info.avatarUrl | sanitize: 'url'" alt="">
+                <img avatarLoad [avatarError]="3" [src]="otherInfo.info.avatarUrl" alt="">
             </div>
             <div class="other-info-avatar-username" [title]="otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username">
                 {{otherInfo.info.memo_name || otherInfo.info.nickname || otherInfo.info.username}}

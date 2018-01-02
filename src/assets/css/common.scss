@@ -351,11 +351,14 @@ ul,li,ol{
     z-index: 2;
 }
 /* emoji*/
+.emoji{
+    vertical-align: middle;
+}
 .emoji-normal .emoji{
     position: relative;
     top: -3px;
 }
-.conversation-recentMsg .emoji{
+.conversation-recentMsg .emoji,.chat-panel-content-text .emoji, .room-panel-content-text .emoji, .conversation-draft .emoji{
     position: relative;
     top: -1px;
 }
@@ -363,11 +366,6 @@ ul,li,ol{
     img{
         width: 100%;
     }
-}
-.chat-panel-content-text .emoji, .room-panel-content-text .emoji, .conversation-draft .emoji{
-    position: relative;
-    top: -1px;
-    vertical-align: middle;
 }
 // menu
 .chat-panel-operation-board .menu-wrap, .room-panel-operation-board .menu-wrap{

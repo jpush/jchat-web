@@ -10,7 +10,7 @@
                 <perfect-scrollbar class="scroll">
                     <div class="unread-list-item display-flex" (click)="watchOtherInfo(unread)" *ngFor="let unread of unreadList.info.unread">
                         <div class="unread-list-avatar">
-                            <img [src]="unread.avatarUrl | sanitize : 'url'" avatarLoad [avatarError]="3" alt="">
+                            <img [src]="unread.avatarUrl" avatarLoad [avatarError]="3" alt="">
                         </div>
                         <div class="unread-list-name flex-1" [title]="unread.memo_name || unread.nickname || unread.username">
                             {{unread.memo_name || unread.nickname || unread.username}}
@@ -23,7 +23,7 @@
                 <perfect-scrollbar class="scroll">
                     <div class="unread-list-item display-flex" (click)="watchOtherInfo(read)" *ngFor="let read of unreadList.info.read">
                         <div class="unread-list-avatar">
-                            <img [src]="read.avatarUrl | sanitize : 'url'" avatarLoad [avatarError]="3" alt="">
+                            <img [src]="read.avatarUrl" avatarLoad [avatarError]="3" alt="">
                         </div>
                         <div class="unread-list-name flex-1" [title]="read.memo_name || read.nickname || read.username">
                             {{read.memo_name || read.nickname || read.username}}

@@ -11,7 +11,7 @@
         <a href="javascript: ;" *ngFor="let item of atList.list" (click)="selectPerson(item, $event)">
             <li class="clearfix" *ngIf="global.user !== item.username">
                 <div class="float-left at-list-avatar">
-                    <img avatarLoad [avatarError]="3" [src]="item.avatarUrl | sanitize : 'url'" alt="">                
+                    <img avatarLoad [avatarError]="3" [src]="item.avatarUrl" alt="">                
                 </div>
                 <span class="float-left at-list-text" *ngIf="atList.showAll">{{item.memo_name || item.nickName || item.username}}</span>
                 <span class="float-left at-list-text" *ngIf="!atList.showAll">{{item.match === 'memo_name' ? item.memo_name : (item.match === 'nickName' ? item.nickName : item.username)}}</span>

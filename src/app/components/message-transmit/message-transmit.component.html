@@ -15,7 +15,7 @@
                             <div class="create-group-item">
                                 <div class="display-flex">
                                     <div class="create-group-avatar">
-                                        <img [src]="user.avatarUrl | sanitize: 'url'" avatarLoad [avatarError]="user.type === 3 ? 0 : 1" alt="">
+                                        <img [src]="user.avatarUrl" avatarLoad [avatarError]="user.type === 3 ? 0 : 1" alt="">
                                     </div>
                                     <div class="flex-1 create-group-username">{{user.memo_name || user.nickName || user.name}}</div>
                                     <label class="create-group-select-label">
@@ -34,7 +34,7 @@
                     <div *ngFor="let user of selectList" class="create-group-item">
                         <div class="display-flex">
                             <div class="create-group-avatar">
-                                <img [src]="user.avatarUrl | sanitize: 'url'" avatarLoad [avatarError]="user.type === 3 ? 0 : 1" alt="">
+                                <img [src]="user.avatarUrl" avatarLoad [avatarError]="user.type === 3 ? 0 : 1" alt="">
                             </div>
                             <div class="flex-1">{{user.memo_name || user.nickName || user.name}}</div>
                             <div class="create-group-cancel-select" (click)="cancelSelect(user)"></div>
