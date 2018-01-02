@@ -349,4 +349,4 @@
 </div>
 <paste-image-component *ngIf="pasteImage.show" [pasteInfo]="pasteImage" (pasteImage)="pasteImageEmit()"></paste-image-component>
 <drop-file-component *ngIf="dropFileInfo.show" (dropFile)="dropFileEmit()" [dropFileInfo]="dropFileInfo"></drop-file-component>
-<card-modal-component *ngIf="businessCard.show" [businessCard]="businessCard" (businessCardSend)="businessCardSendEmit($event)"></card-modal-component>
+<card-modal-component *ngIf="businessCard.show" [businessCard]="businessCard" (closeBusinessCard)="closeBusinessCardEmit()" (businessCardSend)="businessCardSendEmit($event)"></card-modal-component>

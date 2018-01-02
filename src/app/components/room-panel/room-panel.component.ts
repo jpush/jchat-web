@@ -2,7 +2,7 @@ import {
     Component, OnInit, Input, Output,
     EventEmitter, ElementRef, OnDestroy,
     HostListener, OnChanges, SimpleChanges, ViewChild,
-    Renderer
+    Renderer, AfterContentInit
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { PerfectScrollbarComponent, PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
@@ -22,7 +22,7 @@ import * as download from 'downloadjs';
     styleUrls: ['./room-panel.component.scss']
 })
 
-export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
+export class RoomPanelComponent implements OnInit, OnChanges, AfterContentInit, OnDestroy {
     @ViewChild(PerfectScrollbarComponent) private componentScroll;
     @ViewChild('contentDiv') private contentDiv;
     @Input()
@@ -124,6 +124,7 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
         item: null
     };
     private roomPanelStream$;
+    private mainMenu;
     constructor(
         private elementRef: ElementRef,
         private store$: Store<any>,
@@ -154,6 +155,9 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
         if (changes.otherScrollTobottom) {
             this.scrollBottom(150, true);
         }
+    }
+    public ngAfterContentInit() {
+        this.mainMenu = document.getElementById('mainMenu');
     }
     public ngOnDestroy() {
         this.roomPanelStream$.unsubscribe();
@@ -279,11 +283,11 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.imageViewer.show = true;
         this.viewer = this.imageViewer;
-        document.getElementById('mainMenu').style.zIndex = '3';
+        this.mainMenu.style.zIndex = '3';
     }
     // 关闭图片预览
     private closeImageViewerEmit() {
-        document.getElementById('mainMenu').style.zIndex = '4';
+        this.mainMenu.style.zIndex = '4';
     }
     // 点击更多列表的元素
     private selectMoreMenuItemEmit(item) {
@@ -354,9 +358,14 @@ export class RoomPanelComponent implements OnInit, OnChanges, OnDestroy {
     }
     private showBusinessCardModal() {
         this.businessCard.show = true;
+        this.mainMenu.style.zIndex = '3';
     }
     private businessCardSendEmit(user) {
         this.businessCardSend.emit(user);
+        this.mainMenu.style.zIndex = '4';
+    }
+    private closeBusinessCardEmit() {
+        this.mainMenu.style.zIndex = '4';
     }
     // 粘贴图片发送
     private pasteImageEmit() {

@@ -11,6 +11,8 @@ export class CardModalComponent implements OnInit {
     @Input()
     private businessCard;
     @Output()
+    private closeBusinessCard: EventEmitter<any> = new EventEmitter();
+    @Output()
     private businessCardSend: EventEmitter<any> = new EventEmitter();
     private selectList = null;
     private searchResult = {
@@ -27,6 +29,7 @@ export class CardModalComponent implements OnInit {
     }
     private cancelBusinessCard() {
         this.businessCard.show = false;
+        this.closeBusinessCard.emit();
         for (let list of this.businessCard.info) {
             for (let item of list.data) {
                 item.checked = false;

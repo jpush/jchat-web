@@ -234,8 +234,10 @@ export class ChatEffect {
                     let flag = false;
                     for (let j = end; j < msgs.length; j++) {
                         if (msgs[i].content.from_id === msgs[j].content.from_id) {
-                            msgs[i].content.avatarUrl = msgs[j].content.avatarUrl;
-                            flag = true;
+                            if (msgs[j].content.avatarUrl) {
+                                msgs[i].content.avatarUrl = msgs[j].content.avatarUrl;
+                                flag = true;
+                            }
                             break;
                         }
                     }
