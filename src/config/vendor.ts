@@ -9,9 +9,9 @@ import '@angular/router';
 import '@ngrx/core';
 import '@ngrx/effects';
 import '@ngrx/store';
-// RxJS
+
 import 'rxjs';
-// Other vendors for example jQuery, Lodash or Bootstrap
-// You can import js, ts, css, sass, ...
 import 'ngx-perfect-scrollbar';
 import 'downloadjs';
+import 'push.js';
+import 'clipboard';

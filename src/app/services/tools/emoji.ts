@@ -26,17 +26,10 @@ export abstract class Emoji {
     }
 
     public static trans(text, fontSize) {
-        let isElement;
-        let el;
-
         text = text.replace(this.reg, (code) => {
-            return '<img width=' + fontSize + ' class="emoji" src="'
-                + imgRouter + this._escapeToUtf32(code) + '.png">';
+            return `<img width='${fontSize}' class="emoji"
+                    src="${imgRouter}${this._escapeToUtf32(code)}.png">`;
         });
-
-        if (isElement) {
-            el.innerHTML = text;
-        }
         return text;
     }
 

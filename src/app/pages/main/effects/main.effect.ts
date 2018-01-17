@@ -6,10 +6,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppStore } from '../../../app.store';
 import { mainAction } from '../actions';
 import { chatAction } from '../../../pages/chat/actions';
-import { global, authPayload, ApiService } from '../../../services/common';
+import { global, authPayload, ApiService, demoInitConfig } from '../../../services/common';
 import { md5 } from '../../../services/tools';
 import { Util } from '../../../services/util';
 import { appAction } from '../../../actions';
+import SignatureService from '../../../services/common/signature.service';
 
 @Injectable()
 export class MainEffect {
@@ -19,13 +20,28 @@ export class MainEffect {
         .ofType(mainAction.jimInit)
         .map(toPayload)
         .switchMap(async () => {
-            const timestamp = new Date().getTime();
-            const signature = Util.createSignature(timestamp);
+            let timestamp = new Date().getTime();
+            let signature;
+            if (authPayload.isFrontSignature) {
+                if (authPayload.masterSecret.length === 0) {
+                    signature = demoInitConfig.signature;
+                    timestamp = demoInitConfig.timestamp;
+                } else {
+                    signature = Util.createSignature(timestamp);
+                }
+            } else {
+                const data = {
+                    timestamp,
+                    appkey: authPayload.appkey,
+                    randomStr: authPayload.randomStr
+                };
+                signature = await this.signatureService.requestSignature(authPayload.signatureApiUrl, data);
+            }
             const initObj = {
                 appkey: authPayload.appkey,
                 random_str: authPayload.randomStr,
-                signature: authPayload.signature || signature,
-                timestamp: authPayload.timestamp || timestamp,
+                signature,
+                timestamp,
                 flag: authPayload.flag
             };
             const data: any = await this.apiService.init(initObj);
@@ -525,13 +541,28 @@ export class MainEffect {
         .ofType(mainAction.login)
         .map(toPayload)
         .switchMap(async (val) => {
-            const timestamp = new Date().getTime();
-            const signature = Util.createSignature(timestamp);
+            let timestamp = new Date().getTime();
+            let signature;
+            if (authPayload.isFrontSignature) {
+                if (authPayload.masterSecret.length === 0) {
+                    signature = demoInitConfig.signature;
+                    timestamp = demoInitConfig.timestamp;
+                } else {
+                    signature = Util.createSignature(timestamp);
+                }
+            } else {
+                const data = {
+                    timestamp,
+                    appkey: authPayload.appkey,
+                    randomStr: authPayload.randomStr
+                };
+                signature = await this.signatureService.requestSignature(authPayload.signatureApiUrl, data);
+            }
             const initObj = {
                 appkey: authPayload.appkey,
                 random_str: authPayload.randomStr,
-                signature: authPayload.signature || signature,
-                timestamp: authPayload.timestamp || timestamp,
+                signature,
+                timestamp,
                 flag: authPayload.flag
             };
             const data: any = await this.apiService.init(initObj);
@@ -797,7 +828,8 @@ export class MainEffect {
         private actions$: Actions,
         private store$: Store<AppStore>,
         private router: Router,
-        private apiService: ApiService
+        private apiService: ApiService,
+        private signatureService: SignatureService
     ) { }
     private errorFn(error) {
         this.store$.dispatch({

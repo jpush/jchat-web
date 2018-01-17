@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { global } from './global';
-import { authPayload } from './config';
+import { authPayload, demoInitConfig } from './config';
 import { md5 } from '../../services/tools';
 import { Util } from '../../services/util';
+import SignatureService from './signature.service';
 
 /**
  * main路由的路由守卫服务
@@ -16,7 +17,8 @@ export class MainCanActivate implements CanActivate {
     private password = '';
     constructor(
         private router: Router,
-        private storageService: StorageService
+        private storageService: StorageService,
+        private signatureService: SignatureService
     ) { }
     public canActivate(): boolean | Promise<boolean> {
         // 如果是从登陆界面跳转过来的就直接return true
@@ -37,14 +39,29 @@ export class MainCanActivate implements CanActivate {
             return false;
         }
     }
-    private JIMInit(resolve) {
-        const timestamp = new Date().getTime();
-        const signature = Util.createSignature(timestamp);
+    private async JIMInit(resolve) {
+        let timestamp = new Date().getTime();
+        let signature;
+        if (authPayload.isFrontSignature) {
+            if (authPayload.masterSecret.length === 0) {
+                signature = demoInitConfig.signature;
+                timestamp = demoInitConfig.timestamp;
+            } else {
+                signature = Util.createSignature(timestamp);
+            }
+        } else {
+            const data = {
+                timestamp,
+                appkey: authPayload.appkey,
+                randomStr: authPayload.randomStr
+            };
+            signature = await this.signatureService.requestSignature(authPayload.signatureApiUrl, data);
+        }
         global.JIM.init({
             appkey: authPayload.appkey,
             random_str: authPayload.randomStr,
-            signature: authPayload.signature || signature,
-            timestamp: authPayload.timestamp || timestamp,
+            signature,
+            timestamp,
             flag: authPayload.flag
         }).onSuccess((data) => {
             this.autoLogin(resolve);

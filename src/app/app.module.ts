@@ -25,6 +25,7 @@ import { routing } from './app.router';
 import { AppComponent } from './app.component';
 import { StorageService, PreloadService, ApiService } from './services/common';
 import '../assets/css/common.scss';
+import SignatureService from './services/common/signature.service';
 
 @NgModule({
     imports: [
@@ -59,7 +60,8 @@ import '../assets/css/common.scss';
         MainCanActivate,
         StorageService,
         PreloadService,
-        ApiService
+        ApiService,
+        SignatureService
     ]
 })
 export class AppModule extends HMR {

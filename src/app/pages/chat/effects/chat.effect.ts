@@ -222,6 +222,7 @@ export class ChatEffect {
         .ofType(chatAction.getMemberAvatarUrl)
         .map(toPayload)
         .switchMap(async (info) => {
+            let userArr = [];
             const msgs = info.messageList[info.active.activeIndex].msgs;
             const end = msgs.length - (info.loadingCount - 1) * pageNumber;
             this.store$.dispatch({
@@ -245,17 +246,27 @@ export class ChatEffect {
                         continue;
                     }
                 }
+                msgs[i].content.avatarUrl = '';
                 // 第一次加载头像的用户
+                if (msgs[i].content.from_id !== global.user &&
+                    userArr.indexOf(msgs[i].content.from_id) < 0) {
+                    userArr.push(msgs[i].content.from_id);
+                }
+            }
+            for (let user of userArr) {
                 const userObj = {
-                    username: msgs[i].content.from_id
+                    username: user
                 };
                 this.apiService.getUserInfo(userObj).then((data: any) => {
-                    msgs[i].content.avatarUrl = '';
                     if (!data.code && data.user_info.avatar !== '') {
                         const urlObj = { media_id: data.user_info.avatar };
                         this.apiService.getResource(urlObj).then((urlInfo: any) => {
                             if (!urlInfo.code) {
-                                msgs[i].content.avatarUrl = urlInfo.url;
+                                for (let i = end - 1; i >= end - pageNumber && i >= 0 && end >= 1; i--) {
+                                    if (msgs[i].content.from_id === user) {
+                                        msgs[i].content.avatarUrl = urlInfo.url;
+                                    }
+                                }
                             }
                         });
                     }
@@ -1626,6 +1637,13 @@ export class ChatEffect {
                     if (info.message.unread_count !== data.msg_unread_list.unread_list.length) {
                         info.message.unread_count = data.msg_unread_list.unread_list.length;
                     }
+                    this.store$.dispatch({
+                        type: chatAction.watchUnreadListSuccess,
+                        payload: {
+                            info: data.msg_unread_list,
+                            loading: false
+                        }
+                    });
                     for (let unread of data.msg_unread_list.unread_list) {
                         this.getUnreadListInfo(data, unread);
                     }

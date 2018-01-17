@@ -96,7 +96,6 @@
     "core-js": "^2.4.1",
     "downloadjs": "^1.4.7",
     "jpush-ui": "^0.0.1",
-    "libbase64": "^0.1.0",
     "ngx-perfect-scrollbar": "4.5.3",
     "push.js": "^1.0.4",
     "reflect-metadata": "^0.1.10",

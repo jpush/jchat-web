@@ -9,7 +9,7 @@ import { global } from '../../services/common';
 
 export class AtListComponent implements OnInit {
     @Input()
-    private atList: EventEmitter<any> = new EventEmitter();
+    private atList;
     @Output()
     private selectAtItem: EventEmitter<any> = new EventEmitter();
     private global = global;
