@@ -6,11 +6,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppStore } from '../../../app.store';
 import { mainAction } from '../actions';
 import { chatAction } from '../../../pages/chat/actions';
-import { global, authPayload, ApiService, demoInitConfig } from '../../../services/common';
+import {
+    global,
+    authPayload,
+    ApiService,
+    demoInitConfig,
+    SignatureService
+} from '../../../services/common';
 import { md5 } from '../../../services/tools';
 import { Util } from '../../../services/util';
 import { appAction } from '../../../actions';
-import SignatureService from '../../../services/common/signature.service';
 
 @Injectable()
 export class MainEffect {
@@ -22,14 +27,18 @@ export class MainEffect {
         .switchMap(async () => {
             let timestamp = new Date().getTime();
             let signature;
+            // 前端生成签名
             if (authPayload.isFrontSignature) {
+                // 使用jchat demo自身的签名
                 if (authPayload.masterSecret.length === 0) {
                     signature = demoInitConfig.signature;
                     timestamp = demoInitConfig.timestamp;
+                    // 开发者配置前端生成签名
                 } else {
                     signature = Util.createSignature(timestamp);
                 }
             } else {
+                // 服务端生成签名
                 const data = {
                     timestamp,
                     appkey: authPayload.appkey,

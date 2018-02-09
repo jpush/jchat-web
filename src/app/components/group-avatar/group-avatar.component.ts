@@ -35,7 +35,6 @@ export class GroupAvatarComponent implements OnInit {
     private modalAction(event, type?) {
         event.stopPropagation();
         if (type === 'confirm') {
-            const that = this;
             const canvas = this.cropper.getCroppedCanvas({
                 width: 100,
                 height: 100,
@@ -44,13 +43,13 @@ export class GroupAvatarComponent implements OnInit {
             if (canvas.toBlob) {
                 canvas.toBlob((blob) => {
                     let formData = new FormData();
-                    formData.append(that.groupAvatarInfo.filename, blob,
-                        that.groupAvatarInfo.filename);
-                    const ext = Util.getExt(that.groupAvatarInfo.filename) || 'png';
-                    that.groupAvatarInfo.formData = formData;
-                    that.groupAvatarInfo.src = canvas.toDataURL(`image/${ext}`, 1);
-                    that.groupAvatar.emit(that.groupAvatarInfo);
-                    that.groupAvatarInfo.show = false;
+                    formData.append(this.groupAvatarInfo.filename, blob,
+                        this.groupAvatarInfo.filename);
+                    const ext = Util.getExt(this.groupAvatarInfo.filename) || 'png';
+                    this.groupAvatarInfo.formData = formData;
+                    this.groupAvatarInfo.src = canvas.toDataURL(`image/${ext}`, 1);
+                    this.groupAvatar.emit(this.groupAvatarInfo);
+                    this.groupAvatarInfo.show = false;
                 }, '');
             }
         } else {

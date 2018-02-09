@@ -5,3 +5,4 @@ export * from './main-canActivate.service';
 export * from './storage.service';
 export * from './preload.service';
 export * from './api.service';
+export * from './signature.service';

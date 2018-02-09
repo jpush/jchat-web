@@ -23,9 +23,8 @@ import { TipModalModule } from './components/tip-modal';
 import { HMR } from '../config/hmr';
 import { routing } from './app.router';
 import { AppComponent } from './app.component';
-import { StorageService, PreloadService, ApiService } from './services/common';
+import { StorageService, PreloadService, ApiService, SignatureService } from './services/common';
 import '../assets/css/common.scss';
-import SignatureService from './services/common/signature.service';
 
 @NgModule({
     imports: [

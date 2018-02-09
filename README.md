@@ -51,13 +51,15 @@ localhost:3000
 说明：
 * 如果使用的不是本地localhost服务器，则要在task/webpack.dev.js中的publicPath改成自己的ip和端口，在浏览器输入ip和端口去访问项目
 
-* 应用配置：<br />
+* 应用配置（前端生成签名和服务端生成签名，任选一种方式）：<br />
 前端生成签名配置：<br />
-1、填写好appkey以及对应的masterSecret<br />
+在src/services/common/config.ts中<br />
+1、填写appkey以及对应的masterSecret<br />
 2、isFrontSignature改为true<br />
 <br />
-服务端生成签名配置：
-1、填写好appkey，不填masterSecret，masterSecret放在服务端<br />
+服务端生成签名配置：<br />
+在src/services/common/config.ts中<br />
+1、填写appkey，不填masterSecret，masterSecret放在服务端<br />
 2、isFrontSignature改为false<br />
 3、填写服务端接口url配置项signatureApiUrl<br />
 4、在自己的服务端上开发出生成签名的post类型接口<br />

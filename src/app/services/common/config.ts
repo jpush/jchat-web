@@ -1,13 +1,4 @@
 /**
- * 各字段释义
- * randomStr : 20-36 长度的随机字符串, 作为签名加 salt 使用
- * appkey : 开发者在极光平台注册的 IM 应用 appkey
- * masterSecret : 秘钥，由前端生成签名时需要填写，有暴露的风险
- * isFrontSignature : 是否由前端生成签名，值为true则由前端自动生成签名，值为false则由服务端生成签名，开发者需要在服务端提供post类型接口
- * signatureApiUrl : 由服务端生成签名时，前端调用服务端post类型接口的url，仅在isFrontSignature为false时可用
- * flag : 是否启用消息漫游，值为0不开启，值为1开启
- */
-/**
  * 前端自动生成签名，配置指南
  * step 1、填写好appkey以及对应的masterSecret
  * step 2、isFrontSignature改为true
@@ -33,20 +24,31 @@
  */
 /**
  * 注意:
- * 建议在生产环境中使用服务端生成签名
- * 否则masterSecret有暴露的风险
+ * 签名的生成有前端和服务端两种方式，任选其中之一即可
+ * 建议在生产环境中使用服务端生成签名，否则masterSecret有暴露的风险
  */
+
+// randomStr : 随机字符串, 作为签名加 salt 使用
 const randomStr = '404';
+
+// appkey : 开发者在极光平台注册的 IM 应用 appkey
 const appkey = '4f7aef34fb361292c566a1cd';
+
+// masterSecret : 密钥，由前端生成签名时需要填写，有暴露的风险
 const masterSecret = '';
+
+// isFrontSignature : 是否由前端生成签名，值为true则由前端自动生成签名，值为false则由服务端生成签名，开发者需要在服务端提供post类型接口
 const isFrontSignature = true;
+
+// signatureApiUrl : 由服务端生成签名时，前端调用服务端post类型接口的url，仅在isFrontSignature为false时可用
 const signatureApiUrl = '';
 
-// JIM init配置
+// JIM 应用配置
 export const authPayload = {
     appkey,
     masterSecret,
     randomStr,
+    // flag : 是否启用消息漫游，值为0不开启，值为1开启
     flag: 1,
     isFrontSignature,
     signatureApiUrl
