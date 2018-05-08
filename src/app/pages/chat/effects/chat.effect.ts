@@ -785,7 +785,7 @@ export class ChatEffect {
         .ofType(chatAction.sendSingleFile)
         .map(toPayload)
         .switchMap(async (file) => {
-            const msgs: any = this.apiService.sendSingleFile(file.singleFile);
+            const msgs: any = await this.apiService.sendSingleFile(file.singleFile);
             if (msgs.code) {
                 this.store$.dispatch({
                     type: chatAction.sendMsgComplete,
