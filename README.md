@@ -81,7 +81,7 @@ localhost:3000
 
 1. 在task/webpack.prod.js中的publicPath改成'./'
 2. 终端输入gulp noqiniu-prod生成dist文件夹
-3. 将dist目录下的所有文件上传到自己服务器上（不包含dist目录）
+3. 将dist目录下的所有文件上传到自己服务器上
 
 ### 备注说明
 
