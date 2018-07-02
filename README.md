@@ -53,25 +53,25 @@ localhost:3000
 
 * 应用配置（前端生成签名和服务端生成签名，任选一种方式）：<br />
 前端生成签名配置：<br />
-在src/services/common/config.ts中<br />
+在src/app/services/common/config.ts中<br />
 1、填写appkey以及对应的masterSecret<br />
 2、isFrontSignature改为true<br />
 <br />
-服务端生成签名配置：<br />
-在src/services/common/config.ts中<br />
+* 服务端生成签名配置：<br />
+在src/app/services/common/config.ts中<br />
 1、填写appkey，不填masterSecret，masterSecret放在服务端<br />
 2、isFrontSignature改为false<br />
 3、填写服务端接口url配置项signatureApiUrl<br />
 4、在自己的服务端上开发出生成签名的post类型接口<br />
 <br />
-服务端生成签名的api详解：<br />
+* 服务端生成签名的api详解：<br />
 前端接口的调用相关的代码已经写好，开发者只需要配置好signatureApiUrl，并在服务端提供签名api接口即可<br />
-服务端接收post请求，收到json数据，json数据结构如下:<br />
-{<br />
-  timestamp: new Date().getTime(),<br />
-  appkey: authPayload.appkey,<br />
-  randomStr: authPayload.randomStr<br />
-}<br />
+服务端接收post请求，收到'Content-Type'为'application/json'的json数据，json数据结构示例如下:<br />
+{  
+  timestamp: new Date().getTime(),  
+  appkey: authPayload.appkey,  
+  randomStr: authPayload.randomStr  
+}  
 根据json数据及masterSecret生成签名，返回string类型格式的response给前端<br />
 <br />
 * 注意：
@@ -81,7 +81,7 @@ localhost:3000
 
 1. 在task/webpack.prod.js中的publicPath改成'./'
 2. 终端输入gulp noqiniu-prod生成dist文件夹
-3. 将dist目录下的所有文件上传到自己服务器上
+3. 将dist目录下的所有文件上传到自己服务器上（不包含dist目录）
 
 ### 备注说明
 
