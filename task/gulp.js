@@ -40,7 +40,7 @@ gulp.task('webpack', function (callback) {
 */
 gulp.task('replace', function () {
     return gulp.src('./dist/index.html')
-        .pipe(replace('./assets/static/', WebpackConfig.output.publicPath + 'assets/static/'))
+        .pipe(replace('./assets/', WebpackConfig.output.publicPath + 'assets/'))
         .pipe(gulp.dest('./dist/'));
 })
 gulp.task('replacejs', function () {
