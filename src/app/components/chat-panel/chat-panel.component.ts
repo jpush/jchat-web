@@ -652,6 +652,10 @@ export class ChatPanelComponent implements OnInit, AfterViewInit, OnChanges, OnD
             img.src = this.result;
             const _this = this;
             img.onload = function () {
+                // 为了兼容chrome 49以下不能发送粘贴和复制图片的问题
+                if (!pasteFile || !pasteFile.name) {
+                    pasteFile = Util.dataURLtoFile(_this.result, 'aa.png');
+                }
                 that.pasteImage.info = {
                     src: _this.result,
                     width: img.naturalWidth,
