@@ -15,7 +15,7 @@ export class RegisterEffect {
     private maxLength = 128;
     private chineseReg = /[\u4e00-\u9fa5]/ig;
     private letterNumberStartReg = /^[0-9a-zA-Z]/ig;
-    private charReg = /^([a-zA-Z]|[0-9]|_|\.|-|@]){4,}$/ig;
+    private charReg = /^([a-zA-Z]|[0-9]|_|\.|-|@){4,}$/ig;
     // 注册
     @Effect()
     private register$: Observable<Action> = this.actions$

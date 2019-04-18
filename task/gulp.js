@@ -198,7 +198,8 @@ gulp.task('upload', function () {
             accessKey: config[type].ak,
             secretKey: config[type].sk,
             bucket: config[type].bk,
-            private: false
+            private: false,
+            uploadURL: config[type].uploadURL
         }, {
             dir: 'web-jchat/' + config.v + '/',
             versioning: false,
